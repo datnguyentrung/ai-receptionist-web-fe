@@ -1,0 +1,46 @@
+.loginContainer {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5;
+  padding: 1rem;
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+
+.card {
+  width: 100%;
+  max-width: 72rem;
+  background-color: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.12),
+    0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.rightPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+
+  @media (min-width: 768px) {
+    padding: 3rem 3.5rem;
+  }
+}
