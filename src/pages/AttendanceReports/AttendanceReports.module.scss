@@ -1,2 +1,270 @@
 // AttendanceReports.module.scss
-// Layout handled by Tailwind utilities and inline styles
+@use "../../styles/variables" as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: "Inter", "Poppins", sans-serif;
+}
+
+// ── Header ────────────────────────────────────────────────
+.pageHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid #e02020;
+  background: #fff;
+  color: #e02020;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+// ── Summary + Pie grid ────────────────────────────────────
+.summaryOuter {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: $lg) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.summaryLeft {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: $sm) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.summaryCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #f0f0f5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryIconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trendCard {
+  grid-column: span 2;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #f0f0f5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (min-width: $sm) {
+    grid-column: span 4;
+  }
+}
+
+.trendIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sparkBarsOuter {
+  margin-left: auto;
+  display: none;
+
+  @media (min-width: $sm) {
+    display: block;
+  }
+}
+
+.sparkBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.sparkBar {
+  width: 16px;
+  border-radius: 2px;
+}
+
+.pieCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #f0f0f5;
+}
+
+// ── Filters ───────────────────────────────────────────────
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #e8ebf0;
+  background: #fff;
+}
+
+.searchInput {
+  flex: 1;
+  outline: none;
+  background: transparent;
+  min-width: 0;
+}
+
+.dateBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #e8ebf0;
+  background: #fff;
+}
+
+.dateInput {
+  outline: none;
+  background: transparent;
+}
+
+.filterBtn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #e8ebf0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  color: #6b7280;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+// ── Table card ────────────────────────────────────────────
+.tableCard {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.tr {
+  border-top: 1px solid #f3f4f6;
+  transition: background 0.12s;
+
+  &:hover {
+    background: rgba(249, 250, 251, 0.6);
+  }
+}
+
+.td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.avatarCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+// ── Empty state ───────────────────────────────────────────
+.emptyState {
+  text-align: center;
+  padding: 48px 0;
+}
+
+// ── Table footer ──────────────────────────────────────────
+.tableFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #f3f4f6;
+}
+
+// ── Attendance badge ──────────────────────────────────────
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}

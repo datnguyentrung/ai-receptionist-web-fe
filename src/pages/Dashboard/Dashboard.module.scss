@@ -1,2 +1,367 @@
 // Dashboard.module.scss
-// Layout handled by Tailwind utilities and inline styles
+
+// ── Page wrapper ──────────────────────────────────────────────
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: "Inter", "Poppins", sans-serif;
+}
+
+// ── Greeting banner ───────────────────────────────────────────
+.banner {
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #e02020 0%, #7b0000 100%);
+}
+
+.bannerBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+}
+
+.bannerLeft {
+  position: relative;
+  z-index: 10;
+}
+
+.bannerSubtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+}
+
+.bannerTitle {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.bannerDate {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.bannerAction {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 10;
+
+  @media (min-width: 640px) {
+    display: flex;
+  }
+}
+
+.bannerActionBtn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+// ── Stats grid ────────────────────────────────────────────────
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statCard {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid #f0f0f5;
+}
+
+.statCardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.statCardBody {
+  flex: 1;
+}
+
+.statIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statTrend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid #f3f4f6;
+}
+
+// ── Charts grid ───────────────────────────────────────────────
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.chartCard {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #f0f0f5;
+}
+
+.chartCardWide {
+  @media (min-width: 1024px) {
+    grid-column: span 2;
+  }
+}
+
+.chartHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.chartBadge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #e02020;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.chartSubHead {
+  margin-bottom: 16px;
+}
+
+// ── Bottom grid ──────────────────────────────────────────────
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.recentCard {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+
+  @media (min-width: 1280px) {
+    grid-column: span 2;
+  }
+}
+
+.todayCard {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cardSimpleHead {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.viewAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid #e02020;
+  background: none;
+  color: #e02020;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #fef2f2;
+  }
+}
+
+// ── Table ────────────────────────────────────────────────────
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: 12px 16px;
+}
+
+.tr {
+  border-top: 1px solid #f3f4f6;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(249, 250, 251, 0.6);
+  }
+}
+
+.td {
+  padding: 12px 16px;
+}
+
+.avatarCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+// ── Today classes card body ───────────────────────────────────
+.cardBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.classItem {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #f0f0f5;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.classItemHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.classTimeRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.timeInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9ca3af;
+}
+
+.capacityBar {
+  margin-top: 8px;
+  height: 4px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.capacityFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s;
+}
+
+// ── Custom tooltip ────────────────────────────────────────────
+.tooltip {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+// ── Status badge ──────────────────────────────────────────────
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}

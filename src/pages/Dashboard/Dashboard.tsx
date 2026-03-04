@@ -28,6 +28,7 @@ import {
   MONTHLY_ENROLLMENT,
   STATS,
 } from "../../data/mockData";
+import styles from "./Dashboard.module.scss";
 
 // ── helpers ──────────────────────────────────────────────────
 function avatarColor(initials: string) {
@@ -78,18 +79,10 @@ function StatusBadge({
   const s = map[status];
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-      style={{
-        background: s.bg,
-        color: s.color,
-        fontSize: "11px",
-        fontWeight: 600,
-      }}
+      className={styles.statusBadge}
+      style={{ background: s.bg, color: s.color }}
     >
-      <span
-        className="w-1.5 h-1.5 rounded-full"
-        style={{ background: s.dot }}
-      />
+      <span className={styles.statusDot} style={{ background: s.dot }} />
       {s.label}
     </span>
   );
@@ -126,19 +119,16 @@ function StatCard({
   label: string;
   value: string | number;
   sub?: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
   trend?: number;
   trendLabel?: string;
   accent: string;
 }) {
   const positive = (trend ?? 0) >= 0;
   return (
-    <div
-      className="bg-white rounded-2xl p-5 flex flex-col gap-4 border"
-      style={{ borderColor: "#F0F0F5" }}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
+    <div className={styles.statCard}>
+      <div className={styles.statCardHead}>
+        <div className={styles.statCardBody}>
           <p
             style={{
               fontSize: "12px",
@@ -151,12 +141,12 @@ function StatCard({
             {label}
           </p>
           <p
-            className="mt-1"
             style={{
               fontSize: "30px",
               fontWeight: 800,
               color: "#111827",
               lineHeight: 1.1,
+              marginTop: "4px",
             }}
           >
             {value}
@@ -168,17 +158,14 @@ function StatCard({
           )}
         </div>
         <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center"
+          className={styles.statIconWrap}
           style={{ background: accent + "15" }}
         >
           <Icon size={22} style={{ color: accent }} />
         </div>
       </div>
       {trend !== undefined && (
-        <div
-          className="flex items-center gap-1.5 pt-1 border-t"
-          style={{ borderColor: "#F3F4F6" }}
-        >
+        <div className={styles.statTrend} style={{ borderColor: "#F3F4F6" }}>
           {trend === 0 ? (
             <Minus size={13} style={{ color: "#9CA3AF" }} />
           ) : positive ? (
@@ -205,13 +192,19 @@ function StatCard({
 }
 
 // ── Custom Tooltip ────────────────────────────────────────────
-function CustomTooltip({ active, payload, label }: any) {
+type TooltipPayloadEntry = { value: number | string; name: string };
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+  label?: string;
+}) {
   if (!active || !payload?.length) return null;
   return (
-    <div
-      className="bg-white border rounded-xl px-3 py-2 shadow-lg"
-      style={{ borderColor: "#E5E7EB" }}
-    >
+    <div className={styles.tooltip}>
       <p style={{ fontSize: "11px", fontWeight: 600, color: "#6B7280" }}>
         {label}
       </p>
@@ -229,19 +222,11 @@ const todayClasses = CLASSES.filter((c) => c.status === "ongoing").slice(0, 3);
 // ── Main Dashboard ────────────────────────────────────────────
 export function Dashboard() {
   return (
-    <div
-      className="space-y-6"
-      style={{ fontFamily: "'Inter', 'Poppins', sans-serif" }}
-    >
+    <div className={styles.dashboard}>
       {/* Greeting banner */}
-      <div
-        className="rounded-2xl p-5 flex items-center justify-between overflow-hidden relative"
-        style={{
-          background: "linear-gradient(135deg, #E02020 0%, #7b0000 100%)",
-        }}
-      >
+      <div className={styles.banner}>
         <svg
-          className="absolute inset-0 w-full h-full opacity-10"
+          className={styles.bannerBg}
           viewBox="0 0 600 120"
           preserveAspectRatio="xMidYMid slice"
         >
@@ -254,32 +239,20 @@ export function Dashboard() {
             fill="none"
           />
         </svg>
-        <div className="relative z-10">
-          <p className="text-white/80" style={{ fontSize: "13px" }}>
-            Chào buổi sáng 👋
-          </p>
-          <h2
-            className="text-white mt-0.5"
-            style={{ fontSize: "20px", fontWeight: 700 }}
-          >
-            Tổng quan hệ thống hôm nay
-          </h2>
-          <p className="text-white/60 mt-1" style={{ fontSize: "12px" }}>
+        <div className={styles.bannerLeft}>
+          <p className={styles.bannerSubtitle}>Chào buổi sáng 👋</p>
+          <h2 className={styles.bannerTitle}>Tổng quan hệ thống hôm nay</h2>
+          <p className={styles.bannerDate}>
             Thứ 4, 04/03/2026 · 5 lớp học đang diễn ra
           </p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 relative z-10">
-          <div
-            className="px-4 py-2 rounded-xl bg-white/15 border border-white/20 text-white"
-            style={{ fontSize: "12px", fontWeight: 600 }}
-          >
-            📊 Xem báo cáo tháng
-          </div>
+        <div className={styles.bannerAction}>
+          <div className={styles.bannerActionBtn}>📊 Xem báo cáo tháng</div>
         </div>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className={styles.statsGrid}>
         <StatCard
           label="Học viên đang học"
           value={STATS.totalActiveStudents}
@@ -319,13 +292,10 @@ export function Dashboard() {
       </div>
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className={styles.chartsGrid}>
         {/* Enrollment trend */}
-        <div
-          className="lg:col-span-2 bg-white rounded-2xl p-5 border"
-          style={{ borderColor: "#F0F0F5" }}
-        >
-          <div className="flex items-center justify-between mb-4">
+        <div className={`${styles.chartCard} ${styles.chartCardWide}`}>
+          <div className={styles.chartHead}>
             <div>
               <h3
                 style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}
@@ -336,14 +306,7 @@ export function Dashboard() {
                 7 tháng gần nhất
               </p>
             </div>
-            <span
-              className="px-3 py-1 rounded-full text-white"
-              style={{
-                background: "#E02020",
-                fontSize: "11px",
-                fontWeight: 600,
-              }}
-            >
+            <span className={styles.chartBadge}>
               +{STATS.totalStudentsTrend} HV
             </span>
           </div>
@@ -387,11 +350,8 @@ export function Dashboard() {
         </div>
 
         {/* Attendance rate bar */}
-        <div
-          className="bg-white rounded-2xl p-5 border"
-          style={{ borderColor: "#F0F0F5" }}
-        >
-          <div className="mb-4">
+        <div className={styles.chartCard}>
+          <div className={styles.chartSubHead}>
             <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>
               Tỷ lệ điểm danh
             </h3>
@@ -433,16 +393,10 @@ export function Dashboard() {
       </div>
 
       {/* Bottom row: Recent enrollments + Today classes */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div className={styles.bottomGrid}>
         {/* Recent Activity – StudentEnrollmentResDTO */}
-        <div
-          className="xl:col-span-2 bg-white rounded-2xl border overflow-hidden"
-          style={{ borderColor: "#F0F0F5" }}
-        >
-          <div
-            className="flex items-center justify-between px-5 py-4 border-b"
-            style={{ borderColor: "#F3F4F6" }}
-          >
+        <div className={styles.recentCard}>
+          <div className={styles.cardHead}>
             <div>
               <h3
                 style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}
@@ -453,21 +407,13 @@ export function Dashboard() {
                 Danh sách StudentEnrollmentResDTO
               </p>
             </div>
-            <button
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl transition hover:bg-red-50"
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#E02020",
-                border: "1px solid #E02020",
-              }}
-            >
+            <button className={styles.viewAllBtn}>
               Xem tất cả <ArrowRight size={12} />
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
               <thead>
                 <tr style={{ background: "#FAFAFA" }}>
                   {[
@@ -480,7 +426,7 @@ export function Dashboard() {
                   ].map((h) => (
                     <th
                       key={h}
-                      className="text-left px-4 py-3"
+                      className={styles.th}
                       style={{
                         fontSize: "11px",
                         fontWeight: 700,
@@ -496,15 +442,11 @@ export function Dashboard() {
               </thead>
               <tbody>
                 {ENROLLMENTS.map((e) => (
-                  <tr
-                    key={e.enrollmentId}
-                    className="border-t hover:bg-gray-50/60 transition"
-                    style={{ borderColor: "#F3F4F6" }}
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
+                  <tr key={e.enrollmentId} className={styles.tr}>
+                    <td className={styles.td}>
+                      <div className={styles.avatarCell}>
                         <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white flex-shrink-0"
+                          className={styles.avatar}
                           style={{
                             background: avatarColor(e.studentAvatar),
                             fontSize: "10px",
@@ -530,7 +472,7 @@ export function Dashboard() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={styles.td}>
                       <p
                         style={{
                           fontSize: "12px",
@@ -545,32 +487,28 @@ export function Dashboard() {
                         {e.classCode}
                       </p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={styles.td}>
                       <p
                         style={{
                           fontSize: "12px",
                           color: "#374151",
                           whiteSpace: "nowrap",
                         }}
-                      >
-                        {e.coachName.replace("HLV ", "")}
-                      </p>
+                      ></p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={styles.td}>
                       <p
                         style={{
                           fontSize: "12px",
                           color: "#374151",
                           whiteSpace: "nowrap",
                         }}
-                      >
-                        {new Date(e.enrollmentDate).toLocaleDateString("vi-VN")}
-                      </p>
+                      ></p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={styles.td}>
                       <StatusBadge status={e.status} />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={styles.td}>
                       <p
                         style={{
                           fontSize: "12px",
@@ -591,14 +529,8 @@ export function Dashboard() {
         </div>
 
         {/* Today's classes */}
-        <div
-          className="bg-white rounded-2xl border overflow-hidden"
-          style={{ borderColor: "#F0F0F5" }}
-        >
-          <div
-            className="px-5 py-4 border-b"
-            style={{ borderColor: "#F3F4F6" }}
-          >
+        <div className={styles.todayCard}>
+          <div className={styles.cardSimpleHead}>
             <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>
               Lớp học hôm nay
             </h3>
@@ -606,98 +538,91 @@ export function Dashboard() {
               Thứ 4, 04/03/2026
             </p>
           </div>
-          <div className="p-4 space-y-3">
-            {CLASSES.filter((c) => c.dayOfWeek.includes("Thứ 4")).map(
-              (cls, i) => (
-                <div
-                  key={cls.classId}
-                  className="p-3 rounded-xl border hover:shadow-sm transition"
-                  style={{ borderColor: "#F0F0F5" }}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          color: "#111827",
-                        }}
-                      >
-                        {cls.className}
-                      </p>
-                      <p
-                        style={{
-                          fontSize: "11px",
-                          color: "#9CA3AF",
-                          marginTop: "2px",
-                        }}
-                      >
-                        {cls.coach}
-                      </p>
-                    </div>
-                    <span
-                      className="px-2 py-0.5 rounded-full flex-shrink-0"
+          <div className={styles.cardBody}>
+            {CLASSES.filter((c) => c.dayOfWeek.includes("Thứ 4")).map((cls) => (
+              <div key={cls.classId} className={styles.classItem}>
+                <div className={styles.classItemHead}>
+                  <div>
+                    <p
                       style={{
-                        background:
-                          cls.level === "beginner"
-                            ? "#D1FAE5"
-                            : cls.level === "intermediate"
-                              ? "#FEF3C7"
-                              : cls.level === "advanced"
-                                ? "#FEE2E2"
-                                : "#E0E7FF",
-                        color:
-                          cls.level === "beginner"
-                            ? "#065F46"
-                            : cls.level === "intermediate"
-                              ? "#92400E"
-                              : cls.level === "advanced"
-                                ? "#991B1B"
-                                : "#3730A3",
-                        fontSize: "10px",
-                        fontWeight: 600,
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        color: "#111827",
                       }}
                     >
-                      {cls.level === "beginner"
-                        ? "Cơ bản"
-                        : cls.level === "intermediate"
-                          ? "Nâng cao"
-                          : cls.level === "advanced"
-                            ? "Cao cấp"
-                            : "Tất cả"}
+                      {cls.className}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: "11px",
+                        color: "#9CA3AF",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {cls.coach}
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      padding: "2px 8px",
+                      borderRadius: "9999px",
+                      flexShrink: 0,
+                      background:
+                        cls.level === "beginner"
+                          ? "#D1FAE5"
+                          : cls.level === "intermediate"
+                            ? "#FEF3C7"
+                            : cls.level === "advanced"
+                              ? "#FEE2E2"
+                              : "#E0E7FF",
+                      color:
+                        cls.level === "beginner"
+                          ? "#065F46"
+                          : cls.level === "intermediate"
+                            ? "#92400E"
+                            : cls.level === "advanced"
+                              ? "#991B1B"
+                              : "#3730A3",
+                      fontSize: "10px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {cls.level === "beginner"
+                      ? "Cơ bản"
+                      : cls.level === "intermediate"
+                        ? "Nâng cao"
+                        : cls.level === "advanced"
+                          ? "Cao cấp"
+                          : "Tất cả"}
+                  </span>
+                </div>
+                <div className={styles.classTimeRow}>
+                  <div className={styles.timeInfo}>
+                    <Clock size={11} />
+                    <span style={{ fontSize: "11px" }}>{cls.time}</span>
+                  </div>
+                  <div className={styles.timeInfo}>
+                    <Users size={11} />
+                    <span style={{ fontSize: "11px" }}>
+                      {cls.enrolled}/{cls.capacity}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 mt-2">
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <Clock size={11} />
-                      <span style={{ fontSize: "11px" }}>{cls.time}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <Users size={11} />
-                      <span style={{ fontSize: "11px" }}>
-                        {cls.enrolled}/{cls.capacity}
-                      </span>
-                    </div>
-                  </div>
-                  {/* capacity bar */}
-                  <div
-                    className="mt-2 h-1 rounded-full overflow-hidden"
-                    style={{ background: "#F3F4F6" }}
-                  >
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(cls.enrolled / cls.capacity) * 100}%`,
-                        background:
-                          cls.enrolled / cls.capacity > 0.8
-                            ? "#E02020"
-                            : "#10B981",
-                      }}
-                    />
-                  </div>
                 </div>
-              ),
-            )}
+                {/* capacity bar */}
+                <div className={styles.capacityBar}>
+                  <div
+                    className={styles.capacityFill}
+                    style={{
+                      width: `${(cls.enrolled / cls.capacity) * 100}%`,
+                      background:
+                        cls.enrolled / cls.capacity > 0.8
+                          ? "#E02020"
+                          : "#10B981",
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

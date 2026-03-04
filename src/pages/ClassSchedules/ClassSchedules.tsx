@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { CLASSES } from "../../data/mockData";
+import styles from "./ClassSchedules.module.scss";
 
 const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
 
@@ -36,12 +37,10 @@ function LevelBadge({ level }: { level: ClassScheduleDTO["level"] }) {
   const s = map[level];
   return (
     <span
-      className="px-2 py-0.5 rounded-full"
+      className={styles.badge}
       style={{
         background: s.bg,
         color: s.color,
-        fontSize: "10px",
-        fontWeight: 700,
       }}
     >
       {s.label}
@@ -58,12 +57,10 @@ function StatusBadge({ status }: { status: ClassScheduleDTO["status"] }) {
   const s = map[status];
   return (
     <span
-      className="px-2.5 py-1 rounded-full"
+      className={styles.badge}
       style={{
         background: s.bg,
         color: s.color,
-        fontSize: "11px",
-        fontWeight: 600,
       }}
     >
       {s.label}
@@ -76,12 +73,9 @@ export function ClassSchedules() {
   const [selectedDay, setSelectedDay] = useState("Thứ 4");
 
   return (
-    <div
-      className="space-y-5"
-      style={{ fontFamily: "'Inter', 'Poppins', sans-serif" }}
-    >
+    <div className={styles.page}>
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={styles.pageHead}>
         <div>
           <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
             Lịch Học
@@ -92,17 +86,14 @@ export function ClassSchedules() {
             động
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={styles.headerActions}>
           {/* View toggle */}
-          <div
-            className="flex items-center rounded-xl border bg-white p-1 gap-1"
-            style={{ borderColor: "#E8EBF0" }}
-          >
+          <div className={styles.viewToggle}>
             {(["grid", "week"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className="px-3 py-1.5 rounded-lg transition"
+                className={styles.viewToggleBtn}
                 style={{
                   fontSize: "12px",
                   fontWeight: 600,
@@ -114,31 +105,19 @@ export function ClassSchedules() {
               </button>
             ))}
           </div>
-          <button
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white transition hover:opacity-90"
-            style={{
-              background: "linear-gradient(135deg,#E02020,#7b0000)",
-              fontSize: "13px",
-              fontWeight: 600,
-              boxShadow: "0 4px 12px rgba(224,32,32,0.35)",
-            }}
-          >
+          <button className={styles.addBtn}>
             <Plus size={16} /> Tạo lớp mới
           </button>
         </div>
       </div>
 
       {view === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className={styles.cardsGrid}>
           {CLASSES.map((cls) => (
-            <div
-              key={cls.classId}
-              className="bg-white rounded-2xl border overflow-hidden hover:shadow-md transition group cursor-pointer"
-              style={{ borderColor: "#F0F0F5" }}
-            >
+            <div key={cls.classId} className={styles.classCard}>
               {/* Color accent */}
               <div
-                className="h-1.5"
+                className={styles.cardAccent}
                 style={{
                   background:
                     cls.status === "ongoing"
@@ -148,8 +127,8 @@ export function ClassSchedules() {
                         : "#E5E7EB",
                 }}
               />
-              <div className="p-5">
-                <div className="flex items-start justify-between gap-2 mb-3">
+              <div className={styles.cardBody}>
+                <div className={styles.cardTop}>
                   <div>
                     <p
                       style={{
@@ -170,16 +149,16 @@ export function ClassSchedules() {
                       {cls.classCode}
                     </p>
                   </div>
-                  <div className="flex flex-col gap-1 items-end">
+                  <div className={styles.cardBadges}>
                     <LevelBadge level={cls.level} />
                     <StatusBadge status={cls.status} />
                   </div>
                 </div>
 
                 {/* Coach */}
-                <div className="flex items-center gap-2 mb-4">
+                <div className={styles.coachRow}>
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-white"
+                    className={styles.coachAvatar}
                     style={{
                       background: avatarColor(cls.coachAvatar),
                       fontSize: "9px",
@@ -200,29 +179,29 @@ export function ClassSchedules() {
                 </div>
 
                 {/* Info rows */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-gray-500">
+                <div className={styles.infoRows}>
+                  <div className={styles.infoRow}>
                     <Clock size={13} style={{ flexShrink: 0 }} />
                     <span style={{ fontSize: "12px" }}>
                       {cls.time} ({cls.duration} phút)
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-500">
+                  <div className={styles.infoRow}>
                     <Calendar size={13} style={{ flexShrink: 0 }} />
                     <span style={{ fontSize: "12px" }}>
                       {cls.dayOfWeek.join(" · ")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-500">
+                  <div className={styles.infoRow}>
                     <MapPin size={13} style={{ flexShrink: 0 }} />
                     <span style={{ fontSize: "12px" }}>{cls.room}</span>
                   </div>
                 </div>
 
                 {/* Capacity */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1 text-gray-500">
+                <div className={styles.capacitySection}>
+                  <div className={styles.capacityHeader}>
+                    <div className={styles.capacityUsers}>
                       <Users size={12} />
                       <span style={{ fontSize: "11px" }}>Sĩ số</span>
                     </div>
@@ -239,12 +218,9 @@ export function ClassSchedules() {
                       {cls.enrolled}/{cls.capacity}
                     </span>
                   </div>
-                  <div
-                    className="h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "#F3F4F6" }}
-                  >
+                  <div className={styles.capacityBar}>
                     <div
-                      className="h-full rounded-full transition-all"
+                      className={styles.capacityFill}
                       style={{
                         width: `${(cls.enrolled / cls.capacity) * 100}%`,
                         background:
@@ -263,9 +239,9 @@ export function ClassSchedules() {
         </div>
       ) : (
         /* Week view */
-        <div className="space-y-4">
+        <div className={styles.weekView}>
           {/* Day pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className={styles.dayPills}>
             {DAYS.map((day) => {
               const count = CLASSES.filter((c) =>
                 c.dayOfWeek.includes(day),
@@ -274,7 +250,7 @@ export function ClassSchedules() {
                 <button
                   key={day}
                   onClick={() => setSelectedDay(day)}
-                  className="flex flex-col items-center px-4 py-3 rounded-2xl border transition flex-shrink-0"
+                  className={styles.dayPill}
                   style={{
                     borderColor: selectedDay === day ? "#E02020" : "#E8EBF0",
                     background: selectedDay === day ? "#E02020" : "white",
@@ -290,14 +266,12 @@ export function ClassSchedules() {
                     {day}
                   </span>
                   <span
-                    className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center"
+                    className={styles.dayPillCount}
                     style={{
                       background:
                         selectedDay === day
                           ? "rgba(255,255,255,0.2)"
                           : "#F3F4F6",
-                      fontSize: "10px",
-                      fontWeight: 700,
                       color: selectedDay === day ? "white" : "#9CA3AF",
                     }}
                   >
@@ -309,13 +283,10 @@ export function ClassSchedules() {
           </div>
 
           {/* Classes for selected day */}
-          <div className="space-y-3">
+          <div className={styles.classList}>
             {CLASSES.filter((c) => c.dayOfWeek.includes(selectedDay)).length ===
             0 ? (
-              <div
-                className="text-center py-16 bg-white rounded-2xl border"
-                style={{ borderColor: "#F0F0F5" }}
-              >
+              <div className={styles.emptyState}>
                 <Calendar
                   size={40}
                   style={{ color: "#D1D5DB", margin: "0 auto 12px" }}
@@ -327,16 +298,9 @@ export function ClassSchedules() {
             ) : (
               CLASSES.filter((c) => c.dayOfWeek.includes(selectedDay)).map(
                 (cls) => (
-                  <div
-                    key={cls.classId}
-                    className="bg-white rounded-2xl border p-4 flex items-center gap-4 hover:shadow-sm transition"
-                    style={{ borderColor: "#F0F0F5" }}
-                  >
+                  <div key={cls.classId} className={styles.weekClassItem}>
                     {/* Time block */}
-                    <div
-                      className="flex-shrink-0 w-20 text-center p-2 rounded-xl"
-                      style={{ background: "#FEF2F2" }}
-                    >
+                    <div className={styles.timeBlock}>
                       <p
                         style={{
                           fontSize: "12px",
@@ -351,8 +315,8 @@ export function ClassSchedules() {
                       </p>
                     </div>
                     {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    <div className={styles.weekClassInfo}>
+                      <div className={styles.weekClassTitleRow}>
                         <p
                           style={{
                             fontSize: "13px",
@@ -364,23 +328,14 @@ export function ClassSchedules() {
                         </p>
                         <LevelBadge level={cls.level} />
                       </div>
-                      <div className="flex items-center gap-3 mt-1 flex-wrap">
-                        <span
-                          className="flex items-center gap-1 text-gray-400"
-                          style={{ fontSize: "11px" }}
-                        >
+                      <div className={styles.weekClassMetaRow}>
+                        <span className={styles.metaItem}>
                           <Users size={11} /> {cls.enrolled}/{cls.capacity} HV
                         </span>
-                        <span
-                          className="flex items-center gap-1 text-gray-400"
-                          style={{ fontSize: "11px" }}
-                        >
+                        <span className={styles.metaItem}>
                           <MapPin size={11} /> {cls.room}
                         </span>
-                        <span
-                          className="flex items-center gap-1 text-gray-400"
-                          style={{ fontSize: "11px" }}
-                        >
+                        <span className={styles.metaItem}>
                           HLV: {cls.coach}
                         </span>
                       </div>

@@ -2,6 +2,7 @@ import type { StudentDTO } from "@/data/mockData";
 import { MoreHorizontal, Plus, Search, Users } from "lucide-react";
 import { useState } from "react";
 import { STUDENTS } from "../../data/mockData";
+import styles from "./StudentManagement.module.scss";
 
 function avatarColor(initials: string) {
   const colors = [
@@ -50,18 +51,10 @@ function StatusBadge({ status }: { status: StudentDTO["status"] }) {
   const s = map[status];
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full"
-      style={{
-        background: s.bg,
-        color: s.color,
-        fontSize: "11px",
-        fontWeight: 600,
-      }}
+      className={styles.statusBadge}
+      style={{ background: s.bg, color: s.color }}
     >
-      <span
-        className="w-1.5 h-1.5 rounded-full"
-        style={{ background: s.dot }}
-      />
+      <span className={styles.statusDot} style={{ background: s.dot }} />
       {s.label}
     </span>
   );
@@ -89,12 +82,9 @@ export function StudentManagement() {
     );
 
   return (
-    <div
-      className="space-y-5"
-      style={{ fontFamily: "'Inter', 'Poppins', sans-serif" }}
-    >
+    <div className={styles.page}>
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={styles.pageHead}>
         <div>
           <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
             Quản lý Học Viên
@@ -104,21 +94,13 @@ export function StudentManagement() {
             {STUDENTS.filter((s) => s.status === "active").length} đang học
           </p>
         </div>
-        <button
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white transition hover:opacity-90"
-          style={{
-            background: "linear-gradient(135deg,#E02020,#7b0000)",
-            fontSize: "13px",
-            fontWeight: 600,
-            boxShadow: "0 4px 12px rgba(224,32,32,0.35)",
-          }}
-        >
+        <button className={styles.addBtn}>
           <Plus size={16} /> Thêm học viên
         </button>
       </div>
 
       {/* Summary mini cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className={styles.summaryGrid}>
         {[
           { label: "Tổng học viên", value: STUDENTS.length, color: "#E02020" },
           {
@@ -132,11 +114,7 @@ export function StudentManagement() {
             color: "#F59E0B",
           },
         ].map((c) => (
-          <div
-            key={c.label}
-            className="bg-white rounded-2xl p-4 border text-center"
-            style={{ borderColor: "#F0F0F5" }}
-          >
+          <div key={c.label} className={styles.summaryCard}>
             <p style={{ fontSize: "22px", fontWeight: 800, color: c.color }}>
               {c.value}
             </p>
@@ -148,14 +126,11 @@ export function StudentManagement() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div
-          className="flex items-center gap-2 px-3 py-2 rounded-xl border bg-white"
-          style={{ borderColor: "#E8EBF0", width: "260px" }}
-        >
+      <div className={styles.filters}>
+        <div className={styles.searchBox} style={{ width: "260px" }}>
           <Search size={14} style={{ color: "#9CA3AF" }} />
           <input
-            className="flex-1 outline-none bg-transparent"
+            className={styles.searchInput}
             placeholder="Tìm học viên, lớp, HLV..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -166,10 +141,8 @@ export function StudentManagement() {
           <button
             key={f}
             onClick={() => setStatusFilter(f)}
-            className="px-3 py-2 rounded-xl border transition"
+            className={styles.filterBtn}
             style={{
-              fontSize: "12px",
-              fontWeight: 600,
               borderColor: statusFilter === f ? "#E02020" : "#E8EBF0",
               background: statusFilter === f ? "#E02020" : "white",
               color: statusFilter === f ? "white" : "#6B7280",
@@ -185,22 +158,16 @@ export function StudentManagement() {
           </button>
         ))}
         {selected.length > 0 && (
-          <span
-            className="ml-auto px-3 py-2 rounded-xl text-white"
-            style={{ background: "#E02020", fontSize: "12px", fontWeight: 600 }}
-          >
+          <span className={styles.selectedBadge}>
             Đã chọn {selected.length}
           </span>
         )}
       </div>
 
       {/* Table */}
-      <div
-        className="bg-white rounded-2xl border overflow-hidden"
-        style={{ borderColor: "#F0F0F5" }}
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className={styles.tableCard}>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
             <thead>
               <tr
                 style={{
@@ -208,7 +175,7 @@ export function StudentManagement() {
                   borderBottom: "1px solid #F3F4F6",
                 }}
               >
-                <th className="px-4 py-3 w-8">
+                <th className={styles.th} style={{ width: "32px" }}>
                   <input
                     type="checkbox"
                     className="rounded"
@@ -234,17 +201,7 @@ export function StudentManagement() {
                   "Trạng thái",
                   "",
                 ].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-4 py-3"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      color: "#9CA3AF",
-                      whiteSpace: "nowrap",
-                      letterSpacing: "0.5px",
-                    }}
-                  >
+                  <th key={h} className={styles.th}>
                     {h}
                   </th>
                 ))}
@@ -252,12 +209,8 @@ export function StudentManagement() {
             </thead>
             <tbody>
               {filtered.map((student) => (
-                <tr
-                  key={student.studentId}
-                  className="border-t hover:bg-gray-50/60 transition"
-                  style={{ borderColor: "#F3F4F6" }}
-                >
-                  <td className="px-4 py-3">
+                <tr key={student.studentId} className={styles.tr}>
+                  <td className={styles.td}>
                     <input
                       type="checkbox"
                       className="rounded"
@@ -265,10 +218,10 @@ export function StudentManagement() {
                       onChange={() => toggleSelect(student.studentId)}
                     />
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
+                  <td className={styles.td}>
+                    <div className={styles.avatarCell}>
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0"
+                        className={styles.avatar}
                         style={{
                           background: avatarColor(student.avatar),
                           fontSize: "10px",
@@ -294,7 +247,7 @@ export function StudentManagement() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <p style={{ fontSize: "12px", color: "#374151" }}>
                       {student.phone}
                     </p>
@@ -302,7 +255,7 @@ export function StudentManagement() {
                       {student.email}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <p
                       style={{
                         fontSize: "12px",
@@ -317,7 +270,7 @@ export function StudentManagement() {
                       {student.enrolledClass}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <p
                       style={{
                         fontSize: "12px",
@@ -328,9 +281,9 @@ export function StudentManagement() {
                       {student.coach}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <span
-                      className="px-2.5 py-1 rounded-full"
+                      className={styles.beltBadge}
                       style={{
                         background: BELT_COLORS[student.belt]?.bg ?? "#F3F4F6",
                         color: BELT_COLORS[student.belt]?.color ?? "#374151",
@@ -342,7 +295,7 @@ export function StudentManagement() {
                       {student.belt}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <p
                       style={{
                         fontSize: "12px",
@@ -353,11 +306,11 @@ export function StudentManagement() {
                       {new Date(student.enrollDate).toLocaleDateString("vi-VN")}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={styles.td}>
                     <StatusBadge status={student.status} />
                   </td>
-                  <td className="px-4 py-3">
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition">
+                  <td className={styles.td}>
+                    <button className={styles.moreBtn}>
                       <MoreHorizontal size={15} style={{ color: "#9CA3AF" }} />
                     </button>
                   </td>
@@ -367,7 +320,7 @@ export function StudentManagement() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="text-center py-12">
+          <div className={styles.emptyState}>
             <Users
               size={36}
               style={{ color: "#D1D5DB", margin: "0 auto 8px" }}
@@ -377,23 +330,18 @@ export function StudentManagement() {
             </p>
           </div>
         )}
-        <div
-          className="flex items-center justify-between px-5 py-3 border-t"
-          style={{ borderColor: "#F3F4F6" }}
-        >
+        <div className={styles.tableFooter}>
           <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
             Hiển thị {filtered.length} / {STUDENTS.length} học viên
           </p>
-          <div className="flex items-center gap-1">
+          <div className={styles.paginationBtns}>
             {[1, 2, 3].map((p) => (
               <button
                 key={p}
-                className="w-7 h-7 rounded-lg flex items-center justify-center transition"
+                className={styles.paginationBtn}
                 style={{
                   background: p === 1 ? "#E02020" : "transparent",
                   color: p === 1 ? "white" : "#6B7280",
-                  fontSize: "12px",
-                  fontWeight: 600,
                 }}
               >
                 {p}
