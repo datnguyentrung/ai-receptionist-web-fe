@@ -1,7 +1,9 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { authApi } from "./authApi";
+import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
+import { authApi } from "./authApi";
 
 // 1. Hook lấy thông tin tài khoản (Dùng useQuery vì là GET)
 export const useGetAccount = () => {
@@ -14,17 +16,17 @@ export const useGetAccount = () => {
 
 // 2. Hook xử lý Đăng nhập (Dùng useMutation vì là POST)
 export const useLogin = () => {
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
   return useMutation({
     mutationFn: (data: UserBase) => authApi.login(data),
     onSuccess: (data) => {
       // Chạy khi API login thành công (HTTP 200)
       console.log("Đăng nhập thành công!", data);
 
-      // Ở đây thường bạn sẽ:
-      // 1. Lưu token vào localStorage
-      localStorage.setItem("access_token", data.accessToken);
-      // 2. Cập nhật trạng thái vào Zustand (authStore)
-      // 3. Chuyển hướng (Navigate) sang trang Dashboard
+      // Lưu token + user vào Zustand store (persist vào localStorage)
+      setAuth(data.accessToken, data.user);
+      navigate("/dashboard");
     },
     onError: (error) => {
       // Chạy khi API báo lỗi (Sai pass, tài khoản không tồn tại...)
@@ -36,12 +38,13 @@ export const useLogin = () => {
 
 // 3. Hook xử lý Đăng xuất (Dùng useMutation)
 export const useLogout = () => {
+  const navigate = useNavigate();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      localStorage.removeItem("access_token");
-      // Xóa thông tin user trong Zustand
-      // Chuyển hướng về trang Login
+      clearAuth();
+      navigate("/login");
     },
   });
 };
