@@ -1,5 +1,11 @@
 import { LoginPage } from "@/features/auth";
+import { AttendanceReports } from "@/pages/AttendanceReports";
+import { ClassSchedules } from "@/pages/ClassSchedules";
+import { CoachManagement } from "@/pages/CoachManagement";
+import { Dashboard } from "@/pages/Dashboard";
 import HomePage from "@/pages/HomePage";
+import { Layout } from "@/pages/Layout";
+import { StudentManagement } from "@/pages/StudentManagement";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -11,19 +17,23 @@ export default function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
 
       {/* Protected Routes */}
+      {/* --- CÁC TRANG PROTECTED (Yêu cầu đăng nhập) --- */}
+      {/* Định nghĩa một Route mẹ bọc ngoài cùng */}
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <ProtectedRoute>
-            <div className="p-8">
-              <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="text-gray-600 mt-2">
-                Trang chủ sau khi đăng nhập - Coming soon!
-              </p>
-            </div>
+            <Layout />
           </ProtectedRoute>
         }
-      />
+      >
+        {/* Các Route con nằm bên trong Layout */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="coaches" element={<CoachManagement />} />
+        <Route path="students" element={<StudentManagement />} />
+        <Route path="schedules" element={<ClassSchedules />} />
+        <Route path="attendance" element={<AttendanceReports />} />
+      </Route>
 
       {/* Catch all - redirect to home */}
       <Route path="*" element={<Navigate to="/" replace />} />

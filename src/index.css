@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/theme.css";
 
 * {
   margin: 0;
