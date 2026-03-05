@@ -1,77 +1,45 @@
-import type { StudentDTO } from "@/data/mockData";
 import { MoreHorizontal, Plus, Search, Users } from "lucide-react";
 import { useState } from "react";
+import type { StudentStatus } from "../../config/constants";
 import { STUDENTS } from "../../data/mockData";
+import { BELT_COLORS, StatusBadge } from "../../features/student";
+import { useGetStudents } from "../../features/student/api/useStudent";
+import { avatarColor } from "../../utils/avatarColor";
+import { formatDateDMY } from "../../utils/format";
 import styles from "./StudentManagement.module.scss";
-
-function avatarColor(initials: string) {
-  const colors = [
-    "#E02020",
-    "#7C3AED",
-    "#059669",
-    "#0284C7",
-    "#D97706",
-    "#DB2777",
-  ];
-  let hash = 0;
-  for (const c of initials) hash += c.charCodeAt(0);
-  return colors[hash % colors.length];
-}
-
-const BELT_COLORS: Record<string, { bg: string; color: string }> = {
-  "Đai Trắng": { bg: "#F9FAFB", color: "#374151" },
-  "Đai Vàng": { bg: "#FEF9C3", color: "#854D0E" },
-  "Đai Xanh Lá": { bg: "#DCFCE7", color: "#166534" },
-  "Đai Xanh Lam": { bg: "#DBEAFE", color: "#1E40AF" },
-  "Đai Đỏ": { bg: "#FEE2E2", color: "#991B1B" },
-  "Đai Đen 1 Đẳng": { bg: "#1F2937", color: "#F9FAFB" },
-};
-
-function StatusBadge({ status }: { status: StudentDTO["status"] }) {
-  const map = {
-    active: {
-      label: "Đang học",
-      bg: "#D1FAE5",
-      color: "#065F46",
-      dot: "#10B981",
-    },
-    inactive: {
-      label: "Tạm nghỉ",
-      bg: "#FEE2E2",
-      color: "#991B1B",
-      dot: "#EF4444",
-    },
-    graduated: {
-      label: "Tốt nghiệp",
-      bg: "#E0E7FF",
-      color: "#3730A3",
-      dot: "#6366F1",
-    },
-  };
-  const s = map[status];
-  return (
-    <span
-      className={styles.statusBadge}
-      style={{ background: s.bg, color: s.color }}
-    >
-      <span className={styles.statusDot} style={{ background: s.dot }} />
-      {s.label}
-    </span>
-  );
-}
 
 export function StudentManagement() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | StudentDTO["status"]
-  >("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | StudentStatus>(
+    "all",
+  );
   const [selected, setSelected] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
 
-  const filtered = STUDENTS.filter((s) => {
+  const { data: students, isLoading } = useGetStudents({
+    search,
+    status: statusFilter === "all" ? undefined : statusFilter,
+    page,
+    size: 10,
+  });
+
+  if (isLoading) {
+    return (
+      <div className={styles.page}>
+        <p style={{ fontSize: "14px", color: "#9CA3AF" }}>
+          Đang tải dữ liệu...
+        </p>
+      </div>
+    );
+  }
+
+  const list = students ?? [];
+
+  const filtered = list.filter((s) => {
     const matchSearch =
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.enrolledClass.toLowerCase().includes(search.toLowerCase()) ||
-      s.coach.toLowerCase().includes(search.toLowerCase());
+      s.fullName.toLowerCase().includes(search.toLowerCase()) ||
+      s.birthDate.toLowerCase().includes(search.toLowerCase()) ||
+      s.branchId.toString().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || s.status === statusFilter;
     return matchSearch && matchStatus;
   });
@@ -90,8 +58,8 @@ export function StudentManagement() {
             Quản lý Học Viên
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
-            {STUDENTS.length} học viên ·{" "}
-            {STUDENTS.filter((s) => s.status === "active").length} đang học
+            {list.length} học viên ·{" "}
+            {list.filter((s) => s.status === "active").length} đang học
           </p>
         </div>
         <button className={styles.addBtn}>
@@ -102,15 +70,15 @@ export function StudentManagement() {
       {/* Summary mini cards */}
       <div className={styles.summaryGrid}>
         {[
-          { label: "Tổng học viên", value: STUDENTS.length, color: "#E02020" },
+          { label: "Tổng học viên", value: list.length, color: "#E02020" },
           {
             label: "Đang học",
-            value: STUDENTS.filter((s) => s.status === "active").length,
+            value: list.filter((s) => s.status === "active").length,
             color: "#10B981",
           },
           {
             label: "Tạm nghỉ",
-            value: STUDENTS.filter((s) => s.status === "inactive").length,
+            value: list.filter((s) => s.status === "inactive").length,
             color: "#F59E0B",
           },
         ].map((c) => (
@@ -133,14 +101,20 @@ export function StudentManagement() {
             className={styles.searchInput}
             placeholder="Tìm học viên, lớp, HLV..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             style={{ fontSize: "13px", color: "#374151" }}
           />
         </div>
         {(["all", "active", "inactive", "graduated"] as const).map((f) => (
           <button
             key={f}
-            onClick={() => setStatusFilter(f)}
+            onClick={() => {
+              setStatusFilter(f);
+              setPage(1);
+            }}
             className={styles.filterBtn}
             style={{
               borderColor: statusFilter === f ? "#E02020" : "#E8EBF0",
@@ -182,7 +156,7 @@ export function StudentManagement() {
                     onChange={(e) =>
                       setSelected(
                         e.target.checked
-                          ? filtered.map((s) => s.studentId)
+                          ? filtered.map((s) => s.studentCode)
                           : [],
                       )
                     }
@@ -209,13 +183,13 @@ export function StudentManagement() {
             </thead>
             <tbody>
               {filtered.map((student) => (
-                <tr key={student.studentId} className={styles.tr}>
+                <tr key={student.studentCode} className={styles.tr}>
                   <td className={styles.td}>
                     <input
                       type="checkbox"
                       className="rounded"
-                      checked={selected.includes(student.studentId)}
-                      onChange={() => toggleSelect(student.studentId)}
+                      checked={selected.includes(student.studentCode)}
+                      onChange={() => toggleSelect(student.studentCode)}
                     />
                   </td>
                   <td className={styles.td}>
@@ -239,20 +213,20 @@ export function StudentManagement() {
                             whiteSpace: "nowrap",
                           }}
                         >
-                          {student.name}
+                          {student.fullName}
                         </p>
                         <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                          {student.studentId}
+                          {student.studentCode}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className={styles.td}>
                     <p style={{ fontSize: "12px", color: "#374151" }}>
-                      {student.phone}
+                      {student.phoneNumber}
                     </p>
                     <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                      {student.email}
+                      {student.branchName}
                     </p>
                   </td>
                   <td className={styles.td}>
@@ -303,11 +277,11 @@ export function StudentManagement() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {new Date(student.enrollDate).toLocaleDateString("vi-VN")}
+                      {formatDateDMY(student.startDate)}
                     </p>
                   </td>
                   <td className={styles.td}>
-                    <StatusBadge status={student.status} />
+                    <StatusBadge status={student.studentStatus} />
                   </td>
                   <td className={styles.td}>
                     <button className={styles.moreBtn}>
@@ -319,17 +293,27 @@ export function StudentManagement() {
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && (
+        {list.length === 0 ? (
           <div className={styles.emptyState}>
             <Users
               size={36}
               style={{ color: "#D1D5DB", margin: "0 auto 8px" }}
             />
             <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
-              Không tìm thấy học viên nào
+              Chưa có học viên nào
             </p>
           </div>
-        )}
+        ) : filtered.length === 0 ? (
+          <div className={styles.emptyState}>
+            <Users
+              size={36}
+              style={{ color: "#D1D5DB", margin: "0 auto 8px" }}
+            />
+            <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+              Không tìm thấy học viên phù hợp với bộ lọc
+            </p>
+          </div>
+        ) : null}
         <div className={styles.tableFooter}>
           <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
             Hiển thị {filtered.length} / {STUDENTS.length} học viên

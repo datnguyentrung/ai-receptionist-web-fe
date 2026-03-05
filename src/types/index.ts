@@ -1,7 +1,7 @@
 // Core
 export * from "./Core/ClassScheduleTypes";
 export * from "./Core/CoachTypes";
-export * from "./Core/StudentStypes";
+export * from "./Core/StudentTypes";
 
 // Operation
 export * from "./Operation/CoachAssignmentTypes";

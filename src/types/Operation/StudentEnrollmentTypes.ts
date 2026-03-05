@@ -1,6 +1,6 @@
+import type { StudentEnrollmentStatus } from "../../config/constants";
 import type { ClassScheduleSummary } from "../Core/ClassScheduleTypes";
-import type { StudentSummary } from "../Core/StudentStypes";
-import type { StudentEnrollmentStatus } from '../../config/constants';
+import type { StudentSummary } from "../Core/StudentTypes";
 
 export interface StudentEnrollmentCreateRequest {
   studentId: string;

@@ -1,5 +1,15 @@
 import type { Belt, StudentStatus } from "../../config/constants";
 
+// Type cho params lọc
+export interface GetStudentsParams {
+  search?: string;
+  status?: StudentStatus;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+}
+
 // ============================================================
 // Request DTOs
 // ============================================================
