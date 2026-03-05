@@ -1,11 +1,28 @@
+import type { CoachStatus } from "@/config/constants";
 import { Search } from "lucide-react";
 import styles from "./CoachFilters.module.scss";
+
+const FILTER_OPTIONS: ("all" | CoachStatus)[] = [
+  "all",
+  "ACTIVE",
+  "INACTIVE",
+  "SUSPENDED",
+  "RETIRED",
+];
+
+const STATUS_LABELS: Record<"all" | CoachStatus, string> = {
+  all: "Tất cả",
+  ACTIVE: "Đang hoạt động",
+  INACTIVE: "Tạm nghỉ",
+  SUSPENDED: "Đình chỉ",
+  RETIRED: "Đã nghỉ hưu", // Hoặc "Nghỉ việc" tùy nghiệp vụ của bạn
+};
 
 type Props = {
   search: string;
   setSearch: (value: string) => void;
-  filter: "all" | "active" | "on-leave" | "inactive";
-  setFilter: (value: "all" | "active" | "on-leave" | "inactive") => void;
+  filter: "all" | CoachStatus;
+  setFilter: (value: "all" | CoachStatus) => void;
 };
 
 export default function CoachFilters({
@@ -26,7 +43,7 @@ export default function CoachFilters({
           style={{ fontSize: "13px", color: "#374151" }}
         />
       </div>
-      {(["all", "active", "on-leave", "inactive"] as const).map((f) => (
+      {FILTER_OPTIONS.map((f) => (
         <button
           key={f}
           onClick={() => setFilter(f)}
@@ -37,13 +54,7 @@ export default function CoachFilters({
             color: filter === f ? "white" : "#6B7280",
           }}
         >
-          {f === "all"
-            ? "Tất cả"
-            : f === "active"
-              ? "Đang hoạt động"
-              : f === "on-leave"
-                ? "Nghỉ phép"
-                : "Tạm nghỉ"}
+          {STATUS_LABELS[f]}
         </button>
       ))}
     </div>

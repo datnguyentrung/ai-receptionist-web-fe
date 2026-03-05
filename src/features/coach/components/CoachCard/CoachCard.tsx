@@ -1,5 +1,5 @@
+import Avatar from "@/components/Avatar";
 import type { CoachDetail } from "@/types";
-import { avatarColor } from "@/utils/avatarColor";
 import {
   Award,
   BookOpen,
@@ -14,13 +14,6 @@ import StatusBadge from "../StatusBadge/StatusBadge";
 import styles from "./CoachCard.module.scss";
 
 export default function CoachCard({ coach }: { coach: CoachDetail }) {
-  const avatarInitials = coach.fullName
-    ? coach.fullName
-        .trim()
-        .split(/\s+/)
-        .map((word) => word.charAt(0).toUpperCase())
-        .join("")
-    : "?"; // Fallback nếu fullName bị rỗng hoặc null
   return (
     <div className={styles.coachCard}>
       {/* Card top bar */}
@@ -36,16 +29,13 @@ export default function CoachCard({ coach }: { coach: CoachDetail }) {
       <div className={styles.cardBody}>
         <div className={styles.cardTopRow}>
           <div className={styles.coachInfo}>
-            <div
-              className={styles.coachAvatar}
-              style={{
-                background: avatarColor(avatarInitials),
-                fontSize: "13px",
-                fontWeight: 800,
-              }}
-            >
-              {avatarInitials}
-            </div>
+            <Avatar
+              fullName={coach.fullName}
+              fontSize="13px"
+              fontWeight={800}
+              width="48px"
+              height="48px"
+            />
             <div>
               <p
                 style={{

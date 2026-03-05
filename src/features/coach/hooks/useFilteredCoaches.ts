@@ -11,11 +11,13 @@ export function useFilteredCoaches(
   return useMemo(() => {
     if (!Array.isArray(coaches)) return [];
 
+    console.log("Filtering coaches with search:", search, "and filter:", filter);
+
     return coaches.filter((c) => {
       const matchSearch =
         c.fullName.toLowerCase().includes(search.toLowerCase()) ||
         c.belt.toLowerCase().includes(search.toLowerCase());
-      const matchFilter = filter === "all" || c.status === filter;
+      const matchFilter = filter === "all" || c.coachStatus === filter;
 
       return matchSearch && matchFilter;
     });
