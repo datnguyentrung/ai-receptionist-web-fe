@@ -1,10 +1,10 @@
 import { LoginPage } from "@/features/auth";
+import { MainLayout } from "@/layouts/MainLayout";
 import { AttendanceReports } from "@/pages/AttendanceReports";
 import { ClassSchedules } from "@/pages/ClassSchedules";
 import { CoachManagement } from "@/pages/CoachManagement";
 import { Dashboard } from "@/pages/Dashboard";
 import HomePage from "@/pages/HomePage";
-import { Layout } from "@/pages/Layout";
 import { StudentManagement } from "@/pages/StudentManagement";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -23,7 +23,7 @@ export default function AppRoutes() {
         path="/"
         element={
           <ProtectedRoute>
-            <Layout />
+            <MainLayout />
           </ProtectedRoute>
         }
       >

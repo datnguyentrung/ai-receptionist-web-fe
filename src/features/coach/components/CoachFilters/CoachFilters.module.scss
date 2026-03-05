@@ -1,0 +1,40 @@
+// ── Filters bar ───────────────────────────────────────────────
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #e8ebf0;
+  background: white;
+  width: 240px;
+}
+
+.searchInput {
+  flex: 1;
+  outline: none;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #374151;
+}
+
+.filterBtn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}

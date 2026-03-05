@@ -1,0 +1,136 @@
+// ── Coach cards grid ──────────────────────────────────────────
+
+.coachCard {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  &:hover .moreBtn {
+    opacity: 1;
+  }
+}
+
+.cardAccent {
+  height: 8px;
+}
+
+.cardBody {
+  padding: 20px;
+}
+
+.cardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.coachInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coachAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.moreBtn {
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.statusSection {
+  margin-top: 12px;
+}
+
+// ── Stats row ─────────────────────────────────────────────────
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.statItem {
+  text-align: center;
+  padding: 8px;
+  border-radius: 12px;
+  background: #f8f9fc;
+}
+
+// ── Rating ────────────────────────────────────────────────────
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.ratingValue {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+}
+
+// ── Contact ───────────────────────────────────────────────────
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.contactLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #9ca3af;
+  font-size: 11px;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #e02020;
+  }
+}
+
+.contactLinkRight {
+  @extend .contactLink;
+  margin-left: auto;
+  overflow: hidden;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 130px;
+  }
+}
