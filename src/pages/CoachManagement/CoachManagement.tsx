@@ -1,4 +1,3 @@
-import type { CoachDTO } from "@/data/mockData";
 import { useGetAllCoaches } from "@/features/coach/api/useCoach";
 import CoachCard from "@/features/coach/components/CoachCard/CoachCard";
 import { Plus, Users } from "lucide-react";
@@ -6,10 +5,11 @@ import { useState } from "react";
 import CoachFilters from "../../features/coach/components/CoachFilters/CoachFilters";
 import { useFilteredCoaches } from "../../features/coach/hooks/useFilteredCoaches";
 import styles from "./CoachManagement.module.scss";
+import type { CoachStatus } from '../../config/constants';
 
 export function CoachManagement() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | CoachDTO["status"]>("all");
+  const [filter, setFilter] = useState<"all" | CoachStatus>("all");
 
   const { data: coaches, isLoading } = useGetAllCoaches();
 

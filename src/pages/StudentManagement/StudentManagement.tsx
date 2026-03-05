@@ -1,12 +1,20 @@
-import { MoreHorizontal, Plus, Search, Users } from "lucide-react";
+import { MoreHorizontal, Plus, Users } from "lucide-react";
 import { useState } from "react";
+import Avatar from "../../components/Avatar";
+import StatusFilters from "../../components/StatusFilters";
 import type { StudentStatus } from "../../config/constants";
 import { STUDENTS } from "../../data/mockData";
 import { BELT_COLORS, StatusBadge } from "../../features/student";
 import { useGetStudents } from "../../features/student/api/useStudent";
-import { avatarColor } from "../../utils/avatarColor";
 import { formatDateDMY } from "../../utils/format";
 import styles from "./StudentManagement.module.scss";
+
+const STUDENT_FILTER_OPTIONS = [
+  { value: "all" as const, label: "Tất cả" },
+  { value: "active" as StudentStatus, label: "Đang học" },
+  { value: "inactive" as StudentStatus, label: "Tạm nghỉ" },
+  { value: "graduated" as StudentStatus, label: "Tốt nghiệp" },
+];
 
 export function StudentManagement() {
   const [search, setSearch] = useState("");
@@ -16,7 +24,7 @@ export function StudentManagement() {
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
-  const { data: students, isLoading } = useGetStudents({
+  const { data: data, isLoading } = useGetStudents({
     search,
     status: statusFilter === "all" ? undefined : statusFilter,
     page,
@@ -33,7 +41,7 @@ export function StudentManagement() {
     );
   }
 
-  const list = students ?? [];
+  const list = data?.content ?? [];
 
   const filtered = list.filter((s) => {
     const matchSearch =
@@ -58,7 +66,7 @@ export function StudentManagement() {
             Quản lý Học Viên
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
-            {list.length} học viên ·{" "}
+            {data?.totalElements ?? 0} học viên ·{" "}
             {list.filter((s) => s.status === "active").length} đang học
           </p>
         </div>
@@ -70,7 +78,11 @@ export function StudentManagement() {
       {/* Summary mini cards */}
       <div className={styles.summaryGrid}>
         {[
-          { label: "Tổng học viên", value: list.length, color: "#E02020" },
+          {
+            label: "Tổng học viên",
+            value: data?.totalElements ?? 0,
+            color: "#E02020",
+          },
           {
             label: "Đang học",
             value: list.filter((s) => s.status === "active").length,
@@ -94,43 +106,29 @@ export function StudentManagement() {
       </div>
 
       {/* Filters */}
-      <div className={styles.filters}>
-        <div className={styles.searchBox} style={{ width: "260px" }}>
-          <Search size={14} style={{ color: "#9CA3AF" }} />
-          <input
-            className={styles.searchInput}
-            placeholder="Tìm học viên, lớp, HLV..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            style={{ fontSize: "13px", color: "#374151" }}
-          />
-        </div>
-        {(["all", "active", "inactive", "graduated"] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => {
-              setStatusFilter(f);
-              setPage(1);
-            }}
-            className={styles.filterBtn}
-            style={{
-              borderColor: statusFilter === f ? "#E02020" : "#E8EBF0",
-              background: statusFilter === f ? "#E02020" : "white",
-              color: statusFilter === f ? "white" : "#6B7280",
-            }}
-          >
-            {f === "all"
-              ? "Tất cả"
-              : f === "active"
-                ? "Đang học"
-                : f === "inactive"
-                  ? "Tạm nghỉ"
-                  : "Tốt nghiệp"}
-          </button>
-        ))}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "12px",
+        }}
+      >
+        <StatusFilters
+          search={search}
+          setSearch={(val) => {
+            setSearch(val);
+            setPage(1);
+          }}
+          filter={statusFilter}
+          setFilter={(val) => {
+            setStatusFilter(val);
+            setPage(1);
+          }}
+          filterOptions={STUDENT_FILTER_OPTIONS}
+          searchPlaceholder="Tìm học viên, lớp, HLV..."
+          searchWidth="260px"
+        />
         {selected.length > 0 && (
           <span className={styles.selectedBadge}>
             Đã chọn {selected.length}
@@ -194,16 +192,13 @@ export function StudentManagement() {
                   </td>
                   <td className={styles.td}>
                     <div className={styles.avatarCell}>
-                      <div
-                        className={styles.avatar}
-                        style={{
-                          background: avatarColor(student.avatar),
-                          fontSize: "10px",
-                          fontWeight: 800,
-                        }}
-                      >
-                        {student.avatar}
-                      </div>
+                      <Avatar
+                        fullName={student.fullName}
+                        fontSize="10px"
+                        fontWeight={800}
+                        width="36px"
+                        height="36px"
+                      />
                       <div>
                         <p
                           style={{
