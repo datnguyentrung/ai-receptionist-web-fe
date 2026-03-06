@@ -1,42 +1,36 @@
 import { DaySelector } from "@/components/DaySelector";
-import type { ClassScheduleDTO } from "@/data/mockData";
+import { WeekdayCode, WeekdayFromCode, WeekdayLabel } from "@/config/constants";
 import { ClassWeekItem } from "@/features/classSchedule/components/ClassWeekItem";
+import type { ClassScheduleDetail } from "@/types";
+import { getCurrentWeekday } from "@/utils/format";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import styles from "./ClassWeekView.module.scss";
 
-const WEEK_DAYS = [
-  "Thứ 2",
-  "Thứ 3",
-  "Thứ 4",
-  "Thứ 5",
-  "Thứ 6",
-  "Thứ 7",
-  "Chủ Nhật",
-];
-
 interface Props {
-  classes: ClassScheduleDTO[];
+  classes: ClassScheduleDetail[];
 }
 
 export function ClassWeekView({ classes }: Props) {
-  const [selectedDay, setSelectedDay] = useState("Thứ 4");
+  const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
 
   const counts = Object.fromEntries(
-    WEEK_DAYS.map((day) => [
-      day,
-      classes.filter((c) => c.dayOfWeek.includes(day)).length,
+    Object.entries(WeekdayCode).map(([key, code]) => [
+      key,
+      classes.filter((c) => c.weekday === code).length,
     ]),
   );
 
-  const filtered = classes.filter((c) => c.dayOfWeek.includes(selectedDay));
+  const filtered = classes.filter((c) => c.weekday === selectedDay);
 
   return (
     <div className={styles.weekView}>
       <DaySelector
-        days={WEEK_DAYS}
-        selectedDay={selectedDay}
-        onSelectDay={setSelectedDay}
+        days={Object.keys(WeekdayCode)}
+        selectedDay={WeekdayFromCode[selectedDay] ?? ""}
+        onSelectDay={(day) =>
+          setSelectedDay(WeekdayCode[day as keyof typeof WeekdayCode])
+        }
         counts={counts}
       />
       <div className={styles.classList}>
@@ -47,11 +41,18 @@ export function ClassWeekView({ classes }: Props) {
               style={{ color: "#D1D5DB", margin: "0 auto 12px" }}
             />
             <p style={{ fontSize: "14px", color: "#9CA3AF" }}>
-              Không có lớp học vào {selectedDay}
+              Không có lớp học vào{" "}
+              {
+                WeekdayLabel[
+                  WeekdayFromCode[selectedDay] as keyof typeof WeekdayLabel
+                ]
+              }
             </p>
           </div>
         ) : (
-          filtered.map((cls) => <ClassWeekItem key={cls.classId} cls={cls} />)
+          filtered.map((cls) => (
+            <ClassWeekItem key={cls.scheduleId} cls={cls} />
+          ))
         )}
       </div>
     </div>

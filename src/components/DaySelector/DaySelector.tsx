@@ -1,4 +1,5 @@
 import styles from "./DaySelector.module.scss";
+import { WeekdayLabel } from "@/config/constants";
 
 interface Props {
   days: string[];
@@ -29,7 +30,7 @@ export function DaySelector({ days, selectedDay, onSelectDay, counts }: Props) {
                 color: isSelected ? "white" : "#374151",
               }}
             >
-              {day}
+              {WeekdayLabel[day as keyof typeof WeekdayLabel]}
             </span>
             {counts !== undefined && (
               <span

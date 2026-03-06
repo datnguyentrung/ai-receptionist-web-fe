@@ -69,3 +69,31 @@ export const formatDateTimeForBackend = (dateString: Date | number) => {
   // SỬA LẠI: Dùng dấu 'T' ngăn cách và thêm giây
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 };
+
+export const getDurationInMinutes = (startTime: string, endTime: string) => {
+  if (!startTime || !endTime) return 0;
+
+  // Tách chuỗi và lấy giờ, phút. map(Number) sẽ chuyển chuỗi thành số.
+  const [startHour, startMinute] = startTime.split(":").map(Number);
+  const [endHour, endMinute] = endTime.split(":").map(Number);
+
+  const startTotalMinutes = startHour * 60 + startMinute;
+  const endTotalMinutes = endHour * 60 + endMinute;
+
+  // Xử lý trường hợp qua đêm (nếu có)
+  if (endTotalMinutes < startTotalMinutes) {
+    return endTotalMinutes + 24 * 60 - startTotalMinutes;
+  }
+
+  return endTotalMinutes - startTotalMinutes;
+};
+
+export const getCurrentWeekday = () => {
+  const currentJsDay = new Date().getDay(); // Trả về 0 (CN) đến 6 (Thứ 7)
+
+  if (currentJsDay === 0) {
+    return 8; // Nếu hôm nay là Chủ nhật, trả về 8 (Đổi thành 1 nếu backend của bạn dùng số 1 cho Chủ nhật)
+  }
+
+  return currentJsDay + 1; // Các ngày khác: 1 (T2 của JS) + 1 = 2 (Thứ 2 của Backend)
+};

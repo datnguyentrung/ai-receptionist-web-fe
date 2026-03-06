@@ -64,7 +64,7 @@ export const ScheduleLevelLabel: Record<ScheduleLevel, string> = {
 export type ScheduleLocation = "INDOOR" | "OUTDOOR" | "ONLINE";
 
 export const ScheduleLocationLabel: Record<ScheduleLocation, string> = {
-  INDOOR: "Trong nhà",
+  INDOOR: "Phòng tập",
   OUTDOOR: "Ngoài trời",
   ONLINE: "Trực tuyến",
 };
@@ -119,6 +119,9 @@ export const WeekdayCode: Record<Weekday, number> = {
 
 /** Nhãn hiển thị UI */
 export const WeekdayLabel: Record<Weekday, string> = {
+  /* `MONDAY` is a constant representing the weekday Monday in the Weekday enum
+  type. It is used to define and identify Monday within the context of
+  scheduling and organizing activities based on weekdays. */
   MONDAY: "Thứ Hai",
   TUESDAY: "Thứ Ba",
   WEDNESDAY: "Thứ Tư",
