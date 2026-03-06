@@ -1,0 +1,87 @@
+.classCard {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.cardAccent {
+  height: 6px;
+}
+
+.cardBody {
+  padding: 20px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cardBadges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.coachRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.infoRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+}
+
+.capacitySection {
+  margin-top: 16px;
+}
+
+.capacityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.capacityUsers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6b7280;
+}
+
+.capacityBar {
+  height: 6px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.capacityFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s;
+}

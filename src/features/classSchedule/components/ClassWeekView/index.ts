@@ -1,0 +1,1 @@
+export { ClassWeekView } from "./ClassWeekView";

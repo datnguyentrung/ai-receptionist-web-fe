@@ -1,0 +1,51 @@
+.weekClassItem {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.timeBlock {
+  flex-shrink: 0;
+  width: 80px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 12px;
+  background: #fef2f2;
+}
+
+.weekClassInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.weekClassTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.weekClassMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9ca3af;
+  font-size: 11px;
+}

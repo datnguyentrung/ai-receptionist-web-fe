@@ -1,0 +1,19 @@
+.weekView {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.classList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 64px 16px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+}

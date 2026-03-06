@@ -1,8 +1,8 @@
+import { NAV_ITEMS } from "@/config/constants/path";
 import { Bell, Menu, Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router";
 import styles from "./Header.module.scss";
-import { NAV_ITEMS } from "@/config/constants/path";
 
 export default function Header({
   setSidebarOpen,
