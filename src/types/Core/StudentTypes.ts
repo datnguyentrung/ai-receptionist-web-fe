@@ -1,4 +1,6 @@
 import type { Belt, StudentStatus } from "../../config/constants";
+import type { PageResponse } from "../pagination";
+import type { ClassScheduleSummary } from "./ClassScheduleTypes";
 
 // Type cho params lọc
 export interface GetStudentsParams {
@@ -10,9 +12,29 @@ export interface GetStudentsParams {
   sortDir?: "asc" | "desc";
 }
 
+export interface StudentListResponse {
+  activeStudentCount: number;
+  reservedStudentCount: number;
+  droppedStudentCount: number;
+  students: PageResponse<StudentOverview>;
+}
+
 // ============================================================
 // Request DTOs
 // ============================================================
+
+export interface StudentOverview {
+  studentCode: string;
+  nationalCode: string | null;
+  fullName: string;
+  birthDate: string | Date;
+  phoneNumber: string;
+  belt: Belt;
+  roleName: string;
+  studentStatus: StudentStatus;
+  branchName: string;
+  classSchedules: ClassScheduleSummary[];
+}
 
 export interface StudentCreateRequest {
   nationalCode?: string;

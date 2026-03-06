@@ -3,7 +3,6 @@ import { useState } from "react";
 import Avatar from "../../components/Avatar";
 import StatusFilters from "../../components/StatusFilters";
 import type { StudentStatus } from "../../config/constants";
-import { STUDENTS } from "../../data/mockData";
 import { BELT_COLORS, StatusBadge } from "../../features/student";
 import { useGetStudents } from "../../features/student/api/useStudent";
 import { formatDateDMY } from "../../utils/format";
@@ -11,9 +10,9 @@ import styles from "./StudentManagement.module.scss";
 
 const STUDENT_FILTER_OPTIONS = [
   { value: "all" as const, label: "Tất cả" },
-  { value: "active" as StudentStatus, label: "Đang học" },
-  { value: "inactive" as StudentStatus, label: "Tạm nghỉ" },
-  { value: "graduated" as StudentStatus, label: "Tốt nghiệp" },
+  { value: "ACTIVE" as StudentStatus, label: "Đang học" },
+  { value: "RESERVED" as StudentStatus, label: "Tạm nghỉ" },
+  { value: "DROPPED" as StudentStatus, label: "Nghỉ học" },
 ];
 
 export function StudentManagement() {
@@ -24,7 +23,7 @@ export function StudentManagement() {
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
-  const { data: data, isLoading } = useGetStudents({
+  const { data, isLoading } = useGetStudents({
     search,
     status: statusFilter === "all" ? undefined : statusFilter,
     page,
@@ -41,16 +40,12 @@ export function StudentManagement() {
     );
   }
 
-  const list = data?.content ?? [];
-
-  const filtered = list.filter((s) => {
-    const matchSearch =
-      s.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      s.birthDate.toLowerCase().includes(search.toLowerCase()) ||
-      s.branchId.toString().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" || s.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const list = data?.students.content ?? [];
+  const totalPages = data?.students.totalPages ?? 1;
+  const totalStudents =
+    (data?.activeStudentCount ?? 0) +
+    (data?.reservedStudentCount ?? 0) +
+    (data?.droppedStudentCount ?? 0);
 
   const toggleSelect = (id: string) =>
     setSelected((prev) =>
@@ -66,8 +61,7 @@ export function StudentManagement() {
             Quản lý Học Viên
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
-            {data?.totalElements ?? 0} học viên ·{" "}
-            {list.filter((s) => s.status === "active").length} đang học
+            {totalStudents} học viên · {data?.activeStudentCount ?? 0} đang học
           </p>
         </div>
         <button className={styles.addBtn}>
@@ -80,18 +74,26 @@ export function StudentManagement() {
         {[
           {
             label: "Tổng học viên",
-            value: data?.totalElements ?? 0,
+            value:
+              (data?.activeStudentCount ?? 0) +
+              (data?.reservedStudentCount ?? 0) +
+              (data?.droppedStudentCount ?? 0),
             color: "#E02020",
           },
           {
             label: "Đang học",
-            value: list.filter((s) => s.status === "active").length,
+            value: data?.activeStudentCount ?? 0,
             color: "#10B981",
           },
           {
             label: "Tạm nghỉ",
-            value: list.filter((s) => s.status === "inactive").length,
+            value: data?.reservedStudentCount ?? 0,
             color: "#F59E0B",
+          },
+          {
+            label: "Nghỉ học",
+            value: data?.droppedStudentCount ?? 0,
+            color: "#EF4444",
           },
         ].map((c) => (
           <div key={c.label} className={styles.summaryCard}>
@@ -153,23 +155,19 @@ export function StudentManagement() {
                     className="rounded"
                     onChange={(e) =>
                       setSelected(
-                        e.target.checked
-                          ? filtered.map((s) => s.studentCode)
-                          : [],
+                        e.target.checked ? list.map((s) => s.studentCode) : [],
                       )
                     }
-                    checked={
-                      selected.length === filtered.length && filtered.length > 0
-                    }
+                    checked={selected.length === list.length && list.length > 0}
                   />
                 </th>
                 {[
                   "Học viên",
                   "Liên hệ",
                   "Lớp học",
-                  "Huấn luyện viên",
+                  "Ngày sinh",
                   "Cấp đai",
-                  "Ngày vào học",
+                  "Chức vụ",
                   "Trạng thái",
                   "",
                 ].map((h) => (
@@ -180,7 +178,7 @@ export function StudentManagement() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((student) => (
+              {list.map((student) => (
                 <tr key={student.studentCode} className={styles.tr}>
                   <td className={styles.td}>
                     <input
@@ -236,7 +234,9 @@ export function StudentManagement() {
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {student.enrolledClass}
+                      {student.classSchedules
+                        .map((c) => c.scheduleId)
+                        .join(", ") || "-"}
                     </p>
                   </td>
                   <td className={styles.td}>
@@ -247,7 +247,7 @@ export function StudentManagement() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {student.coach}
+                      {formatDateDMY(student.birthDate)}
                     </p>
                   </td>
                   <td className={styles.td}>
@@ -272,7 +272,7 @@ export function StudentManagement() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {formatDateDMY(student.startDate)}
+                      {student.roleName}
                     </p>
                   </td>
                   <td className={styles.td}>
@@ -288,7 +288,7 @@ export function StudentManagement() {
             </tbody>
           </table>
         </div>
-        {list.length === 0 ? (
+        {list.length === 0 && (
           <div className={styles.emptyState}>
             <Users
               size={36}
@@ -298,29 +298,20 @@ export function StudentManagement() {
               Chưa có học viên nào
             </p>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className={styles.emptyState}>
-            <Users
-              size={36}
-              style={{ color: "#D1D5DB", margin: "0 auto 8px" }}
-            />
-            <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
-              Không tìm thấy học viên phù hợp với bộ lọc
-            </p>
-          </div>
-        ) : null}
+        )}
         <div className={styles.tableFooter}>
           <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
-            Hiển thị {filtered.length} / {STUDENTS.length} học viên
+            Hiển thị {list.length} / {totalStudents} học viên
           </p>
           <div className={styles.paginationBtns}>
-            {[1, 2, 3].map((p) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
                 className={styles.paginationBtn}
+                onClick={() => setPage(p)}
                 style={{
-                  background: p === 1 ? "#E02020" : "transparent",
-                  color: p === 1 ? "white" : "#6B7280",
+                  background: p === page ? "#E02020" : "transparent",
+                  color: p === page ? "white" : "#6B7280",
                 }}
               >
                 {p}

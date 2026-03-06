@@ -1,12 +1,12 @@
 import axiosInstance from "@/lib/axiosInstance";
 
+import type { StudentStatus } from "@/config/constants";
 import type {
-  PageResponse,
   StudentCreateRequest,
   StudentDetail,
+  StudentListResponse,
   StudentUpdateRequest,
 } from "@/types";
-import type { StudentStatus } from '@/config/constants';
 
 export const studentAPI = {
   getStudents: async ({
@@ -23,7 +23,15 @@ export const studentAPI = {
     size?: number;
     sortBy?: string;
     sortDir?: "asc" | "desc";
-  }): Promise<PageResponse<StudentDetail>> => {
+  }): Promise<StudentListResponse> => {
+    console.log("Fetching students with params:", {
+      search,
+      status,
+      page,
+      size,
+      sortBy,
+      sortDir,
+    }); // Debug log
     const response = await axiosInstance.get("/students", {
       params: {
         search,
