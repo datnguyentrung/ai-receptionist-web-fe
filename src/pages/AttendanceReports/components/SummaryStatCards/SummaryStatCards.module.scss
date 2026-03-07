@@ -1,0 +1,18 @@
+.summaryCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #f0f0f5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryIconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

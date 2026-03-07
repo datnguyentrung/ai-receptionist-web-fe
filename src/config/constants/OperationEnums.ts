@@ -5,6 +5,14 @@ export type AttendanceStatus =
   | "EXCUSED"
   | "MAKEUP";
 
+export const AttendanceStatusLabel: Record<AttendanceStatus, string> = {
+  PRESENT: "Có mặt",
+  ABSENT: "Vắng",
+  LATE: "Đi muộn",
+  EXCUSED: "Có phép",
+  MAKEUP: "Học bù",
+};
+
 export type BeltPromotionStatus = "PASSED" | "FAILED" | "PENDING";
 
 // ---------------------------------------------------------------------------
@@ -61,6 +69,13 @@ export const EvaluationStatusFromValue = Object.entries(
   },
   {} as Record<string, EvaluationStatus>,
 );
+
+export const EvaluationStatusLabel: Record<EvaluationStatus, string> = {
+  PENDING: "Chờ đánh giá",
+  GOOD: "Tốt",
+  AVERAGE: "Trung bình",
+  WEAK: "Yếu",
+};
 
 // ---------------------------------------------------------------------------
 // StudentEnrollmentStatus

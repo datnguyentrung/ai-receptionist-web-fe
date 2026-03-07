@@ -1,0 +1,21 @@
+@use "@/styles/variables" as *;
+
+.summaryOuter {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: $lg) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.summaryLeft {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: $sm) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

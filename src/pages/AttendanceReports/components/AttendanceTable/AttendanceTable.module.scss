@@ -1,0 +1,71 @@
+.tableCard {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f0f0f5;
+  overflow: hidden;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.tr {
+  border-top: 1px solid #f3f4f6;
+  transition: background 0.12s;
+
+  &:hover {
+    background: rgba(249, 250, 251, 0.6);
+  }
+}
+
+.td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.avatarCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 0;
+}
+
+.tableFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #f3f4f6;
+}
