@@ -3,13 +3,15 @@ import type {
   AttendanceStatus,
   EvaluationStatus,
 } from "@/config/constants/OperationEnums";
-import { ATTENDANCE } from "@/data/mockData";
+import { useFilterAttendance } from "@/features/studentAttendance/api/useStudentAttendance";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
 import { AttendanceTable } from "@/pages/AttendanceReports/components/AttendanceTable";
 import { useState } from "react";
 import styles from "./AttendanceReports.module.scss";
+
+const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;
 
 export function AttendanceReports() {
   const [search, setSearch] = useState("");
@@ -23,18 +25,19 @@ export function AttendanceReports() {
   const [belts, setBelts] = useState<Belt[]>([]);
   const [branches, setBranches] = useState<number[]>([]);
   const [scheduleLevels, setScheduleLevels] = useState<ScheduleLevel[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filtered = ATTENDANCE.filter((a) => {
-    const matchSearch =
-      !search ||
-      a.studentName.toLowerCase().includes(search.toLowerCase()) ||
-      a.className.toLowerCase().includes(search.toLowerCase());
-    const matchDate = !dateFilter || a.date === dateFilter;
-    const matchStatus =
-      attendanceStatuses.length === 0 ||
-      attendanceStatuses.some((s) => s.toLowerCase() === a.status);
-    return matchSearch && matchDate && matchStatus;
-  });
+  const { data } = useFilterAttendance(
+    search,
+    dateFilter,
+    attendanceStatuses,
+    evaluationStatuses,
+    belts,
+    branches,
+    scheduleLevels,
+    currentPage - 1, // Spring Boot dùng 0-based page
+    PAGE_SIZE,
+  );
 
   const handleClearAll = () => {
     setSearch("");
@@ -44,31 +47,58 @@ export function AttendanceReports() {
     setBelts([]);
     setBranches([]);
     setScheduleLevels([]);
+    setCurrentPage(1);
   };
 
   return (
     <div className={styles.page}>
-      <AttendancePageHeader totalRecords={ATTENDANCE.length} />
+      <AttendancePageHeader totalRecords={data?.totalElements || 0} />
       <AttendanceSummarySection />
       <AttendanceFilters
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={(v) => {
+          setSearch(v);
+          setCurrentPage(1);
+        }}
         dateFilter={dateFilter}
-        onDateChange={setDateFilter}
+        onDateChange={(v) => {
+          setDateFilter(v);
+          setCurrentPage(1);
+        }}
         attendanceStatuses={attendanceStatuses}
-        onAttendanceStatusesChange={setAttendanceStatuses}
+        onAttendanceStatusesChange={(v) => {
+          setAttendanceStatuses(v);
+          setCurrentPage(1);
+        }}
         evaluationStatuses={evaluationStatuses}
-        onEvaluationStatusesChange={setEvaluationStatuses}
+        onEvaluationStatusesChange={(v) => {
+          setEvaluationStatuses(v);
+          setCurrentPage(1);
+        }}
         belts={belts}
-        onBeltsChange={setBelts}
+        onBeltsChange={(v) => {
+          setBelts(v);
+          setCurrentPage(1);
+        }}
         branches={branches}
-        onBranchesChange={setBranches}
+        onBranchesChange={(v) => {
+          setBranches(v);
+          setCurrentPage(1);
+        }}
         scheduleLevels={scheduleLevels}
-        onScheduleLevelsChange={setScheduleLevels}
-        resultCount={filtered.length}
+        onScheduleLevelsChange={(v) => {
+          setScheduleLevels(v);
+          setCurrentPage(1);
+        }}
+        resultCount={data?.totalElements || 0}
         onClearAll={handleClearAll}
       />
-      <AttendanceTable data={filtered} total={ATTENDANCE.length} />
+      <AttendanceTable
+        data={data}
+        currentPage={currentPage}
+        pageSize={data?.size || PAGE_SIZE}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 }

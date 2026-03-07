@@ -10,7 +10,7 @@ export interface StudentAttendanceResponse {
   sessionDate: string;
   attendanceStatus: AttendanceStatus;
   /** Format: ISO 8601 UTC */
-  checkInTime: string | null;
+  checkInTime: Date | string | null;
   recordedByCoachName: string | null;
   evaluationStatus: EvaluationStatus | null;
   note: string | null;

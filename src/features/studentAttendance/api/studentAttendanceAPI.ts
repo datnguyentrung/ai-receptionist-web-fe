@@ -4,8 +4,15 @@ import type {
   AttendanceManualLogRequest,
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
+  PageResponse,
   StudentAttendanceResponse,
 } from "@/types";
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+  ScheduleLevel,
+} from "../../../config/constants";
 
 export const studentAttendanceAPI = {
   /** PATCH /{attendanceId}/status — Cập nhật trạng thái điểm danh */
@@ -14,7 +21,7 @@ export const studentAttendanceAPI = {
     data: AttendanceUpdateStatusRequest,
   ): Promise<void> => {
     await axiosInstance.patch(
-      `/student-attendance/${attendanceId}/status`,
+      `/student-attendances/${attendanceId}/status`,
       data,
     );
   },
@@ -25,7 +32,7 @@ export const studentAttendanceAPI = {
     data: AttendanceUpdateEvaluationRequest,
   ): Promise<void> => {
     await axiosInstance.patch(
-      `/student-attendance/${attendanceId}/evaluation`,
+      `/student-attendances/${attendanceId}/evaluation`,
       data,
     );
   },
@@ -34,7 +41,7 @@ export const studentAttendanceAPI = {
   createRecord: async (
     data: AttendanceManualLogRequest,
   ): Promise<StudentAttendanceResponse> => {
-    const response = await axiosInstance.post("/student-attendance", data);
+    const response = await axiosInstance.post("/student-attendances", data);
     return response.data;
   },
 
@@ -43,7 +50,7 @@ export const studentAttendanceAPI = {
     data: AttendanceBatchCreateRequest,
   ): Promise<StudentAttendanceResponse[]> => {
     const response = await axiosInstance.post(
-      "/student-attendance/batch-init",
+      "/student-attendances/batch-init",
       data,
     );
     return response.data;
@@ -51,11 +58,33 @@ export const studentAttendanceAPI = {
 
   /** GET /filter — Lọc danh sách điểm danh theo lịch học và ngày */
   filter: async (
-    classScheduleId: string,
-    sessionDate: string,
-  ): Promise<StudentAttendanceResponse[]> => {
-    const response = await axiosInstance.get("/student-attendance/filter", {
-      params: { classScheduleId, sessionDate },
+    search?: string,
+    page?: number,
+    size?: number,
+    sortBy?: string,
+    sortDir?: "asc" | "desc",
+
+    sessionDate?: string | Date,
+    attendanceStatuses?: AttendanceStatus[],
+    evaluationStatuses?: EvaluationStatus[],
+    belts?: Belt[],
+    branchIds?: number[],
+    scheduleLevels?: ScheduleLevel[],
+  ): Promise<PageResponse<StudentAttendanceResponse>> => {
+    const response = await axiosInstance.get("/student-attendances", {
+      params: {
+        search,
+        sessionDate,
+        attendanceStatuses: attendanceStatuses,
+        evaluationStatuses: evaluationStatuses,
+        belts: belts,
+        branchIds: branchIds,
+        scheduleLevels: scheduleLevels,
+        page,
+        size,
+        sortBy,
+        sortDir,
+      },
     });
     return response.data;
   },

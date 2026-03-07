@@ -11,7 +11,7 @@ export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
-  currentListLength,
+  currentListLength, // Hiển thị số lượng kết quả trên trang hiện tại
 }: PaginationProps) {
   return (
     <div className={styles.footer}>

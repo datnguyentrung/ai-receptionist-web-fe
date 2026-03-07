@@ -5,19 +5,67 @@ import type {
   AttendanceUpdateStatusRequest,
 } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { studentAttendanceAPI } from "./StudentAttendanceAPI";
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+  ScheduleLevel,
+} from "../../../config/constants";
+import { studentAttendanceAPI } from "./studentAttendanceAPI";
 
 const ATTENDANCE_QUERY_KEY = "student-attendance";
 
 // 1. Hook lấy danh sách điểm danh theo lịch học và ngày
 export const useFilterAttendance = (
-  classScheduleId: string,
-  sessionDate: string,
+  search?: string,
+  sessionDate?: string | Date,
+  attendanceStatuses?: AttendanceStatus[],
+  evaluationStatuses?: EvaluationStatus[],
+  belts?: Belt[],
+  branchIds?: number[],
+  scheduleLevels?: ScheduleLevel[],
+  page?: number,
+  size?: number,
+  sortBy?: string,
+  sortDir?: "asc" | "desc"
 ) => {
   return useQuery({
-    queryKey: [ATTENDANCE_QUERY_KEY, classScheduleId, sessionDate],
-    queryFn: () => studentAttendanceAPI.filter(classScheduleId, sessionDate),
-    enabled: !!classScheduleId && !!sessionDate,
+    queryKey: [
+      ATTENDANCE_QUERY_KEY,
+      search,
+      sessionDate,
+      attendanceStatuses,
+      evaluationStatuses,
+      belts,
+      branchIds,
+      scheduleLevels,
+      page,
+      size,
+      sortBy,
+      sortDir,
+    ],
+    queryFn: () =>
+      studentAttendanceAPI.filter(
+        search,
+        page,
+        size,
+        sortBy,
+        sortDir,
+        sessionDate,
+        attendanceStatuses,
+        evaluationStatuses,
+        belts,
+        branchIds,
+        scheduleLevels,
+      ),
+    enabled:
+      !!search ||
+      !!sessionDate ||
+      !!attendanceStatuses ||
+      !!evaluationStatuses ||
+      !!belts ||
+      !!branchIds ||
+      !!scheduleLevels,
   });
 };
 
