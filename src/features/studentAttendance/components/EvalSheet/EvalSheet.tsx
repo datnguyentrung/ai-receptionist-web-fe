@@ -90,10 +90,10 @@ export function EvalSheet({
 
       {/* Sheet */}
       <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 28, stiffness: 300 }}
+        initial={{ opacity: 0, scale: 0.95, y: "-50%", x: "-50%" }} // Chỉnh lại initial
+        animate={{ opacity: 1, scale: 1, y: "-50%", x: "-50%" }} // Chỉnh lại animate
+        exit={{ opacity: 0, scale: 0.95, y: "-50%", x: "-50%" }}
+        transition={{ duration: 0.2 }}
         className={styles.sheet}
       >
         {/* Handle */}

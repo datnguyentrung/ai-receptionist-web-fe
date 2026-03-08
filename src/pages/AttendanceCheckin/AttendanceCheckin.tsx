@@ -139,7 +139,7 @@ export function AttendanceCheckin() {
 
   const isLoading = enrollmentsLoading || attendanceLoading;
 
-  if (isLoading) {
+  if (isLoading || !enrollments || !data) {
     return (
       <div className={styles.page}>
         <div className={styles.grid}>
@@ -190,7 +190,7 @@ export function AttendanceCheckin() {
         {/* -- Left Sidebar -- */}
         <aside className={styles.sidebar}>
           <AttendanceHeader
-            session={enrollments?.classScheduleSummary}
+            session={enrollments.classScheduleSummary}
             markedCount={markedCount}
             totalCount={totalCount}
             progress={progress}
@@ -266,7 +266,7 @@ export function AttendanceCheckin() {
             present={presentCount}
             absent={absentCount}
             excused={excusedCount}
-            className={enrollments?.classScheduleSummary.branchName}
+            className={enrollments.classScheduleSummary.branchName}
             submittedTime={submittedTime}
           />
         )}

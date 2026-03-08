@@ -3,7 +3,7 @@ import { AttendancePill } from "@/features/studentAttendance/components/Attendan
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
-import { ChevronDown, Clock, Zap } from "lucide-react";
+import { ChevronDown, Clock, Eye, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import styles from "./StudentCard.module.scss";
@@ -98,6 +98,11 @@ export function StudentCard({
         </div>
 
         {/* Expand toggle */}
+
+        <button className={`${styles.expandBtn}`}>
+          <Eye size={14} className={`${styles.chevron}`} />
+        </button>
+
         <button
           onClick={() => setExpanded((prev) => !prev)}
           className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}
