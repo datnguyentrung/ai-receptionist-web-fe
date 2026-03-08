@@ -6,7 +6,7 @@ import styles from "./ClassSchedules.module.scss";
 import {useGetAllClassSchedules} from "@/features/classSchedule/api/useClassSchedule";
 
 export function ClassSchedules() {
-  const [view, setView] = useState<"grid" | "week">("grid");
+  const [view, setView] = useState<"grid" | "week">("week");
   const { data: classSchedules, isLoading, error } = useGetAllClassSchedules();
 
   if (isLoading) {

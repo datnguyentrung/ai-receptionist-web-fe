@@ -1,0 +1,164 @@
+import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
+import { AttendancePill } from "@/features/studentAttendance/components/AttendancePill";
+import type { StudentAttendanceResponse } from "@/types";
+import { avatarColor } from "@/utils/avatarColor";
+import { getNameInitials } from "@/utils/getInitials";
+import { ChevronDown, Clock, Zap } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import styles from "./StudentCard.module.scss";
+
+function evalLabel(e: EvaluationStatus | null): string | null {
+  if (!e) return null;
+  return (
+    {
+      GOOD: "👍 Tốt",
+      AVERAGE: "👌 TB",
+      WEAK: "😔 Yếu",
+      PENDING: "⏳ Chờ",
+    }[e] ?? null
+  );
+}
+
+interface StudentCardProps {
+  student: StudentAttendanceResponse;
+  index: number;
+  onUpdateStatus: (id: string, status: AttendanceStatus | null) => void;
+  onOpenEval: (student: StudentAttendanceResponse) => void;
+}
+
+export function StudentCard({
+  student,
+  index,
+  onUpdateStatus,
+  onOpenEval,
+}: StudentCardProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.18, delay: index * 0.02 }}
+      className={`${styles.studentCard} ${
+        student.attendanceStatus === "PRESENT"
+          ? styles.present
+          : student.attendanceStatus === "ABSENT"
+            ? styles.absent
+            : student.attendanceStatus === "EXCUSED"
+              ? styles.excused
+              : styles.unmarked
+      }`}
+    >
+      {/* Main row */}
+      <div className={styles.studentRow}>
+        {/* Avatar */}
+        <div className={styles.avatarWrap}>
+          <div
+            className={styles.avatar}
+            style={{ background: avatarColor(student.studentId) }}
+          >
+            {getNameInitials(student.studentName)}
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className={styles.studentInfo}>
+          <div className={styles.nameRow}>
+            <p className={styles.studentName}>{student.studentName}</p>
+            {student.evaluationStatus && (
+              <span className={styles.evalBadge}>
+                {evalLabel(student.evaluationStatus)}
+              </span>
+            )}
+          </div>
+          <div className={styles.metaRow}>
+            {student.checkInTime && (
+              <span className={styles.checkInTime}>
+                <Clock size={9} />{" "}
+                {typeof student.checkInTime === "string"
+                  ? student.checkInTime
+                  : student.checkInTime.toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Attendance pill */}
+        <div className={styles.pillWrap}>
+          <AttendancePill
+            value={student.attendanceStatus}
+            onChange={(v) => onUpdateStatus(student.studentId, v)}
+          />
+        </div>
+
+        {/* Expand toggle */}
+        <button
+          onClick={() => setExpanded((prev) => !prev)}
+          className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}
+        >
+          <ChevronDown
+            size={14}
+            className={`${styles.chevron} ${expanded ? styles.rotated : ""}`}
+          />
+        </button>
+      </div>
+
+      {/* Expanded evaluation area */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={styles.expandedPanel}
+          >
+            <div className={styles.expandedInner}>
+              {/* Student meta */}
+              <div className={styles.studentMeta}>
+                <p className={styles.metaItem}>
+                  Mã HV:{" "}
+                  <span className={styles.metaValue}>{student.studentId}</span>
+                </p>
+                {student.sessionDate && (
+                  <p className={styles.metaItem}>
+                    Ngày:{" "}
+                    <span className={styles.metaValue}>
+                      {new Date(student.sessionDate).toLocaleDateString(
+                        "vi-VN",
+                      )}
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              {/* Notes preview */}
+              {student.note && (
+                <div className={styles.notesPreview}>
+                  <p className={styles.notesText}>"{student.note}"</p>
+                </div>
+              )}
+
+              {/* Quick eval button */}
+              <button
+                onClick={() => onOpenEval(student)}
+                className={`${styles.evalBtn} ${student.evaluationStatus ? styles.evaluated : ""}`}
+              >
+                <Zap size={14} />
+                {student.evaluationStatus
+                  ? `Đã nhận xét: ${evalLabel(student.evaluationStatus)} · Sửa`
+                  : "Nhận xét nhanh"}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}

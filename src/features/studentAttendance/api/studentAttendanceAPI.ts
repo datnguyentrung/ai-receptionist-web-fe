@@ -1,3 +1,9 @@
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+  ScheduleLevel,
+} from "@/config/constants";
 import axiosInstance from "@/lib/axiosInstance";
 import type {
   AttendanceBatchCreateRequest,
@@ -7,12 +13,6 @@ import type {
   PageResponse,
   StudentAttendanceResponse,
 } from "@/types";
-import type {
-  AttendanceStatus,
-  Belt,
-  EvaluationStatus,
-  ScheduleLevel,
-} from "../../../config/constants";
 
 export const studentAttendanceAPI = {
   /** PATCH /{attendanceId}/status — Cập nhật trạng thái điểm danh */
@@ -70,6 +70,7 @@ export const studentAttendanceAPI = {
     belts?: Belt[],
     branchIds?: number[],
     scheduleLevels?: ScheduleLevel[],
+    scheduleId?: string,
   ): Promise<PageResponse<StudentAttendanceResponse>> => {
     const response = await axiosInstance.get("/student-attendances", {
       params: {
@@ -80,6 +81,7 @@ export const studentAttendanceAPI = {
         belts: belts,
         branchIds: branchIds,
         scheduleLevels: scheduleLevels,
+        scheduleId: scheduleId,
         page,
         size,
         sortBy,

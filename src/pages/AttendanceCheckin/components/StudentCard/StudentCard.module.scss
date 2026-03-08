@@ -1,0 +1,227 @@
+// ── Student Card ──────────────────────────────────────────────
+
+.studentCard {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #f3f4f6;
+  border-left-width: 4px;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  &.present {
+    border-color: #bbf7d0;
+    border-left-color: #16a34a;
+  }
+
+  &.absent {
+    border-color: #fecaca;
+    border-left-color: #e02020;
+  }
+
+  &.excused {
+    border-color: #fde68a;
+    border-left-color: #d97706;
+  }
+
+  &.unmarked {
+    border-color: #f3f4f6;
+    border-left-color: #e5e7eb;
+  }
+}
+
+.studentRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 14px 12px;
+}
+
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.streakBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef3c7;
+  border: 2px solid white;
+}
+
+.studentInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.studentName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evalBadge {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.checkInTime {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.streakText {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.pillWrap {
+  flex-shrink: 0;
+}
+
+.expandBtn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: #f9fafb;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+
+  &.expanded {
+    background: #fef2f2;
+  }
+}
+
+.chevron {
+  transition: transform 0.2s;
+  color: #9ca3af;
+
+  &.rotated {
+    transform: rotate(180deg);
+    color: #e02020;
+  }
+}
+
+// ── Expanded Panel ────────────────────────────────────────────
+
+.expandedPanel {
+  overflow: hidden;
+}
+
+.expandedInner {
+  padding: 4px 14px 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.studentMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.metaValue {
+  color: #374151;
+  font-weight: 600;
+}
+
+.notesPreview {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border-left: 3px solid #e02020;
+}
+
+.notesText {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.evalBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  background: linear-gradient(135deg, #e02020, #b91c1c);
+  color: white;
+
+  &.evaluated {
+    background: #fef2f2;
+    color: #e02020;
+    border: 1.5px solid #fecaca;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

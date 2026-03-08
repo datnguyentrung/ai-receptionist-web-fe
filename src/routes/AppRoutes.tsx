@@ -8,6 +8,7 @@ import HomePage from "@/pages/HomePage";
 import { StudentManagement } from "@/pages/StudentManagement";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import { AttendanceCheckin } from '../pages/AttendanceCheckin/AttendanceCheckin';
 
 export default function AppRoutes() {
   return (
@@ -33,6 +34,7 @@ export default function AppRoutes() {
         <Route path="students" element={<StudentManagement />} />
         <Route path="schedules" element={<ClassSchedules />} />
         <Route path="attendance" element={<AttendanceReports />} />
+        <Route path="schedules/:scheduleId" element={<AttendanceCheckin />} />
       </Route>
 
       {/* Catch all - redirect to home */}

@@ -1,0 +1,62 @@
+// ── Bottom Submit Bar ─────────────────────────────────────────
+
+.bottomBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: 16px 0 24px;
+  background: linear-gradient(to top, #f4f6fa 70%, transparent);
+}
+
+.warningBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+
+.warningText {
+  font-size: 13px;
+  color: #92400e;
+}
+
+.warningCount {
+  font-weight: 700;
+}
+
+.btnSubmit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e02020 0%, #b91c1c 100%);
+  box-shadow: 0 6px 20px rgba(224, 32, 32, 0.35);
+  transition:
+    opacity 0.15s,
+    box-shadow 0.15s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow: 0 8px 24px rgba(224, 32, 32, 0.45);
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    box-shadow: none;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}

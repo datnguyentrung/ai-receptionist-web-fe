@@ -1,0 +1,67 @@
+// -- AttendanceCheckin page-level styles ----------------------
+
+.page {
+  min-height: 100vh;
+  background: #f4f6fa;
+  font-family: "Inter", "Poppins", sans-serif;
+}
+
+// -- Two-column desktop grid ----------------------------------
+
+.grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  max-width: 1440px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 0 32px;
+  gap: 28px;
+}
+
+// -- Left sidebar ---------------------------------------------
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// -- Right main area ------------------------------------------
+
+.main {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 0;
+  min-height: 100vh;
+}
+
+// -- Student Grid ---------------------------------------------
+
+.studentList {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 12px;
+  align-content: start;
+  padding-bottom: 24px;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 0;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #9ca3af;
+}

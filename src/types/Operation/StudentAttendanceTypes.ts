@@ -1,14 +1,14 @@
 import type { AttendanceStatus, EvaluationStatus } from '../../config/constants';
 
 export interface StudentAttendanceResponse {
-  attendanceId: string;
+  attendanceId: string | null;
   enrollmentId: string;
   studentId: string;
   studentName: string;
   classScheduleId: string;
   /** Format: "yyyy-MM-dd" */
   sessionDate: string;
-  attendanceStatus: AttendanceStatus;
+  attendanceStatus: AttendanceStatus | null;
   /** Format: ISO 8601 UTC */
   checkInTime: Date | string | null;
   recordedByCoachName: string | null;

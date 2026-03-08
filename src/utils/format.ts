@@ -92,7 +92,7 @@ export const getCurrentWeekday = () => {
   const currentJsDay = new Date().getDay(); // Trả về 0 (CN) đến 6 (Thứ 7)
 
   if (currentJsDay === 0) {
-    return 8; // Nếu hôm nay là Chủ nhật, trả về 8 (Đổi thành 1 nếu backend của bạn dùng số 1 cho Chủ nhật)
+    return 1; // Nếu hôm nay là Chủ nhật, trả về 1 (Theo chuẩn backend: Thứ 2 = 2, ..., Chủ nhật = 1)
   }
 
   return currentJsDay + 1; // Các ngày khác: 1 (T2 của JS) + 1 = 2 (Thứ 2 của Backend)

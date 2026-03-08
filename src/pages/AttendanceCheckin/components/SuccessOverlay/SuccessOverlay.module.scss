@@ -1,0 +1,92 @@
+// ── Success Overlay ───────────────────────────────────────────
+
+.successOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.successCard {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+  max-width: 384px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #e02020, #b91c1c);
+}
+
+.successTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.successSubtitle {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.successClassName {
+  font-weight: 700;
+  color: #e02020;
+}
+
+.successStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0 24px;
+}
+
+.successStatItem {
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.successStatValue {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.successStatLabel {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.btnDone {
+  width: 100%;
+  padding: 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e02020, #b91c1c);
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
