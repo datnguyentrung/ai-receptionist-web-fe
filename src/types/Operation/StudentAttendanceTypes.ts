@@ -58,8 +58,6 @@ export interface AttendanceManualLogRequest {
 /** Cập nhật trạng thái điểm danh của 1 học viên */
 export interface AttendanceUpdateStatusRequest {
   attendanceStatus: AttendanceStatus;
-  /** Format: ISO 8601 UTC */
-  checkInTime: string;
 }
 
 /** Cập nhật đánh giá / nhận xét */

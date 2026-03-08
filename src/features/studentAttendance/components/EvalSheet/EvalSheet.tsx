@@ -56,7 +56,7 @@ const EVAL_OPTIONS: {
 interface EvalSheetProps {
   student: StudentAttendanceResponse;
   sessionDate: string;
-  onSave: (evalStatus: EvaluationStatus | null, notes: string) => void;
+  onSave: (evalStatus: EvaluationStatus, notes: string) => void;
   onClose: () => void;
 }
 
@@ -66,8 +66,8 @@ export function EvalSheet({
   onSave,
   onClose,
 }: EvalSheetProps) {
-  const [evalStatus, setEvalStatus] = useState<EvaluationStatus | null>(
-    student.evaluationStatus,
+  const [evalStatus, setEvalStatus] = useState<EvaluationStatus>(
+    student.evaluationStatus || "GOOD"
   );
   const [notes, setNotes] = useState(student.note ?? "");
   const textRef = useRef<HTMLTextAreaElement>(null);
@@ -132,7 +132,8 @@ export function EvalSheet({
                 return (
                   <button
                     key={opt.value}
-                    onClick={() => setEvalStatus(active ? null : opt.value)}
+                    disabled={active}
+                    onClick={() => setEvalStatus(opt.value)}
                     className={styles.evalOption}
                     style={
                       active

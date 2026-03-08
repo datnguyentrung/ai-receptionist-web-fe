@@ -24,8 +24,8 @@ const ATTENDANCE_OPTIONS: {
     icon: XCircle,
   },
   {
-    value: "EXCUSED",
-    label: "Có phép",
+    value: "LATE",
+    label: "Muộn",
     short: "~",
     activeBg: "#D97706",
     icon: AlertCircle,
@@ -33,13 +33,13 @@ const ATTENDANCE_OPTIONS: {
 ];
 
 interface AttendancePillProps {
-  isExistingRecord: boolean;
+  attendanceId?: string;
   value: AttendanceStatus | null;
   onChange: (v: AttendanceStatus | null) => void;
 }
 
 export function AttendancePill({
-  isExistingRecord,
+  attendanceId,
   value,
   onChange,
 }: AttendancePillProps) {
@@ -51,7 +51,7 @@ export function AttendancePill({
         return (
           <button
             key={opt.value}
-            disabled={!isExistingRecord}
+            disabled={!attendanceId}
             onClick={() => onChange(active ? null : opt.value)}
             className={`${styles.pillBtn} ${active ? styles.active : ""}`}
             style={active ? { background: opt.activeBg } : undefined}

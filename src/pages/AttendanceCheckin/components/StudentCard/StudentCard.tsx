@@ -6,7 +6,7 @@ import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
 import { ChevronDown, Clock, Eye, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -30,11 +30,11 @@ interface StudentCardProps {
   student: StudentAttendanceResponse;
   index: number;
   onUpdateStatus: (id: string, status: AttendanceStatus | null) => void;
-  onUpdateEval: (id: string, status: EvaluationStatus | null) => void;
+  onUpdateEval: (id: string, status: EvaluationStatus) => void;
   onOpenEval: (student: StudentAttendanceResponse) => void;
 }
 
-export function StudentCard({
+export function StudentCardInner({
   student,
   index,
   onUpdateStatus,
@@ -86,12 +86,10 @@ export function StudentCard({
             {student.checkInTime && (
               <span className={styles.checkInTime}>
                 <Clock size={9} />{" "}
-                {typeof student.checkInTime === "string"
-                  ? student.checkInTime
-                  : student.checkInTime.toLocaleTimeString("vi-VN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                {new Date(student.checkInTime).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             )}
           </div>
@@ -100,8 +98,10 @@ export function StudentCard({
         {/* Attendance pill */}
         <div className={styles.pillWrap}>
           <AttendancePill
-            isExistingRecord={!!student.attendanceId}
-            value={student.attendanceStatus}
+            attendanceId={
+              student.attendanceId ? student.attendanceId : undefined
+            }
+            value={student.attendanceStatus }
             onChange={(v) => onUpdateStatus(student.studentId, v)}
           />
         </div>
@@ -189,3 +189,17 @@ export function StudentCard({
     </motion.div>
   );
 }
+
+export const StudentCard = memo(StudentCardInner, (prev, next) => {
+  return (
+    prev.index === next.index &&
+    prev.student.studentId === next.student.studentId &&
+    prev.student.attendanceStatus === next.student.attendanceStatus &&
+    prev.student.evaluationStatus === next.student.evaluationStatus &&
+    prev.student.checkInTime === next.student.checkInTime &&
+    prev.student.note === next.student.note &&
+    prev.onUpdateStatus === next.onUpdateStatus &&
+    prev.onUpdateEval === next.onUpdateEval &&
+    prev.onOpenEval === next.onOpenEval
+  );
+});

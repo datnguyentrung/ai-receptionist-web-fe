@@ -1,15 +1,22 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
-import { useFilterAttendance } from "@/features/studentAttendance/api/useStudentAttendance";
+import {
+  useFilterAttendance,
+  useUpdateAttendanceEvaluation,
+  useUpdateAttendanceStatus,
+} from "@/features/studentAttendance/api/useStudentAttendance";
 import { EvalSheet } from "@/features/studentAttendance/components/EvalSheet";
 import { useGetStudentEnrollmentsByClassScheduleId } from "@/features/studentEnrollment/api/useStudentEnrollment";
-import type { StudentAttendanceResponse } from "@/types";
+import type {
+  AttendanceUpdateEvaluationRequest,
+  StudentAttendanceResponse,
+} from "@/types";
 import { formatDateYMD } from "@/utils/format";
 import { mergeAttendanceData } from "@/utils/mergeAttendanceData";
 import { Users } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./AttendanceCheckin.module.scss";
 import { AttendanceHeader } from "./components/AttendanceHeader";
@@ -18,6 +25,12 @@ import { StudentCard } from "./components/StudentCard";
 import { SuccessOverlay } from "./components/SuccessOverlay";
 
 function nowTime() {
+  console.log(
+    new Date().toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
   return new Date().toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -55,6 +68,9 @@ export function AttendanceCheckin() {
     scheduleId,
   );
 
+  const { mutate: updateAttendance } = useUpdateAttendanceStatus();
+  const { mutate: updateEvaluation } = useUpdateAttendanceEvaluation();
+
   // console.log("Attendance data:", data);
 
   // Merge server data once, then apply local mutations on top
@@ -66,6 +82,20 @@ export function AttendanceCheckin() {
       CLASS_SESSION.date,
     );
   }, [data, enrollments]);
+
+  // Stable refs so callbacks don't become stale or recreate on every render
+  const baseMergedRef = useRef<StudentAttendanceResponse[]>([]);
+  const mutationsRef = useRef<
+    Record<string, Partial<StudentAttendanceResponse>>
+  >({});
+
+  useEffect(() => {
+    baseMergedRef.current = baseMerged;
+  }, [baseMerged]);
+
+  useEffect(() => {
+    mutationsRef.current = mutations;
+  }, [mutations]);
 
   const students = useMemo(
     () => baseMerged.map((s) => ({ ...s, ...(mutations[s.studentId] ?? {}) })),
@@ -98,36 +128,82 @@ export function AttendanceCheckin() {
 
   const updateStatus = useCallback(
     (id: string, status: AttendanceStatus | null) => {
+      const prevMutation = mutationsRef.current[id];
+
       setMutations((prev) => ({
         ...prev,
         [id]: {
           ...prev[id],
           attendanceStatus: status,
-          checkInTime: status === "PRESENT" ? nowTime() : null,
+          checkInTime:
+            status === "PRESENT" || status === "LATE" ? new Date() : null,
         },
       }));
-    },
-    [],
-  );
 
-  const saveEval = useCallback(
-    (id: string, evalStatus: EvaluationStatus | null, notes: string) => {
-      setMutations((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], evaluationStatus: evalStatus, note: notes },
-      }));
+      if (!status) return;
+
+      const attendanceId = baseMergedRef.current.find(
+        (s) => s.studentId === id,
+      )?.attendanceId;
+      if (!attendanceId) return;
+
+      updateAttendance(
+        { attendanceId, data: { attendanceStatus: status } },
+        {
+          // Nếu thành công (Tùy chọn: có thể để trống vì UI đã update rồi)
+          onSuccess: () => {
+            // console.log(`Đã cập nhật trạng thái cho ${id}`);
+          },
+          // Nếu lỗi -> Thực hiện Rollback (Quay xe)
+          onError: () => {
+            // Ghi đè lại state cũ
+            setMutations((prev) => ({ ...prev, [id]: prevMutation ?? {} }));
+          },
+        },
+      );
     },
-    [],
+    [updateAttendance],
   );
 
   const updateEval = useCallback(
-    (id: string, evalStatus: EvaluationStatus | null) => {
-      setMutations((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], evaluationStatus: evalStatus },
-      }));
+    (id: string, evalStatus: EvaluationStatus, notes?: string) => {
+      const prevMutation = mutationsRef.current[id];
+
+      // 1. Cập nhật giao diện (Nếu có notes thì ghi đè, không thì giữ nguyên)
+      setMutations((prev) => {
+        const updatedItem = { ...prev[id], evaluationStatus: evalStatus };
+        if (notes !== undefined) {
+          updatedItem.note = notes;
+        }
+        return { ...prev, [id]: updatedItem };
+      });
+
+      // 2. Tìm attendanceId
+      const attendanceId = baseMergedRef.current.find(
+        (s) => s.studentId === id,
+      )?.attendanceId;
+      if (!attendanceId) return;
+
+      // 3. Chuẩn bị dữ liệu gửi lên API
+      const payloadData: AttendanceUpdateEvaluationRequest = {
+        evaluationStatus: evalStatus ?? undefined,
+      };
+      if (notes !== undefined) {
+        payloadData.note = notes;
+      }
+
+      // 4. Gọi API cập nhật đánh giá
+      updateEvaluation(
+        { attendanceId, data: payloadData },
+        {
+          onError: () => {
+            // Quay xe nếu lỗi
+            setMutations((prev) => ({ ...prev, [id]: prevMutation ?? {} }));
+          },
+        },
+      );
     },
-    [],
+    [updateEvaluation],
   );
 
   const markAll = (status: AttendanceStatus | null) => {
@@ -264,7 +340,7 @@ export function AttendanceCheckin() {
             student={evalTarget}
             sessionDate={new Date().toISOString().split("T")[0]}
             onSave={(evalStatus, notes) =>
-              saveEval(evalTarget.studentId, evalStatus, notes)
+              updateEval(evalTarget.studentId, evalStatus, notes)
             }
             onClose={() => setEvalTarget(null)}
           />

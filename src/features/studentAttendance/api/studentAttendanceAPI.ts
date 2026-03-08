@@ -88,6 +88,7 @@ export const studentAttendanceAPI = {
         sortDir,
       },
     });
+    console.log("API response:", response);
     return response.data;
   },
 };

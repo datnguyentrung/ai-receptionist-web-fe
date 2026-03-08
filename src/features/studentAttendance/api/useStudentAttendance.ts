@@ -28,7 +28,7 @@ export const useFilterAttendance = (
   page?: number,
   size?: number,
   sortBy?: string,
-  sortDir?: "asc" | "desc"
+  sortDir?: "asc" | "desc",
 ) => {
   return useQuery({
     queryKey: [
@@ -111,7 +111,6 @@ export const useCreateAttendanceRecord = () => {
 
 // 4. Hook cập nhật trạng thái điểm danh
 export const useUpdateAttendanceStatus = () => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       attendanceId,
@@ -120,15 +119,11 @@ export const useUpdateAttendanceStatus = () => {
       attendanceId: string;
       data: AttendanceUpdateStatusRequest;
     }) => studentAttendanceAPI.updateStatus(attendanceId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ATTENDANCE_QUERY_KEY] });
-    },
   });
 };
 
 // 5. Hook cập nhật đánh giá điểm danh
 export const useUpdateAttendanceEvaluation = () => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       attendanceId,
@@ -137,8 +132,5 @@ export const useUpdateAttendanceEvaluation = () => {
       attendanceId: string;
       data: AttendanceUpdateEvaluationRequest;
     }) => studentAttendanceAPI.updateEvaluation(attendanceId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ATTENDANCE_QUERY_KEY] });
-    },
   });
 };

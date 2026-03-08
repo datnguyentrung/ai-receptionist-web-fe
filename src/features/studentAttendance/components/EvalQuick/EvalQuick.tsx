@@ -39,7 +39,7 @@ const EVAL_OPTIONS: EvalOption[] = [
 
 interface EvalQuickProps {
   value: EvaluationStatus | null;
-  onChange: (v: EvaluationStatus | null) => void;
+  onChange: (v: EvaluationStatus) => void;
   studentName?: string;
 }
 
@@ -62,12 +62,13 @@ export default function EvalQuick({
             <button
               key={opt.value}
               className={`${styles.optBtn} ${active ? styles.active : ""}`}
+              disabled={active}
               style={
                 active
                   ? { background: opt.activeBg, color: "white" }
                   : { background: opt.bg, color: opt.color }
               }
-              onClick={() => onChange(active ? null : opt.value)}
+              onClick={() => onChange(opt.value)}
             >
               <span className={styles.emoji}>{active ? "✓" : opt.emoji}</span>
               <span className={styles.optLabel}>{opt.label}</span>
