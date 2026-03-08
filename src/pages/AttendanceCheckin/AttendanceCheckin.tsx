@@ -42,7 +42,7 @@ export function AttendanceCheckin() {
   const { data: enrollments, isLoading: enrollmentsLoading } =
     useGetStudentEnrollmentsByClassScheduleId(scheduleId!);
 
-  console.log("Enrollments:", enrollments);
+  // console.log("Enrollments:", enrollments);
 
   const { data: data, isLoading: attendanceLoading } = useFilterAttendance(
     undefined,
@@ -54,6 +54,8 @@ export function AttendanceCheckin() {
     undefined,
     scheduleId,
   );
+
+  console.log("Attendance data:", data);
 
   // Merge server data once, then apply local mutations on top
   const baseMerged = useMemo<StudentAttendanceResponse[]>(() => {
@@ -113,6 +115,16 @@ export function AttendanceCheckin() {
       setMutations((prev) => ({
         ...prev,
         [id]: { ...prev[id], evaluationStatus: evalStatus, note: notes },
+      }));
+    },
+    [],
+  );
+
+  const updateEval = useCallback(
+    (id: string, evalStatus: EvaluationStatus | null) => {
+      setMutations((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], evaluationStatus: evalStatus },
       }));
     },
     [],
@@ -227,6 +239,7 @@ export function AttendanceCheckin() {
                   student={student}
                   index={index}
                   onUpdateStatus={updateStatus}
+                  onUpdateEval={updateEval}
                   onOpenEval={setEvalTarget}
                 />
               ))}

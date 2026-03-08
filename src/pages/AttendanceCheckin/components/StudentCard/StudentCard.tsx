@@ -1,11 +1,17 @@
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { AttendancePill } from "@/features/studentAttendance/components/AttendancePill";
+import EvalQuick from "@/features/studentAttendance/components/EvalQuick";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
 import { ChevronDown, Clock, Eye, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../../../../components/ui/hover-card";
 import styles from "./StudentCard.module.scss";
 
 function evalLabel(e: EvaluationStatus | null): string | null {
@@ -13,7 +19,7 @@ function evalLabel(e: EvaluationStatus | null): string | null {
   return (
     {
       GOOD: "👍 Tốt",
-      AVERAGE: "👌 TB",
+      AVERAGE: "👌 Trung bình",
       WEAK: "😔 Yếu",
       PENDING: "⏳ Chờ",
     }[e] ?? null
@@ -24,6 +30,7 @@ interface StudentCardProps {
   student: StudentAttendanceResponse;
   index: number;
   onUpdateStatus: (id: string, status: AttendanceStatus | null) => void;
+  onUpdateEval: (id: string, status: EvaluationStatus | null) => void;
   onOpenEval: (student: StudentAttendanceResponse) => void;
 }
 
@@ -31,6 +38,7 @@ export function StudentCard({
   student,
   index,
   onUpdateStatus,
+  onUpdateEval,
   onOpenEval,
 }: StudentCardProps) {
   const [expanded, setExpanded] = useState(false);
@@ -97,12 +105,25 @@ export function StudentCard({
           />
         </div>
 
+        {/* Nút Eye kèm Popover */}
+        <HoverCard openDelay={0} closeDelay={100}>
+          <HoverCardTrigger asChild>
+            <button className={`${styles.expandBtn}`}>
+              <Eye size={14} className={`${styles.chevron}`} />
+            </button>
+          </HoverCardTrigger>
+
+          {/* Nội dung sẽ hiển thị khi di chuột vào con mắt */}
+          <HoverCardContent side="top" align="center" className="w-48 p-3">
+            <EvalQuick
+              value={student.evaluationStatus}
+              onChange={(v) => onUpdateEval(student.studentId, v)}
+              studentName={student.studentName}
+            />
+          </HoverCardContent>
+        </HoverCard>
+
         {/* Expand toggle */}
-
-        <button className={`${styles.expandBtn}`}>
-          <Eye size={14} className={`${styles.chevron}`} />
-        </button>
-
         <button
           onClick={() => setExpanded((prev) => !prev)}
           className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}

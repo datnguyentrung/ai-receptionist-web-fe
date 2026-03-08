@@ -1,0 +1,79 @@
+// ── EvalQuick ─────────────────────────────────────────────────
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 8px;
+}
+
+.header {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studentName {
+  color: #111827;
+  font-weight: 600;
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+}
+
+.optBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 3px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0.45;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.active {
+    font-weight: 700;
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+}
+
+.emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.optLabel {
+  font-size: 8px;
+  line-height: 1;
+}
