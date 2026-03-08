@@ -32,7 +32,6 @@ export function mergeAttendanceData(
         enrollmentId: enrollment.enrollmentId,
         studentId: studentId,
         studentName: enrollment.studentSummary.fullName,
-        classScheduleId: enrollment.classScheduleSummary.scheduleId,
         sessionDate: sessionDate,
 
         // Các trường chưa có dữ liệu sẽ set mặc định là null

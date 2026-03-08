@@ -1,5 +1,12 @@
 import type { AttendanceStatus } from "@/config/constants";
-import type { ClassSessionDTO } from "@/data/mockData";
+import {
+  ScheduleLevelLabel,
+  ScheduleLocationLabel,
+  ScheduleShiftLabel,
+  WeekdayCodeToLabel,
+} from "@/config/constants";
+import type { ClassScheduleSummary } from "@/types";
+import { formatDateDMY } from "@/utils/format";
 import {
   Calendar,
   CheckCircle2,
@@ -13,7 +20,7 @@ import { motion } from "motion/react";
 import styles from "./AttendanceHeader.module.scss";
 
 interface AttendanceHeaderProps {
-  session: ClassSessionDTO;
+  session: ClassScheduleSummary;
   markedCount: number;
   totalCount: number;
   progress: number;
@@ -51,15 +58,16 @@ export function AttendanceHeader({
           <ChevronLeft size={18} style={{ color: "#374151" }} />
         </button>
         <div className={styles.headerTitle}>
-          <p className={styles.className}>{session.className}</p>
+          <p className={styles.className}>{session.branchName}</p>
           <p className={styles.classCode}>
-            {session.classCode} · {session.sessionId}
+            {ScheduleLevelLabel[session.scheduleLevel]} ·{" "}
+            {ScheduleShiftLabel[session.scheduleShift]}
           </p>
         </div>
-        {session.status === "in-progress" && (
+        {session.scheduleId === "in-progress" && (
           <span className={styles.statusPill}>
             <span className={styles.statusDot} />
-            Đang học
+            Đang mở
           </span>
         )}
       </div>
@@ -68,11 +76,14 @@ export function AttendanceHeader({
       <div className={styles.classInfoCard}>
         <div className={styles.classInfoDecor} />
         {[
-          { icon: MapPin, text: session.branchName },
-          { icon: Clock, text: `${session.timeStart} – ${session.timeEnd}` },
+          {
+            icon: MapPin,
+            text: ScheduleLocationLabel[session.scheduleLocation],
+          },
+          { icon: Clock, text: `${session.startTime} – ${session.endTime}` },
           {
             icon: Calendar,
-            text: `${session.weekday}, ${new Date(session.date).toLocaleDateString("vi-VN")}`,
+            text: `${WeekdayCodeToLabel[session.weekday]}, ${formatDateDMY(new Date())}`,
           },
         ].map(({ icon: Icon, text }) => (
           <div key={text} className={styles.classInfoItem}>
@@ -106,7 +117,7 @@ export function AttendanceHeader({
             { label: "Có mặt", count: presentCount, color: "#16A34A" },
             { label: "Vắng", count: absentCount, color: "#E02020" },
             { label: "Có phép", count: excusedCount, color: "#D97706" },
-            { label: "Chưa", count: unmarkedCount, color: "#9CA3AF" },
+            { label: "Chờ", count: unmarkedCount, color: "#9CA3AF" },
           ].map((s) => (
             <div key={s.label} className={styles.statItem}>
               <span className={styles.statValue} style={{ color: s.color }}>
@@ -117,7 +128,7 @@ export function AttendanceHeader({
           ))}
           <div className={styles.evalCount}>
             <Star size={11} style={{ color: "#F59E0B" }} />
-            <span className={styles.evalCountText}>{evalCount} nhận xét</span>
+            <span className={styles.evalCountText}>{evalCount} đánh giá</span>
           </div>
         </div>
       </div>

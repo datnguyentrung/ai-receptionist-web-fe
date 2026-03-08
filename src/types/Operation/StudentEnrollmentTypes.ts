@@ -46,3 +46,15 @@ export interface StudentEnrollmentSimpleResponse {
   joinDate: string;
   status: StudentEnrollmentStatus;
 }
+
+export interface EnrollmentsByScheduleResponse {
+  classScheduleSummary: ClassScheduleSummary;
+  enrollments: StudentEnrollmentSimpleResponse[];
+}
+
+export interface EnrolledStudentItem {
+  enrollmentId: string;
+  studentSummary: StudentSummary;
+  joinDate: string;
+  status: StudentEnrollmentStatus;
+}

@@ -14,7 +14,7 @@
   max-width: 1440px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 0 32px;
+  // padding: 0 32px;
   gap: 28px;
 }
 
@@ -64,4 +64,103 @@
 .emptyText {
   font-size: 14px;
   color: #9ca3af;
+}
+
+// -- Skeleton loading states ----------------------------------
+
+.skeletonSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 16px;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.skeletonTitle {
+  height: 22px;
+  width: 70%;
+  border-radius: 6px;
+}
+
+.skeletonSubtitle {
+  height: 16px;
+  width: 50%;
+  border-radius: 6px;
+}
+
+.skeletonProgress {
+  height: 10px;
+  width: 100%;
+  border-radius: 99px;
+}
+
+.skeletonStatRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.skeletonStat {
+  height: 52px;
+  border-radius: 10px;
+}
+
+.skeletonFilterBar {
+  height: 36px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.skeletonCard {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.skeletonCardRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeletonAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeletonCardInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeletonName {
+  height: 16px;
+  width: 60%;
+  border-radius: 5px;
+}
+
+.skeletonMeta {
+  height: 13px;
+  width: 40%;
+  border-radius: 5px;
+}
+
+.skeletonPills {
+  display: flex;
+  gap: 8px;
+}
+
+.skeletonPill {
+  height: 28px;
+  width: 72px;
+  border-radius: 99px;
 }

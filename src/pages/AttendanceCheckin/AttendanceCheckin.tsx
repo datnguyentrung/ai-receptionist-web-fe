@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import { useFilterAttendance } from "@/features/studentAttendance/api/useStudentAttendance";
@@ -38,13 +39,12 @@ export function AttendanceCheckin() {
 
   const { scheduleId } = useParams();
 
-  const { data: enrollments } = useGetStudentEnrollmentsByClassScheduleId(
-    scheduleId!,
-  );
+  const { data: enrollments, isLoading: enrollmentsLoading } =
+    useGetStudentEnrollmentsByClassScheduleId(scheduleId!);
 
   console.log("Enrollments:", enrollments);
 
-  const { data: data } = useFilterAttendance(
+  const { data: data, isLoading: attendanceLoading } = useFilterAttendance(
     undefined,
     formatDateYMD(new Date()),
     undefined,
@@ -58,7 +58,11 @@ export function AttendanceCheckin() {
   // Merge server data once, then apply local mutations on top
   const baseMerged = useMemo<StudentAttendanceResponse[]>(() => {
     if (!data || !enrollments) return [];
-    return mergeAttendanceData(enrollments, data.content, CLASS_SESSION.date);
+    return mergeAttendanceData(
+      enrollments.enrollments,
+      data.content,
+      CLASS_SESSION.date,
+    );
   }, [data, enrollments]);
 
   const students = useMemo(
@@ -133,13 +137,60 @@ export function AttendanceCheckin() {
     setSubmitted(true);
   };
 
+  const isLoading = enrollmentsLoading || attendanceLoading;
+
+  if (isLoading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.grid}>
+          {/* Sidebar skeleton */}
+          <aside className={styles.sidebar}>
+            <div className={styles.skeletonSidebar}>
+              <Skeleton className={styles.skeletonTitle} />
+              <Skeleton className={styles.skeletonSubtitle} />
+              <Skeleton className={styles.skeletonProgress} />
+              <div className={styles.skeletonStatRow}>
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className={styles.skeletonStat} />
+                ))}
+              </div>
+              <Skeleton className={styles.skeletonFilterBar} />
+            </div>
+          </aside>
+
+          {/* Cards skeleton */}
+          <main className={styles.main}>
+            <div className={styles.studentList}>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className={styles.skeletonCard}>
+                  <div className={styles.skeletonCardRow}>
+                    <Skeleton className={styles.skeletonAvatar} />
+                    <div className={styles.skeletonCardInfo}>
+                      <Skeleton className={styles.skeletonName} />
+                      <Skeleton className={styles.skeletonMeta} />
+                    </div>
+                  </div>
+                  <div className={styles.skeletonPills}>
+                    {[...Array(3)].map((_, j) => (
+                      <Skeleton key={j} className={styles.skeletonPill} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.grid}>
         {/* -- Left Sidebar -- */}
         <aside className={styles.sidebar}>
           <AttendanceHeader
-            session={CLASS_SESSION}
+            session={enrollments?.classScheduleSummary}
             markedCount={markedCount}
             totalCount={totalCount}
             progress={progress}
@@ -198,7 +249,7 @@ export function AttendanceCheckin() {
         {evalTarget && (
           <EvalSheet
             student={evalTarget}
-            sessionDate={CLASS_SESSION.date}
+            sessionDate={new Date().toISOString().split("T")[0]}
             onSave={(evalStatus, notes) =>
               saveEval(evalTarget.studentId, evalStatus, notes)
             }
@@ -215,7 +266,7 @@ export function AttendanceCheckin() {
             present={presentCount}
             absent={absentCount}
             excused={excusedCount}
-            className={CLASS_SESSION.className}
+            className={enrollments?.classScheduleSummary.branchName}
             submittedTime={submittedTime}
           />
         )}

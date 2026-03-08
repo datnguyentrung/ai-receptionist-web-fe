@@ -4,6 +4,7 @@ import type {
   StudentEnrollmentUpdateRequest,
   StudentEnrollmentResponse,
   StudentEnrollmentSimpleResponse,
+  EnrollmentsByScheduleResponse,
 } from "@/types";
 
 
@@ -50,7 +51,7 @@ export const studentEnrollmentAPI = {
 
   getStudentEnrollmentsByClassScheduleId: async (
     classScheduleId: string,
-  ): Promise<StudentEnrollmentSimpleResponse[]> => {
+  ): Promise<EnrollmentsByScheduleResponse> => {
     const response = await axiosInstance.get(
       `/student-enrollments/class-schedule/${classScheduleId}`,
     );

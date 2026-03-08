@@ -5,7 +5,7 @@ export interface StudentAttendanceResponse {
   enrollmentId: string;
   studentId: string;
   studentName: string;
-  classScheduleId: string;
+  classScheduleId?: string;
   /** Format: "yyyy-MM-dd" */
   sessionDate: string;
   attendanceStatus: AttendanceStatus | null;

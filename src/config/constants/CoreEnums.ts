@@ -131,6 +131,16 @@ export const WeekdayLabel: Record<Weekday, string> = {
   SUNDAY: "Chủ Nhật",
 };
 
+export const WeekdayCodeToLabel: Record<number, string> = {
+  1: "Chủ Nhật",
+  2: "Thứ Hai",
+  3: "Thứ Ba",
+  4: "Thứ Tư",
+  5: "Thứ Năm",
+  6: "Thứ Sáu",
+  7: "Thứ Bảy",
+};
+
 /** Tra cứu Weekday theo code (O(1), tương đương fromCode() bên Java) */
 export const WeekdayFromCode = Object.entries(WeekdayCode).reduce(
   (acc, [day, code]) => {
