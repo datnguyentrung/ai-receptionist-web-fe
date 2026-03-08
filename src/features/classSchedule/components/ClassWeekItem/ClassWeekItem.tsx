@@ -3,14 +3,25 @@ import {
   LevelBadge,
   StatusBadge,
 } from "@/features/classSchedule/components/ClassBadges";
+import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
 import { ChevronRight, MapPin, Users } from "lucide-react";
 import styles from "./ClassWeekItem.module.scss";
 
 export function ClassWeekItem({ cls }: { cls: ClassScheduleDetail }) {
+  const navigateToStudentListByClassScheduleId =
+    useNavigateStudentListByClassScheduleId();
+
   return (
-    <div className={styles.weekClassItem}>
+    <div
+      className={styles.weekClassItem}
+      onClick={() =>
+        navigateToStudentListByClassScheduleId({
+          classScheduleId: cls.scheduleId,
+        })
+      }
+    >
       <div className={styles.timeBlock}>
         <p style={{ fontSize: "12px", fontWeight: 700, color: "#E02020" }}>
           {formatTimeStringHM(cls.startTime)} -{" "}

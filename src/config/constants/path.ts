@@ -1,4 +1,10 @@
-import { CalendarDays, ClipboardList, LayoutDashboard, UserCheck, Users } from "lucide-react";
+import {
+  CalendarDays,
+  ClipboardList,
+  LayoutDashboard,
+  UserCheck,
+  Users,
+} from "lucide-react";
 
 export const NAV_ITEMS = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -6,5 +12,4 @@ export const NAV_ITEMS = [
   { path: "/students", label: "Quản lý Học Viên", icon: Users },
   { path: "/schedules", label: "Lịch Học", icon: CalendarDays },
   { path: "/attendance", label: "Điểm Danh", icon: ClipboardList },
-  { path: "/checkin", label: "Điểm Danh Nhanh", icon: ClipboardList },
 ];
