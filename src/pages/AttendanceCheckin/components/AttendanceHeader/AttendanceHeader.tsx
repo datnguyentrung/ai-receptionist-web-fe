@@ -5,6 +5,7 @@ import {
   ScheduleShiftLabel,
   WeekdayCodeToLabel,
 } from "@/config/constants";
+import { useNavigateBack } from "@/hooks/useNavigation";
 import type { ClassScheduleSummary } from "@/types";
 import { formatDateDMY } from "@/utils/format";
 import {
@@ -35,6 +36,8 @@ interface AttendanceHeaderProps {
   onReset: () => void;
 }
 
+// Link: /schedules/[:scheduleId]
+
 export function AttendanceHeader({
   session,
   markedCount,
@@ -50,11 +53,13 @@ export function AttendanceHeader({
   onMarkAll,
   onReset,
 }: AttendanceHeaderProps) {
+  const onBack = useNavigateBack();
+
   return (
     <div className={styles.header}>
       {/* Top bar */}
       <div className={styles.topBar}>
-        <button className={styles.backBtn}>
+        <button className={styles.backBtn} onClick={onBack}>
           <ChevronLeft size={18} style={{ color: "#374151" }} />
         </button>
         <div className={styles.headerTitle}>

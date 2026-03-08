@@ -55,7 +55,7 @@ export function AttendanceCheckin() {
     scheduleId,
   );
 
-  console.log("Attendance data:", data);
+  // console.log("Attendance data:", data);
 
   // Merge server data once, then apply local mutations on top
   const baseMerged = useMemo<StudentAttendanceResponse[]>(() => {

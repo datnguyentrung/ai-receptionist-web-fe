@@ -35,6 +35,7 @@ export function AttendanceReports() {
     belts,
     branches,
     scheduleLevels,
+    undefined, // Assuming this is for a specific parameter, replace with actual value if needed
     currentPage - 1, // Spring Boot dùng 0-based page
     PAGE_SIZE,
   );

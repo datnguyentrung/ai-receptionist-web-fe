@@ -33,11 +33,16 @@ const ATTENDANCE_OPTIONS: {
 ];
 
 interface AttendancePillProps {
+  isExistingRecord: boolean;
   value: AttendanceStatus | null;
   onChange: (v: AttendanceStatus | null) => void;
 }
 
-export function AttendancePill({ value, onChange }: AttendancePillProps) {
+export function AttendancePill({
+  isExistingRecord,
+  value,
+  onChange,
+}: AttendancePillProps) {
   return (
     <div className={styles.pillContainer}>
       {ATTENDANCE_OPTIONS.map((opt) => {
@@ -46,6 +51,7 @@ export function AttendancePill({ value, onChange }: AttendancePillProps) {
         return (
           <button
             key={opt.value}
+            disabled={!isExistingRecord}
             onClick={() => onChange(active ? null : opt.value)}
             className={`${styles.pillBtn} ${active ? styles.active : ""}`}
             style={active ? { background: opt.activeBg } : undefined}

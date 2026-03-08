@@ -8,3 +8,10 @@ export const useNavigateStudentListByClassScheduleId = () => {
     navigate(`/schedules/${classScheduleId}`);
   };
 };
+
+
+// Back navigation
+export const useNavigateBack = () => {
+  const navigate = useNavigate();
+  return () => navigate(-1);
+}

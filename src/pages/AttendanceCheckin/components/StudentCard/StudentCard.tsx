@@ -100,6 +100,7 @@ export function StudentCard({
         {/* Attendance pill */}
         <div className={styles.pillWrap}>
           <AttendancePill
+            isExistingRecord={!!student.attendanceId}
             value={student.attendanceStatus}
             onChange={(v) => onUpdateStatus(student.studentId, v)}
           />
