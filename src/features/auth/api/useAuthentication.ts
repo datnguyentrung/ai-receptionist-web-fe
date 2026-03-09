@@ -26,7 +26,7 @@ export const useLogin = () => {
 
       // Lưu token + user vào Zustand store (persist vào localStorage)
       setAuth(data.accessToken, data.user);
-      navigate("/dashboard");
+      navigate("/");
     },
     onError: (error) => {
       // Chạy khi API báo lỗi (Sai pass, tài khoản không tồn tại...)

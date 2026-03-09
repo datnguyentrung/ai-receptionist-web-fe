@@ -1,7 +1,10 @@
 import logoImage from "@/assets/taekwondo.jpg";
 import { NAV_ITEMS } from "@/config/constants/path";
+import { useAuthStore } from "@/store/authStore";
+import type { UserResponse } from "@/types";
 import { Bot, LogOut, X } from "lucide-react";
 import { NavLink } from "react-router";
+import Avatar from "../Avatar";
 import styles from "./Sidebar.module.scss";
 
 export default function Sidebar({
@@ -11,6 +14,7 @@ export default function Sidebar({
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }) {
+  const { user, clearAuth } = useAuthStore((state) => state);
   return (
     <aside
       className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
@@ -46,7 +50,7 @@ export default function Sidebar({
           <NavLink
             key={path}
             to={path}
-            end={path === "/dashboard"}
+            end={path === "/"}
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
@@ -79,14 +83,25 @@ export default function Sidebar({
       {/* Bottom user card */}
       <div className={styles.sidebarBottom}>
         <div className={styles.userCard}>
-          <div className={styles.userAvatar}>AD</div>
+          <Avatar
+            fullName={(user as UserResponse)?.userProfile?.name || ""}
+            fontSize="14px"
+            fontWeight={500}
+            width="32px"
+            height="32px"
+          />
           <div className={styles.userInfo}>
-            <p className={styles.userName}>Admin Hệ Thống</p>
-            <p className={styles.userRole}>Quản trị viên</p>
+            <p className={styles.userName}>
+              {(user as UserResponse)?.userProfile?.name || "Admin Hệ Thống"}
+            </p>
+            <p className={styles.userRole}>
+              {(user as UserResponse)?.userInfo?.idRole || "Admin Hệ Thống"}
+            </p>
           </div>
           <LogOut
             size={14}
             style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }}
+            onClick={clearAuth}
           />
         </div>
       </div>

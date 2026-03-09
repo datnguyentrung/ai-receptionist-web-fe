@@ -15,8 +15,8 @@ export default function Header({
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
     NAV_ITEMS.find((n) =>
-      n.path === "/dashboard"
-        ? location.pathname === "/dashboard"
+      n.path === "/"
+        ? location.pathname === "/"
         : location.pathname.startsWith(n.path),
     )?.label ?? "Dashboard";
 

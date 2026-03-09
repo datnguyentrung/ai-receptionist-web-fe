@@ -12,3 +12,4 @@ export * from "./Operation/StudentEnrollmentTypes";
 export * from "./Security/authTypes";
 
 export * from "./pagination";
+export * from "./ApiType";
