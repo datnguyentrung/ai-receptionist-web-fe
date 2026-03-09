@@ -1,0 +1,239 @@
+@use "../../styles/variables" as *;
+@use "sass:color";
+// ─── WRAPPER ──────────────────────────────────────────────────
+.wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+// ─── VIDEO CONTAINER ──────────────────────────────────────────
+.videoContainer {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 4 / 3;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px rgba($brand-red, 0.55),
+    0 0 28px rgba($brand-red, 0.22),
+    0 0 64px rgba($brand-red, 0.08);
+  animation: containerGlow 3s ease-in-out infinite;
+}
+
+@keyframes containerGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba($brand-red, 0.55),
+      0 0 28px rgba($brand-red, 0.22),
+      0 0 64px rgba($brand-red, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba($brand-red, 0.85),
+      0 0 48px rgba($brand-red, 0.38),
+      0 0 96px rgba($brand-red, 0.14);
+  }
+}
+
+.video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #0d0d1a;
+}
+
+// ─── OVERLAY (vignette + tint) ────────────────────────────────
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  border-radius: 22px;
+}
+
+// ─── CORNER BRACKETS ──────────────────────────────────────────
+.cornerBracket {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba($brand-red, 0.75));
+}
+
+.cornerTL {
+  top: 18px;
+  left: 18px;
+  border-top: 3px solid $brand-red;
+  border-left: 3px solid $brand-red;
+  border-top-left-radius: 7px;
+}
+
+.cornerTR {
+  top: 18px;
+  right: 18px;
+  border-top: 3px solid $brand-red;
+  border-right: 3px solid $brand-red;
+  border-top-right-radius: 7px;
+}
+
+.cornerBL {
+  bottom: 18px;
+  left: 18px;
+  border-bottom: 3px solid $brand-red;
+  border-left: 3px solid $brand-red;
+  border-bottom-left-radius: 7px;
+}
+
+.cornerBR {
+  bottom: 18px;
+  right: 18px;
+  border-bottom: 3px solid $brand-red;
+  border-right: 3px solid $brand-red;
+  border-bottom-right-radius: 7px;
+}
+
+// ─── SCAN LINE ────────────────────────────────────────────────
+.scanLine {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  height: 2px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba($brand-red, 0.45) 18%,
+    $brand-red 50%,
+    rgba($brand-red, 0.45) 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 12px 3px rgba($brand-red, 0.38),
+    0 0 24px rgba($brand-red, 0.12);
+  animation: scanLine 2.8s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0% {
+    top: 12%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 88%;
+    opacity: 0;
+  }
+}
+
+// ─── STATUS BADGE ────────────────────────────────────────────
+.statusBadge {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 999px;
+  border: 1px solid rgba($brand-red, 0.42);
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  background: $brand-red;
+  border-radius: 50%;
+  box-shadow: 0 0 8px $brand-red;
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.65);
+  }
+}
+
+.statusText {
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+// ─── HIDDEN CANVAS ────────────────────────────────────────────
+.hidden {
+  display: none;
+}
+
+// ─── START BUTTON ─────────────────────────────────────────────
+.startButton {
+  margin-top: 22px;
+  padding: 11px 32px;
+  background: $brand-red;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba($brand-red, 0.42);
+
+  &:hover {
+    background: color.adjust($brand-red, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba($brand-red, 0.48);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ─── LOADING TEXT ─────────────────────────────────────────────
+.loadingText {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}

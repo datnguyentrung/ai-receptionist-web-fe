@@ -1,0 +1,240 @@
+@use "../../../styles/variables" as *;
+
+// ─── CARD ─────────────────────────────────────────────────────
+.card {
+  background: #ffffff;
+  border-radius: 2rem;
+  box-shadow: 0 20px 60px -15px rgba($brand-red, 0.15);
+  overflow: hidden;
+  width: 100%;
+  max-width: 32rem;
+  border: 1px solid #f3f4f6;
+  position: relative;
+}
+
+.topStrip {
+  height: 12px;
+  width: 100%;
+  background-color: $brand-red;
+}
+
+.body {
+  padding: 2rem;
+}
+
+// ─── SUCCESS HEADER ───────────────────────────────────────────
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.iconCircle {
+  width: 5rem;
+  height: 5rem;
+  background-color: #fef2f2;
+  color: $brand-red;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.successSubtitle {
+  color: $brand-red;
+  font-weight: 500;
+  margin: 0.25rem 0 0;
+}
+
+// ─── PROFILE ──────────────────────────────────────────────────
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: rgba(249, 250, 251, 0.8);
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+}
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: block;
+}
+
+.verifiedBadge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: $brand-red;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.studentName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.beltBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 999px;
+  background-color: rgba(254, 226, 226, 0.8);
+  color: $brand-red;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid rgba($brand-red, 0.2);
+}
+
+.beltDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $brand-red;
+  margin-right: 0.5rem;
+  box-shadow: 0 0 8px rgba($brand-red, 0.8);
+}
+
+.memberId {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// ─── SCHEDULE GRID ────────────────────────────────────────────
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.infoCard {
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
+}
+
+.infoCardLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+
+  svg {
+    color: $brand-red;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+  }
+}
+
+.infoCardTime {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.infoCardNote {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0.25rem 0 0;
+}
+
+.infoCardAccent {
+  padding: 1.25rem;
+  background-color: $brand-red;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  box-shadow: 0 10px 30px -10px rgba($brand-red, 0.5);
+}
+
+.infoCardAccentLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fecaca;
+  margin-bottom: 0.5rem;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+  }
+}
+
+.infoCardAccentTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.infoCardAccentNote {
+  color: #fecaca;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+// ─── DECORATIVE DOTS ──────────────────────────────────────────
+.decorDots {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0.05;
+  pointer-events: none;
+}

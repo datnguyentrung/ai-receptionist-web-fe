@@ -1,0 +1,95 @@
+@use "../../../styles/variables" as *;
+
+// ─── CONTAINER ────────────────────────────────────────────────
+.container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  box-shadow: 0 10px 30px -5px rgba($brand-red, 0.15);
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem 0.75rem 1rem;
+  border: 1px solid #f3f4f6;
+  z-index: 50;
+}
+
+// ─── MIC ICON ─────────────────────────────────────────────────
+.micCircle {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #fef2f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+
+  svg {
+    color: $brand-red;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+// ─── BARS ─────────────────────────────────────────────────────
+.bars {
+  display: flex;
+  align-items: flex-end;
+  height: 1.5rem;
+  gap: 3px;
+  width: 4rem;
+}
+
+.bar {
+  width: 6px;
+  background-color: $brand-red;
+  border-radius: 999px;
+  transform-origin: bottom;
+  opacity: 0.8;
+  animation: waveBar 1.5s ease-in-out infinite;
+}
+
+.bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.bar:nth-child(4) {
+  animation-delay: 0.45s;
+}
+.bar:nth-child(5) {
+  animation-delay: 0.6s;
+}
+
+@keyframes waveBar {
+  0%,
+  100% {
+    height: 20%;
+  }
+  25% {
+    height: 100%;
+  }
+  50% {
+    height: 30%;
+  }
+  75% {
+    height: 80%;
+  }
+}
+
+// ─── LABEL ────────────────────────────────────────────────────
+.label {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.025em;
+}

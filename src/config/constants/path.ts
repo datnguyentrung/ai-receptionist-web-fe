@@ -1,15 +1,41 @@
 import {
-  CalendarDays,
-  ClipboardList,
+  CalendarRange,
+  History,
   LayoutDashboard,
-  UserCheck,
+  ScanFace,
+  UserRoundCheck,
   Users,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/coaches", label: "Quản lý HLV", icon: UserCheck },
-  { path: "/students", label: "Quản lý Học Viên", icon: Users },
-  { path: "/schedules", label: "Lịch Học", icon: CalendarDays },
-  { path: "/attendance", label: "Điểm Danh", icon: ClipboardList },
+  {
+    path: "/",
+    label: "Tổng quan",
+    icon: LayoutDashboard,
+  },
+  {
+    path: "/coaches",
+    label: "Đội ngũ HLV",
+    icon: UserRoundCheck,
+  },
+  {
+    path: "/students",
+    label: "Hồ sơ Võ sinh",
+    icon: Users,
+  },
+  {
+    path: "/schedules",
+    label: "Lịch tập & Lớp học",
+    icon: CalendarRange,
+  },
+  {
+    path: "/history",
+    label: "Nhật ký điểm danh",
+    icon: History,
+  },
+  {
+    path: "/ai/check-in",
+    label: "Trợ lý AI Check-in",
+    icon: ScanFace,
+  },
 ];

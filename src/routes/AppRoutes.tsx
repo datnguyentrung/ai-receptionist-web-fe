@@ -7,9 +7,9 @@ import { Dashboard } from "@/pages/Dashboard";
 import HomePage from "@/pages/HomePage";
 import { StudentManagement } from "@/pages/StudentManagement";
 import { Navigate, Route, Routes } from "react-router-dom";
-// import ProtectedRoute from "./ProtectedRoute"; // Có thể bỏ đi nếu áp dụng cách dưới
-import { AttendanceCheckin } from '../pages/AttendanceCheckin/AttendanceCheckin';
-import { useAuthStore } from '../store/authStore';
+import AICheckIn from "../pages/AICheckIn";
+import { AttendanceCheckin } from "../pages/AttendanceCheckin/AttendanceCheckin";
+import { useAuthStore } from "../store/authStore";
 
 export default function AppRoutes() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -40,8 +40,9 @@ export default function AppRoutes() {
         <Route path="coaches" element={<CoachManagement />} />
         <Route path="students" element={<StudentManagement />} />
         <Route path="schedules" element={<ClassSchedules />} />
-        <Route path="attendance" element={<AttendanceReports />} />
         <Route path="schedules/:scheduleId" element={<AttendanceCheckin />} />
+        <Route path="history" element={<AttendanceReports />} />
+        <Route path="/ai/check-in" element={<AICheckIn />} />
       </Route>
 
       {/* --- CATCH ALL (Đường dẫn không tồn tại) --- */}
