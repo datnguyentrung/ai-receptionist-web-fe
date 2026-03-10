@@ -1,27 +1,26 @@
-// File: src/features/auth/api/authApi.ts
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 import type { LoginResponse, UserBase, UserLogin } from "@/types";
 
 export const authApi = {
   login: async (loginReq: UserBase): Promise<LoginResponse> => {
     // Trả về data luôn, code siêu ngắn
     console.log("Gọi API login với dữ liệu:", loginReq);
-    const response = await axiosInstance.post("/auth/login", loginReq);
+    const response = await javaApi.post("/auth/login", loginReq);
     return response.data;
   },
 
   logout: async (): Promise<void> => {
-    await axiosInstance.post("/auth/logout");
+    await javaApi.post("/auth/logout");
     // Lưu ý: Việc xóa localStorage nên để ở tầng Hook hoặc Store, không nên để ở file API thuần này.
   },
 
   getAccount: async (): Promise<UserLogin> => {
-    const response = await axiosInstance.get("/auth/account");
+    const response = await javaApi.get("/auth/account");
     return response.data;
   },
 
   refreshToken: async (): Promise<LoginResponse> => {
-    const response = await axiosInstance.post("/auth/refresh");
+    const response = await javaApi.post("/auth/refresh");
     return response.data;
   },
 };

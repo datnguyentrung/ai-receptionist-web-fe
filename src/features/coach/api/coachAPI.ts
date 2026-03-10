@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 
 import type {
   CoachCreateRequest,
@@ -8,18 +8,18 @@ import type {
 
 export const coachAPI = {
   getAllCoaches: async (): Promise<CoachDetail[]> => {
-    const response = await axiosInstance.get("/coaches");
+    const response = await javaApi.get("/coaches");
     console.log("Fetched coaches:", response.data); // Debug log
     return response.data;
   },
 
   getCoachById: async (id: number): Promise<CoachDetail> => {
-    const response = await axiosInstance.get(`/coaches/${id}`);
+    const response = await javaApi.get(`/coaches/${id}`);
     return response.data;
   },
 
   createCoach: async (coachData: CoachCreateRequest): Promise<CoachDetail> => {
-    const response = await axiosInstance.post("/coaches", coachData);
+    const response = await javaApi.post("/coaches", coachData);
     return response.data;
   },
 
@@ -27,11 +27,11 @@ export const coachAPI = {
     id: number,
     coachData: CoachUpdateRequest,
   ): Promise<CoachDetail> => {
-    const response = await axiosInstance.put(`/coaches/${id}`, coachData);
+    const response = await javaApi.put(`/coaches/${id}`, coachData);
     return response.data;
   },
 
   deleteCoach: async (id: number): Promise<void> => {
-    await axiosInstance.delete(`/coaches/${id}`);
+    await javaApi.delete(`/coaches/${id}`);
   },
 };

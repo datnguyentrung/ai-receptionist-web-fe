@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 
 import type { StudentStatus } from "@/config/constants";
 import type {
@@ -32,7 +32,7 @@ export const studentAPI = {
       sortBy,
       sortDir,
     }); // Debug log
-    const response = await axiosInstance.get("/students", {
+    const response = await javaApi.get("/students", {
       params: {
         search,
         status,
@@ -47,14 +47,14 @@ export const studentAPI = {
   },
 
   getStudentById: async (id: string): Promise<StudentDetail> => {
-    const response = await axiosInstance.get(`/students/${id}`);
+    const response = await javaApi.get(`/students/${id}`);
     return response.data;
   },
 
   createStudent: async (
     studentData: StudentCreateRequest,
   ): Promise<StudentDetail> => {
-    const response = await axiosInstance.post("/students", studentData);
+    const response = await javaApi.post("/students", studentData);
     return response.data;
   },
 
@@ -62,11 +62,11 @@ export const studentAPI = {
     id: number,
     studentData: StudentUpdateRequest,
   ): Promise<StudentDetail> => {
-    const response = await axiosInstance.put(`/students/${id}`, studentData);
+    const response = await javaApi.put(`/students/${id}`, studentData);
     return response.data;
   },
 
   deleteStudent: async (id: number): Promise<void> => {
-    await axiosInstance.delete(`/students/${id}`);
+    await javaApi.delete(`/students/${id}`);
   },
 };

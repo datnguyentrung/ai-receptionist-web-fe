@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 import type {
   StudentEnrollmentCreateRequest,
   StudentEnrollmentUpdateRequest,
@@ -7,12 +7,11 @@ import type {
   EnrollmentsByScheduleResponse,
 } from "@/types";
 
-
 export const studentEnrollmentAPI = {
   createStudentEnrollment: async (
     data: StudentEnrollmentCreateRequest,
   ): Promise<StudentEnrollmentResponse> => {
-    const response = await axiosInstance.post("/student-enrollments", data);
+    const response = await javaApi.post("/student-enrollments", data);
     return response.data;
   },
 
@@ -20,7 +19,7 @@ export const studentEnrollmentAPI = {
     enrollmentId: string,
     data: StudentEnrollmentUpdateRequest,
   ): Promise<StudentEnrollmentResponse> => {
-    const response = await axiosInstance.put(
+    const response = await javaApi.put(
       `/student-enrollments/${enrollmentId}`,
       data,
     );
@@ -28,13 +27,13 @@ export const studentEnrollmentAPI = {
   },
 
   deleteStudentEnrollment: async (enrollmentId: string): Promise<void> => {
-    await axiosInstance.delete(`/student-enrollments/${enrollmentId}`);
+    await javaApi.delete(`/student-enrollments/${enrollmentId}`);
   },
 
   getStudentEnrollmentsByStudentCode: async (
     studentCode: string,
   ): Promise<StudentEnrollmentSimpleResponse[]> => {
-    const response = await axiosInstance.get(
+    const response = await javaApi.get(
       `/student-enrollments/student/${studentCode}`,
     );
     return response.data;
@@ -43,7 +42,7 @@ export const studentEnrollmentAPI = {
   getDetailedStudentEnrollmentsByStudentCode: async (
     studentCode: string,
   ): Promise<StudentEnrollmentResponse[]> => {
-    const response = await axiosInstance.get(
+    const response = await javaApi.get(
       `/student-enrollments/student/${studentCode}/detailed`,
     );
     return response.data;
@@ -52,7 +51,7 @@ export const studentEnrollmentAPI = {
   getStudentEnrollmentsByClassScheduleId: async (
     classScheduleId: string,
   ): Promise<EnrollmentsByScheduleResponse> => {
-    const response = await axiosInstance.get(
+    const response = await javaApi.get(
       `/student-enrollments/class-schedule/${classScheduleId}`,
     );
     return response.data;

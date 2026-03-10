@@ -1,5 +1,5 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { useGetUserInfo } from "@/features/auth/api/useUser";
+import { useGetUserInfo } from "@/features/user/api/useUser";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";

@@ -1,4 +1,4 @@
-import FaceScanner from "@components/FaceScanner/FaceScanner";
+import { FaceScanner } from "@components/FaceScanner";
 import { ShieldAlert } from "lucide-react";
 import { motion } from "motion/react";
 import styles from "./AICheckIn.module.scss";

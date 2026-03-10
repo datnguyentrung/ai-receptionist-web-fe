@@ -4,7 +4,7 @@ import type {
   EvaluationStatus,
   ScheduleLevel,
 } from "@/config/constants";
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 import type {
   AttendanceBatchCreateRequest,
   AttendanceManualLogRequest,
@@ -20,7 +20,7 @@ export const studentAttendanceAPI = {
     attendanceId: string,
     data: AttendanceUpdateStatusRequest,
   ): Promise<void> => {
-    await axiosInstance.patch(
+    await javaApi.patch(
       `/student-attendances/${attendanceId}/status`,
       data,
     );
@@ -31,7 +31,7 @@ export const studentAttendanceAPI = {
     attendanceId: string,
     data: AttendanceUpdateEvaluationRequest,
   ): Promise<void> => {
-    await axiosInstance.patch(
+    await javaApi.patch(
       `/student-attendances/${attendanceId}/evaluation`,
       data,
     );
@@ -41,7 +41,7 @@ export const studentAttendanceAPI = {
   createRecord: async (
     data: AttendanceManualLogRequest,
   ): Promise<StudentAttendanceResponse> => {
-    const response = await axiosInstance.post("/student-attendances", data);
+    const response = await javaApi.post("/student-attendances", data);
     return response.data;
   },
 
@@ -49,7 +49,7 @@ export const studentAttendanceAPI = {
   batchInit: async (
     data: AttendanceBatchCreateRequest,
   ): Promise<StudentAttendanceResponse[]> => {
-    const response = await axiosInstance.post(
+    const response = await javaApi.post(
       "/student-attendances/batch-init",
       data,
     );
@@ -72,7 +72,7 @@ export const studentAttendanceAPI = {
     scheduleLevels?: ScheduleLevel[],
     scheduleId?: string,
   ): Promise<PageResponse<StudentAttendanceResponse>> => {
-    const response = await axiosInstance.get("/student-attendances", {
+    const response = await javaApi.get("/student-attendances", {
       params: {
         search,
         sessionDate,

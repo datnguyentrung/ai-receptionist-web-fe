@@ -1,3 +1,4 @@
+import { userAPI } from "@/features/user/api/userAPI";
 import type { Detection } from "@mediapipe/tasks-vision";
 import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 import React, { useEffect, useRef, useState } from "react";
@@ -17,11 +18,17 @@ interface FaceScannerProps {
   onCheckInResult?: (result: CheckInResult) => void;
 }
 
-const FaceScanner: React.FC<FaceScannerProps> = ({ onCheckInResult }) => {
+export const FaceScanner: React.FC<FaceScannerProps> = ({
+  onCheckInResult,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [faceDetector, setFaceDetector] = useState<FaceDetector | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const lastVideoTimeRef = useRef(-1);
+  const requestRef = useRef<number>(0);
+  const isScanningRef = useRef(false); // Thêm dòng này để track trạng thái trong vòng lặp
 
   // 1. Initialize Face Detector
   useEffect(() => {
@@ -47,32 +54,65 @@ const FaceScanner: React.FC<FaceScannerProps> = ({ onCheckInResult }) => {
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.addEventListener("loadeddata", predictWebcam);
+
+      setHasStarted(true);
       setIsScanning(true);
+      isScanningRef.current = true; // Cập nhật trạng thái trong ref khi bắt đầu scanning
     }
   };
 
   // 3. Detection loop (Realtime)
-  let lastVideoTime = -1;
   const predictWebcam = async () => {
-    if (!videoRef.current || !faceDetector) return;
+    // Kiểm tra video element và faceDetector đã sẵn sàng chưa
+    if (!videoRef.current || !faceDetector || !isScanningRef.current) return;
 
+    if (
+      videoRef.current.videoHeight === 0 ||
+      videoRef.current.videoWidth === 0
+    ) {
+      // Nếu video chưa sẵn sàng (chưa có khung hình), tiếp tục yêu cầu frame tiếp theo
+      window.requestAnimationFrame(predictWebcam);
+      return;
+    }
+
+    // Chỉ chạy detect khi video đã cập nhật khung hình mới (dựa vào currentTime)
     const startTimeMs = performance.now();
-    if (videoRef.current.currentTime !== lastVideoTime) {
-      lastVideoTime = videoRef.current.currentTime;
+
+    // Nếu currentTime của video đã thay đổi so với lần detect trước, nghĩa là có khung hình mới -> chạy detect
+    if (videoRef.current.currentTime !== lastVideoTimeRef.current) {
+      lastVideoTimeRef.current = videoRef.current.currentTime;
+      // Chạy detect trên khung hình hiện tại của video
       const { detections } = faceDetector.detectForVideo(
         videoRef.current,
         startTimeMs,
       );
+      // Xử lý kết quả detect (nếu có)
       processDetections(detections);
     }
 
-    if (isScanning) {
-      window.requestAnimationFrame(predictWebcam);
+    // 2. Chỉ gọi frame tiếp theo nếu CHẮC CHẮN vẫn đang scan
+    if (isScanningRef.current) {
+      requestRef.current = window.requestAnimationFrame(predictWebcam);
     }
   };
 
+  useEffect(() => {
+    if (isScanning && faceDetector) {
+      requestRef.current = window.requestAnimationFrame(predictWebcam);
+    }
+
+    // Cleanup function: Tự động hủy vòng lặp cũ khi isScanning chuyển false
+    // hoặc khi component bị tháo khỏi DOM
+    return () => {
+      if (requestRef.current) {
+        window.cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [isScanning, faceDetector]);
+
   // 4. Business logic: capture & send when face is close enough
   const processDetections = (detections: Detection[]) => {
+    // Nếu phát hiện ít nhất 1 khuôn mặt, lấy khuôn mặt đầu tiên để phân tích
     if (detections.length > 0) {
       const face = detections[0];
       const box = face.boundingBox;
@@ -93,33 +133,42 @@ const FaceScanner: React.FC<FaceScannerProps> = ({ onCheckInResult }) => {
     if (!videoRef.current || !canvasRef.current) return;
 
     // Debounce: pause scanning while API call is in flight
-    setIsScanning(false);
+    setIsScanning(false); // Dừng vòng lặp
+    isScanningRef.current = false; // Cập nhật trạng thái trong ref
+
+    // Hủy luôn frame đang chờ (nếu có)
+    if (requestRef.current) {
+      window.cancelAnimationFrame(requestRef.current);
+    }
 
     const context = canvasRef.current.getContext("2d");
     canvasRef.current.width = videoRef.current.videoWidth;
     canvasRef.current.height = videoRef.current.videoHeight;
     context?.drawImage(videoRef.current, 0, 0);
 
+    // Chuyển canvas sang Blob để gửi lên server
     canvasRef.current.toBlob(async (blob) => {
       if (blob) {
         const formData = new FormData();
         formData.append("file", blob, "face.jpg");
 
+        // KIỂM TRA DỮ LIỆU TẠI ĐÂY
+        // console.log("FormData actual content:", Array.from(formData.entries()));
+
         try {
-          const response = await fetch(
-            "http://localhost:8000/api/v1/attendance/check-in",
-            {
-              method: "POST",
-              body: formData,
-            },
-          );
-          const result: CheckInResult = await response.json();
-          onCheckInResult?.(result);
+          console.log("Sending to server...");
+          const response = await userAPI.face_check_in(formData);
+          // onCheckInResult?.(result);
+          console.log("Check-in result:", response);
         } catch (error) {
           console.error("Error sending image:", error);
         } finally {
           // Resume scanning after 3 seconds
-          setTimeout(() => setIsScanning(true), 3000);
+          setTimeout(() => {
+            setIsScanning(true);
+            isScanningRef.current = true; // Nhớ bật lại cả Ref
+            // Hàm useEffect bên dưới sẽ tự động gọi lại predictWebcam()
+          }, 3000);
         }
       }
     }, "image/jpeg");
@@ -143,7 +192,7 @@ const FaceScanner: React.FC<FaceScannerProps> = ({ onCheckInResult }) => {
         {isScanning && <div className={styles.scanLine} />}
 
         {/* Status badge */}
-        {isScanning && (
+        {hasStarted && (
           <div className={styles.statusBadge}>
             <span className={styles.statusDot} />
             <span className={styles.statusText}>Scanning Face</span>
@@ -153,7 +202,7 @@ const FaceScanner: React.FC<FaceScannerProps> = ({ onCheckInResult }) => {
 
       <canvas ref={canvasRef} className={styles.hidden} />
 
-      {!isScanning && (
+      {!hasStarted && (
         <button className={styles.startButton} onClick={startVideo}>
           Start AI Receptionist
         </button>

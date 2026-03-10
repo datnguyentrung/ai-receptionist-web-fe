@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 
 import type {
   ClassScheduleCreateRequest,
@@ -8,22 +8,19 @@ import type {
 
 export const classScheduleAPI = {
   getAllClassSchedules: async (): Promise<ClassScheduleDetail[]> => {
-    const response = await axiosInstance.get("/class-schedules");
+    const response = await javaApi.get("/class-schedules");
     return response.data;
   },
 
   getClassScheduleById: async (id: number): Promise<ClassScheduleDetail> => {
-    const response = await axiosInstance.get(`/class-schedules/${id}`);
+    const response = await javaApi.get(`/class-schedules/${id}`);
     return response.data;
   },
 
   createClassSchedule: async (
     classSchedule: ClassScheduleCreateRequest,
   ): Promise<ClassScheduleDetail> => {
-    const response = await axiosInstance.post(
-      "/class-schedules",
-      classSchedule,
-    );
+    const response = await javaApi.post("/class-schedules", classSchedule);
     return response.data;
   },
 
@@ -31,14 +28,11 @@ export const classScheduleAPI = {
     id: string,
     classSchedule: ClassScheduleUpdateRequest,
   ): Promise<ClassScheduleDetail> => {
-    const response = await axiosInstance.put(
-      `/class-schedules/${id}`,
-      classSchedule,
-    );
+    const response = await javaApi.put(`/class-schedules/${id}`, classSchedule);
     return response.data;
   },
 
   deleteClassSchedule: async (id: string): Promise<void> => {
-    await axiosInstance.delete(`/class-schedules/${id}`);
+    await javaApi.delete(`/class-schedules/${id}`);
   },
 };
