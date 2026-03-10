@@ -28,7 +28,6 @@ export interface UserBase {
 
 export interface UserInfo{
   idUser: string;
-  idAccount: string;
   idRole: string;
 }
 

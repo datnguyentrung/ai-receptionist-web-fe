@@ -14,8 +14,9 @@ export const userAPI = {
     return response.data;
   },
 
-  face_check_in: async (formData: FormData): Promise<ApiResponse<string>> => {
+  face_check_in: async (formData: FormData): Promise<UserResponse> => {
     const response = await pythonApi.post("/users/check-in", formData);
+    console.log("response:", response.data);
     return response.data;
-  }
+  },
 };

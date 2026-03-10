@@ -229,6 +229,36 @@
   }
 }
 
+.stopButton {
+  margin-top: 12px;
+  padding: 8px 24px;
+  background: $info-800; // Dùng màu xanh đen từ token của bạn
+  color: $text-on-dark; // Dùng text token cho chuẩn bài
+  border: none;
+  border-radius: $radius-full; // Dùng token radius
+  font-family: $font-sans;
+  font-weight: $font-semibold;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 3px 12px rgba($info-800, 0.38);
+
+  &:hover {
+    // Làm sáng lên một chút khi hover vì màu gốc đã rất tối
+    background: color.adjust($info-800, $lightness: 10%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba($info-800, 0.42);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 12px rgba($info-800, 0.38);
+  }
+}
+
 // ─── LOADING TEXT ─────────────────────────────────────────────
 .loadingText {
   margin-top: 12px;
