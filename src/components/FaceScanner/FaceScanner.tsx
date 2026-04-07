@@ -24,8 +24,11 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
   const lastVideoTimeRef = useRef(-1);
   const requestRef = useRef<number>(0);
   const isScanningRef = useRef(false);
+  const isSubmittingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasStartedRef = useRef(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Ref để phá circular dependency: resumeScanning → predictWebcam → ... → resumeScanning
   const predictWebcamRef = useRef<() => Promise<void>>(async () => {});
 
@@ -77,6 +80,18 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
     }
   }, [faceDetector, resetInactivityTimeout]);
 
+  const cancelPendingCheckIn = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    isSubmittingRef.current = false;
+    setIsSubmitting(false);
+    if (!checkInResult) {
+      resumeScanning();
+    }
+  }, [checkInResult, resumeScanning]);
+
   // 1. Initialize Face Detector
   useEffect(() => {
     const initDetector = async () => {
@@ -95,15 +110,22 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
     initDetector();
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current); // Cleanup timeout khi component unmount
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
     };
   }, []);
 
   // 4. Business logic: capture & send when face is close enough
   const captureAndSend = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
+    if (isSubmittingRef.current) return;
 
     setIsScanning(false);
     isScanningRef.current = false;
+    setIsSubmitting(true);
+    isSubmittingRef.current = true;
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
@@ -117,16 +139,33 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
       if (blob) {
         const formData = new FormData();
         formData.append("file", blob, "face.jpg");
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
 
         try {
           console.log("Sending to server...");
-          const response: AttendanceRecord =
-            await userAPI.face_check_in(formData);
+          const response: AttendanceRecord = await userAPI.face_check_in(
+            formData,
+            controller.signal,
+          );
+          abortControllerRef.current = null;
+          isSubmittingRef.current = false;
+          setIsSubmitting(false);
           stopScanningDuringCheckIn();
           playSound("success");
           // speakText("Check-in thành công!");
           onCheckInResult?.(response);
         } catch (error) {
+          abortControllerRef.current = null;
+          isSubmittingRef.current = false;
+          setIsSubmitting(false);
+
+          if (error instanceof Error && error.name === "CanceledError") {
+            console.log("Check-in request canceled by user.");
+            if (!checkInResult) resumeScanning();
+            return;
+          }
+
           console.error("Error sending image:", error);
           playSound("error");
           setTimeout(() => {
@@ -212,7 +251,7 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
   }, [resetInactivityTimeout]);
 
   useEffect(() => {
-    if (checkInResult) {
+    if (checkInResult || isSubmitting) {
       // isScanning is already false from captureAndSend; just cancel any pending frame
       isScanningRef.current = false;
       if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
@@ -222,7 +261,7 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
       const id = setTimeout(() => resumeScanning(), 3000);
       return () => clearTimeout(id);
     }
-  }, [checkInResult, resumeScanning]);
+  }, [checkInResult, isSubmitting, resumeScanning]);
 
   useEffect(() => {
     if (isScanning && faceDetector) {
@@ -270,6 +309,7 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
       {hasStarted && (
         <button
           className={styles.stopButton}
+          disabled={isSubmitting}
           onClick={() =>
             stopScanningDueToInactivity(
               "No longer scanning due to user action.",
@@ -280,6 +320,26 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
         </button>
       )}
       {!faceDetector && <p className={styles.loadingText}>Loading AI model…</p>}
+
+      {isSubmitting && (
+        <div className={styles.pendingOverlay}>
+          <div className={styles.pendingCard}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={cancelPendingCheckIn}
+              aria-label="Cancel check-in request"
+            >
+              X
+            </button>
+            <div className={styles.spinner} aria-hidden="true" />
+            <p className={styles.pendingTitle}>Checking in...</p>
+            <p className={styles.pendingSubtitle}>
+              Please keep your face in frame.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
