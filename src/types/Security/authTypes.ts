@@ -43,3 +43,4 @@ export interface UserResponse {
   userInfo: UserInfo;
   userProfile: UserProfile;
 }
+

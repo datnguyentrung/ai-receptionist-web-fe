@@ -2,14 +2,14 @@ import { userAPI } from "@/features/user/api/userAPI";
 import type { Detection } from "@mediapipe/tasks-vision";
 import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { UserResponse } from "../../types";
+import type { AttendanceRecord } from "../../types";
 import { playSound } from "../../utils/playSound";
 // import { speakText } from "../../utils/speakText";
 import styles from "./FaceScanner.module.scss";
 
 interface FaceScannerProps {
-  checkInResult?: UserResponse | null;
-  onCheckInResult?: (result: UserResponse | null) => void;
+  checkInResult?: AttendanceRecord | null;
+  onCheckInResult?: (result: AttendanceRecord | null) => void;
 }
 
 export const FaceScanner: React.FC<FaceScannerProps> = ({
@@ -120,7 +120,8 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
 
         try {
           console.log("Sending to server...");
-          const response: UserResponse = await userAPI.face_check_in(formData);
+          const response: AttendanceRecord =
+            await userAPI.face_check_in(formData);
           stopScanningDuringCheckIn();
           playSound("success");
           // speakText("Check-in thành công!");
@@ -130,7 +131,7 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
           playSound("error");
           setTimeout(() => {
             if (!checkInResult) resumeScanning();
-          }, 3000);
+          }, 5000);
         }
       }
     }, "image/jpeg");
@@ -208,7 +209,7 @@ export const FaceScanner: React.FC<FaceScannerProps> = ({
       isScanningRef.current = true;
       resetInactivityTimeout();
     }
-  }, []);
+  }, [resetInactivityTimeout]);
 
   useEffect(() => {
     if (checkInResult) {

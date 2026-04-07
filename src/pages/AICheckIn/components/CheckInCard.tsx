@@ -5,17 +5,26 @@ import { useEffect, useState } from "react";
 import type { UserResponse } from "../../../types";
 import styles from "./CheckInCard.module.scss";
 
-const AUTO_DISMISS_SECONDS = 8;
+const AUTO_DISMISS_SECONDS = 3;
 
 type CheckInCardProps = {
   user: UserResponse;
+  startAutoDismiss: boolean;
   onClose: () => void;
 };
 
-export function CheckInCard({ user, onClose }: CheckInCardProps) {
+export function CheckInCard({
+  user,
+  startAutoDismiss,
+  onClose,
+}: CheckInCardProps) {
   const [countdown, setCountdown] = useState(AUTO_DISMISS_SECONDS);
 
   useEffect(() => {
+    if (!startAutoDismiss) {
+      return;
+    }
+
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -26,16 +35,18 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(interval);
-  }, [onClose]);
+  }, [startAutoDismiss, onClose]);
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
   });
-  const progress =
-    ((AUTO_DISMISS_SECONDS - countdown) / AUTO_DISMISS_SECONDS) * 100;
+  const progress = startAutoDismiss
+    ? ((AUTO_DISMISS_SECONDS - countdown) / AUTO_DISMISS_SECONDS) * 100
+    : 0;
 
   return (
     <AnimatePresence>
@@ -158,7 +169,9 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
 
           {/* Auto-dismiss hint */}
           <div className={styles.dismissHint}>
-            Tự động đóng sau {countdown}s &nbsp;·&nbsp; Nhấn bên ngoài để đóng
+            {startAutoDismiss
+              ? `Tự động đóng sau ${countdown}s \u00A0\u00B7\u00A0 Nhấn bên ngoài để đóng`
+              : "Dang phat audio huong dan..."}
           </div>
 
           {/* Decorative dots / texture */}

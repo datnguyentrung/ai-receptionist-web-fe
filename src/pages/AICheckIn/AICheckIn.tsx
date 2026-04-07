@@ -1,18 +1,34 @@
+import type { AttendanceRecord } from "@/types";
 import { FaceScanner } from "@components/FaceScanner";
 import { ShieldAlert } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import type { UserResponse } from "../../types";
 import styles from "./AICheckIn.module.scss";
 import { CheckInCard } from "./components/CheckInCard";
 import { IdlePromoCard } from "./components/IdlePromoCard";
 import { VoiceWave } from "./components/VoiceWave";
 
 export default function AICheckIn() {
-  const [checkInResult, setCheckInResult] = useState<UserResponse | null>(null);
+  const [checkInResult, setCheckInResult] = useState<AttendanceRecord | null>(
+    null,
+  );
+  const [isAudioFinished, setIsAudioFinished] = useState(false);
 
-  const backendUrl = "http://localhost:8000"; // Thay bằng URL BE của bạn
-  const audioUrl = `${backendUrl}/api/v1/tts/greeting?name=${encodeURIComponent(checkInResult?.userProfile.name || "")}&belt=${encodeURIComponent(checkInResult?.userProfile.belt || "")}`;
+  const audioBase64 = checkInResult?.audio_base64;
+
+  // Tạo URL định dạng Data URI để thẻ audio có thể đọc được chuỗi Base64
+  const audioUrl = audioBase64 ? `data:audio/mpeg;base64,${audioBase64}` : null;
+  const startAutoDismiss = !audioUrl || isAudioFinished;
+
+  const handleCheckInResult = (result: AttendanceRecord | null) => {
+    setIsAudioFinished(false);
+    setCheckInResult(result);
+  };
+
+  const handleCloseCard = () => {
+    setIsAudioFinished(false);
+    setCheckInResult(null);
+  };
 
   return (
     <>
@@ -38,7 +54,7 @@ export default function AICheckIn() {
           <div className={styles.cameraWrapper}>
             <FaceScanner
               checkInResult={checkInResult}
-              onCheckInResult={setCheckInResult}
+              onCheckInResult={handleCheckInResult}
             />
           </div>
         </motion.div>
@@ -63,16 +79,21 @@ export default function AICheckIn() {
       {checkInResult && (
         <CheckInCard
           user={checkInResult}
-          onClose={() => setCheckInResult(null)}
+          startAutoDismiss={startAutoDismiss}
+          onClose={handleCloseCard}
         />
       )}
 
-      {/* TRÌNH PHÁT AUDIO ẨN - TỰ ĐỘNG LẤY GIỌNG NÓI VÀ PHÁT */}
+      {/* TRÌNH PHÁT AUDIO TỰ ĐỘNG BẰNG BASE64 */}
       {audioUrl && (
         <audio
           autoPlay
           src={audioUrl}
-          onError={(e) => console.error("Lỗi phát giọng nói:", e)}
+          onEnded={() => setIsAudioFinished(true)}
+          onError={(e) => {
+            console.error("Lỗi phát giọng nói:", e);
+            setIsAudioFinished(true);
+          }}
         />
       )}
     </>

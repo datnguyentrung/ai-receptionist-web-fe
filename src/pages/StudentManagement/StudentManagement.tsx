@@ -3,11 +3,11 @@ import { Pagination } from "../../components/Pagination";
 import StatusFilters from "../../components/StatusFilters";
 import type { StudentStatus } from "../../config/constants";
 import { useGetStudents } from "../../features/student/api/useStudent";
+import { useDebounce } from "../../hooks/useDebounce";
 import styles from "./StudentManagement.module.scss";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
-import { useDebounce } from '../../hooks/useDebounce';
 
 const STUDENT_FILTER_OPTIONS = [
   { value: "all" as const, label: "Tất cả" },
@@ -29,7 +29,7 @@ export function StudentManagement() {
   const { data, isFetching } = useGetStudents({
     search: debouncedSearch,
     status: statusFilter === "all" ? undefined : statusFilter,
-    page,
+    page: 0,
     size: 10,
   });
 

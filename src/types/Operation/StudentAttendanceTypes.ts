@@ -1,4 +1,8 @@
 import type { AttendanceStatus, EvaluationStatus } from '../../config/constants';
+import type { UserResponse } from '../index';
+export interface AttendanceRecord extends UserResponse {
+  audio_base64?: string;
+}
 
 export interface StudentAttendanceResponse {
   attendanceId: string | null;

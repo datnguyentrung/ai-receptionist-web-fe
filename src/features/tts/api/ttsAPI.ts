@@ -1,16 +1,9 @@
-import { pythonApi } from "@/lib/axiosInstance";
+const PYTHON_API_URL =
+  import.meta.env.VITE_API_URL_PYTHON || "http://localhost:8000";
 
 export const ttsAPI = {
-  textToSpeech: async ({ name, belt }: { name: string; belt: string }) => {
-    const response = await pythonApi.post(
-      "/tts/greeting",
-      { name, belt },
-      {
-        responseType: "blob", // QUAN TRỌNG: Phải có dòng này để báo Axios đây là file âm thanh
-      },
-    );
-
-    // Tạo một URL tạm thời từ file Blob nhận được để có thể nhét vào thẻ <audio src="...">
-    return window.URL.createObjectURL(response.data);
+  getGreetingAudioUrl: (name: string, belt: string): string => {
+    if (!name) return ""; // Không tạo URL nếu không có tên
+    return `${PYTHON_API_URL}/tts/greeting?name=${encodeURIComponent(name)}&belt=${encodeURIComponent(belt)}`;
   },
 };

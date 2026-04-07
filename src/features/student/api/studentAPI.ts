@@ -32,6 +32,8 @@ export const studentAPI = {
       sortBy,
       sortDir,
     }); // Debug log
+
+    console.log("search: ", search);
     const response = await javaApi.get("/students", {
       params: {
         search,
