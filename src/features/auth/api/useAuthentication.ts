@@ -1,7 +1,7 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
 import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { authApi } from "./authApi";
 
@@ -40,10 +40,21 @@ export const useLogin = () => {
 export const useLogout = () => {
   const navigate = useNavigate();
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
+      // 1. Xóa token và user trong Zustand
       clearAuth();
+
+      // 2. XOÁ SẠCH CACHE CỦA REACT QUERY
+      // Cách A: Xóa toàn bộ mọi cache (rất sạch sẽ khi user logout)
+      queryClient.clear();
+
+      // Cách B: Nếu bạn chỉ muốn xóa riêng cache của user-info
+      // queryClient.removeQueries({ queryKey: ["user-info"] });
+
+      // 3. Đá về trang login
       navigate("/login");
     },
   });

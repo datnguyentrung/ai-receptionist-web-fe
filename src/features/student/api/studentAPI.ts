@@ -24,16 +24,16 @@ export const studentAPI = {
     sortBy?: string;
     sortDir?: "asc" | "desc";
   }): Promise<StudentListResponse> => {
-    console.log("Fetching students with params:", {
-      search,
-      status,
-      page,
-      size,
-      sortBy,
-      sortDir,
-    }); // Debug log
+    // console.log("Fetching students with params:", {
+    //   search,
+    //   status,
+    //   page,
+    //   size,
+    //   sortBy,
+    //   sortDir,
+    // }); // Debug log
 
-    console.log("search: ", search);
+    // console.log("search: ", search);
     const response = await javaApi.get("/students", {
       params: {
         search,
@@ -44,7 +44,7 @@ export const studentAPI = {
         sortDir,
       },
     });
-    console.log("Fetched students:", response.data); // Debug log
+    // console.log("Fetched students:", response.data); // Debug log
     return response.data;
   },
 

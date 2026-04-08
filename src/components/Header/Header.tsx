@@ -1,4 +1,4 @@
-import { NAV_ITEMS } from "@/config/constants/path";
+import { useNavItems } from "@/hooks/useNavItems";
 import { Bell, Menu, Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router";
@@ -11,10 +11,11 @@ export default function Header({
 }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
+  const nav_items = useNavItems();
 
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
-    NAV_ITEMS.find((n) =>
+    nav_items.find((n) =>
       n.path === "/"
         ? location.pathname === "/"
         : location.pathname.startsWith(n.path),

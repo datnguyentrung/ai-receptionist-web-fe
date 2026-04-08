@@ -1,4 +1,5 @@
-import type { StudentEnrollmentResDTO } from "@/data/mockData";
+import { tuitionPaymentAPI } from "@/features/tuitionPayment/api/tuitionPaymentAPI";
+import type { TuitionPaymentResponse } from "@/types/Operation/TuitionPaymentTypes";
 import {
   ArrowRight,
   CalendarDays,
@@ -10,6 +11,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
+import React from "react";
 import {
   Area,
   AreaChart,
@@ -21,91 +23,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import Avatar from "../../components/Avatar";
 import {
   ATTENDANCE_RATE,
   CLASSES,
-  ENROLLMENTS,
   MONTHLY_ENROLLMENT,
   STATS,
 } from "../../data/mockData";
+import { formatDateDMYHM } from "../../utils/format";
 import styles from "./Dashboard.module.scss";
 
 // ── helpers ──────────────────────────────────────────────────
-function avatarColor(initials: string) {
-  const colors = [
-    "#E02020",
-    "#7C3AED",
-    "#059669",
-    "#0284C7",
-    "#D97706",
-    "#DB2777",
-  ];
-  let hash = 0;
-  for (const c of initials) hash += c.charCodeAt(0);
-  return colors[hash % colors.length];
-}
-
-function StatusBadge({
-  status,
-}: {
-  status: StudentEnrollmentResDTO["status"];
-}) {
-  const map = {
-    active: {
-      label: "Đang học",
-      bg: "#D1FAE5",
-      color: "#065F46",
-      dot: "#10B981",
-    },
-    pending: {
-      label: "Chờ duyệt",
-      bg: "#FEF3C7",
-      color: "#92400E",
-      dot: "#F59E0B",
-    },
-    completed: {
-      label: "Hoàn thành",
-      bg: "#E0E7FF",
-      color: "#3730A3",
-      dot: "#6366F1",
-    },
-    cancelled: {
-      label: "Đã hủy",
-      bg: "#FEE2E2",
-      color: "#991B1B",
-      dot: "#EF4444",
-    },
-  };
-  const s = map[status];
-  return (
-    <span
-      className={styles.statusBadge}
-      style={{ background: s.bg, color: s.color }}
-    >
-      <span className={styles.statusDot} style={{ background: s.dot }} />
-      {s.label}
-    </span>
-  );
-}
-
-function PayBadge({
-  status,
-}: {
-  status: StudentEnrollmentResDTO["paymentStatus"];
-}) {
-  const map = {
-    paid: { label: "Đã thanh toán", color: "#059669" },
-    unpaid: { label: "Chưa thanh toán", color: "#DC2626" },
-    partial: { label: "Thanh toán 1 phần", color: "#D97706" },
-  };
-  const s = map[status];
-  return (
-    <span style={{ fontSize: "11px", fontWeight: 600, color: s.color }}>
-      {s.label}
-    </span>
-  );
-}
-
 // ── Stat Card ────────────────────────────────────────────────
 function StatCard({
   label,
@@ -219,8 +147,52 @@ function CustomTooltip({
 // ── Today's classes mini list ─────────────────────────────────
 const todayClasses = CLASSES.filter((c) => c.status === "ongoing").slice(0, 3);
 
+function formatPaymentPeriod(details: TuitionPaymentResponse["details"]) {
+  if (!details.length) return "-";
+
+  const firstDetail = details[0];
+  const lastDetail = details[details.length - 1];
+
+  if (
+    firstDetail.forMonth === lastDetail.forMonth &&
+    firstDetail.forYear === lastDetail.forYear
+  ) {
+    return `${String(firstDetail.forMonth).padStart(2, "0")}/${firstDetail.forYear}`;
+  }
+
+  return `${String(firstDetail.forMonth).padStart(2, "0")}/${firstDetail.forYear} - ${String(
+    lastDetail.forMonth,
+  ).padStart(2, "0")}/${lastDetail.forYear}`;
+}
+
+function getPrimaryScheduleId(details: TuitionPaymentResponse["details"]) {
+  return details[0]?.scheduleId ?? "-";
+}
+
 // ── Main Dashboard ────────────────────────────────────────────
 export function Dashboard() {
+  const [tuitionPaymentHistory, setTuitionPaymentHistory] = React.useState<
+    TuitionPaymentResponse[]
+  >([]);
+  const initedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    // Chỉ gọi API lần đầu tiên (tránh double-invoke từ StrictMode)
+    if (initedRef.current) return;
+    initedRef.current = true;
+
+    async function fetchTuitionPayments() {
+      try {
+        console.log("Fetching tuition payments...");
+        const data = await tuitionPaymentAPI.getAllPaymentsForAdmin();
+        setTuitionPaymentHistory(data.content);
+      } catch (error) {
+        console.error("Failed to fetch tuition payments:", error);
+      }
+    }
+    void fetchTuitionPayments();
+  }, []);
+
   return (
     <div className={styles.dashboard}>
       {/* Greeting banner */}
@@ -392,19 +364,19 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom row: Recent enrollments + Today classes */}
+      {/* Bottom row: Recent tuition payments + Today classes */}
       <div className={styles.bottomGrid}>
-        {/* Recent Activity – StudentEnrollmentResDTO */}
+        {/* Recent tuition payments */}
         <div className={styles.recentCard}>
           <div className={styles.cardHead}>
             <div>
               <h3
                 style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}
               >
-                Đăng ký gần đây
+                Thanh toán học phí gần đây
               </h3>
               <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
-                Danh sách StudentEnrollmentResDTO
+                Chỉ hiển thị dữ liệu từ content của API
               </p>
             </div>
             <button className={styles.viewAllBtn}>
@@ -418,10 +390,10 @@ export function Dashboard() {
                 <tr style={{ background: "#FAFAFA" }}>
                   {[
                     "Học viên",
-                    "Lớp học",
-                    "HLV",
-                    "Ngày đăng ký",
-                    "Trạng thái",
+                    "Mã lớp",
+                    "Kỳ thanh toán",
+                    "Ghi chú",
+                    "Ngày thanh toán",
                     "Học phí",
                   ].map((h) => (
                     <th
@@ -441,20 +413,17 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {ENROLLMENTS.map((e) => (
-                  <tr key={e.enrollmentId} className={styles.tr}>
+                {tuitionPaymentHistory.map((e) => (
+                  <tr key={e.paymentId} className={styles.tr}>
                     <td className={styles.td}>
                       <div className={styles.avatarCell}>
-                        <div
-                          className={styles.avatar}
-                          style={{
-                            background: avatarColor(e.studentAvatar),
-                            fontSize: "10px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {e.studentAvatar}
-                        </div>
+                        <Avatar
+                          fullName={e.student.fullName}
+                          fontSize="9px"
+                          fontWeight={800}
+                          width="28px"
+                          height="28px"
+                        />
                         <div>
                           <p
                             style={{
@@ -464,10 +433,10 @@ export function Dashboard() {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {e.studentName}
+                            {e.student.fullName}
                           </p>
                           <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                            {e.phone}
+                            {e.student.code}
                           </p>
                         </div>
                       </div>
@@ -481,10 +450,10 @@ export function Dashboard() {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {e.className}
+                        {getPrimaryScheduleId(e.details)}
                       </p>
                       <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                        {e.classCode}
+                        {e.details.length} dòng phân bổ
                       </p>
                     </td>
                     <td className={styles.td}>
@@ -494,7 +463,9 @@ export function Dashboard() {
                           color: "#374151",
                           whiteSpace: "nowrap",
                         }}
-                      ></p>
+                      >
+                        {formatPaymentPeriod(e.details)}
+                      </p>
                     </td>
                     <td className={styles.td}>
                       <p
@@ -503,10 +474,20 @@ export function Dashboard() {
                           color: "#374151",
                           whiteSpace: "nowrap",
                         }}
-                      ></p>
+                      >
+                        {e.note ?? "-"}
+                      </p>
                     </td>
                     <td className={styles.td}>
-                      <StatusBadge status={e.status} />
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "#374151",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatDateDMYHM(e.createdAt)}
+                      </p>
                     </td>
                     <td className={styles.td}>
                       <p
@@ -517,9 +498,17 @@ export function Dashboard() {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {e.fee.toLocaleString("vi-VN")}₫
+                        {e.totalAmount.toLocaleString("vi-VN")}₫
                       </p>
-                      <PayBadge status={e.paymentStatus} />
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          color: "#059669",
+                        }}
+                      >
+                        Đã thanh toán
+                      </span>
                     </td>
                   </tr>
                 ))}

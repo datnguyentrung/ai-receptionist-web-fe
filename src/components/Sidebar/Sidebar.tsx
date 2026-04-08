@@ -1,5 +1,5 @@
 import logoImage from "@/assets/taekwondo.jpg";
-import { NAV_ITEMS } from "@/config/constants/path";
+import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
 import type { UserResponse } from "@/types";
 import { Bot, LogOut, X } from "lucide-react";
@@ -15,6 +15,7 @@ export default function Sidebar({
   setSidebarOpen: (open: boolean) => void;
 }) {
   const { user, clearAuth } = useAuthStore((state) => state);
+  const nav_items = useNavItems();
   return (
     <aside
       className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
@@ -46,7 +47,7 @@ export default function Sidebar({
       {/* Nav */}
       <nav className={styles.nav}>
         <p className={styles.navLabel}>MENU CHÍNH</p>
-        {NAV_ITEMS.map(({ path, label, icon: Icon }) => (
+        {nav_items.map(({ path, label, icon: Icon }) => (
           <NavLink
             key={path}
             to={path}

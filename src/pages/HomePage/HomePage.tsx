@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./HomePage.module.scss";
 
 export default function HomePage() {
@@ -49,9 +50,9 @@ export default function HomePage() {
         </div>
 
         <div className={styles.actions}>
-          <a href="/login" className={styles.buttonPrimary}>
+          <Link to="/login" className={styles.buttonPrimary}>
             Đăng Nhập
-          </a>
+          </Link>
           <button className={styles.buttonSecondary}>Tìm Hiểu Thêm</button>
         </div>
       </div>
