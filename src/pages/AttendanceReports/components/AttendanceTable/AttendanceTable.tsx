@@ -1,5 +1,6 @@
 import Avatar from "@/components/Avatar";
 import { Pagination } from "@/components/Pagination";
+import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import type { EvaluationStatus } from "@/config/constants";
 import { EvaluationStatusLabel } from "@/config/constants";
 import { AttendanceBadge, ClipboardList } from "@/features/studentAttendance";
@@ -17,6 +18,7 @@ const TABLE_HEADERS = [
   "Điểm danh",
   "Đánh giá",
   "Ghi chú",
+  "",
 ];
 
 const EVALUATION_STYLE: Record<
@@ -189,6 +191,11 @@ export function AttendanceTable({
                     >
                       {a.note ?? "—"}
                     </p>
+                  </td>
+
+                  {/* Action buttons (e.g., view details) */}
+                  <td className={styles.td}>
+                    <MiniActionPopover itemLabel={a.studentName} />
                   </td>
                 </tr>
               );
