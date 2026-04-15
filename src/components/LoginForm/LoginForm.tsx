@@ -1,6 +1,6 @@
+import { useLogin } from "@/features/auth";
 import { Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useState } from "react";
-import { useLogin } from "../../features/auth/api/useAuthentication";
 import styles from "./LoginForm.module.scss";
 
 export default function LoginForm() {

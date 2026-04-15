@@ -6,6 +6,7 @@ import type { ClassScheduleSummary } from "./ClassScheduleTypes";
 export interface GetStudentsParams {
   search?: string;
   status?: StudentStatus;
+  scheduleIds?: string[];
   page?: number;
   size?: number;
   sortBy?: string;

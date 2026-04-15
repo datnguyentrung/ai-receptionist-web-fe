@@ -2,12 +2,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import {
+  EvalSheet,
   useFilterAttendance,
   useUpdateAttendanceEvaluation,
   useUpdateAttendanceStatus,
-} from "@/features/studentAttendance/api/useStudentAttendance";
-import { EvalSheet } from "@/features/studentAttendance/components/EvalSheet";
-import { useGetStudentEnrollmentsByClassScheduleId } from "@/features/studentEnrollment/api/useStudentEnrollment";
+} from "@/features/studentAttendance";
+import { useGetStudentEnrollmentsByClassScheduleId } from "@/features/studentEnrollment";
+import { useAuthStore } from "@/store/authStore";
 import type {
   AttendanceUpdateEvaluationRequest,
   StudentAttendanceResponse,
@@ -51,9 +52,16 @@ export function AttendanceCheckin() {
   const [filter, setFilter] = useState<"all" | AttendanceStatus>("all");
 
   const { scheduleId } = useParams();
+  const user = useAuthStore((state) => state.user);
+  const allowedScheduleIds = user?.userInfo.assignedClasses ?? [];
+  const hasScheduleParam = !!scheduleId;
+  const hasScheduleAccess =
+    hasScheduleParam && allowedScheduleIds.includes(scheduleId);
+  const selectedScheduleId = hasScheduleAccess ? scheduleId : "";
+  const attendanceScheduleIds = hasScheduleAccess ? [scheduleId] : undefined;
 
   const { data: enrollments, isLoading: enrollmentsLoading } =
-    useGetStudentEnrollmentsByClassScheduleId(scheduleId!);
+    useGetStudentEnrollmentsByClassScheduleId(selectedScheduleId);
 
   // console.log("Enrollments:", enrollments);
 
@@ -65,7 +73,7 @@ export function AttendanceCheckin() {
     undefined,
     undefined,
     undefined,
-    scheduleId,
+    attendanceScheduleIds,
   );
 
   const { mutate: updateAttendance } = useUpdateAttendanceStatus();
@@ -224,6 +232,22 @@ export function AttendanceCheckin() {
     setShowSuccess(true);
     setSubmitted(true);
   };
+
+  if (!hasScheduleAccess) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.emptyState}>
+          <Users
+            size={40}
+            style={{ color: "#E5E7EB", margin: "0 auto 10px" }}
+          />
+          <p className={styles.emptyText}>
+            Bạn không có quyền truy cập lớp này
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const isLoading = enrollmentsLoading || attendanceLoading;
 

@@ -1,17 +1,42 @@
 import type {
   ClassScheduleCreateRequest,
   ClassScheduleUpdateRequest,
+  GetClassSchedulesParams,
 } from "@/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 import { classScheduleAPI } from "./classScheduleAPI";
 
 const CLASS_SCHEDULE_QUERY_KEY = "class-schedules";
 
 // 1. Hook lấy danh sách tất cả lịch học
-export const useGetAllClassSchedules = () => {
+// export const useGetAllClassSchedules = () => {
+//   return useQuery({
+//     queryKey: [CLASS_SCHEDULE_QUERY_KEY],
+//     queryFn: classScheduleAPI.getAllClassSchedules,
+//   });
+// };
+
+export const useGetAllClassSchedules = (
+  params: GetClassSchedulesParams,
+  options?: Omit<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof classScheduleAPI.getAllClassSchedules>>,
+      Error
+    >,
+    "queryKey" | "queryFn"
+  >,
+) => {
   return useQuery({
-    queryKey: [CLASS_SCHEDULE_QUERY_KEY],
-    queryFn: classScheduleAPI.getAllClassSchedules,
+    // Cực kỳ quan trọng: Nhét params vào queryKey
+    // Khi params thay đổi (vd: page từ 1 sang 2), React Query sẽ tự động gọi lại API
+    queryKey: [CLASS_SCHEDULE_QUERY_KEY, params],
+    queryFn: () => classScheduleAPI.getAllClassSchedules(params),
+    ...options,
   });
 };
 

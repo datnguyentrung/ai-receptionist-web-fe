@@ -4,11 +4,32 @@ import type {
   ClassScheduleCreateRequest,
   ClassScheduleDetail,
   ClassScheduleUpdateRequest,
+  GetClassSchedulesParams,
 } from "@/types";
 
 export const classScheduleAPI = {
-  getAllClassSchedules: async (): Promise<ClassScheduleDetail[]> => {
-    const response = await javaApi.get("/class-schedules");
+  getAllClassSchedules: async ({
+    branchId,
+    scheduleLevel,
+    scheduleLocation,
+    scheduleShift,
+    scheduleStatus,
+    weekday,
+    scheduleIds,
+  }: GetClassSchedulesParams): Promise<
+    ClassScheduleDetail[]
+  > => {
+    const response = await javaApi.get("/class-schedules", {
+      params: {
+        branchId,
+        scheduleLevel,
+        scheduleLocation,
+        scheduleShift,
+        scheduleStatus,
+        weekday,
+        scheduleIds,
+      },
+    });
     return response.data;
   },
 

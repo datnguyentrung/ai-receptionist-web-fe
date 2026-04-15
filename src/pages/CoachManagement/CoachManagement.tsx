@@ -1,11 +1,13 @@
-import { useGetAllCoaches } from "@/features/coach/api/useCoach";
-import CoachCard from "@/features/coach/components/CoachCard/CoachCard";
+import {
+  CoachCard,
+  CoachFilters,
+  useFilteredCoaches,
+  useGetAllCoaches,
+} from "@/features/coach";
 import { Plus, Users } from "lucide-react";
 import { useState } from "react";
-import CoachFilters from "../../features/coach/components/CoachFilters/CoachFilters";
-import { useFilteredCoaches } from "../../features/coach/hooks/useFilteredCoaches";
+import type { CoachStatus } from "../../config/constants";
 import styles from "./CoachManagement.module.scss";
-import type { CoachStatus } from '../../config/constants';
 
 export function CoachManagement() {
   const [search, setSearch] = useState("");

@@ -1,5 +1,5 @@
-import { ClassCard } from "@/features/classSchedule/components/ClassCard";
 import type { ClassScheduleDetail } from "@/types";
+import { ClassCard } from "../ClassCard";
 import styles from "./ClassGrid.module.scss";
 
 interface Props {

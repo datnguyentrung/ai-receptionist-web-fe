@@ -1,4 +1,4 @@
-import { userAPI } from "@/features/user/api/userAPI";
+import { userAPI } from "@/features/user";
 import type { Detection } from "@mediapipe/tasks-vision";
 import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 import React, { useCallback, useEffect, useRef, useState } from "react";

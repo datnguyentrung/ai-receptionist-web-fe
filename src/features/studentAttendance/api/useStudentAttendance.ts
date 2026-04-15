@@ -24,7 +24,7 @@ export const useFilterAttendance = (
   belts?: Belt[],
   branchIds?: number[],
   scheduleLevels?: ScheduleLevel[],
-  scheduleId?: string,
+  scheduleIds?: string[],
   page?: number,
   size?: number,
   sortBy?: string,
@@ -40,7 +40,7 @@ export const useFilterAttendance = (
       belts,
       branchIds,
       scheduleLevels,
-      scheduleId,
+      scheduleIds,
       page,
       size,
       sortBy,
@@ -59,7 +59,7 @@ export const useFilterAttendance = (
         belts,
         branchIds,
         scheduleLevels,
-        scheduleId,
+        scheduleIds,
       ),
     enabled:
       !!search ||
@@ -69,7 +69,7 @@ export const useFilterAttendance = (
       !!belts ||
       !!branchIds ||
       !!scheduleLevels ||
-      !!scheduleId,
+      !!scheduleIds,
   });
 };
 

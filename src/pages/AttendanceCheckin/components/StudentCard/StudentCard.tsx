@@ -1,6 +1,5 @@
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
-import { AttendancePill } from "@/features/studentAttendance/components/AttendancePill";
-import EvalQuick from "@/features/studentAttendance/components/EvalQuick";
+import { AttendancePill, EvalQuick } from "@/features/studentAttendance";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
@@ -101,7 +100,7 @@ export function StudentCardInner({
             attendanceId={
               student.attendanceId ? student.attendanceId : undefined
             }
-            value={student.attendanceStatus }
+            value={student.attendanceStatus}
             onChange={(v) => onUpdateStatus(student.studentId, v)}
           />
         </div>

@@ -70,7 +70,7 @@ export const studentAttendanceAPI = {
     belts?: Belt[],
     branchIds?: number[],
     scheduleLevels?: ScheduleLevel[],
-    scheduleId?: string,
+    scheduleIds?: string[],
   ): Promise<PageResponse<StudentAttendanceResponse>> => {
     const response = await javaApi.get("/student-attendances", {
       params: {
@@ -81,7 +81,7 @@ export const studentAttendanceAPI = {
         belts: belts,
         branchIds: branchIds,
         scheduleLevels: scheduleLevels,
-        scheduleId: scheduleId,
+        scheduleIds: scheduleIds,
         page,
         size,
         sortBy,

@@ -1,10 +1,10 @@
 import { DaySelector } from "@/components/DaySelector";
 import { WeekdayCode, WeekdayFromCode, WeekdayLabel } from "@/config/constants";
-import { ClassWeekItem } from "@/features/classSchedule/components/ClassWeekItem";
 import type { ClassScheduleDetail } from "@/types";
 import { getCurrentWeekday } from "@/utils/format";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
+import { ClassWeekItem } from "../ClassWeekItem";
 import styles from "./ClassWeekView.module.scss";
 
 interface Props {

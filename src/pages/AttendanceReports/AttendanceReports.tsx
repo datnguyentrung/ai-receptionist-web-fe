@@ -3,11 +3,12 @@ import type {
   AttendanceStatus,
   EvaluationStatus,
 } from "@/config/constants/OperationEnums";
-import { useFilterAttendance } from "@/features/studentAttendance/api/useStudentAttendance";
+import { useFilterAttendance } from "@/features/studentAttendance";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
 import { AttendanceTable } from "@/pages/AttendanceReports/components/AttendanceTable";
+import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import styles from "./AttendanceReports.module.scss";
 
@@ -26,6 +27,8 @@ export function AttendanceReports() {
   const [branches, setBranches] = useState<number[]>([]);
   const [scheduleLevels, setScheduleLevels] = useState<ScheduleLevel[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const user = useAuthStore((state) => state.user);
+  const scheduleIds = user?.userInfo.assignedClasses ?? [];
 
   const { data } = useFilterAttendance(
     search,
@@ -35,7 +38,7 @@ export function AttendanceReports() {
     belts,
     branches,
     scheduleLevels,
-    undefined, // Assuming this is for a specific parameter, replace with actual value if needed
+    scheduleIds,
     currentPage - 1, // Spring Boot dùng 0-based page
     PAGE_SIZE,
   );

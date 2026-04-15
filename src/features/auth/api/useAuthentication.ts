@@ -1,4 +1,5 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
+import { userAPI } from "@/features/user";
 import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -20,12 +21,13 @@ export const useLogin = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   return useMutation({
     mutationFn: (data: UserBase) => authApi.login(data),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Chạy khi API login thành công (HTTP 200)
       console.log("Đăng nhập thành công!", data);
 
-      // Lưu token + user vào Zustand store (persist vào localStorage)
-      setAuth(data.accessToken, data.user);
+      // Login xong phải lấy profile đầy đủ để chuẩn hóa user trong store.
+      const fullUserData = await userAPI.getUserInfo(data.accessToken);
+      setAuth(data.accessToken, fullUserData);
       navigate("/");
     },
     onError: (error) => {

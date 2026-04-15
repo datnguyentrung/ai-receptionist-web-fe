@@ -1,7 +1,6 @@
 import logoImage from "@/assets/taekwondo.jpg";
 import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
-import type { UserResponse } from "@/types";
 import { Bot, LogOut, X } from "lucide-react";
 import { NavLink } from "react-router";
 import Avatar from "../Avatar";
@@ -85,7 +84,7 @@ export default function Sidebar({
       <div className={styles.sidebarBottom}>
         <div className={styles.userCard}>
           <Avatar
-            fullName={(user as UserResponse)?.userProfile?.name || ""}
+            fullName={user?.userProfile?.name || ""}
             fontSize="14px"
             fontWeight={500}
             width="32px"
@@ -93,10 +92,10 @@ export default function Sidebar({
           />
           <div className={styles.userInfo}>
             <p className={styles.userName}>
-              {(user as UserResponse)?.userProfile?.name || "Admin Hệ Thống"}
+              {user?.userProfile?.name || "Admin Hệ Thống"}
             </p>
             <p className={styles.userRole}>
-              {(user as UserResponse)?.userInfo?.idRole || "Admin Hệ Thống"}
+              {user?.userInfo?.idRole || "Admin Hệ Thống"}
             </p>
           </div>
           <LogOut

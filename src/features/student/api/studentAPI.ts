@@ -1,7 +1,7 @@
 import { javaApi } from "@/lib/axiosInstance";
 
-import type { StudentStatus } from "@/config/constants";
 import type {
+  GetStudentsParams,
   StudentCreateRequest,
   StudentDetail,
   StudentListResponse,
@@ -12,18 +12,12 @@ export const studentAPI = {
   getStudents: async ({
     search,
     status,
+    scheduleIds,
     page,
     size,
     sortBy,
     sortDir,
-  }: {
-    search?: string;
-    status?: StudentStatus;
-    page?: number;
-    size?: number;
-    sortBy?: string;
-    sortDir?: "asc" | "desc";
-  }): Promise<StudentListResponse> => {
+  }: GetStudentsParams): Promise<StudentListResponse> => {
     // console.log("Fetching students with params:", {
     //   search,
     //   status,
@@ -38,6 +32,7 @@ export const studentAPI = {
       params: {
         search,
         status,
+        scheduleIds,
         page,
         size,
         sortBy,

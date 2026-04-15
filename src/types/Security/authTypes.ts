@@ -26,9 +26,10 @@ export interface UserBase {
   idDevice: string;
 }
 
-export interface UserInfo{
+export interface UserInfo {
   idUser: string;
   idRole: string;
+  assignedClasses: string[]; // Danh sách ID lớp mà user này được phân công (dành cho HLV)
 }
 
 export interface UserProfile {
@@ -43,4 +44,3 @@ export interface UserResponse {
   userInfo: UserInfo;
   userProfile: UserProfile;
 }
-

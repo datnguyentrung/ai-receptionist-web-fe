@@ -1,4 +1,4 @@
-import { tuitionPaymentAPI } from "@/features/tuitionPayment/api/tuitionPaymentAPI";
+import { tuitionPaymentAPI } from "@/features/tuitionPayment";
 import type { TuitionPaymentResponse } from "@/types/Operation/TuitionPaymentTypes";
 import {
   ArrowRight,

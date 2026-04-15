@@ -1,13 +1,13 @@
-import type { ChangePasswordRequest } from "@/types";
+import type { ChangePasswordRequest, UserResponse } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { userAPI } from "./userAPI";
 
 const USER_QUERY_KEY = "user-info";
 
 export const useGetUserInfo = () => {
-  return useQuery({
+  return useQuery<UserResponse>({
     queryKey: [USER_QUERY_KEY],
-    queryFn: userAPI.getUserInfo,
+    queryFn: () => userAPI.getUserInfo(),
     retry: false,
   });
 };

@@ -1,12 +1,9 @@
 import Avatar from "@/components/Avatar";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
-import {
-  LevelBadge,
-  StatusBadge,
-} from "@/features/classSchedule/components/ClassBadges";
 import type { ClassScheduleDetail } from "@/types";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import { getDurationInMinutes } from "../../../../utils/format";
+import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
 export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {

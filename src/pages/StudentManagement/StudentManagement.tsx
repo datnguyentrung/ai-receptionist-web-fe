@@ -1,9 +1,10 @@
+import { useGetStudents } from "@/features/student";
 import { useState } from "react";
 import { Pagination } from "../../components/Pagination";
 import StatusFilters from "../../components/StatusFilters";
 import type { StudentStatus } from "../../config/constants";
-import { useGetStudents } from "../../features/student/api/useStudent";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useAuthStore } from "../../store/authStore";
 import styles from "./StudentManagement.module.scss";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
@@ -23,15 +24,22 @@ export function StudentManagement() {
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const { user: userInfo } = useAuthStore();
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isFetching } = useGetStudents({
-    search: debouncedSearch,
-    status: statusFilter === "all" ? undefined : statusFilter,
-    page: 0,
-    size: 10,
-  });
+  const { data, isFetching: isStudentsFetching } = useGetStudents(
+    {
+      search: debouncedSearch,
+      status: statusFilter === "all" ? undefined : statusFilter,
+      scheduleIds: userInfo?.userInfo.assignedClasses,
+      page: page - 1,
+      size: 10,
+    },
+    {
+      enabled: !!userInfo,
+    },
+  );
 
   const list = data?.students.content ?? [];
   const totalPages = data?.students.totalPages ?? 1;
@@ -102,7 +110,7 @@ export function StudentManagement() {
           selected={selected}
           onToggleSelect={toggleSelect}
           onSelectAll={handleSelectAll}
-          isFetching={isFetching}
+          isFetching={isStudentsFetching}
         />
         <Pagination
           currentPage={page}

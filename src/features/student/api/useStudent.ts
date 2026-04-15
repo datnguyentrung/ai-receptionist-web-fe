@@ -1,17 +1,29 @@
 import type { StudentCreateRequest, StudentUpdateRequest } from "@/types";
 import type { GetStudentsParams } from "@/types/Core/StudentTypes";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 import { studentAPI } from "./studentAPI";
 
 const STUDENT_QUERY_KEY = "students";
 
 // 1. Hook lấy danh sách HỌC VIÊN (CÓ ĐÍNH KÈM PARAMS)
-export const useGetStudents = (params: GetStudentsParams) => {
+export const useGetStudents = (
+  params: GetStudentsParams,
+  options?: Omit<
+    UseQueryOptions<Awaited<ReturnType<typeof studentAPI.getStudents>>, Error>,
+    "queryKey" | "queryFn"
+  >,
+) => {
   return useQuery({
     // Cực kỳ quan trọng: Nhét params vào queryKey
     // Khi params thay đổi (vd: page từ 1 sang 2), React Query sẽ tự động gọi lại API
     queryKey: [STUDENT_QUERY_KEY, params],
     queryFn: () => studentAPI.getStudents(params),
+    ...options,
   });
 };
 

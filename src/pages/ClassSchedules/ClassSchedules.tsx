@@ -1,13 +1,29 @@
-﻿import { useState } from "react";
-import { ClassHeader } from "@/features/classSchedule/components/ClassHeader";
-import { ClassGrid } from "@/features/classSchedule/components/ClassGrid";
-import { ClassWeekView } from "@/features/classSchedule/components/ClassWeekView";
+﻿import {
+  ClassGrid,
+  ClassHeader,
+  ClassWeekView,
+  useGetAllClassSchedules,
+} from "@/features/classSchedule";
+import { useAuthStore } from "@/store/authStore";
+import { useState } from "react";
 import styles from "./ClassSchedules.module.scss";
-import {useGetAllClassSchedules} from "@/features/classSchedule/api/useClassSchedule";
 
 export function ClassSchedules() {
   const [view, setView] = useState<"grid" | "week">("week");
-  const { data: classSchedules, isLoading, error } = useGetAllClassSchedules();
+
+  const user = useAuthStore((state) => state.user);
+  const scheduleIds = user?.userInfo.assignedClasses ?? [];
+
+  const {
+    data: classSchedules,
+    isLoading,
+    error,
+  } = useGetAllClassSchedules(
+    { scheduleIds },
+    {
+      enabled: !!user,
+    },
+  );
 
   if (isLoading) {
     return <div>Loading class schedules...</div>;
@@ -21,7 +37,10 @@ export function ClassSchedules() {
     <div className={styles.page}>
       <ClassHeader
         totalClasses={classSchedules?.length || 0}
-        activeClasses={classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE").length || 0}
+        activeClasses={
+          classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE").length ||
+          0
+        }
         view={view}
         onViewChange={setView}
       />

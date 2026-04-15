@@ -1,15 +1,27 @@
-import type { UserLogin, UserResponse } from "@/types";
+import type { UserResponse } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
   accessToken: string | null;
-  user: UserLogin | UserResponse | null;
+  user: UserResponse | null;
   isAuthenticated: boolean;
-  setAuth: (token: string, user: UserLogin) => void;
+  setAuth: (token: string, user: UserResponse) => void;
   setUserProfile: (userInfo: UserResponse) => void;
   clearAuth: () => void;
 }
+
+const clearRoleDebugSessionFlags = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const debugKeys = Object.keys(sessionStorage).filter((key) =>
+    key.startsWith("role-debug-logged:"),
+  );
+
+  debugKeys.forEach((key) => sessionStorage.removeItem(key));
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -19,18 +31,16 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       // 1. Dùng lúc Login xong
-      setAuth: (token, userLogin) =>
-        set({ accessToken: token, user: userLogin, isAuthenticated: true }),
+      setAuth: (token, user) =>
+        set({ accessToken: token, user, isAuthenticated: true }),
 
       // 2. Dùng lúc gọi /users/me xong
-      setUserProfile: (fullUserData) =>
-        set((state) => ({
-          // Giữ lại các data cũ (như role, userId) và gộp thêm data mới
-          user: { ...state.user, ...fullUserData },
-        })),
+      setUserProfile: (fullUserData) => set({ user: fullUserData }),
 
-      clearAuth: () =>
-        set({ accessToken: null, user: null, isAuthenticated: false }),
+      clearAuth: () => {
+        clearRoleDebugSessionFlags();
+        set({ accessToken: null, user: null, isAuthenticated: false });
+      },
     }),
     {
       name: "auth-storage",

@@ -7,6 +7,16 @@ import type {
 } from "../../config/constants";
 import type { CoachSummary } from "./CoachTypes";
 
+export interface GetClassSchedulesParams {
+  branchId?: number;
+  scheduleLevel?: ScheduleLevel;
+  scheduleLocation?: ScheduleLocation;
+  scheduleShift?: ScheduleShift;
+  scheduleStatus?: ScheduleStatus;
+  weekday?: Weekday;
+  scheduleIds?: string[];
+}
+
 /** Dùng trong danh sách / dropdown — thông tin tối giản */
 export interface ClassScheduleSummary {
   scheduleId: string;
