@@ -64,131 +64,135 @@ export function AttendanceTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((a, index) => (
-              <tr key={a.attendanceId} className={styles.tr}>
-                {/* STT */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#6B7280",
-                      textAlign: "center",
-                    }}
-                  >
-                    {(currentPage - 1) * pageSize + index + 1}
-                  </p>
-                </td>
-                {/* Ngày học */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {formatDateDMY(a.sessionDate)}
-                  </p>
-                </td>
-                {/* Học viên */}
-                <td className={styles.td}>
-                  <div className={styles.avatarCell}>
-                    <Avatar
-                      fullName={a.studentName}
-                      fontSize="9px"
-                      fontWeight={800}
-                      width="32px"
-                      height="32px"
-                    />
+            {rows.map((a, index) => {
+              const attendanceStatus = a.attendanceStatus ?? "ABSENT";
+
+              return (
+                <tr key={a.attendanceId} className={styles.tr}>
+                  {/* STT */}
+                  <td className={styles.td}>
                     <p
                       style={{
                         fontSize: "12px",
-                        fontWeight: 600,
-                        color: "#111827",
+                        color: "#6B7280",
+                        textAlign: "center",
+                      }}
+                    >
+                      {(currentPage - 1) * pageSize + index + 1}
+                    </p>
+                  </td>
+                  {/* Ngày học */}
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {a.studentName}
+                      {formatDateDMY(a.sessionDate)}
                     </p>
-                  </div>
-                </td>
-                {/* Cơ sở */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Cơ sở {a.classScheduleId.charAt(1)}
-                  </p>
-                </td>
-                {/* Thứ */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Thứ {a.classScheduleId.charAt(2)}
-                  </p>
-                </td>
-                {/* Ca học */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Ca {a.classScheduleId.charAt(4)}
-                  </p>
-                </td>
-                {/* Điểm danh */}
-                <td className={styles.td}>
-                  <AttendanceBadge status={a.attendanceStatus} />
-                </td>
-                {/* Đánh giá */}
-                <td className={styles.td}>
-                  {a.evaluationStatus &&
-                  EVALUATION_STYLE[a.evaluationStatus] ? (
-                    <span
+                  </td>
+                  {/* Học viên */}
+                  <td className={styles.td}>
+                    <div className={styles.avatarCell}>
+                      <Avatar
+                        fullName={a.studentName}
+                        fontSize="9px"
+                        fontWeight={800}
+                        width="32px"
+                        height="32px"
+                      />
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          color: "#111827",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {a.studentName}
+                      </p>
+                    </div>
+                  </td>
+                  {/* Cơ sở */}
+                  <td className={styles.td}>
+                    <p
                       style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "2px 8px",
-                        borderRadius: "9999px",
-                        fontSize: "11px",
-                        fontWeight: 500,
-                        background: EVALUATION_STYLE[a.evaluationStatus].bg,
-                        color: EVALUATION_STYLE[a.evaluationStatus].color,
+                        fontSize: "12px",
+                        color: "#374151",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {EvaluationStatusLabel[a.evaluationStatus]}
-                    </span>
-                  ) : (
-                    <span style={{ fontSize: "12px", color: "#D1D5DB" }}>
-                      —
-                    </span>
-                  )}
-                </td>
-                {/* Ghi chú */}
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: a.note ? "#374151" : "#D1D5DB",
-                    }}
-                  >
-                    {a.note ?? "—"}
-                  </p>
-                </td>
-              </tr>
-            ))}
+                      Cơ sở {a.classScheduleId?.charAt(1) ?? "—"}
+                    </p>
+                  </td>
+                  {/* Thứ */}
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Thứ {a.classScheduleId?.charAt(2) ?? "—"}
+                    </p>
+                  </td>
+                  {/* Ca học */}
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Ca {a.classScheduleId?.charAt(4) ?? "—"}
+                    </p>
+                  </td>
+                  {/* Điểm danh */}
+                  <td className={styles.td}>
+                    <AttendanceBadge status={attendanceStatus} />
+                  </td>
+                  {/* Đánh giá */}
+                  <td className={styles.td}>
+                    {a.evaluationStatus &&
+                    EVALUATION_STYLE[a.evaluationStatus] ? (
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          padding: "2px 8px",
+                          borderRadius: "9999px",
+                          fontSize: "11px",
+                          fontWeight: 500,
+                          background: EVALUATION_STYLE[a.evaluationStatus].bg,
+                          color: EVALUATION_STYLE[a.evaluationStatus].color,
+                        }}
+                      >
+                        {EvaluationStatusLabel[a.evaluationStatus]}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: "12px", color: "#D1D5DB" }}>
+                        —
+                      </span>
+                    )}
+                  </td>
+                  {/* Ghi chú */}
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: a.note ? "#374151" : "#D1D5DB",
+                      }}
+                    >
+                      {a.note ?? "—"}
+                    </p>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

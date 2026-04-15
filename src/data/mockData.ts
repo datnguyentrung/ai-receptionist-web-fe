@@ -135,7 +135,35 @@ export interface ClassSessionDTO {
   coachAvatar: string;
   room: string;
   totalStudents: number;
-  status: "upcoming" | "in-progress" | "completed";
+  status: "upcoming" | "in-progress" | "completed" | "ongoing";
+}
+
+export interface ClassScheduleDTO {
+  classId: string;
+  className: string;
+  classCode: string;
+  coach: string;
+  coachAvatar: string;
+  room: string;
+  dayOfWeek: string[];
+  time: string;
+  duration: number;
+  capacity: number;
+  enrolled: number;
+  level: "beginner" | "intermediate" | "advanced" | "all";
+  status: "ongoing" | "upcoming" | "completed";
+}
+
+export interface AttendanceDTO {
+  attendanceId: string;
+  studentName: string;
+  studentAvatar: string;
+  className: string;
+  date: string;
+  checkIn: string;
+  checkOut: string;
+  status: "present" | "late" | "absent" | "excused";
+  coachName: string;
 }
 // ──────────────────────────────────────────────────────────────
 // MOCK DATA
