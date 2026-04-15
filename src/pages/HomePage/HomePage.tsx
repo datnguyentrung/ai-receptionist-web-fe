@@ -1,7 +1,72 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { showInfoToast, showWarningToast } from "../../components/ui/toast";
+import { useAuthStore } from "../../store/authStore";
+import { isCoach } from "../../utils/roleUtils";
 import styles from "./HomePage.module.scss";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+
+  const hasToken = Boolean(accessToken) && isAuthenticated;
+  const canViewExamResult = isCoach(user?.userInfo?.idRole);
+
+  const handleFeatureClick = (
+    path: string,
+    requiresExamPermission = false,
+    requiresAuth = true,
+  ) => {
+    if (requiresAuth && !hasToken) {
+      showInfoToast("Vui lòng đăng nhập để sử dụng tính năng này.");
+      navigate("/login");
+      return;
+    }
+
+    if (requiresExamPermission && !canViewExamResult) {
+      showWarningToast("Bạn chưa có quyền xem nội dung này.");
+      return;
+    }
+
+    navigate(path);
+  };
+
+  const features = [
+    {
+      icon: "👥",
+      title: "Quản Lý Học Viên",
+      description: "Theo dõi thông tin và tiến độ học tập",
+      colorClass: styles.red,
+      path: "/students",
+    },
+    {
+      icon: "📚",
+      title: "Quản Lý Lớp Học",
+      description: "Tổ chức và sắp xếp lịch học hiệu quả",
+      colorClass: styles.blue,
+      path: "/schedules",
+    },
+    {
+      icon: "🥋",
+      title: "Quản Lý Thi Đấu",
+      description: "Theo dõi giải đấu và thành tích",
+      colorClass: styles.yellow,
+      path: "/history",
+    },
+    {
+      icon: "📋",
+      title: "Quản Lý Khảo Thí",
+      description:
+        "Theo dõi kết quả đánh giá định kỳ và hồ sơ xét thăng cấp của học viên.",
+      colorClass: styles.green,
+      path: "/public/exam",
+      requiresExamPermission: false, // TODO: true
+      requiresAuth: false,
+      specialClass: styles.examFeature,
+    },
+  ];
+
   return (
     <div className={styles.homeContainer}>
       <div className={styles.card}>
@@ -26,33 +91,51 @@ export default function HomePage() {
         </div>
 
         <div className={styles.features}>
-          <div className={`${styles.featureCard} ${styles.red}`}>
-            <div className={styles.featureIcon}>👥</div>
-            <h3 className={styles.featureTitle}>Quản Lý Học Viên</h3>
-            <p className={styles.featureDescription}>
-              Theo dõi thông tin và tiến độ học tập
-            </p>
-          </div>
-          <div className={`${styles.featureCard} ${styles.blue}`}>
-            <div className={styles.featureIcon}>📚</div>
-            <h3 className={styles.featureTitle}>Quản Lý Lớp Học</h3>
-            <p className={styles.featureDescription}>
-              Tổ chức và sắp xếp lịch học hiệu quả
-            </p>
-          </div>
-          <div className={`${styles.featureCard} ${styles.yellow}`}>
-            <div className={styles.featureIcon}>🥋</div>
-            <h3 className={styles.featureTitle}>Quản Lý Thi Đấu</h3>
-            <p className={styles.featureDescription}>
-              Theo dõi giải đấu và thành tích
-            </p>
-          </div>
+          {features.map((feature) => (
+            <div
+              key={feature.title}
+              role="button"
+              tabIndex={0}
+              className={`${styles.featureCard} ${feature.colorClass} ${feature.specialClass || ""}`}
+              onClick={() =>
+                handleFeatureClick(
+                  feature.path,
+                  feature.requiresExamPermission,
+                  feature.requiresAuth,
+                )
+              }
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleFeatureClick(
+                    feature.path,
+                    feature.requiresExamPermission,
+                    feature.requiresAuth,
+                  );
+                }
+              }}
+            >
+              <div className={styles.featureIcon}>{feature.icon}</div>
+              <h3 className={styles.featureTitle}>{feature.title}</h3>
+              <p className={styles.featureDescription}>{feature.description}</p>
+            </div>
+          ))}
         </div>
 
         <div className={styles.actions}>
-          <Link to="/login" className={styles.buttonPrimary}>
+          <button
+            type="button"
+            className={styles.buttonPrimary}
+            onClick={() => {
+              if (!hasToken) {
+                navigate("/login");
+                return;
+              }
+              navigate("/");
+            }}
+          >
             Đăng Nhập
-          </Link>
+          </button>
           <button className={styles.buttonSecondary}>Tìm Hiểu Thêm</button>
         </div>
       </div>

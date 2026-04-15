@@ -92,10 +92,10 @@ export default function Sidebar({
           />
           <div className={styles.userInfo}>
             <p className={styles.userName}>
-              {user?.userProfile?.name || "Admin Hệ Thống"}
+              {user?.userProfile?.name || "Khách"}
             </p>
             <p className={styles.userRole}>
-              {user?.userInfo?.idRole || "Admin Hệ Thống"}
+              {user?.userInfo?.idRole || "Guest"}
             </p>
           </div>
           <LogOut

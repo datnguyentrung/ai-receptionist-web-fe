@@ -5,18 +5,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .card {
-  max-width: 56rem;
+  max-width: 50rem;
   width: 100%;
   background-color: white;
-  border-radius: 1rem;
+  border-radius: 0.875rem;
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  padding: 3rem;
+  padding: 2.25rem;
   text-align: center;
 }
 
@@ -24,85 +24,142 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 5rem;
-  height: 5rem;
+  width: 4.25rem;
+  height: 4.25rem;
   border-radius: 9999px;
   background: linear-gradient(to bottom right, #dc2626, #991b1b);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 
   svg {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.1rem;
+    height: 2.1rem;
     color: white;
   }
 }
 
 .title {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .subtitle {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #dc2626;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .description {
   color: #4b5563;
-  font-size: 1.125rem;
-  max-width: 42rem;
-  margin: 0 auto 2rem;
+  font-size: 1rem;
+  max-width: 38rem;
+  margin: 0 auto 1.5rem;
 }
 
 .features {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .featureCard {
-  padding: 1.5rem;
-  border-radius: 0.75rem;
+  padding: 1.15rem;
+  border-radius: 0.65rem;
   border: 1px solid;
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 14px 22px -14px rgba(17, 24, 39, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
 
   &.red {
     background: linear-gradient(to bottom right, #fef2f2, white);
     border-color: #fecaca;
+
+    &:hover {
+      border-color: #fca5a5;
+    }
   }
 
   &.blue {
     background: linear-gradient(to bottom right, #eff6ff, white);
     border-color: #bfdbfe;
+
+    &:hover {
+      border-color: #93c5fd;
+    }
   }
 
   &.yellow {
     background: linear-gradient(to bottom right, #fefce8, white);
     border-color: #fef08a;
+
+    &:hover {
+      border-color: #fde047;
+    }
+  }
+
+  &.green {
+    background: linear-gradient(to bottom right, #ecfdf3, white);
+    border-color: #86efac;
+
+    &:hover {
+      border-color: #4ade80;
+    }
+  }
+}
+
+.examFeature {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      rgba(22, 163, 74, 0.08),
+      transparent 55%
+    );
+    pointer-events: none;
+  }
+
+  .featureTitle {
+    color: #166534;
   }
 }
 
 .featureIcon {
-  font-size: 1.875rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .featureTitle {
   font-weight: 600;
   color: #111827;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 .featureDescription {
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   color: #4b5563;
 }
 
@@ -114,10 +171,10 @@
 }
 
 .buttonPrimary {
-  padding: 0.75rem 2rem;
+  padding: 0.68rem 1.8rem;
   background: linear-gradient(to right, #dc2626, #b91c1c);
   color: white;
-  border-radius: 0.75rem;
+  border-radius: 0.65rem;
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow:
@@ -141,10 +198,10 @@
 }
 
 .buttonSecondary {
-  padding: 0.75rem 2rem;
+  padding: 0.68rem 1.8rem;
   background-color: white;
   color: #374151;
-  border-radius: 0.75rem;
+  border-radius: 0.65rem;
   font-weight: 600;
   border: 2px solid #e5e7eb;
   transition: all 0.3s ease;

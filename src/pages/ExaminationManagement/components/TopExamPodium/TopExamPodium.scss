@@ -1,0 +1,172 @@
+.top-exam-podium {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(26, 26, 46, 0.06);
+}
+
+.top-exam-podium__header {
+  margin-bottom: 14px;
+
+  h3 {
+    font-size: 18px;
+    line-height: 1.2;
+    color: #1a1a2e;
+    font-weight: 800;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #475569;
+  }
+}
+
+.top-exam-podium__stage {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.top-exam-podium__item {
+  .top-exam-podium__card {
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    padding: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    h4 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: #1a1a2e;
+      min-height: 38px;
+    }
+  }
+}
+
+.top-exam-podium__rank-label {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+  background: #fff1f1;
+  color: #e02020;
+}
+
+.top-exam-podium__student-id {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.top-exam-podium__score {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.top-exam-podium__logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(224, 32, 32, 0.35);
+  animation: top1Pulse 1.8s ease-in-out infinite;
+}
+
+.rank-3 .top-exam-podium__card {
+  min-height: 146px;
+}
+
+.rank-1 .top-exam-podium__card {
+  min-height: 190px;
+  border-color: #fca5a5;
+  background: linear-gradient(180deg, #fff5f5, #ffffff);
+  box-shadow: 0 12px 18px rgba(224, 32, 32, 0.14);
+
+  .top-exam-podium__rank-label {
+    background: linear-gradient(135deg, #e02020, #7b0000);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .top-exam-podium__score {
+    color: #e02020;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 14px;
+    border: 1px solid rgba(224, 32, 32, 0.35);
+    pointer-events: none;
+    animation: championGlow 2.4s ease-in-out infinite;
+  }
+}
+
+.rank-2 .top-exam-podium__card {
+  min-height: 168px;
+}
+
+@keyframes championGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 32, 32, 0.16);
+  }
+
+  50% {
+    box-shadow: 0 0 0 7px rgba(224, 32, 32, 0);
+  }
+}
+
+@keyframes top1Pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+@media (max-width: 768px) {
+  .top-exam-podium__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .top-exam-podium__item {
+    order: 2;
+  }
+
+  .rank-1 {
+    order: 1;
+  }
+
+  .rank-2 {
+    order: 2;
+  }
+
+  .rank-3 {
+    order: 3;
+  }
+
+  .rank-3 .top-exam-podium__card,
+  .rank-2 .top-exam-podium__card,
+  .rank-1 .top-exam-podium__card {
+    min-height: 148px;
+  }
+}

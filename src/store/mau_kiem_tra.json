@@ -1,0 +1,210 @@
+[
+  {
+    "dam": 10,
+    "content": [
+      {
+        "kt_tay": 3,
+        "content": {
+          "3": "Đúng kết thúc",
+          "2": "Đúng đường đi",
+          "1": "Đúng khởi thế",
+          "0": "Sai kỹ thuật hoặc Không thuộc bài"
+        }
+      },
+      {
+        "kt_tan": 3,
+        "content": {
+          "3": "Tấn chắc chắn",
+          "2": "Đúng kỹ thuật",
+          "1": "Đúng hình tấn",
+          "0": "Sai kỹ thuật hoặc Không thuộc bài"
+        }
+      },
+      {
+        "ky_nang": 3,
+        "content": {
+          "3": "Đấm nhanh, có lực hông & vai",
+          "2": "Tốc độ nhanh hơn, có nhịp độ rõ ràng",
+          "1": "Tốc độ và lực ở mức trung bình",
+          "0": "Thiếu lực, chậm chạp, đấm cứng nhắc hoặc hời hợt"
+        }
+      },
+      {
+        "tieng_het": 1,
+        "content": {
+          "1": "Hét dứt khoát, to, rõ ràng, đúng thời điểm kết thúc đòn",
+          "0": "Hét nhỏ, sai nhịp hoặc không hét"
+        }
+      }
+    ]
+  },
+  {
+    "tan": 20,
+    "content": [
+      {
+        "thuat_ngu": 7,
+        "content": {
+          "7": "Thuộc và đọc to, rõ, chính xác 100% tên gọi các thế tấn được yêu cầu",
+          "5": "Nhớ được phần lớn (khoảng 70%)",
+          "3": "Chỉ nhớ được 2-3 bài",
+          "0": "Sai kỹ thuật hoặc Không thuộc bài"
+        }
+      },
+      {
+        "kt_tay": 3,
+        "content": {
+          "3": "Tay nắm chặt, thu về tốc độ",
+          "2": "Đúng kỹ thuật",
+          "1": "Đúng đường đi",
+          "0": "Sai kỹ thuật hoặc Không thuộc bài"
+        }
+      },
+      {
+        "kt_tan": 10,
+        "content": {
+          "10": ""
+        }
+      }
+    ]
+  },
+  {
+    "tan_tay": 30,
+    "content": [
+      {
+        "dt1": 10,
+        "content": [
+          {
+            "kt_tan": 6,
+            "content": {
+              "6": "Biết cách chuyển trọng tâm",
+              "5": "Đúng kỹ thuật",
+              "3": "Đúng hình tấn",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "kt_tay": 3,
+            "content": {
+              "3": "Tốc độ, nhịp độ, phát lực dứt khoát",
+              "2": "Đúng kỹ thuật & Thời điểm",
+              "1": "Đúng hình đòn tay & Nhịp độ",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "tieng_het": 1,
+            "content": {
+              "1": "Hét dứt khoát, to, rõ ràng, đúng thời điểm kết thúc đòn",
+              "0": "Hét nhỏ, sai nhịp hoặc không hét"
+            }
+          }
+        ]
+      },
+      {
+        "dt2": 10,
+        "content": [
+          {
+            "kt_tan": 6,
+            "content": {
+              "6": "Biết cách chuyển trọng tâm",
+              "5": "Đúng kỹ thuật",
+              "3": "Đúng hình tấn",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "kt_tay": 3,
+            "content": {
+              "3": "Tốc độ, nhịp độ, phát lực dứt khoát",
+              "2": "Đúng kỹ thuật & Thời điểm",
+              "1": "Đúng hình đòn tay & Nhịp độ",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "tieng_het": 1,
+            "content": {
+              "1": "Hét dứt khoát, to, rõ ràng, đúng thời điểm kết thúc đòn",
+              "0": "Hét nhỏ, sai nhịp hoặc không hét"
+            }
+          }
+        ]
+      },
+      {
+        "dt3": 10,
+        "content": [
+          {
+            "kt_tan": 6,
+            "content": {
+              "6": "Biết cách chuyển trọng tâm",
+              "5": "Đúng kỹ thuật",
+              "3": "Đúng hình tấn",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "kt_tay": 3,
+            "content": {
+              "3": "Tốc độ, nhịp độ, phát lực dứt khoát",
+              "2": "Đúng kỹ thuật & Thời điểm",
+              "1": "Đúng hình đòn tay & Nhịp độ",
+              "0": "Sai kỹ thuật & Không thuộc bài"
+            }
+          },
+          {
+            "tieng_het": 1,
+            "content": {
+              "1": "Hét dứt khoát, to, rõ ràng, đúng thời điểm kết thúc đòn",
+              "0": "Hét nhỏ, sai nhịp hoặc không hét"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chan": 40,
+    "content": [
+      {
+        "ap_chagi": 10,
+        "content": {
+          "10": "",
+          "8": "Tốc độ đá ra/gập về nhanh, đúng thời điểm",
+          "5": "Đúng kỹ thuật, cao ngang hoặc hơn đầu",
+          "2": "Đá đúng hình dáng đòn nhưng thiếu lực/tốc độ; độ cao đòn đá thấp; hoặc bị mất thăng bằng/rơi tự do chân sau khi đá",
+          "0": "Chỉ nhấc được chân lên hoặc ngã khi thực hiện đòn hoặc Không thực hiện được đòn"
+        }
+      },
+      {
+        "dop_chagi": 10,
+        "content": {
+          "10": "",
+          "8": "Tốc độ đá ra/gập về nhanh, đúng thời điểm",
+          "5": "Đúng kỹ thuật, cao ngang hoặc hơn đầu",
+          "2": "Đá đúng hình dáng đòn nhưng thiếu lực/tốc độ; độ cao đòn đá thấp; hoặc bị mất thăng bằng/rơi tự do chân sau khi đá",
+          "0": "Chỉ nhấc được chân lên hoặc ngã khi thực hiện đòn hoặc Không thực hiện được đòn"
+        }
+      },
+      {
+        "tolo_chagi": 10,
+        "content": {
+          "10": "",
+          "8": "Tốc độ đá ra/gập về nhanh, đúng thời điểm",
+          "5": "Đúng kỹ thuật, cao ngang hoặc hơn đầu",
+          "2": "Đá đúng hình dáng đòn nhưng thiếu lực/tốc độ; độ cao đòn đá thấp; hoặc bị mất thăng bằng/rơi tự do chân sau khi đá",
+          "0": "Chỉ nhấc được chân lên hoặc ngã khi thực hiện đòn hoặc Không thực hiện được đòn"
+        }
+      },
+      {
+        "dwit_chagi": 10,
+        "content": {
+          "10": "",
+          "8": "Tốc độ đá ra/gập về nhanh, đúng thời điểm",
+          "5": "Đúng kỹ thuật, cao ngang hoặc hơn đầu",
+          "2": "Đá đúng hình dáng đòn nhưng thiếu lực/tốc độ; độ cao đòn đá thấp; hoặc bị mất thăng bằng/rơi tự do chân sau khi đá",
+          "0": "Chỉ nhấc được chân lên hoặc ngã khi thực hiện đòn hoặc Không thực hiện được đòn"
+        }
+      }
+    ]
+  }
+]

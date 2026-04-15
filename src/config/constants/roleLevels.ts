@@ -1,4 +1,5 @@
 export const ROLE_LEVELS = {
+  GUEST: 0, // Guest or unauthenticated user
   STUDENT: 1,
   COACH: 2,
   MANAGER: 3,

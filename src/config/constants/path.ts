@@ -45,4 +45,9 @@ export const NAV_ITEMS = [
     icon: ScanFace,
     minLevel: ROLE_LEVELS.STUDENT,
   },
+  {
+    path: "/public/exam",
+    label: "Quản lý Khảo thí",
+    icon: ScanFace,
+  },
 ];

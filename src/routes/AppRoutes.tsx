@@ -12,6 +12,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AICheckIn from "../pages/AICheckIn";
 import { AttendanceCheckin } from "../pages/AttendanceCheckin/AttendanceCheckin";
 import { useAuthStore } from "../store/authStore";
+import ExaminationManagement from '../pages/ExaminationManagement/ExaminationManagement';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -24,6 +25,10 @@ export default function AppRoutes() {
       {/* --- PUBLIC ROUTES --- */}
       <Route path="/welcome" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+
+      <Route path="/public" element={<MainLayout />}>
+        <Route path="exam" element={<ExaminationManagement />} />
+      </Route>
 
       {/* --- PROTECTED ROUTES --- */}
       <Route
@@ -54,7 +59,7 @@ export default function AppRoutes() {
           <Route path="schedules" element={<ClassSchedules />} />
           <Route path="schedules/:scheduleId" element={<AttendanceCheckin />} />
           <Route path="history" element={<AttendanceReports />} />
-          <Route path="/ai/check-in" element={<AICheckIn />} />
+          <Route path="ai/check-in" element={<AICheckIn />} />
         </Route>
       </Route>
 

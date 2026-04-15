@@ -1,0 +1,43 @@
+@use "../../styles/variables" as *;
+
+.examination-management-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.examination-management-header {
+  h1 {
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #1a1a2e;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #475569;
+    font-weight: 500;
+  }
+}
+
+.examination-management-placeholder {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 0 6px 16px rgba(26, 26, 46, 0.06);
+
+  h2 {
+    font-size: 18px;
+    color: #1a1a2e;
+    font-weight: 700;
+  }
+
+  p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #475569;
+  }
+}
