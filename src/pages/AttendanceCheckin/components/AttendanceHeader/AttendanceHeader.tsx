@@ -18,6 +18,7 @@ import {
   Star,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useRoleStudent } from "../../../../utils/roleUtils";
 import styles from "./AttendanceHeader.module.scss";
 
 interface AttendanceHeaderProps {
@@ -54,6 +55,7 @@ export function AttendanceHeader({
   onReset,
 }: AttendanceHeaderProps) {
   const onBack = useNavigateBack();
+  const { canViewManager } = useRoleStudent();
 
   return (
     <div className={styles.header}>
@@ -141,12 +143,14 @@ export function AttendanceHeader({
       {/* Quick actions + filter */}
       <div className={styles.quickActions}>
         <div className={styles.actionBtns}>
-          <button
-            onClick={() => onMarkAll("PRESENT")}
-            className={styles.btnMarkAll}
-          >
-            <CheckCircle2 size={12} /> Tất cả có mặt
-          </button>
+          {canViewManager && (
+            <button
+              onClick={() => onMarkAll("PRESENT")}
+              className={styles.btnMarkAll}
+            >
+              <CheckCircle2 size={12} /> Tất cả có mặt
+            </button>
+          )}
           <button onClick={onReset} className={styles.btnReset}>
             <RotateCcw size={11} /> Reset
           </button>

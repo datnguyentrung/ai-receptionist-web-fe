@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import styles from "../StudentManagement.module.scss";
+import { useRoleStudent } from '../../../utils/roleUtils';
 
 interface StudentHeaderProps {
   totalStudents: number;
@@ -10,6 +11,7 @@ export function StudentHeader({
   totalStudents,
   activeCount,
 }: StudentHeaderProps) {
+  const { canViewManager } = useRoleStudent();
   return (
     <div className={styles.pageHead}>
       <div>
@@ -20,9 +22,11 @@ export function StudentHeader({
           {totalStudents} học viên · {activeCount} đang học
         </p>
       </div>
-      <button className={styles.addBtn}>
-        <Plus size={16} /> Thêm học viên
-      </button>
+      {canViewManager && (
+        <button className={styles.addBtn}>
+          <Plus size={16} /> Thêm học viên
+        </button>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Avatar from "@/components/Avatar";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { useNavigateStudentListByClassScheduleId } from "../../../../hooks/useNavigation";
 import { getDurationInMinutes } from "../../../../utils/format";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
@@ -9,9 +10,18 @@ import styles from "./ClassCard.module.scss";
 export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {
   const enrolled = (cls.scheduleId.charCodeAt(0) * 7) % 100; // Mock enrolled students, replace with actual data when available
   const capacity = 100;
+  const navigateToStudentListByClassScheduleId =
+    useNavigateStudentListByClassScheduleId();
 
   return (
-    <div className={styles.classCard}>
+    <div
+      className={styles.classCard}
+      onClick={() =>
+        navigateToStudentListByClassScheduleId({
+          classScheduleId: cls.scheduleId,
+        })
+      }
+    >
       <div
         className={styles.cardAccent}
         style={{

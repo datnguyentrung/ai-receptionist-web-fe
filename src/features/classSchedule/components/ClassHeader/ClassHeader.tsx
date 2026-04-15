@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useRoleStudent } from "../../../../utils/roleUtils";
 import styles from "./ClassHeader.module.scss";
 
 interface Props {
@@ -14,6 +15,7 @@ export function ClassHeader({
   view,
   onViewChange,
 }: Props) {
+  const { canViewManager } = useRoleStudent();
   return (
     <div className={styles.pageHead}>
       <div>
@@ -42,9 +44,11 @@ export function ClassHeader({
             </button>
           ))}
         </div>
-        <button className={styles.addBtn}>
-          <Plus size={16} /> Tạo lớp mới
-        </button>
+        {canViewManager && (
+          <button className={styles.addBtn}>
+            <Plus size={16} /> Tạo lớp mới
+          </button>
+        )}
       </div>
     </div>
   );
