@@ -39,7 +39,7 @@ export function BottomBar({
           </>
         ) : (
           <>
-            <Send size={18} /> Nộp điểm danh ({markedCount}/{totalCount})
+            <Send size={18} /> Nộp đánh giá ({markedCount}/{totalCount})
           </>
         )}
       </button>

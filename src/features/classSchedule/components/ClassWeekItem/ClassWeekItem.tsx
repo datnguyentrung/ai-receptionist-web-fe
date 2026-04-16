@@ -38,7 +38,7 @@ export function ClassWeekItem({ cls }: { cls: ClassScheduleDetail }) {
         </div>
         <div className={styles.weekClassMetaRow}>
           <span className={styles.metaItem}>
-            <Users size={11} /> 60/100 HV
+            <Users size={11} /> {cls.totalStudents} HV
           </span>
           <span className={styles.metaItem}>
             <MapPin size={11} /> {ScheduleLocationLabel[cls.scheduleLocation]}

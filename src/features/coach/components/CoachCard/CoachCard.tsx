@@ -118,7 +118,7 @@ export default function CoachCard({ coach }: { coach: CoachDetail }) {
             <Phone size={13} />
             <span style={{ fontSize: "11px" }}>{coach.phoneNumber}</span>
           </a>
-          <a href={`mailto:${coach.belt}`} className={styles.contactLinkRight}>
+          <a href={`mailto:${coach.email}`} className={styles.contactLinkRight}>
             <Mail size={13} />
             <span
               style={{
@@ -126,10 +126,10 @@ export default function CoachCard({ coach }: { coach: CoachDetail }) {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "130px",
+                // maxWidth: "130px",
               }}
             >
-              {coach.belt || "Không có email"}
+              {coach.email || "Không có email"}
             </span>
           </a>
         </div>

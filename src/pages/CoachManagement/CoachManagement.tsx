@@ -1,7 +1,7 @@
 import {
   CoachCard,
   CoachFilters,
-  useFilteredCoaches,
+  useCoachesGroupedByRole,
   useGetAllCoaches,
 } from "@/features/coach";
 import { Plus, Users } from "lucide-react";
@@ -15,7 +15,10 @@ export function CoachManagement() {
 
   const { data: coaches, isLoading } = useGetAllCoaches();
 
-  const filteredCoaches = useFilteredCoaches(coaches || [], search, filter);
+  const coachGroups = useCoachesGroupedByRole(coaches || [], search, filter);
+
+  // Calculate filteredCoaches from groups to ensure consistency
+  const filteredCoaches = coachGroups.flatMap((group) => group.coaches);
 
   if (isLoading) {
     return <div>Đang tải dữ liệu...</div>;
@@ -31,7 +34,7 @@ export function CoachManagement() {
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
             {filteredCoaches.length} huấn luyện viên ·{" "}
-            {filteredCoaches.filter((c) => c.status === "active").length} đang
+            {filteredCoaches.filter((c) => c.status === "ACTIVE").length} đang
             hoạt động
           </p>
         </div>
@@ -48,14 +51,21 @@ export function CoachManagement() {
         setFilter={setFilter}
       />
 
-      {/* Coach cards grid */}
-      <div className={styles.coachGrid}>
-        {filteredCoaches.map((coach) => (
-          <CoachCard key={coach.staffCode} coach={coach} />
-        ))}
-      </div>
-
-      {filteredCoaches.length === 0 && (
+      {/* Coach groups */}
+      {coachGroups.length > 0 ? (
+        <div className={styles.coachGroups}>
+          {coachGroups.map((group) => (
+            <div key={group.roleCode} className={styles.roleGroup}>
+              <h3 className={styles.roleGroupHeader}>{group.label}</h3>
+              <div className={styles.coachGrid}>
+                {group.coaches.map((coach) => (
+                  <CoachCard key={coach.staffCode} coach={coach} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
         <div className={styles.emptyState}>
           <Users
             size={40}

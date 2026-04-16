@@ -31,13 +31,17 @@ export interface CoachDetail {
   birthDate: string;
   phoneNumber: string;
   belt: Belt;
+  email: string;
   /** Trạng thái tài khoản hệ thống */
   status: string; // UserStatus — imported from Security if needed
   /** Format: ISO 8601 UTC */
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string;
+  /** Role code/name từ API (e.g., "COACH_TRAINEE", "HEAD_COACH") */
   roleName: string;
+  /** Optional roleCode field (for future use) */
+  roleCode?: string;
   staffCode: string;
   fullName: string;
   /** Trạng thái công việc */
@@ -49,4 +53,5 @@ export interface CoachSummary {
   userId: string;
   fullName: string;
   staffCode: string;
+  email: string;
 }

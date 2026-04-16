@@ -114,7 +114,11 @@ export function StudentCardInner({
           </HoverCardTrigger>
 
           {/* Nội dung sẽ hiển thị khi di chuột vào con mắt */}
-          <HoverCardContent side="top" align="center" className="w-48 p-3">
+          <HoverCardContent
+            side="top"
+            align="center"
+            className={styles.evalHoverCard}
+          >
             <EvalQuick
               value={student.evaluationStatus}
               onChange={(v) => onUpdateEval(student.studentId, v)}
@@ -124,15 +128,39 @@ export function StudentCardInner({
         </HoverCard>
 
         {/* Expand toggle */}
-        <button
-          onClick={() => setExpanded((prev) => !prev)}
-          className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}
-        >
-          <ChevronDown
-            size={14}
-            className={`${styles.chevron} ${expanded ? styles.rotated : ""}`}
-          />
-        </button>
+        {!student || !student.attendanceId ? (
+          <HoverCard openDelay={0} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              {/* Phải bọc div vì button disabled bị mất pointer-events, không trigger được hover */}
+              <div className={styles.disabledExpandTriggerWrap}>
+                <button
+                  disabled
+                  className={`${styles.expandBtn} ${styles.expandBtnDisabled}`}
+                >
+                  <ChevronDown size={14} className={styles.chevron} />
+                </button>
+              </div>
+            </HoverCardTrigger>
+
+            <HoverCardContent
+              side="top"
+              align="center"
+              className={styles.missingAttendanceHoverCard}
+            >
+              Học viên này chưa có bản ghi điểm danh hôm nay
+            </HoverCardContent>
+          </HoverCard>
+        ) : (
+          <button
+            onClick={() => setExpanded((prev) => !prev)}
+            className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}
+          >
+            <ChevronDown
+              size={14}
+              className={`${styles.chevron} ${expanded ? styles.rotated : ""}`}
+            />
+          </button>
+        )}
       </div>
 
       {/* Expanded evaluation area */}
