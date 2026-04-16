@@ -23,70 +23,81 @@ export default function Header({
 
   return (
     <header className={styles.header}>
-      <button className={styles.menuBtn} onClick={() => setSidebarOpen(true)}>
-        <Menu size={20} />
-      </button>
-
-      <div>
-        <h1 className={styles.pageTitle}>{pageTitle}</h1>
-        <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
-          Thứ 4, ngày 04 tháng 03 năm 2026
-        </p>
-      </div>
-
-      {/* Search */}
-      <div className={styles.searchBar}>
-        <Search size={15} style={{ color: "#9CA3AF" }} />
-        <input placeholder="Tìm kiếm..." className={styles.searchInput} />
-      </div>
-
-      {/* Notif */}
-      <div className={styles.notifContainer}>
-        <button
-          onClick={() => setNotifOpen(!notifOpen)}
-          className={styles.iconBtn}
-        >
-          <Bell size={17} style={{ color: "#374151" }} />
-          <span className={styles.notifDot} />
+      <div className={styles.headerLeft}>
+        <button className={styles.menuBtn} onClick={() => setSidebarOpen(true)}>
+          <Menu size={20} />
         </button>
-        {notifOpen && (
-          <div className={styles.notifDropdown}>
-            <p className={styles.notifTitle}>Thông báo</p>
-            {[
-              {
-                text: "Nguyễn Văn An vừa đăng ký lớp học",
-                time: "2 phút trước",
-                dot: "#E02020",
-              },
-              {
-                text: "Lớp TKD-CB-A đã đầy 80% chỗ",
-                time: "15 phút trước",
-                dot: "#F59E0B",
-              },
-              {
-                text: "HLV Vũ Quốc Bảo xin nghỉ phép",
-                time: "1 giờ trước",
-                dot: "#6B7280",
-              },
-            ].map((n, i) => (
-              <div key={i} className={styles.notifItem}>
-                <div
-                  className={styles.notifItemDot}
-                  style={{ background: n.dot }}
-                />
-                <div>
-                  <p style={{ fontSize: "12px", color: "#374151" }}>{n.text}</p>
-                  <p style={{ fontSize: "11px", color: "#9CA3AF" }}>{n.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+
+        {/* Title & Date */}
+        <div>
+          <h1 className={styles.pageTitle}>{pageTitle}</h1>
+          <p className={styles.pageSubtitle}>
+            Thứ 4, ngày 04 tháng 03 năm 2026
+          </p>
+        </div>
       </div>
 
-      <button className={styles.iconBtn}>
-        <Settings size={17} style={{ color: "#374151" }} />
-      </button>
+      <div className={styles.headerCenter}>
+        {/* Search */}
+        <div className={styles.searchBar}>
+          <Search size={15} style={{ color: "#9CA3AF" }} />
+          <input placeholder="Tìm kiếm..." className={styles.searchInput} />
+        </div>
+      </div>
+
+      <div className={styles.headerRight}>
+        {/* Notif */}
+        <div className={styles.notifContainer}>
+          <button
+            onClick={() => setNotifOpen(!notifOpen)}
+            className={styles.iconBtn}
+          >
+            <Bell size={17} style={{ color: "#374151" }} />
+            <span className={styles.notifDot} />
+          </button>
+          {notifOpen && (
+            <div className={styles.notifDropdown}>
+              <p className={styles.notifTitle}>Thông báo</p>
+              {[
+                {
+                  text: "Nguyễn Văn An vừa đăng ký lớp học",
+                  time: "2 phút trước",
+                  dot: "#E02020",
+                },
+                {
+                  text: "Lớp TKD-CB-A đã đầy 80% chỗ",
+                  time: "15 phút trước",
+                  dot: "#F59E0B",
+                },
+                {
+                  text: "HLV Vũ Quốc Bảo xin nghỉ phép",
+                  time: "1 giờ trước",
+                  dot: "#6B7280",
+                },
+              ].map((n, i) => (
+                <div key={i} className={styles.notifItem}>
+                  <div
+                    className={styles.notifItemDot}
+                    style={{ background: n.dot }}
+                  />
+                  <div>
+                    <p style={{ fontSize: "12px", color: "#374151" }}>
+                      {n.text}
+                    </p>
+                    <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                      {n.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button className={styles.iconBtn}>
+          <Settings size={17} style={{ color: "#374151" }} />
+        </button>
+      </div>
     </header>
   );
 }

@@ -59,7 +59,14 @@ export function AttendanceTable({
               }}
             >
               {TABLE_HEADERS.map((h) => (
-                <th key={h} className={styles.th}>
+                <th
+                  key={h}
+                  className={
+                    h === "Học viên"
+                      ? `${styles.th} ${styles.studentCol}`
+                      : styles.th
+                  }
+                >
                   {h}
                 </th>
               ))}
@@ -90,13 +97,14 @@ export function AttendanceTable({
                         fontSize: "12px",
                         color: "#374151",
                         whiteSpace: "nowrap",
+                        textAlign: "center",
                       }}
                     >
                       {formatDateDMY(a.sessionDate)}
                     </p>
                   </td>
                   {/* Học viên */}
-                  <td className={styles.td}>
+                  <td className={`${styles.td} ${styles.studentCol}`}>
                     <div className={styles.avatarCell}>
                       <Avatar
                         fullName={a.studentName}
@@ -105,16 +113,7 @@ export function AttendanceTable({
                         width="32px"
                         height="32px"
                       />
-                      <p
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "#111827",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {a.studentName}
-                      </p>
+                      <p className={styles.studentName}>{a.studentName}</p>
                     </div>
                   </td>
                   {/* Cơ sở */}
@@ -124,6 +123,7 @@ export function AttendanceTable({
                         fontSize: "12px",
                         color: "#374151",
                         whiteSpace: "nowrap",
+                        textAlign: "center",
                       }}
                     >
                       Cơ sở {a.classScheduleId?.charAt(1) ?? "—"}
@@ -136,6 +136,7 @@ export function AttendanceTable({
                         fontSize: "12px",
                         color: "#374151",
                         whiteSpace: "nowrap",
+                        textAlign: "center",
                       }}
                     >
                       Thứ {a.classScheduleId?.charAt(2) ?? "—"}
@@ -148,17 +149,18 @@ export function AttendanceTable({
                         fontSize: "12px",
                         color: "#374151",
                         whiteSpace: "nowrap",
+                        textAlign: "center",
                       }}
                     >
                       Ca {a.classScheduleId?.charAt(4) ?? "—"}
                     </p>
                   </td>
                   {/* Điểm danh */}
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ textAlign: "center" }}>
                     <AttendanceBadge status={attendanceStatus} />
                   </td>
                   {/* Đánh giá */}
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ textAlign: "center" }}>
                     {a.evaluationStatus &&
                     EVALUATION_STYLE[a.evaluationStatus] ? (
                       <span
