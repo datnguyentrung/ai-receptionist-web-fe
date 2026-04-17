@@ -19,7 +19,8 @@ export function ensurePageResponse<T>(
 ): PageResponse<T> {
   if (isRecord(value) && Array.isArray(value.content)) {
     const number = typeof value.number === "number" ? value.number : 0;
-    const size = typeof value.size === "number" ? value.size : value.content.length;
+    const size =
+      typeof value.size === "number" ? value.size : value.content.length;
     const totalElements =
       typeof value.totalElements === "number"
         ? value.totalElements
@@ -29,16 +30,22 @@ export function ensurePageResponse<T>(
 
     return {
       content: value.content as T[],
-      empty: typeof value.empty === "boolean" ? value.empty : value.content.length === 0,
+      empty:
+        typeof value.empty === "boolean"
+          ? value.empty
+          : value.content.length === 0,
       first: typeof value.first === "boolean" ? value.first : number === 0,
       last: typeof value.last === "boolean" ? value.last : true,
       number,
       size,
       sort: isRecord(value.sort)
         ? {
-            empty: typeof value.sort.empty === "boolean" ? value.sort.empty : true,
+            empty:
+              typeof value.sort.empty === "boolean" ? value.sort.empty : true,
             sorted:
-              typeof value.sort.sorted === "boolean" ? value.sort.sorted : false,
+              typeof value.sort.sorted === "boolean"
+                ? value.sort.sorted
+                : false,
             unsorted:
               typeof value.sort.unsorted === "boolean"
                 ? value.sort.unsorted
@@ -79,18 +86,25 @@ export function ensureStudentListResponse(
   if (isRecord(value)) {
     return {
       activeStudentCount:
-        typeof value.activeStudentCount === "number" ? value.activeStudentCount : 0,
+        typeof value.activeStudentCount === "number"
+          ? value.activeStudentCount
+          : 0,
       reservedStudentCount:
         typeof value.reservedStudentCount === "number"
           ? value.reservedStudentCount
           : 0,
       droppedStudentCount:
-        typeof value.droppedStudentCount === "number" ? value.droppedStudentCount : 0,
+        typeof value.droppedStudentCount === "number"
+          ? value.droppedStudentCount
+          : 0,
       students: ensurePageResponse(value.students, `${context}.students`),
     };
   }
 
-  console.warn(`[runtime-guard] ${context}: expected student list response`, value);
+  console.warn(
+    `[runtime-guard] ${context}: expected student list response`,
+    value,
+  );
   return {
     activeStudentCount: 0,
     reservedStudentCount: 0,

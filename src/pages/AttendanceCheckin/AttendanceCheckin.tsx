@@ -116,13 +116,21 @@ export function AttendanceCheckin() {
     progress,
     filtered,
   } = useMemo(() => {
-    const present = students.filter((s) => s.attendanceStatus === "PRESENT").length;
-    const absent = students.filter((s) => s.attendanceStatus === "ABSENT").length;
-    const excused = students.filter((s) => s.attendanceStatus === "EXCUSED").length;
+    const present = students.filter(
+      (s) => s.attendanceStatus === "PRESENT",
+    ).length;
+    const absent = students.filter(
+      (s) => s.attendanceStatus === "ABSENT",
+    ).length;
+    const excused = students.filter(
+      (s) => s.attendanceStatus === "EXCUSED",
+    ).length;
     const unmarked = students.filter((s) => s.attendanceStatus === null).length;
     const total = students.length;
     const marked = total - unmarked;
-    const evaluated = students.filter((s) => s.evaluationStatus !== null).length;
+    const evaluated = students.filter(
+      (s) => s.evaluationStatus !== null,
+    ).length;
 
     return {
       presentCount: present,

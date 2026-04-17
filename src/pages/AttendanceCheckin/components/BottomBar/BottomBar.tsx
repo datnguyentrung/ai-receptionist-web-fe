@@ -23,8 +23,8 @@ function BottomBarInner({
         <div className={styles.warningBanner}>
           <Info size={14} style={{ color: "#D97706", flexShrink: 0 }} />
           <p className={styles.warningText}>
-            Còn <span className={styles.warningCount}>{unmarkedCount}</span>{" "}
-            học viên chưa được điểm danh
+            Còn <span className={styles.warningCount}>{unmarkedCount}</span> học
+            viên chưa được điểm danh
           </p>
         </div>
       )}

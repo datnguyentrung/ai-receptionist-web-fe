@@ -13,7 +13,8 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
   const capacity = 100;
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
-  const shiftLabel = ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
+  const shiftLabel =
+    ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
   const locationLabel =
     ScheduleLocationLabel[cls.scheduleLocation] ?? "Địa điểm không xác định";
 

@@ -1,6 +1,6 @@
 import { RequireRole } from "@/config/RequireRole";
-import { lazy, Suspense } from "react";
 import { useRoleStudent } from "@/utils/roleUtils";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
@@ -85,14 +85,21 @@ export default function AppRoutes() {
         <Route
           path="/"
           element={
-            isAuthenticated ? <MainLayout /> : <Navigate to="/welcome" replace />
+            isAuthenticated ? (
+              <MainLayout />
+            ) : (
+              <Navigate to="/welcome" replace />
+            )
           }
         >
           {/* NHÓM 1: CHỈ MANAGER VÀ HEAD_COACH ĐƯỢC XEM */}
           {/* Nếu Coach cố tình truy cập "/", đẩy họ sang trang mặc định của họ là "/schedules" */}
           <Route
             element={
-              <RequireRole isAllowed={canViewManager} fallbackPath="/students" />
+              <RequireRole
+                isAllowed={canViewManager}
+                fallbackPath="/students"
+              />
             }
           >
             <Route index element={<Dashboard />} />

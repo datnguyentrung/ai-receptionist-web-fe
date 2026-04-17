@@ -62,7 +62,8 @@ function AttendanceHeaderInner({
   const scheduleShiftLabel =
     ScheduleShiftLabel[session.scheduleShift] ?? "Ca không xác định";
   const scheduleLocationLabel =
-    ScheduleLocationLabel[session.scheduleLocation] ?? "Địa điểm không xác định";
+    ScheduleLocationLabel[session.scheduleLocation] ??
+    "Địa điểm không xác định";
   const weekdayLabel = WeekdayCodeToLabel[session.weekday] ?? "Không xác định";
 
   return (

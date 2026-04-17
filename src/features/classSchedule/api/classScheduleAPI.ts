@@ -17,9 +17,7 @@ export const classScheduleAPI = {
     scheduleStatus,
     weekday,
     scheduleIds,
-  }: GetClassSchedulesParams): Promise<
-    ClassScheduleDetail[]
-  > => {
+  }: GetClassSchedulesParams): Promise<ClassScheduleDetail[]> => {
     const response = await javaApi.get("/class-schedules", {
       params: {
         branchId,

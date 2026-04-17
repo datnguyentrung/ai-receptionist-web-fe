@@ -62,8 +62,8 @@ export class AppErrorBoundary extends Component<
               lineHeight: 1.6,
             }}
           >
-            Hãy tải lại trang để tiếp tục. Nếu lỗi lặp lại, vui lòng kiểm tra
-            dữ liệu đầu vào hoặc liên hệ đội phát triển.
+            Hãy tải lại trang để tiếp tục. Nếu lỗi lặp lại, vui lòng kiểm tra dữ
+            liệu đầu vào hoặc liên hệ đội phát triển.
           </p>
           <button
             onClick={this.handleReload}

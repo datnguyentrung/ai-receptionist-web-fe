@@ -1,10 +1,10 @@
-﻿import {
+﻿import { RenderProfiler } from "@/components/dev/RenderProfiler";
+import {
   ClassGrid,
   ClassHeader,
   ClassWeekView,
   useGetAllClassSchedules,
 } from "@/features/classSchedule";
-import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import styles from "./ClassSchedules.module.scss";
@@ -40,8 +40,8 @@ export function ClassSchedules() {
         <ClassHeader
           totalClasses={classSchedules?.length || 0}
           activeClasses={
-            classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE").length ||
-            0
+            classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE")
+              .length || 0
           }
           view={view}
           onViewChange={setView}

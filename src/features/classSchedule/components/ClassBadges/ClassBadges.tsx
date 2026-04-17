@@ -29,7 +29,10 @@ export function LevelBadge({ level }: { level: ScheduleLevel }) {
 }
 
 export function StatusBadge({ status }: { status: ScheduleStatus }) {
-  const map: Record<ScheduleStatus, { label: string; bg: string; color: string }> = {
+  const map: Record<
+    ScheduleStatus,
+    { label: string; bg: string; color: string }
+  > = {
     ACTIVE: { label: "Đang mở", bg: "#D1FAE5", color: "#065F46" },
     INACTIVE: { label: "Đã kết thúc", bg: "#F3F4F6", color: "#6B7280" },
   };
