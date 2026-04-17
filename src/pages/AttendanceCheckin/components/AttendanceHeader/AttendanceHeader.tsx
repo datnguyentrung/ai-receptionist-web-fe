@@ -18,6 +18,7 @@ import {
   Star,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { memo } from "react";
 import { useRoleStudent } from "../../../../utils/roleUtils";
 import styles from "./AttendanceHeader.module.scss";
 
@@ -39,7 +40,7 @@ interface AttendanceHeaderProps {
 
 // Link: /schedules/[:scheduleId]
 
-export function AttendanceHeader({
+function AttendanceHeaderInner({
   session,
   markedCount,
   totalCount,
@@ -56,6 +57,13 @@ export function AttendanceHeader({
 }: AttendanceHeaderProps) {
   const onBack = useNavigateBack();
   const { canViewManager } = useRoleStudent();
+  const scheduleLevelLabel =
+    ScheduleLevelLabel[session.scheduleLevel] ?? "Lớp không xác định";
+  const scheduleShiftLabel =
+    ScheduleShiftLabel[session.scheduleShift] ?? "Ca không xác định";
+  const scheduleLocationLabel =
+    ScheduleLocationLabel[session.scheduleLocation] ?? "Địa điểm không xác định";
+  const weekdayLabel = WeekdayCodeToLabel[session.weekday] ?? "Không xác định";
 
   return (
     <div className={styles.header}>
@@ -67,8 +75,7 @@ export function AttendanceHeader({
         <div className={styles.headerTitle}>
           <p className={styles.className}>{session.branchName}</p>
           <p className={styles.classCode}>
-            {ScheduleLevelLabel[session.scheduleLevel]} ·{" "}
-            {ScheduleShiftLabel[session.scheduleShift]}
+            {scheduleLevelLabel} · {scheduleShiftLabel}
           </p>
         </div>
         {session.scheduleId === "in-progress" && (
@@ -85,12 +92,12 @@ export function AttendanceHeader({
         {[
           {
             icon: MapPin,
-            text: ScheduleLocationLabel[session.scheduleLocation],
+            text: scheduleLocationLabel,
           },
           { icon: Clock, text: `${session.startTime} – ${session.endTime}` },
           {
             icon: Calendar,
-            text: `${WeekdayCodeToLabel[session.weekday]}, ${formatDateDMY(new Date())}`,
+            text: `${weekdayLabel}, ${formatDateDMY(new Date())}`,
           },
         ].map(({ icon: Icon, text }) => (
           <div key={text} className={styles.classInfoItem}>
@@ -178,3 +185,5 @@ export function AttendanceHeader({
     </div>
   );
 }
+
+export const AttendanceHeader = memo(AttendanceHeaderInner);

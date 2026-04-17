@@ -6,6 +6,61 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tailwindcss(), react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) {
+            return;
+          }
+
+          if (
+            id.includes("node_modules/react") ||
+            id.includes("node_modules/react-dom") ||
+            id.includes("node_modules/scheduler")
+          ) {
+            return "react-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@radix-ui") ||
+            id.includes("node_modules/cmdk") ||
+            id.includes("node_modules/vaul")
+          ) {
+            return "radix-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules/axios") ||
+            id.includes("node_modules/axios-retry")
+          ) {
+            return "data-vendor";
+          }
+
+          if (id.includes("node_modules/recharts")) {
+            return "chart-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@mediapipe") ||
+            id.includes("node_modules/@yudiel/react-qr-scanner")
+          ) {
+            return "ai-vendor";
+          }
+
+          if (
+            id.includes("node_modules/lucide-react") ||
+            id.includes("node_modules/motion")
+          ) {
+            return "ui-vendor";
+          }
+
+          return;
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -1,6 +1,13 @@
 import type { CoachStatus } from "../../../../config/constants";
 import styles from "./StatusBadge.module.scss";
 
+const DEFAULT_STATUS_STYLE = {
+  label: "Không xác định",
+  bg: "#F3F4F6",
+  color: "#6B7280",
+  dot: "#9CA3AF",
+};
+
 export default function StatusBadge({ status }: { status: CoachStatus }) {
   const map: Record<
     CoachStatus,
@@ -31,7 +38,7 @@ export default function StatusBadge({ status }: { status: CoachStatus }) {
       dot: "#7C3AED",
     },
   };
-  const s = map[status];
+  const s = map[status] ?? DEFAULT_STATUS_STYLE;
   return (
     <span
       className={styles.statusBadge}

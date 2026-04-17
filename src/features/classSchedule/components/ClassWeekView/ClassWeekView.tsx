@@ -3,7 +3,7 @@ import { WeekdayCode, WeekdayFromCode, WeekdayLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import { getCurrentWeekday } from "@/utils/format";
 import { Calendar } from "lucide-react";
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { ClassWeekItem } from "../ClassWeekItem";
 import styles from "./ClassWeekView.module.scss";
 
@@ -11,17 +11,24 @@ interface Props {
   classes: ClassScheduleDetail[];
 }
 
-export function ClassWeekView({ classes }: Props) {
+function ClassWeekViewInner({ classes }: Props) {
   const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
 
-  const counts = Object.fromEntries(
-    Object.entries(WeekdayCode).map(([key, code]) => [
-      key,
-      classes.filter((c) => c.weekday === code).length,
-    ]),
+  const counts = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(WeekdayCode).map(([key, code]) => [
+          key,
+          classes.filter((c) => c.weekday === code).length,
+        ]),
+      ),
+    [classes],
   );
 
-  const filtered = classes.filter((c) => c.weekday === selectedDay);
+  const filtered = useMemo(
+    () => classes.filter((c) => c.weekday === selectedDay),
+    [classes, selectedDay],
+  );
 
   return (
     <div className={styles.weekView}>
@@ -58,3 +65,5 @@ export function ClassWeekView({ classes }: Props) {
     </div>
   );
 }
+
+export const ClassWeekView = memo(ClassWeekViewInner);

@@ -24,7 +24,7 @@ export function StudentManagement() {
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const { user: userInfo } = useAuthStore();
+  const userInfo = useAuthStore((state) => state.user);
 
   const debouncedSearch = useDebounce(search, 500);
 

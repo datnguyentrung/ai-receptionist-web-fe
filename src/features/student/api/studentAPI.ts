@@ -1,4 +1,5 @@
 import { javaApi } from "@/lib/axiosInstance";
+import { ensureStudentListResponse } from "@/lib/runtimeGuards";
 
 import type {
   GetStudentsParams,
@@ -40,7 +41,7 @@ export const studentAPI = {
       },
     });
     // console.log("Fetched students:", response.data); // Debug log
-    return response.data;
+    return ensureStudentListResponse(response.data, "studentAPI.getStudents");
   },
 
   getStudentById: async (id: string): Promise<StudentDetail> => {

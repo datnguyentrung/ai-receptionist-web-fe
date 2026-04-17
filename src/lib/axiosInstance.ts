@@ -4,6 +4,7 @@ import type {
   InternalAxiosRequestConfig,
 } from "axios";
 import axios from "axios";
+import axiosRetry from "axios-retry";
 import { useAuthStore } from "../store/authStore";
 
 // API configuration from environment variables
@@ -14,6 +15,33 @@ const PYTHON_API_URL =
 
 console.log("🔧 JAVA_API_URL:", JAVA_API_URL);
 console.log("🔧 PYTHON_API_URL:", PYTHON_API_URL);
+
+function setupRetry(instance: AxiosInstance): AxiosInstance {
+  axiosRetry(instance, {
+    retries: 3,
+    retryDelay: axiosRetry.exponentialDelay,
+    retryCondition: (error) => {
+      const status = error.response?.status;
+
+      if (axiosRetry.isNetworkError(error)) {
+        return true;
+      }
+
+      return status === 429 || (status !== undefined && status >= 500);
+    },
+    onRetry: (retryCount, error, requestConfig) => {
+      console.log(
+        `🔁 Retry #${retryCount} ${requestConfig.method?.toUpperCase()} ${requestConfig.url}`,
+        {
+          status: error.response?.status,
+          message: error.message,
+        },
+      );
+    },
+  });
+
+  return instance;
+}
 
 function setupInterceptors(instance: AxiosInstance): AxiosInstance {
   // Request interceptor - add token automatically
@@ -79,22 +107,26 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
 
 // 🚀 Instance cho Java (Xử lý nghiệp vụ chính, CRUD, tốc độ cao)
 export const javaApi = setupInterceptors(
-  axios.create({
-    baseURL: JAVA_API_URL,
-    timeout: 10000, // 10 giây
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  }),
+  setupRetry(
+    axios.create({
+      baseURL: JAVA_API_URL,
+      timeout: 15000, // 15 giây
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }),
+  ),
 );
 
 // 🤖 Instance cho Python (AI Receptionist, nhận diện khuôn mặt, xử lý file nặng)
 export const pythonApi = setupInterceptors(
-  axios.create({
-    baseURL: PYTHON_API_URL,
-    timeout: 30000, // 30 giây (Model AI xử lý lâu hơn)
-    // LƯU Ý KỸ: Không fix cứng Content-Type là JSON ở đây!
-    // Khi bạn ném FormData (ảnh) vào, Axios sẽ tự động set thành multipart/form-data
-  }),
+  setupRetry(
+    axios.create({
+      baseURL: PYTHON_API_URL,
+      timeout: 30000, // 30 giây (Model AI xử lý lâu hơn)
+      // LƯU Ý KỸ: Không fix cứng Content-Type là JSON ở đây!
+      // Khi bạn ném FormData (ảnh) vào, Axios sẽ tự động set thành multipart/form-data
+    }),
+  ),
 );

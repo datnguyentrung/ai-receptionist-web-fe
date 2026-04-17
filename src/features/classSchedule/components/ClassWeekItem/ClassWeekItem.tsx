@@ -3,10 +3,11 @@ import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
 import { ChevronRight, MapPin, Users } from "lucide-react";
+import { memo } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassWeekItem.module.scss";
 
-export function ClassWeekItem({ cls }: { cls: ClassScheduleDetail }) {
+function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
 
@@ -54,3 +55,5 @@ export function ClassWeekItem({ cls }: { cls: ClassScheduleDetail }) {
     </div>
   );
 }
+
+export const ClassWeekItem = memo(ClassWeekItemInner);

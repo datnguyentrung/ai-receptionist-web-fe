@@ -2,16 +2,20 @@ import Avatar from "@/components/Avatar";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { memo } from "react";
 import { useNavigateStudentListByClassScheduleId } from "../../../../hooks/useNavigation";
 import { getDurationInMinutes } from "../../../../utils/format";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
-export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {
+function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
   const enrolled = (cls.scheduleId.charCodeAt(0) * 7) % 100; // Mock enrolled students, replace with actual data when available
   const capacity = 100;
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
+  const shiftLabel = ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
+  const locationLabel =
+    ScheduleLocationLabel[cls.scheduleLocation] ?? "Địa điểm không xác định";
 
   return (
     <div
@@ -40,7 +44,7 @@ export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {
               {cls.branchName}
             </p>
             <p style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
-              {ScheduleShiftLabel[cls.scheduleShift]}
+              {shiftLabel}
             </p>
           </div>
           <div className={styles.cardBadges}>
@@ -81,9 +85,7 @@ export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {
           </div>
           <div className={styles.infoRow}>
             <MapPin size={13} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: "12px" }}>
-              {ScheduleLocationLabel[cls.scheduleLocation]}
-            </span>
+            <span style={{ fontSize: "12px" }}>{locationLabel}</span>
           </div>
         </div>
 
@@ -124,3 +126,5 @@ export function ClassCard({ cls }: { cls: ClassScheduleDetail }) {
     </div>
   );
 }
+
+export const ClassCard = memo(ClassCardInner);

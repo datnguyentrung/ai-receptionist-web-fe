@@ -28,6 +28,7 @@ const STATUS_MAP = {
 
 export function AttendanceBadge({ status }: { status: AttendanceStatus }) {
   const s = STATUS_MAP[status] ?? STATUS_MAP["ABSENT"];
+  const label = AttendanceStatusLabel[status] ?? s.label;
   const Icon = s.icon;
   return (
     <span
@@ -35,7 +36,7 @@ export function AttendanceBadge({ status }: { status: AttendanceStatus }) {
       style={{ background: s.bg, color: s.color }}
     >
       <Icon size={11} />
-      {AttendanceStatusLabel[status]}
+      {label}
     </span>
   );
 }

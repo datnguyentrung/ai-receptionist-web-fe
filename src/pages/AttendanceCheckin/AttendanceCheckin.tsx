@@ -1,3 +1,4 @@
+import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
@@ -26,12 +27,6 @@ import { StudentCard } from "./components/StudentCard";
 import { SuccessOverlay } from "./components/SuccessOverlay";
 
 function nowTime() {
-  console.log(
-    new Date().toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  );
   return new Date().toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -110,29 +105,40 @@ export function AttendanceCheckin() {
     [baseMerged, mutations],
   );
 
-  // Derived stats
-  const presentCount = students.filter(
-    (s) => s.attendanceStatus === "PRESENT",
-  ).length;
-  const absentCount = students.filter(
-    (s) => s.attendanceStatus === "ABSENT",
-  ).length;
-  const excusedCount = students.filter(
-    (s) => s.attendanceStatus === "EXCUSED",
-  ).length;
-  const unmarkedCount = students.filter(
-    (s) => s.attendanceStatus === null,
-  ).length;
-  const totalCount = students.length;
-  const markedCount = totalCount - unmarkedCount;
-  const evalCount = students.filter((s) => s.evaluationStatus !== null).length;
-  const progress = Math.round((markedCount / totalCount) * 100);
+  const {
+    presentCount,
+    absentCount,
+    excusedCount,
+    unmarkedCount,
+    totalCount,
+    markedCount,
+    evalCount,
+    progress,
+    filtered,
+  } = useMemo(() => {
+    const present = students.filter((s) => s.attendanceStatus === "PRESENT").length;
+    const absent = students.filter((s) => s.attendanceStatus === "ABSENT").length;
+    const excused = students.filter((s) => s.attendanceStatus === "EXCUSED").length;
+    const unmarked = students.filter((s) => s.attendanceStatus === null).length;
+    const total = students.length;
+    const marked = total - unmarked;
+    const evaluated = students.filter((s) => s.evaluationStatus !== null).length;
 
-  // Filter
-  const filtered =
-    filter === "all"
-      ? students
-      : students.filter((s) => s.attendanceStatus === filter);
+    return {
+      presentCount: present,
+      absentCount: absent,
+      excusedCount: excused,
+      unmarkedCount: unmarked,
+      totalCount: total,
+      markedCount: marked,
+      evalCount: evaluated,
+      progress: total > 0 ? Math.round((marked / total) * 100) : 0,
+      filtered:
+        filter === "all"
+          ? students
+          : students.filter((s) => s.attendanceStatus === filter),
+    };
+  }, [students, filter]);
 
   const updateStatus = useCallback(
     (id: string, status: AttendanceStatus | null) => {
@@ -214,24 +220,29 @@ export function AttendanceCheckin() {
     [updateEvaluation],
   );
 
-  const markAll = (status: AttendanceStatus | null) => {
-    const time = status === "PRESENT" ? nowTime() : null;
-    setMutations(
-      baseMerged.reduce(
-        (acc, s) => ({
-          ...acc,
-          [s.studentId]: { attendanceStatus: status, checkInTime: time },
-        }),
-        {} as Record<string, Partial<StudentAttendanceResponse>>,
-      ),
-    );
-  };
+  const markAll = useCallback(
+    (status: AttendanceStatus | null) => {
+      const time = status === "PRESENT" ? nowTime() : null;
+      setMutations(
+        baseMerged.reduce(
+          (acc, s) => ({
+            ...acc,
+            [s.studentId]: { attendanceStatus: status, checkInTime: time },
+          }),
+          {} as Record<string, Partial<StudentAttendanceResponse>>,
+        ),
+      );
+    },
+    [baseMerged],
+  );
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     setSubmittedTime(nowTime());
     setShowSuccess(true);
     setSubmitted(true);
-  };
+  }, []);
+
+  const handleReset = useCallback(() => markAll(null), [markAll]);
 
   if (!hasScheduleAccess) {
     return (
@@ -300,60 +311,66 @@ export function AttendanceCheckin() {
     <div className={styles.page}>
       <div className={styles.grid}>
         {/* -- Left Sidebar -- */}
-        <aside className={styles.sidebar}>
-          <AttendanceHeader
-            session={enrollments.classScheduleSummary}
-            markedCount={markedCount}
-            totalCount={totalCount}
-            progress={progress}
-            presentCount={presentCount}
-            absentCount={absentCount}
-            excusedCount={excusedCount}
-            unmarkedCount={unmarkedCount}
-            evalCount={evalCount}
-            filter={filter}
-            onFilterChange={setFilter}
-            onMarkAll={markAll}
-            onReset={() => markAll(null)}
-          />
-        </aside>
+        <RenderProfiler id="AttendanceCheckin:Sidebar" thresholdMs={6}>
+          <aside className={styles.sidebar}>
+            <AttendanceHeader
+              session={enrollments.classScheduleSummary}
+              markedCount={markedCount}
+              totalCount={totalCount}
+              progress={progress}
+              presentCount={presentCount}
+              absentCount={absentCount}
+              excusedCount={excusedCount}
+              unmarkedCount={unmarkedCount}
+              evalCount={evalCount}
+              filter={filter}
+              onFilterChange={setFilter}
+              onMarkAll={markAll}
+              onReset={handleReset}
+            />
+          </aside>
+        </RenderProfiler>
 
         {/* -- Right Main -- */}
         <main className={styles.main}>
           {/* Student Grid */}
-          <div className={styles.studentList}>
-            {filtered.length === 0 && (
-              <div className={styles.emptyState}>
-                <Users
-                  size={40}
-                  style={{ color: "#E5E7EB", margin: "0 auto 10px" }}
-                />
-                <p className={styles.emptyText}>Không có học viên nào</p>
-              </div>
-            )}
+          <RenderProfiler id="AttendanceCheckin:StudentList" thresholdMs={10}>
+            <div className={styles.studentList}>
+              {filtered.length === 0 && (
+                <div className={styles.emptyState}>
+                  <Users
+                    size={40}
+                    style={{ color: "#E5E7EB", margin: "0 auto 10px" }}
+                  />
+                  <p className={styles.emptyText}>Không có học viên nào</p>
+                </div>
+              )}
 
-            <AnimatePresence initial={false}>
-              {filtered.map((student, index) => (
-                <StudentCard
-                  key={student.studentId}
-                  student={student}
-                  index={index}
-                  onUpdateStatus={updateStatus}
-                  onUpdateEval={updateEval}
-                  onOpenEval={setEvalTarget}
-                />
-              ))}
-            </AnimatePresence>
-          </div>
+              <AnimatePresence initial={false}>
+                {filtered.map((student, index) => (
+                  <StudentCard
+                    key={student.studentId}
+                    student={student}
+                    index={index}
+                    onUpdateStatus={updateStatus}
+                    onUpdateEval={updateEval}
+                    onOpenEval={setEvalTarget}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          </RenderProfiler>
 
           {/* Submit Bar */}
-          <BottomBar
-            unmarkedCount={unmarkedCount}
-            markedCount={markedCount}
-            totalCount={totalCount}
-            submitted={submitted}
-            onSubmit={handleSubmit}
-          />
+          <RenderProfiler id="AttendanceCheckin:BottomBar" thresholdMs={4}>
+            <BottomBar
+              unmarkedCount={unmarkedCount}
+              markedCount={markedCount}
+              totalCount={totalCount}
+              submitted={submitted}
+              onSubmit={handleSubmit}
+            />
+          </RenderProfiler>
         </main>
       </div>
 

@@ -4,6 +4,7 @@
   ClassWeekView,
   useGetAllClassSchedules,
 } from "@/features/classSchedule";
+import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import styles from "./ClassSchedules.module.scss";
@@ -35,20 +36,24 @@ export function ClassSchedules() {
 
   return (
     <div className={styles.page}>
-      <ClassHeader
-        totalClasses={classSchedules?.length || 0}
-        activeClasses={
-          classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE").length ||
-          0
-        }
-        view={view}
-        onViewChange={setView}
-      />
-      {view === "grid" ? (
-        <ClassGrid classes={classSchedules || []} />
-      ) : (
-        <ClassWeekView classes={classSchedules || []} />
-      )}
+      <RenderProfiler id="ClassSchedules:Header" thresholdMs={4}>
+        <ClassHeader
+          totalClasses={classSchedules?.length || 0}
+          activeClasses={
+            classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE").length ||
+            0
+          }
+          view={view}
+          onViewChange={setView}
+        />
+      </RenderProfiler>
+      <RenderProfiler id="ClassSchedules:Content" thresholdMs={8}>
+        {view === "grid" ? (
+          <ClassGrid classes={classSchedules || []} />
+        ) : (
+          <ClassWeekView classes={classSchedules || []} />
+        )}
+      </RenderProfiler>
     </div>
   );
 }

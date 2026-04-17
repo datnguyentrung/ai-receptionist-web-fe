@@ -5,6 +5,7 @@ import type {
   ScheduleLevel,
 } from "@/config/constants";
 import { javaApi } from "@/lib/axiosInstance";
+import { ensureArray, ensurePageResponse } from "@/lib/runtimeGuards";
 import type {
   AttendanceBatchCreateRequest,
   AttendanceManualLogRequest,
@@ -53,7 +54,10 @@ export const studentAttendanceAPI = {
       "/student-attendances/batch-init",
       data,
     );
-    return response.data;
+    return ensureArray<StudentAttendanceResponse>(
+      response.data,
+      "studentAttendanceAPI.batchInit",
+    );
   },
 
   /** GET /filter — Lọc danh sách điểm danh theo lịch học và ngày */
@@ -88,7 +92,10 @@ export const studentAttendanceAPI = {
         sortDir,
       },
     });
-    console.log("API response:", response);
-    return response.data;
+
+    return ensurePageResponse<StudentAttendanceResponse>(
+      response.data,
+      "studentAttendanceAPI.filter",
+    );
   },
 };

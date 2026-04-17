@@ -25,8 +25,15 @@ const STATUS_MAP: Record<
   },
 };
 
+const DEFAULT_STATUS_STYLE = {
+  label: "Không xác định",
+  bg: "#F3F4F6",
+  color: "#6B7280",
+  dot: "#9CA3AF",
+};
+
 export default function StatusBadge({ status }: { status: StudentStatus }) {
-  const s = STATUS_MAP[status];
+  const s = STATUS_MAP[status] ?? DEFAULT_STATUS_STYLE;
   return (
     <span
       className={styles.statusBadge}

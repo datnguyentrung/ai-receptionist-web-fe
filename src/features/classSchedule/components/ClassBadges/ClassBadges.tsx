@@ -2,6 +2,8 @@ import type { ScheduleLevel, ScheduleStatus } from "@/config/constants";
 import { ScheduleLevelLabel } from "@/config/constants";
 import styles from "./ClassBadges.module.scss";
 
+const DEFAULT_BADGE_STYLE = { bg: "#F3F4F6", color: "#6B7280" };
+
 export function LevelBadge({ level }: { level: ScheduleLevel }) {
   const map: Record<ScheduleLevel, { bg: string; color: string }> = {
     BASIC: { bg: "#E0F2FE", color: "#0369A1" },
@@ -17,20 +19,23 @@ export function LevelBadge({ level }: { level: ScheduleLevel }) {
     FORMS_TEAM_TIER_2: { bg: "#E0E7FF", color: "#3730A3" },
     FORMS_TEAM_TIER_3: { bg: "#DBEAFE", color: "#1E40AF" },
   };
-  const s = map[level];
+  const s = map[level] ?? DEFAULT_BADGE_STYLE;
+  const label = ScheduleLevelLabel[level] ?? "Không xác định";
   return (
     <span className={styles.badge} style={{ background: s.bg, color: s.color }}>
-      {ScheduleLevelLabel[level]}
+      {label}
     </span>
   );
 }
 
 export function StatusBadge({ status }: { status: ScheduleStatus }) {
-  const map = {
+  const map: Record<ScheduleStatus, { label: string; bg: string; color: string }> = {
     ACTIVE: { label: "Đang mở", bg: "#D1FAE5", color: "#065F46" },
     INACTIVE: { label: "Đã kết thúc", bg: "#F3F4F6", color: "#6B7280" },
   };
-  const s = map[status];
+  const s =
+    map[status] ??
+    ({ label: "Không xác định", ...DEFAULT_BADGE_STYLE } as const);
   return (
     <span className={styles.badge} style={{ background: s.bg, color: s.color }}>
       {s.label}

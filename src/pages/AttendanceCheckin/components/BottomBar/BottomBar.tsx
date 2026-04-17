@@ -1,4 +1,5 @@
 import { Check, Info, Send } from "lucide-react";
+import { memo } from "react";
 import styles from "./BottomBar.module.scss";
 
 interface BottomBarProps {
@@ -9,7 +10,7 @@ interface BottomBarProps {
   onSubmit: () => void;
 }
 
-export function BottomBar({
+function BottomBarInner({
   unmarkedCount,
   markedCount,
   totalCount,
@@ -46,3 +47,5 @@ export function BottomBar({
     </div>
   );
 }
+
+export const BottomBar = memo(BottomBarInner);

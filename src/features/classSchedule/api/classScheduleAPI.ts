@@ -1,4 +1,5 @@
 import { javaApi } from "@/lib/axiosInstance";
+import { ensureArray } from "@/lib/runtimeGuards";
 
 import type {
   ClassScheduleCreateRequest,
@@ -30,7 +31,10 @@ export const classScheduleAPI = {
         scheduleIds,
       },
     });
-    return response.data;
+    return ensureArray<ClassScheduleDetail>(
+      response.data,
+      "classScheduleAPI.getAllClassSchedules",
+    );
   },
 
   getClassScheduleById: async (id: number): Promise<ClassScheduleDetail> => {
