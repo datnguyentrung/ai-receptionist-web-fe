@@ -61,11 +61,23 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: UserBase) => authApi.login(data),
     onSuccess: async (data) => {
-      // Login xong phải lấy profile đầy đủ để chuẩn hóa user trong store.
-      const fullUserData = await userAPI.getUserInfo(data.accessToken);
-      setAuth(data.accessToken, fullUserData);
-      showSuccessToast("Đăng nhập thành công");
-      navigate("/");
+      try {
+        // 1. Lưu token mới vào store TRƯỚC để các Axios Interceptor (nếu có) kịp cập nhật
+        // Chú ý: Bạn có thể cần tạo thêm hàm setTokenOnly trong store nếu muốn.
+        useAuthStore.setState({ accessToken: data.accessToken });
+
+        // 2. Ép hàm getUserInfo phải dùng token mới truyền vào (Hãy kiểm tra lại ruột hàm này nhé)
+        const fullUserData = await userAPI.getUserInfo(data.accessToken);
+
+        // 3. Set toàn bộ data
+        setAuth(data.accessToken, fullUserData);
+        showSuccessToast("Đăng nhập thành công");
+        navigate("/");
+      } catch (error) {
+        showErrorToast(
+          "Lỗi khi lấy thông tin user: " + getLoginErrorMessage(error),
+        );
+      }
     },
     onError: (error) => {
       showErrorToast(getLoginErrorMessage(error));

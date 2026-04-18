@@ -1,14 +1,32 @@
 import Avatar from "@/components/Avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
-import { memo } from "react";
+import {
+  Calendar,
+  Clock,
+  EllipsisVertical,
+  Info,
+  MapPin,
+  Play,
+  PowerOff,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import { memo, useState } from "react";
 import { useNavigateStudentListByClassScheduleId } from "../../../../hooks/useNavigation";
 import { getDurationInMinutes } from "../../../../utils/format";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
 function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const enrolled = (cls.scheduleId.charCodeAt(0) * 7) % 100; // Mock enrolled students, replace with actual data when available
   const capacity = 100;
   const navigateToStudentListByClassScheduleId =
@@ -17,6 +35,25 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
     ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
   const locationLabel =
     ScheduleLocationLabel[cls.scheduleLocation] ?? "Địa điểm không xác định";
+
+  const handleMenuAction = (action: string) => {
+    switch (action) {
+      case "info":
+        console.log("Xem thông tin lớp:", cls.scheduleId);
+        break;
+      case "stop":
+        console.log("Dừng hoạt động lớp:", cls.scheduleId);
+        break;
+      case "start":
+        console.log("Mở hoạt động lớp:", cls.scheduleId);
+        break;
+      case "assign-coach":
+        console.log("Phân công HLV:", cls.scheduleId);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div
@@ -48,10 +85,68 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
               {shiftLabel}
             </p>
           </div>
-          <div className={styles.cardBadges}>
-            <LevelBadge level={cls.scheduleLevel} />
-            <StatusBadge status={cls.scheduleStatus} />
-          </div>
+          <DropdownMenu
+            modal={false}
+            open={isMenuOpen}
+            onOpenChange={setIsMenuOpen}
+          >
+            <DropdownMenuTrigger asChild>
+              <button
+                className={styles.menuBtn}
+                aria-label="Thao tác lớp học"
+                title="Click chuột trái hoặc phải để mở menu"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMenuOpen(true);
+                }}
+              >
+                <EllipsisVertical size={16} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className={styles.classMenuContent}
+            >
+              <DropdownMenuItem
+                onSelect={() => handleMenuAction("info")}
+                className={styles.menuItemWithIcon}
+              >
+                <Info size={14} />
+                <span>Thông tin</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {cls.scheduleStatus === "ACTIVE" && (
+                <DropdownMenuItem
+                  onSelect={() => handleMenuAction("stop")}
+                  className={styles.menuItemWithIcon}
+                >
+                  <PowerOff size={14} />
+                  <span>Dừng hoạt động lớp</span>
+                </DropdownMenuItem>
+              )}
+              {cls.scheduleStatus === "INACTIVE" && (
+                <DropdownMenuItem
+                  onSelect={() => handleMenuAction("start")}
+                  className={styles.menuItemWithIcon}
+                >
+                  <Play size={14} />
+                  <span>Mở hoạt động lớp</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => handleMenuAction("assign-coach")}
+                className={styles.menuItemWithIcon}
+              >
+                <UserPlus size={14} />
+                <span>Phân công HLV</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {cls.coaches.length > 0 &&
@@ -72,21 +167,27 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
             </div>
           ))}
 
-        <div className={styles.infoRows}>
-          <div className={styles.infoRow}>
-            <Clock size={13} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: "12px" }}>
-              {cls.startTime} - {cls.endTime} (
-              {getDurationInMinutes(cls.startTime, cls.endTime)} phút)
-            </span>
+        <div className={styles.infoBadgeSection}>
+          <div className={styles.infoRows}>
+            <div className={styles.infoRow}>
+              <Clock size={13} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: "12px" }}>
+                {cls.startTime} - {cls.endTime} (
+                {getDurationInMinutes(cls.startTime, cls.endTime)} phút)
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <Calendar size={13} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: "12px" }}>Thứ {cls.weekday}</span>
+            </div>
+            <div className={styles.infoRow}>
+              <MapPin size={13} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: "12px" }}>{locationLabel}</span>
+            </div>
           </div>
-          <div className={styles.infoRow}>
-            <Calendar size={13} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: "12px" }}>Thứ {cls.weekday}</span>
-          </div>
-          <div className={styles.infoRow}>
-            <MapPin size={13} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: "12px" }}>{locationLabel}</span>
+          <div className={styles.cardBadges}>
+            <LevelBadge level={cls.scheduleLevel} />
+            <StatusBadge status={cls.scheduleStatus} />
           </div>
         </div>
 

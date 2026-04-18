@@ -7,6 +7,7 @@ import type {
   ClassScheduleUpdateRequest,
   GetClassSchedulesParams,
 } from "@/types";
+import type { ScheduleStatus } from '../../../config/constants';
 
 export const classScheduleAPI = {
   getAllClassSchedules: async ({
@@ -52,6 +53,16 @@ export const classScheduleAPI = {
     classSchedule: ClassScheduleUpdateRequest,
   ): Promise<ClassScheduleDetail> => {
     const response = await javaApi.put(`/class-schedules/${id}`, classSchedule);
+    return response.data;
+  },
+
+  changeClassScheduleStatus: async (
+    id: string,
+    newStatus: ScheduleStatus,
+  ): Promise<ClassScheduleDetail> => {
+    const response = await javaApi.patch(`/class-schedules/${id}/status`, {
+      scheduleStatus: newStatus,
+    });
     return response.data;
   },
 

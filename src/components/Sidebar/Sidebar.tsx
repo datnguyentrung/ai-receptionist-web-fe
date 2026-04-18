@@ -1,6 +1,7 @@
 import logoImage from "@/assets/taekwondo.jpg";
 import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bot, LogOut, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
@@ -20,6 +21,7 @@ export default function Sidebar({
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutPending, setIsLogoutPending] = useState(false);
   const logoutTimeoutRef = useRef<number | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     return () => {
@@ -55,9 +57,10 @@ export default function Sidebar({
       setIsLogoutPending(false);
       setIsLogoutModalOpen(false);
       clearAuth();
+      queryClient.clear();
       logoutTimeoutRef.current = null;
     }, 900);
-  }, [clearAuth, isLogoutPending]);
+  }, [clearAuth, isLogoutPending, queryClient]);
 
   return (
     <>

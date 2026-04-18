@@ -10,6 +10,7 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import { classScheduleAPI } from "./classScheduleAPI";
+import type { ScheduleStatus } from '@/config/constants';
 
 const CLASS_SCHEDULE_QUERY_KEY = "class-schedules";
 
@@ -72,6 +73,25 @@ export const useUpdateClassSchedule = () => {
       id: string;
       data: ClassScheduleUpdateRequest;
     }) => classScheduleAPI.updateClassSchedule(id, data),
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: [CLASS_SCHEDULE_QUERY_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [CLASS_SCHEDULE_QUERY_KEY, Number(variables.id)],
+      });
+    },
+  });
+};
+
+export const useChangeClassScheduleStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      newStatus,
+    }: {
+      id: string;
+      newStatus: ScheduleStatus;
+    }) => classScheduleAPI.changeClassScheduleStatus(id, newStatus),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({ queryKey: [CLASS_SCHEDULE_QUERY_KEY] });
       queryClient.invalidateQueries({

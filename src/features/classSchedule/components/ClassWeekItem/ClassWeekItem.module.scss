@@ -50,3 +50,65 @@
   color: #9ca3af;
   font-size: 11px;
 }
+
+// Menu button
+.menuBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #d1d5db;
+  flex-shrink: 0;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &:active {
+    background-color: #e5e7eb;
+  }
+}
+
+// Menu content (Google Sheet style)
+.weekMenuContent {
+  min-width: 200px;
+  padding: 6px 0;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+// Menu items with icons
+.menuItemWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  height: 32px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #202124;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: #5f6368;
+  }
+}
+
+// Menu separator (Google Sheet style)
+:global([data-slot="dropdown-menu-separator"]) {
+  margin: 4px 0 !important;
+  height: 1px !important;
+  background: #e8eaed !important;
+}

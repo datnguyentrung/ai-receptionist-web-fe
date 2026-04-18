@@ -2,14 +2,49 @@ import { ScheduleLocationLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
-import { ChevronRight, MapPin, Users } from "lucide-react";
-import { memo } from "react";
+import {
+  EllipsisVertical,
+  Info,
+  MapPin,
+  Play,
+  PowerOff,
+  Users,
+  UserPlus,
+} from "lucide-react";
+import { memo, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassWeekItem.module.scss";
 
 function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
+
+  const handleMenuAction = (action: string) => {
+    switch (action) {
+      case "info":
+        console.log("Xem thông tin lớp:", cls.scheduleId);
+        break;
+      case "stop":
+        console.log("Dừng hoạt động lớp:", cls.scheduleId);
+        break;
+      case "start":
+        console.log("Mở hoạt động lớp:", cls.scheduleId);
+        break;
+      case "assign-coach":
+        console.log("Phân công HLV:", cls.scheduleId);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div
@@ -51,7 +86,65 @@ function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
       </div>
 
       <StatusBadge status={cls.scheduleStatus} />
-      <ChevronRight size={16} style={{ color: "#D1D5DB", flexShrink: 0 }} />
+      <DropdownMenu
+        modal={false}
+        open={isMenuOpen}
+        onOpenChange={setIsMenuOpen}
+      >
+        <DropdownMenuTrigger asChild>
+          <button
+            className={styles.menuBtn}
+            aria-label="Thao tác lớp học"
+            title="Click để mở menu"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsMenuOpen(true);
+            }}
+          >
+            <EllipsisVertical size={16} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className={styles.weekMenuContent}>
+          <DropdownMenuItem
+            onSelect={() => handleMenuAction("info")}
+            className={styles.menuItemWithIcon}
+          >
+            <Info size={14} />
+            <span>Thông tin</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {cls.scheduleStatus === "ACTIVE" && (
+            <DropdownMenuItem
+              onSelect={() => handleMenuAction("stop")}
+              className={styles.menuItemWithIcon}
+            >
+              <PowerOff size={14} />
+              <span>Dừng hoạt động lớp</span>
+            </DropdownMenuItem>
+          )}
+          {cls.scheduleStatus === "INACTIVE" && (
+            <DropdownMenuItem
+              onSelect={() => handleMenuAction("start")}
+              className={styles.menuItemWithIcon}
+            >
+              <Play size={14} />
+              <span>Mở hoạt động lớp</span>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={() => handleMenuAction("assign-coach")}
+            className={styles.menuItemWithIcon}
+          >
+            <UserPlus size={14} />
+            <span>Phân công HLV</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

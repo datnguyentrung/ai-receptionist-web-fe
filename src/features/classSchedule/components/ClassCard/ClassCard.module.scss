@@ -27,6 +27,37 @@
   margin-bottom: 12px;
 }
 
+.menuBtn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: #d1d5db;
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  &:active {
+    background: #e5e7eb;
+  }
+}
+
+.infoBadgeSection {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .cardBadges {
   display: flex;
   flex-direction: column;
@@ -46,6 +77,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .infoRow {
@@ -53,6 +86,52 @@
   align-items: center;
   gap: 8px;
   color: #6b7280;
+}
+
+.classMenuContent {
+  min-width: 200px;
+  padding: 6px 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid #dadce0;
+}
+
+.menuItemWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 12px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  height: 32px;
+  cursor: pointer;
+  user-select: none;
+  color: #202124 !important;
+  transition: background 0.12s ease !important;
+
+  svg {
+    flex-shrink: 0;
+    color: #5f6368;
+  }
+
+  &:hover {
+    background: #f8f9fa !important;
+    color: #202124 !important;
+
+    svg {
+      color: #202124;
+    }
+  }
+
+  &:focus {
+    background: #f8f9fa !important;
+    outline: none;
+  }
+
+  span {
+    flex: 1;
+    white-space: nowrap;
+  }
 }
 
 .capacitySection {
@@ -84,4 +163,11 @@
   height: 100%;
   border-radius: 9999px;
   transition: width 0.3s;
+}
+
+// Dropdown menu separator (Google Sheet style)
+:global([data-slot="dropdown-menu-separator"]) {
+  margin: 4px 0 !important;
+  height: 1px !important;
+  background: #e8eaed !important;
 }

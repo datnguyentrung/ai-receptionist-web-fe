@@ -1,6 +1,7 @@
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import {
   CalendarRange,
+  ClipboardCheck,
   History,
   LayoutDashboard,
   ScanFace,
@@ -48,6 +49,6 @@ export const NAV_ITEMS = [
   {
     path: "/public/exam",
     label: "Quản lý Khảo thí",
-    icon: ScanFace,
+    icon: ClipboardCheck,
   },
 ];
