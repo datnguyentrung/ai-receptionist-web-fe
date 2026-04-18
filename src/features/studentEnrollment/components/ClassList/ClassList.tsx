@@ -5,9 +5,9 @@ import {
   ScheduleLevelLabel,
   ScheduleLocationLabel,
 } from "../../../../config/constants";
+import { formatTimeStringHM } from "../../../../utils/format";
 import { getLabelClassSchedule } from "../../../../utils/getInitials";
 import styles from "./ClassList.module.scss";
-import { formatTimeHM, formatTimeStringHM } from '../../../../utils/format';
 
 interface ClassListProps {
   hasBranch: boolean;
