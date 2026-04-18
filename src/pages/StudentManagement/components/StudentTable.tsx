@@ -1,9 +1,13 @@
 import { MoreHorizontal, Users } from "lucide-react";
 import Avatar from "../../../components/Avatar";
+import { MiniActionPopover } from "../../../components/ui/mini-action-popover";
 import { BELT_COLORS, StatusBadge } from "../../../features/student";
 import type { StudentOverview } from "../../../types";
 import { formatDateDMY } from "../../../utils/format";
+import { useRoleStudent } from "../../../utils/roleUtils";
 import styles from "../StudentManagement.module.scss";
+
+type StudentMenuAction = "assign-class" | "view-info" | "view-history";
 
 interface StudentTableProps {
   list: StudentOverview[];
@@ -11,6 +15,7 @@ interface StudentTableProps {
   onToggleSelect: (id: string) => void;
   onSelectAll: (checked: boolean) => void;
   isFetching: boolean;
+  onMenuAction?: (student: StudentOverview, action: StudentMenuAction) => void;
 }
 
 export function StudentTable({
@@ -19,7 +24,9 @@ export function StudentTable({
   onToggleSelect,
   onSelectAll,
   isFetching,
+  onMenuAction,
 }: StudentTableProps) {
+  const { canViewManagerSenior } = useRoleStudent();
   return (
     <>
       <div className={styles.tableWrap}>
@@ -62,113 +69,142 @@ export function StudentTable({
             </tr>
           </thead>
           <tbody>
-            {list.map((student) => (
-              <tr key={student.studentCode} className={styles.tr}>
-                <td className={styles.td}>
-                  <input
-                    type="checkbox"
-                    className="rounded"
-                    checked={selected.includes(student.studentCode)}
-                    onChange={() => onToggleSelect(student.studentCode)}
-                  />
-                </td>
-                <td className={styles.td}>
-                  <div className={styles.avatarCell}>
-                    <Avatar
-                      fullName={student.fullName}
-                      fontSize="10px"
-                      fontWeight={800}
-                      width="36px"
-                      height="36px"
+            {list.map((student) => {
+              const rowActions = [
+                canViewManagerSenior
+                  ? {
+                      id: "assign-class",
+                      label: "Xếp lớp",
+                    }
+                  : null,
+                {
+                  id: "view-info",
+                  label: "Thông tin",
+                },
+                {
+                  id: "view-history",
+                  label: "Lịch sử học",
+                },
+              ].filter(
+                (action): action is { id: string; label: string } =>
+                  action !== null,
+              );
+
+              return (
+                <tr key={student.studentCode} className={styles.tr}>
+                  <td className={styles.td}>
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      checked={selected.includes(student.studentCode)}
+                      onChange={() => onToggleSelect(student.studentCode)}
                     />
-                    <div>
-                      <p
-                        style={{
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          color: "#111827",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {student.fullName}
-                      </p>
-                      <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                        {student.studentCode}
-                      </p>
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.avatarCell}>
+                      <Avatar
+                        fullName={student.fullName}
+                        fontSize="10px"
+                        fontWeight={800}
+                        width="36px"
+                        height="36px"
+                      />
+                      <div>
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#111827",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {student.fullName}
+                        </p>
+                        <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                          {student.studentCode}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className={styles.td}>
-                  <p style={{ fontSize: "12px", color: "#374151" }}>
-                    {student.phoneNumber}
-                  </p>
-                  <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                    {student.branchName}
-                  </p>
-                </td>
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                      maxWidth: "160px",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {student.classSchedules
-                      .map((c) => c.scheduleId)
-                      .join(", ") || "-"}
-                  </p>
-                </td>
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {formatDateDMY(student.birthDate)}
-                  </p>
-                </td>
-                <td className={styles.td}>
-                  <span
-                    className={styles.beltBadge}
-                    style={{
-                      background: BELT_COLORS[student.belt]?.bg ?? "#F3F4F6",
-                      color: BELT_COLORS[student.belt]?.color ?? "#374151",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {student.belt}
-                  </span>
-                </td>
-                <td className={styles.td}>
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {student.roleName}
-                  </p>
-                </td>
-                <td className={styles.td}>
-                  <StatusBadge status={student.studentStatus} />
-                </td>
-                <td className={styles.td}>
-                  <button className={styles.moreBtn}>
-                    <MoreHorizontal size={15} style={{ color: "#9CA3AF" }} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className={styles.td}>
+                    <p style={{ fontSize: "12px", color: "#374151" }}>
+                      {student.phoneNumber}
+                    </p>
+                    <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                      {student.branchName}
+                    </p>
+                  </td>
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        color: "#374151",
+                        whiteSpace: "nowrap",
+                        maxWidth: "160px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {student.classSchedules
+                        .map((c) => c.scheduleId)
+                        .join(", ") || "-"}
+                    </p>
+                  </td>
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {formatDateDMY(student.birthDate)}
+                    </p>
+                  </td>
+                  <td className={styles.td}>
+                    <span
+                      className={styles.beltBadge}
+                      style={{
+                        background: BELT_COLORS[student.belt]?.bg ?? "#F3F4F6",
+                        color: BELT_COLORS[student.belt]?.color ?? "#374151",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {student.belt}
+                    </span>
+                  </td>
+                  <td className={styles.td}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {student.roleName}
+                    </p>
+                  </td>
+                  <td className={styles.td}>
+                    <StatusBadge status={student.studentStatus} />
+                  </td>
+                  <td className={styles.td}>
+                    <MiniActionPopover
+                      itemLabel={student.fullName}
+                      triggerClassName={styles.moreBtn}
+                      actions={rowActions}
+                      onActionSelect={(action) =>
+                        onMenuAction?.(student, action as StudentMenuAction)
+                      }
+                    >
+                      <MoreHorizontal size={15} style={{ color: "#9CA3AF" }} />
+                    </MiniActionPopover>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

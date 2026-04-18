@@ -13,13 +13,13 @@ export const NAV_ITEMS = [
     path: "/",
     label: "Tổng quan",
     icon: LayoutDashboard,
-    minLevel: ROLE_LEVELS.MANAGER,
+    minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
     path: "/coaches",
     label: "Đội ngũ HLV",
     icon: UserRoundCheck,
-    minLevel: ROLE_LEVELS.MANAGER,
+    minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
     path: "/students",

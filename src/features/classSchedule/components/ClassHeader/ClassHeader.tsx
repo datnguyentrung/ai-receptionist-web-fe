@@ -15,7 +15,7 @@ export function ClassHeader({
   view,
   onViewChange,
 }: Props) {
-  const { canViewManager } = useRoleStudent();
+  const { canViewManagerSenior } = useRoleStudent();
   return (
     <div className={styles.pageHead}>
       <div>
@@ -44,7 +44,7 @@ export function ClassHeader({
             </button>
           ))}
         </div>
-        {canViewManager && (
+        {canViewManagerSenior && (
           <button className={styles.addBtn}>
             <Plus size={16} /> Tạo lớp mới
           </button>

@@ -56,7 +56,7 @@ function AttendanceHeaderInner({
   onReset,
 }: AttendanceHeaderProps) {
   const onBack = useNavigateBack();
-  const { canViewManager } = useRoleStudent();
+  const { canViewManagerSenior } = useRoleStudent();
   const scheduleLevelLabel =
     ScheduleLevelLabel[session.scheduleLevel] ?? "Lớp không xác định";
   const scheduleShiftLabel =
@@ -151,7 +151,7 @@ function AttendanceHeaderInner({
       {/* Quick actions + filter */}
       <div className={styles.quickActions}>
         <div className={styles.actionBtns}>
-          {canViewManager && (
+          {canViewManagerSenior && (
             <button
               onClick={() => onMarkAll("PRESENT")}
               className={styles.btnMarkAll}

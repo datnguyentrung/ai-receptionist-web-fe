@@ -1,23 +1,51 @@
-import { EllipsisVertical, Info, Layers, NotebookPen } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./mini-action-popover.module.scss";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { cn } from "./utils";
 
 interface MiniActionPopoverProps {
   itemLabel?: string;
+  actions?: ReadonlyArray<{ id: string; label: string } | null | undefined>;
+  onActionSelect?: (actionId: string) => void;
+  triggerClassName?: string;
+  children?: React.ReactNode;
 }
 
 const ACTION_ITEMS = [
-  { id: "class", label: "Lop hoc", icon: Layers },
-  { id: "info", label: "Thong tin", icon: Info },
-  { id: "note", label: "Ghi chu", icon: NotebookPen },
+  { id: "class", label: "Lop hoc" },
+  { id: "info", label: "Thong tin" },
+  { id: "note", label: "Ghi chu" },
 ] as const;
 
-export function MiniActionPopover({ itemLabel }: MiniActionPopoverProps) {
+export function MiniActionPopover({
+  itemLabel,
+  actions,
+  onActionSelect,
+  triggerClassName,
+  children,
+}: MiniActionPopoverProps) {
   const [open, setOpen] = useState(false);
 
-  const handleActionClick = (actionLabel: string) => {
+  const resolvedActions =
+    actions
+      ?.filter(
+        (action): action is { id: string; label: string } =>
+          !!action &&
+          typeof action.id === "string" &&
+          typeof action.label === "string",
+      )
+      .map(({ id, label }) => ({ id, label })) ??
+    ACTION_ITEMS.map(({ id, label }) => ({ id, label }));
+
+  const handleActionClick = (actionId: string, actionLabel: string) => {
+    if (onActionSelect) {
+      onActionSelect(actionId);
+      setOpen(false);
+      return;
+    }
+
     const suffix = itemLabel ? `: ${itemLabel}` : "";
     toast.info(`Da chon ${actionLabel}${suffix}`);
     setOpen(false);
@@ -26,25 +54,31 @@ export function MiniActionPopover({ itemLabel }: MiniActionPopoverProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={styles.triggerBtn} aria-label="Mo thao tac">
-          <EllipsisVertical size={14} />
+        <button
+          type="button"
+          className={cn(styles.triggerBtn, triggerClassName)}
+          aria-label="Mo thao tac"
+        >
+          {children ?? <EllipsisVertical size={14} />}
         </button>
       </PopoverTrigger>
 
       <PopoverContent
+        side="bottom"
         align="end"
         sideOffset={6}
+        collisionPadding={8}
+        avoidCollisions
         className={styles.popoverContent}
       >
         <div className={styles.actionList}>
-          {ACTION_ITEMS.map(({ id, label, icon: Icon }) => (
+          {resolvedActions.map(({ id, label }) => (
             <button
               key={id}
               type="button"
               className={styles.actionBtn}
-              onClick={() => handleActionClick(label)}
+              onClick={() => handleActionClick(id, label)}
             >
-              <Icon size={14} className={styles.actionIcon} />
               <span>{label}</span>
             </button>
           ))}

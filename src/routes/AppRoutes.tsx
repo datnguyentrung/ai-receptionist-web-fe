@@ -68,7 +68,7 @@ export default function AppRoutes() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
-  const { canViewManager, canViewCoach } = useRoleStudent();
+  const { canViewManagerSenior, canViewCoach } = useRoleStudent();
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
@@ -92,12 +92,12 @@ export default function AppRoutes() {
             )
           }
         >
-          {/* NHÓM 1: CHỈ MANAGER VÀ HEAD_COACH ĐƯỢC XEM */}
+          {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
           {/* Nếu Coach cố tình truy cập "/", đẩy họ sang trang mặc định của họ là "/schedules" */}
           <Route
             element={
               <RequireRole
-                isAllowed={canViewManager}
+                isAllowed={canViewManagerSenior}
                 fallbackPath="/students"
               />
             }

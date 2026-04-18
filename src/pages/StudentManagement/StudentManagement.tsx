@@ -48,6 +48,29 @@ export function StudentManagement() {
     (data?.reservedStudentCount ?? 0) +
     (data?.droppedStudentCount ?? 0);
 
+  const statusFilterState = {
+    all: {
+      disabled: totalStudents === 0,
+      hoverText:
+        "Hiện chưa có học viên nào thuộc trạng thái này trong phạm vi phụ trách của bạn.",
+    },
+    ACTIVE: {
+      disabled: (data?.activeStudentCount ?? 0) === 0,
+      hoverText:
+        "Hiện chưa có học viên nào thuộc trạng thái này trong phạm vi phụ trách của bạn.",
+    },
+    RESERVED: {
+      disabled: (data?.reservedStudentCount ?? 0) === 0,
+      hoverText:
+        "Hiện chưa có học viên nào thuộc trạng thái này trong phạm vi phụ trách của bạn.",
+    },
+    DROPPED: {
+      disabled: (data?.droppedStudentCount ?? 0) === 0,
+      hoverText:
+        "Hiện chưa có học viên nào thuộc trạng thái này trong phạm vi phụ trách của bạn.",
+    },
+  };
+
   const handleSelectAll = (checked: boolean) =>
     setSelected(checked ? list.map((s) => s.studentCode) : []);
 
@@ -93,6 +116,7 @@ export function StudentManagement() {
             setPage(1);
           }}
           filterOptions={STUDENT_FILTER_OPTIONS}
+          optionState={statusFilterState}
           searchPlaceholder="Tìm học viên, lớp, HLV..."
           searchWidth="260px"
         />

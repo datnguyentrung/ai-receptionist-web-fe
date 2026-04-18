@@ -1,4 +1,9 @@
 import { Search } from "lucide-react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 import styles from "./StatusFilters.module.scss";
 
 export type FilterOption<T extends string> = {
@@ -12,6 +17,7 @@ type Props<T extends string> = {
   filter: T;
   setFilter: (value: T) => void;
   filterOptions: FilterOption<T>[];
+  optionState?: Partial<Record<T, { disabled: boolean; hoverText: string }>>;
   searchPlaceholder?: string;
   searchWidth?: string;
 };
@@ -22,6 +28,7 @@ export default function StatusFilters<T extends string>({
   filter,
   setFilter,
   filterOptions,
+  optionState,
   searchPlaceholder = "Tìm kiếm...",
   searchWidth = "240px",
 }: Props<T>) {
@@ -37,20 +44,45 @@ export default function StatusFilters<T extends string>({
           style={{ fontSize: "13px", color: "#374151" }}
         />
       </div>
-      {filterOptions.map((option) => (
-        <button
-          key={option.value}
-          onClick={() => setFilter(option.value)}
-          className={styles.filterBtn}
-          style={{
-            borderColor: filter === option.value ? "#E02020" : "#E8EBF0",
-            background: filter === option.value ? "#E02020" : "white",
-            color: filter === option.value ? "white" : "#6B7280",
-          }}
-        >
-          {option.label}
-        </button>
-      ))}
+      {filterOptions.map((option) => {
+        const state = optionState?.[option.value];
+        const isDisabled = state?.disabled ?? false;
+        const isActive = filter === option.value;
+
+        const filterButton = (
+          <button
+            type="button"
+            disabled={isDisabled}
+            onClick={() => setFilter(option.value)}
+            className={styles.filterBtn}
+            style={{
+              borderColor: isActive ? "#E02020" : "#E8EBF0",
+              background: isActive ? "#E02020" : "white",
+              color: isActive ? "white" : "#6B7280",
+            }}
+          >
+            {option.label}
+          </button>
+        );
+
+        if (!isDisabled) {
+          return <div key={option.value}>{filterButton}</div>;
+        }
+
+        return (
+          <HoverCard key={option.value} openDelay={120} closeDelay={60}>
+            <HoverCardTrigger asChild>
+              <span className={styles.filterHoverWrap}>{filterButton}</span>
+            </HoverCardTrigger>
+            <HoverCardContent className={styles.filterHoverCard} align="start">
+              <p className={styles.filterHoverText}>
+                {state?.hoverText ??
+                  "Hiện chưa có học viên nào thuộc trạng thái này trong phạm sự của bạn."}
+              </p>
+            </HoverCardContent>
+          </HoverCard>
+        );
+      })}
     </div>
   );
 }

@@ -50,6 +50,25 @@
   }
 }
 
+.inputError {
+  border-color: #dc2626;
+  background-color: #fff7f7;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.helpText {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: #8b93a8;
+}
+
+.errorText {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
 .passwordInput {
   padding-right: 3rem;
 }
@@ -71,6 +90,12 @@
 
   &:hover {
     color: #c0392b;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(192, 57, 43, 0.4);
+    outline-offset: 2px;
+    border-radius: 8px;
   }
 
   svg {
@@ -117,8 +142,9 @@
   }
 
   &:disabled {
-    opacity: 0.8;
+    opacity: 0.75;
     cursor: not-allowed;
+    box-shadow: none;
   }
 
   &:hover:not(:disabled) {

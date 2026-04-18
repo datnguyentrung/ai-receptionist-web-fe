@@ -13,12 +13,16 @@ export const isHeadCoach = (role?: string) => {
   return checkContains(role, "HEAD_COACH") || checkContains(role, "ADMIN");
 };
 
-export const isManager = (role?: string) => {
-  return checkContains(role, "MANAGER") || isHeadCoach(role);
+export const isManagerSenior = (role?: string) => {
+  return checkContains(role, "MANAGER_SENIOR") || isHeadCoach(role);
 };
 
 export const isCoach = (role?: string) => {
-  return checkContains(role, "COACH") || isManager(role);
+  return (
+    checkContains(role, "COACH") ||
+    checkContains(role, "MANAGER") ||
+    isManagerSenior(role)
+  );
 };
 
 // Đổi tên thành useRoleStudent để tuân thủ luật của React Hooks
@@ -48,14 +52,19 @@ export const useRoleStudent = () => {
     sessionStorage.setItem(debugKey, "1");
   }, [user, idRole, idUser]);
 
-  // Lúc này idRole đã là string (hoặc undefined), truyền vào isManager sẽ không bị lỗi
+  // Lúc này idRole đã là string (hoặc undefined), truyền vào isManagerSenior sẽ không bị lỗi
   const canViewHeadCoach = isHeadCoach(idRole);
-  const canViewManager = isManager(idRole);
+  const canViewManagerSenior = isManagerSenior(idRole);
   const canViewCoach = isCoach(idRole);
-  const canViewStudent = !canViewManager && !canViewCoach;
+  const canViewStudent = !canViewManagerSenior && !canViewCoach;
 
   // Trả về thêm isAuthenticated nếu component cần dùng để check đăng nhập
-  return { canViewManager, canViewCoach, canViewStudent, canViewHeadCoach };
+  return {
+    canViewManagerSenior,
+    canViewCoach,
+    canViewStudent,
+    canViewHeadCoach,
+  };
 };
 
 // Hook lấy cấp độ cao nhất của user hiện tại
@@ -71,8 +80,8 @@ export const useUserLevel = () => {
 
   if (isHeadCoach(idRole)) {
     level = ROLE_LEVELS.HEAD_COACH;
-  } else if (isManager(idRole)) {
-    level = ROLE_LEVELS.MANAGER;
+  } else if (isManagerSenior(idRole)) {
+    level = ROLE_LEVELS.MANAGER_SENIOR;
   } else if (isCoach(idRole)) {
     level = ROLE_LEVELS.COACH;
   }

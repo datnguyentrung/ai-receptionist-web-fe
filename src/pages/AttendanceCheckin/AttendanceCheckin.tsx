@@ -1,3 +1,4 @@
+import ConfirmModal from "@/components/ConfirmModal";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
@@ -16,6 +17,7 @@ import type {
 } from "@/types";
 import { formatDateYMD } from "@/utils/format";
 import { mergeAttendanceData } from "@/utils/mergeAttendanceData";
+import { useRoleStudent } from "@/utils/roleUtils";
 import { Users } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -45,13 +47,19 @@ export function AttendanceCheckin() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedTime, setSubmittedTime] = useState("");
   const [filter, setFilter] = useState<"all" | AttendanceStatus>("all");
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [isSubmitPending, setIsSubmitPending] = useState(false);
+  const submitTimeoutRef = useRef<number | null>(null);
+
+  const { canViewManagerSenior } = useRoleStudent();
 
   const { scheduleId } = useParams();
   const user = useAuthStore((state) => state.user);
   const allowedScheduleIds = user?.userInfo.assignedClasses ?? [];
   const hasScheduleParam = !!scheduleId;
   const hasScheduleAccess =
-    hasScheduleParam && allowedScheduleIds.includes(scheduleId);
+    hasScheduleParam &&
+    (allowedScheduleIds.includes(scheduleId) || canViewManagerSenior);
   const selectedScheduleId = hasScheduleAccess ? scheduleId : "";
   const attendanceScheduleIds = hasScheduleAccess ? [scheduleId] : undefined;
 
@@ -99,6 +107,14 @@ export function AttendanceCheckin() {
   useEffect(() => {
     mutationsRef.current = mutations;
   }, [mutations]);
+
+  useEffect(() => {
+    return () => {
+      if (submitTimeoutRef.current !== null) {
+        window.clearTimeout(submitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const students = useMemo(
     () => baseMerged.map((s) => ({ ...s, ...(mutations[s.studentId] ?? {}) })),
@@ -250,6 +266,37 @@ export function AttendanceCheckin() {
     setSubmitted(true);
   }, []);
 
+  const openSubmitModal = useCallback(() => {
+    if (!submitted) {
+      setIsSubmitModalOpen(true);
+    }
+  }, [submitted]);
+
+  const cancelSubmit = useCallback(() => {
+    if (submitTimeoutRef.current !== null) {
+      window.clearTimeout(submitTimeoutRef.current);
+      submitTimeoutRef.current = null;
+    }
+
+    setIsSubmitPending(false);
+    setIsSubmitModalOpen(false);
+  }, []);
+
+  const confirmSubmit = useCallback(() => {
+    if (isSubmitPending) {
+      return;
+    }
+
+    setIsSubmitPending(true);
+
+    submitTimeoutRef.current = window.setTimeout(() => {
+      handleSubmit();
+      setIsSubmitPending(false);
+      setIsSubmitModalOpen(false);
+      submitTimeoutRef.current = null;
+    }, 900);
+  }, [handleSubmit, isSubmitPending]);
+
   const handleReset = useCallback(() => markAll(null), [markAll]);
 
   if (!hasScheduleAccess) {
@@ -376,11 +423,29 @@ export function AttendanceCheckin() {
               markedCount={markedCount}
               totalCount={totalCount}
               submitted={submitted}
-              onSubmit={handleSubmit}
+              onSubmit={openSubmitModal}
             />
           </RenderProfiler>
         </main>
       </div>
+
+      <ConfirmModal
+        open={isSubmitModalOpen}
+        title="Bạn có muốn nộp điểm danh?"
+        description={
+          unmarkedCount > 0
+            ? `Còn ${unmarkedCount} học viên chưa điểm danh. Bạn vẫn có thể nộp và cập nhật lại sau.`
+            : "Tất cả học viên đã được điểm danh. Xác nhận để hoàn tất buổi học."
+        }
+        cancelText="Hủy"
+        confirmText="Có, nộp ngay"
+        loadingText="Đang nộp..."
+        isLoading={isSubmitPending}
+        successToastMessage="Nộp điểm danh thành công"
+        errorToastMessage="Nộp điểm danh thất bại. Vui lòng thử lại."
+        onCancel={cancelSubmit}
+        onConfirm={confirmSubmit}
+      />
 
       {/* -- Eval Sheet -- */}
       <AnimatePresence>

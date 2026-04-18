@@ -183,6 +183,41 @@
   }
 }
 
+.rowActionWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.rowMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 136px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, 0.12);
+}
+
+.rowMenuItem {
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #374151;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
 // ── Empty state ───────────────────────────────────────────
 .emptyState {
   text-align: center;

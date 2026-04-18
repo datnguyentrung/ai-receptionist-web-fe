@@ -1,4 +1,4 @@
-import type { StudentStatus } from "../../../../config/constants";
+import type { StudentStatus } from "@/config/constants";
 import styles from "./StatusBadge.module.scss";
 
 const STATUS_MAP: Record<

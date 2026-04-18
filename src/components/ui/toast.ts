@@ -22,3 +22,10 @@ export const showErrorToast = (
 ) => {
   toast.error(message, { duration });
 };
+
+export const showSuccessToast = (
+  message: string,
+  duration = DEFAULT_TOAST_DURATION,
+) => {
+  toast.success(message, { duration });
+};

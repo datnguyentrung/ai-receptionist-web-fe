@@ -37,3 +37,25 @@
     border-color 0.2s,
     color 0.2s;
 }
+
+.filterBtn:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.filterHoverWrap {
+  display: inline-flex;
+  cursor: not-allowed;
+}
+
+.filterHoverCard {
+  width: 260px;
+  padding: 12px 14px;
+}
+
+.filterHoverText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #374151;
+}

@@ -1,10 +1,49 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
+import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import { userAPI } from "@/features/user";
 import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { authApi } from "./authApi";
+
+const getLoginErrorMessage = (error: unknown) => {
+  if (!error) {
+    return "Đăng nhập thất bại. Vui lòng thử lại.";
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === "object") {
+    const maybeError = error as {
+      message?: unknown;
+      response?: {
+        data?: {
+          message?: unknown;
+          error?: unknown;
+        };
+      };
+    };
+
+    const responseMessage = maybeError.response?.data?.message;
+    if (typeof responseMessage === "string" && responseMessage.trim()) {
+      return responseMessage;
+    }
+
+    const responseError = maybeError.response?.data?.error;
+    if (typeof responseError === "string" && responseError.trim()) {
+      return responseError;
+    }
+
+    if (typeof maybeError.message === "string" && maybeError.message.trim()) {
+      return maybeError.message;
+    }
+  }
+
+  return "Đăng nhập thất bại. Vui lòng thử lại.";
+};
 
 // 1. Hook lấy thông tin tài khoản (Dùng useQuery vì là GET)
 export const useGetAccount = () => {
@@ -22,18 +61,14 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: UserBase) => authApi.login(data),
     onSuccess: async (data) => {
-      // Chạy khi API login thành công (HTTP 200)
-      console.log("Đăng nhập thành công!", data);
-
       // Login xong phải lấy profile đầy đủ để chuẩn hóa user trong store.
       const fullUserData = await userAPI.getUserInfo(data.accessToken);
       setAuth(data.accessToken, fullUserData);
+      showSuccessToast("Đăng nhập thành công");
       navigate("/");
     },
     onError: (error) => {
-      // Chạy khi API báo lỗi (Sai pass, tài khoản không tồn tại...)
-      console.error("Lỗi đăng nhập:", error);
-      // Thường sẽ gọi Toast notification báo lỗi ở đây
+      showErrorToast(getLoginErrorMessage(error));
     },
   });
 };
