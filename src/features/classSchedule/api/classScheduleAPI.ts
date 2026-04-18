@@ -7,7 +7,7 @@ import type {
   ClassScheduleUpdateRequest,
   GetClassSchedulesParams,
 } from "@/types";
-import type { ScheduleStatus } from '../../../config/constants';
+import type { ScheduleStatus } from "../../../config/constants";
 
 export const classScheduleAPI = {
   getAllClassSchedules: async ({
@@ -59,11 +59,13 @@ export const classScheduleAPI = {
   changeClassScheduleStatus: async (
     id: string,
     newStatus: ScheduleStatus,
-  ): Promise<ClassScheduleDetail> => {
-    const response = await javaApi.patch(`/class-schedules/${id}/status`, {
-      scheduleStatus: newStatus,
-    });
-    return response.data;
+  ): Promise<void> => {
+    // Đổi kiểu trả về thành void
+    await javaApi.patch(
+      `/class-schedules/${id}/status`,
+      null, // <--- THAM SỐ THỨ 2: Data/Body (để là null)
+      { params: { status: newStatus } }, // <--- THAM SỐ THỨ 3: Config (chứa params để tạo URL ?status=...)
+    );
   },
 
   deleteClassSchedule: async (id: string): Promise<void> => {

@@ -6,6 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import {
@@ -25,7 +26,16 @@ import { getDurationInMinutes } from "../../../../utils/format";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
-function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
+function ClassCardInner({
+  cls,
+  onRequestStatusChange,
+}: {
+  cls: ClassScheduleDetail;
+  onRequestStatusChange: (
+    scheduleId: string,
+    currentStatus: ScheduleStatus,
+  ) => void;
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const enrolled = (cls.scheduleId.charCodeAt(0) * 7) % 100; // Mock enrolled students, replace with actual data when available
   const capacity = 100;
@@ -42,10 +52,10 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
         console.log("Xem thông tin lớp:", cls.scheduleId);
         break;
       case "stop":
-        console.log("Dừng hoạt động lớp:", cls.scheduleId);
+        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
         break;
       case "start":
-        console.log("Mở hoạt động lớp:", cls.scheduleId);
+        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
         break;
       case "assign-coach":
         console.log("Phân công HLV:", cls.scheduleId);
@@ -110,6 +120,7 @@ function ClassCardInner({ cls }: { cls: ClassScheduleDetail }) {
             <DropdownMenuContent
               align="end"
               className={styles.classMenuContent}
+              onClick={(e) => e.stopPropagation()}
             >
               <DropdownMenuItem
                 onSelect={() => handleMenuAction("info")}

@@ -1,3 +1,4 @@
+import type { ScheduleStatus } from "@/config/constants";
 import type {
   ClassScheduleCreateRequest,
   ClassScheduleUpdateRequest,
@@ -10,7 +11,6 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import { classScheduleAPI } from "./classScheduleAPI";
-import type { ScheduleStatus } from '@/config/constants';
 
 const CLASS_SCHEDULE_QUERY_KEY = "class-schedules";
 
@@ -92,15 +92,17 @@ export const useChangeClassScheduleStatus = () => {
       id: string;
       newStatus: ScheduleStatus;
     }) => classScheduleAPI.changeClassScheduleStatus(id, newStatus),
-    onSuccess: (_result, variables) => {
+
+    // Bỏ _result đi vì giờ nó là void
+    onSuccess: (_, variables) => {
+      // Ép fetch lại data mới nhất từ server
       queryClient.invalidateQueries({ queryKey: [CLASS_SCHEDULE_QUERY_KEY] });
       queryClient.invalidateQueries({
-        queryKey: [CLASS_SCHEDULE_QUERY_KEY, Number(variables.id)],
+        queryKey: [CLASS_SCHEDULE_QUERY_KEY, variables.id],
       });
     },
   });
 };
-
 // 5. Hook xóa lịch học
 export const useDeleteClassSchedule = () => {
   const queryClient = useQueryClient();

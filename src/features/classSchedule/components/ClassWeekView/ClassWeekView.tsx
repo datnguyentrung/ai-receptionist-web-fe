@@ -1,4 +1,5 @@
 import { DaySelector } from "@/components/DaySelector";
+import type { ScheduleStatus } from "@/config/constants";
 import { WeekdayCode, WeekdayFromCode, WeekdayLabel } from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import { getCurrentWeekday } from "@/utils/format";
@@ -9,9 +10,13 @@ import styles from "./ClassWeekView.module.scss";
 
 interface Props {
   classes: ClassScheduleDetail[];
+  onRequestStatusChange: (
+    scheduleId: string,
+    currentStatus: ScheduleStatus,
+  ) => void;
 }
 
-function ClassWeekViewInner({ classes }: Props) {
+function ClassWeekViewInner({ classes, onRequestStatusChange }: Props) {
   const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
 
   const counts = useMemo(
@@ -58,7 +63,11 @@ function ClassWeekViewInner({ classes }: Props) {
           </div>
         ) : (
           filtered.map((cls) => (
-            <ClassWeekItem key={cls.scheduleId} cls={cls} />
+            <ClassWeekItem
+              key={cls.scheduleId}
+              cls={cls}
+              onRequestStatusChange={onRequestStatusChange}
+            />
           ))
         )}
       </div>

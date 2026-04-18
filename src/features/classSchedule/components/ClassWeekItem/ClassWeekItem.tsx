@@ -1,3 +1,11 @@
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
@@ -8,21 +16,23 @@ import {
   MapPin,
   Play,
   PowerOff,
-  Users,
   UserPlus,
+  Users,
 } from "lucide-react";
 import { memo, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassWeekItem.module.scss";
 
-function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
+function ClassWeekItemInner({
+  cls,
+  onRequestStatusChange,
+}: {
+  cls: ClassScheduleDetail;
+  onRequestStatusChange: (
+    scheduleId: string,
+    currentStatus: ScheduleStatus,
+  ) => void;
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
@@ -33,10 +43,10 @@ function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
         console.log("Xem thông tin lớp:", cls.scheduleId);
         break;
       case "stop":
-        console.log("Dừng hoạt động lớp:", cls.scheduleId);
+        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
         break;
       case "start":
-        console.log("Mở hoạt động lớp:", cls.scheduleId);
+        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
         break;
       case "assign-coach":
         console.log("Phân công HLV:", cls.scheduleId);
@@ -108,7 +118,11 @@ function ClassWeekItemInner({ cls }: { cls: ClassScheduleDetail }) {
             <EllipsisVertical size={16} />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className={styles.weekMenuContent}>
+        <DropdownMenuContent
+          align="end"
+          className={styles.weekMenuContent}
+          onClick={(e) => e.stopPropagation()}
+        >
           <DropdownMenuItem
             onSelect={() => handleMenuAction("info")}
             className={styles.menuItemWithIcon}
