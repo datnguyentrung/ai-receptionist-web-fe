@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
+import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
+import { getDurationInMinutes } from "@/utils/format";
 import {
   Calendar,
   Clock,
@@ -21,8 +23,6 @@ import {
   Users,
 } from "lucide-react";
 import { memo, useState } from "react";
-import { useNavigateStudentListByClassScheduleId } from "../../../../hooks/useNavigation";
-import { getDurationInMinutes } from "../../../../utils/format";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
@@ -37,8 +37,9 @@ function ClassCardInner({
   ) => void;
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const enrolled = (cls.scheduleId.charCodeAt(0) * 7) % 100; // Mock enrolled students, replace with actual data when available
-  const capacity = 100;
+  const capacity = 40;
+  const totalStudents = cls.totalStudents ?? 0;
+  const occupancyRate = capacity > 0 ? totalStudents / capacity : 0;
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
   const shiftLabel =
@@ -89,10 +90,12 @@ function ClassCardInner({
         <div className={styles.cardTop}>
           <div>
             <p style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>
-              {cls.branchName}
+              Thứ {cls.weekday}
             </p>
             <p style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
-              {shiftLabel}
+              {cls.coaches.length > 0
+                ? `HLV: ${cls.coaches.map((coach) => coach.fullName).join(" & ")}`
+                : ""}
             </p>
           </div>
           <DropdownMenu
@@ -189,7 +192,7 @@ function ClassCardInner({
             </div>
             <div className={styles.infoRow}>
               <Calendar size={13} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: "12px" }}>Thứ {cls.weekday}</span>
+              <span style={{ fontSize: "12px" }}>{shiftLabel}</span>
             </div>
             <div className={styles.infoRow}>
               <MapPin size={13} style={{ flexShrink: 0 }} />
@@ -212,25 +215,23 @@ function ClassCardInner({
               style={{
                 fontSize: "12px",
                 fontWeight: 700,
-                color: enrolled / capacity > 0.8 ? "#E02020" : "#111827",
+                color: occupancyRate > 0.8 ? "#E02020" : "#111827",
               }}
             >
-              {enrolled}/{capacity}
+              {totalStudents}/{capacity}
             </span>
           </div>
           <div className={styles.capacityBar}>
             <div
               className={styles.capacityFill}
               style={{
-                width: `${(enrolled / capacity) * 100}%`,
+                width: `${Math.min(100, occupancyRate * 100)}%`,
                 background:
-                  // cls.enrolled / cls.capacity > 0.8
-                  enrolled / capacity > 0.8
+                  occupancyRate > 1
                     ? "#E02020"
-                    : // : cls.enrolled / cls.capacity > 0.5
-                      enrolled / capacity > 0.5
-                      ? "#F59E0B"
-                      : "#10B981",
+                    : occupancyRate > 0.6
+                      ? "#10B981"
+                      : "#F59E0B",
               }}
             />
           </div>
