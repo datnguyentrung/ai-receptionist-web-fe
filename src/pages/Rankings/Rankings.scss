@@ -1,43 +1,24 @@
-:root {
+.rankings-page {
   --ranking-primary: #e02020;
   --ranking-text-main: #0f172a;
   --ranking-text-muted: #64748b;
   --ranking-surface: #ffffff;
   --ranking-border: #e2e8f0;
   --ranking-bg: #f8fafc;
-}
-
-.rankings-page {
-  min-height: 100vh;
-  display: flex;
-  background: radial-gradient(
-    circle at 20% 0%,
-    #fff6f6 0%,
-    #f8fafc 35%,
-    #f5f8fb 100%
-  );
-  color: var(--ranking-text-main);
-  overflow: hidden;
-}
-
-.rankings-main {
-  position: relative;
-  z-index: 1;
-  flex: 1;
+  width: 100%;
   min-width: 0;
-  max-height: 100vh;
-  overflow-y: auto;
+  background: transparent;
+  color: var(--ranking-text-main);
 }
 
 .rankings-layout {
   margin: 0 auto;
   width: 100%;
   max-width: 1400px;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 1.25rem 1rem 2rem;
+  padding: 0;
 }
 
 .rankings-header {

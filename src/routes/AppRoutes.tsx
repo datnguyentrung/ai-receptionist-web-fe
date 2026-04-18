@@ -2,6 +2,7 @@ import { RequireRole } from "@/config/RequireRole";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
 
 const MainLayout = lazy(() =>
@@ -9,7 +10,7 @@ const MainLayout = lazy(() =>
     default: module.MainLayout,
   })),
 );
-const HomePage = lazy(() => import("@/pages/HomePage"));
+const Welcome = lazy(() => import("@/pages/Welcome"));
 const LoginPage = lazy(() =>
   import("@/features/auth").then((module) => ({ default: module.LoginPage })),
 );
@@ -74,7 +75,7 @@ export default function AppRoutes() {
     <Suspense fallback={<RouteLoadingFallback />}>
       <Routes>
         {/* --- PUBLIC ROUTES --- */}
-        <Route path="/welcome" element={<HomePage />} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/public" element={<MainLayout />}>
@@ -126,8 +127,12 @@ export default function AppRoutes() {
           {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) CÓ THỂ ĐƯỢC XEM TRANG NÀY
           NHƯNG CHỈ LÀ TRANG MẶC ĐỊNH CHO HỌ, KHÔNG PHẢI TRANG CỦA MANAGER/HEAD COACH */}
           <Route>
-            <Route path = "home" element={<Navigate to="/schedules" replace />} />
-            <Route path = "{:userCode}" element={<Navigate to="/schedules" replace />} />
+            <Route path="home" element={<Navigate to="/schedules" replace />} />
+            <Route
+              path="{:userCode}"
+              element={<Navigate to="/schedules" replace />}
+            />
+            <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>
 

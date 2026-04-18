@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { showInfoToast, showWarningToast } from "../../components/ui/toast";
 import { useAuthStore } from "../../store/authStore";
 import { isCoach } from "../../utils/roleUtils";
-import styles from "./HomePage.module.scss";
+import styles from "./Welcome.module.scss";
 
-export default function HomePage() {
+export default function Welcome() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
