@@ -58,3 +58,33 @@ export interface EnrolledStudentItem {
   joinDate: string;
   status: StudentEnrollmentStatus;
 }
+
+// ============================================================
+// View / UI helpers for enrollment flows
+// ============================================================
+
+// export interface ClassDisplayItem {
+//   scheduleId: string;
+//   displayLabel: string;
+//   joinDate?: string;
+//   branchName?: string;
+// }
+
+// export interface ClassAssignmentStudent {
+//   studentCode: string;
+//   fullName: string;
+//   branchName: string;
+//   studentStatus: string;
+// }
+
+// export interface ClassAssignmentPrefillStudent {
+//   studentCode: string;
+//   fullName: string;
+//   branchName: string;
+//   studentStatus: string;
+// }
+
+// export interface EnrolledClassItem
+//   extends Omit<ClassDisplayItem, "branchName">, ClassScheduleSummary {
+//   enrollmentId: string;
+// }

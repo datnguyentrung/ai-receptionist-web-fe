@@ -42,6 +42,12 @@
   margin-top: 4px;
 }
 
+.listRootGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
 .classItem {
   display: flex;
   align-items: center;
@@ -63,12 +69,27 @@
   }
 }
 
+.classItemGrid {
+  align-items: flex-start;
+  height: 100%;
+}
+
 .classItemStaticAction {
   cursor: default;
 
   &:hover {
     border-color: #e2e8f0;
     background: #fff;
+  }
+}
+
+.classItemDisabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+
+  &:hover {
+    border-color: var(--tkd-border, rgba(0, 0, 0, 0.09));
+    background: var(--tkd-bg3, #f7f8fa);
   }
 }
 
@@ -82,10 +103,17 @@
   min-width: 0;
 }
 
+.classItemGrid .content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .title {
   font-weight: 700;
   color: #1a1d23;
   font-size: 13.5px;
+  line-height: 1.35;
 }
 
 .titleCompact {
@@ -167,7 +195,18 @@
   border-left: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
 }
 
+.classItemGrid .deleteWrapper {
+  margin-left: 0;
+  margin-top: auto;
+  padding-left: 0;
+  padding-top: 12px;
+  border-left: 0;
+  border-top: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  width: 100%;
+}
+
 .btnDelete {
+  width: 100%;
   padding: 6px 12px;
   background: transparent;
   border: 1px solid var(--tkd-red-lt, #e74c3c);

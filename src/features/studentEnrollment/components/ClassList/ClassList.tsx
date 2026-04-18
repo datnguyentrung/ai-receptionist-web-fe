@@ -1,18 +1,25 @@
-// File: src/features/class-assignment/components/ClassList/ClassList.tsx
 import { cn } from "@/components/ui/utils";
+import type { ClassScheduleSummary } from "@/types";
 import { Calendar, Check, Loader2, MapPin } from "lucide-react";
+import {
+  ScheduleLevelLabel,
+  ScheduleLocationLabel,
+} from "../../../../config/constants";
+import { getLabelClassSchedule } from "../../../../utils/getInitials";
 import styles from "./ClassList.module.scss";
-import type { ClassScheduleSummary } from '@/types';
+import { formatTimeHM, formatTimeStringHM } from '../../../../utils/format';
 
 interface ClassListProps {
   hasBranch: boolean;
   isLoading: boolean;
   classList: ClassScheduleSummary[];
   selectedIds?: Set<string>;
+  disabledIds?: Set<string>;
   onToggle?: (scheduleId: string) => void;
   onAction?: (scheduleId: string) => void;
   actionLabel?: string;
   isCompact?: boolean;
+  variant?: "stack" | "grid";
 }
 
 /**
@@ -24,10 +31,12 @@ export default function ClassList({
   isLoading,
   classList,
   selectedIds = new Set(),
+  disabledIds = new Set(),
   onToggle,
   onAction,
   actionLabel,
   isCompact = false,
+  variant = "stack",
 }: ClassListProps) {
   return (
     <div
@@ -40,7 +49,7 @@ export default function ClassList({
       {!hasBranch && (
         <div className={styles.stateBox}>
           <div className={styles.stateEmoji}>🏫</div>
-          <span>Vui lòng chọn Võ sinh để xem lịch học</span>
+          <span>Chưa có dữ liệu lớp học để hiển thị</span>
         </div>
       )}
 
@@ -59,20 +68,34 @@ export default function ClassList({
       )}
 
       {hasBranch && !isLoading && classList.length > 0 && (
-        <div className={styles.listRoot}>
+        <div
+          className={cn(
+            styles.listRoot,
+            variant === "grid" && styles.listRootGrid,
+          )}
+        >
           {classList.map((cls) => {
             const isSelected = selectedIds.has(cls.scheduleId);
+            const isDisabled = disabledIds.has(cls.scheduleId);
 
             return (
               <div
                 key={cls.scheduleId}
                 className={cn(
                   styles.classItem,
+                  variant === "grid" && styles.classItemGrid,
                   isCompact && styles.classItemCompact,
                   isSelected && styles.classItemSelected,
+                  isDisabled && styles.classItemDisabled,
                   onAction && styles.classItemStaticAction,
                 )}
-                onClick={() => !onAction && onToggle?.(cls.scheduleId)}
+                onClick={() => {
+                  if (onAction || isDisabled) {
+                    return;
+                  }
+
+                  onToggle?.(cls.scheduleId);
+                }}
               >
                 {!onAction && (
                   <div className={styles.classCheck}>
@@ -89,22 +112,22 @@ export default function ClassList({
                       isCompact && styles.titleCompact,
                     )}
                   >
-                    {cls.scheduleId}
+                    {getLabelClassSchedule(cls.scheduleId)}
                   </div>
-                  {(cls.branchName) && (
+                  {cls.branchName && (
                     <div className={styles.meta}>
                       {cls.weekday && (
                         <span className={styles.metaItem}>
                           <Calendar size={11} className={styles.metaIcon} />
-                          {cls.weekday}
+                          {ScheduleLocationLabel[cls.scheduleLocation]}{" "}
+                          {formatTimeStringHM(cls.startTime)}
                         </span>
                       )}
-                      {cls.branchName && (
-                        <span className={styles.metaItem}>
-                          <MapPin size={11} className={styles.metaIcon} />
-                          {cls.branchName}
-                        </span>
-                      )}
+                      <span className={styles.metaItem}>
+                        <MapPin size={11} className={styles.metaIcon} />
+                        {ScheduleLevelLabel[cls.scheduleLevel] ||
+                          cls.branchName}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -112,8 +135,12 @@ export default function ClassList({
                 {onAction && (
                   <div className={styles.deleteWrapper}>
                     <button
+                      type="button"
                       className={styles.btnDelete}
-                      onClick={() => onAction(cls.scheduleId)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onAction(cls.scheduleId);
+                      }}
                     >
                       {actionLabel || "Hành động"}
                     </button>

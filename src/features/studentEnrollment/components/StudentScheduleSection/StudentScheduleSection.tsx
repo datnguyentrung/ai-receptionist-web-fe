@@ -1,13 +1,15 @@
+// import type { EnrolledClassItem } from "@/types";
+import type { StudentEnrollmentResponse } from "@/types";
 import React from "react";
 import ClassList from "../ClassList/ClassList";
 import styles from "./StudentScheduleSection.module.scss";
-import type { ClassScheduleSummary } from '@/types';
 
 interface StudentScheduleSectionProps {
   isLoading: boolean;
   hasStudent: boolean;
-  activeDisplayClasses: ClassScheduleSummary[];
+  activeDisplayClasses: StudentEnrollmentResponse[];
   onDelete: (id: string) => void;
+  queuedRemovalIds?: Set<string>;
 }
 
 export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
@@ -15,6 +17,7 @@ export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
   hasStudent,
   activeDisplayClasses,
   onDelete,
+  queuedRemovalIds = new Set(),
 }) => {
   return (
     <div className={styles.root}>
@@ -22,10 +25,13 @@ export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
       <ClassList
         hasBranch={hasStudent}
         isLoading={isLoading}
-        classList={hasStudent ? activeDisplayClasses : []}
+        classList={
+          hasStudent ? activeDisplayClasses.map((cls) => cls.classSchedule) : []
+        }
         selectedIds={new Set()}
         onAction={onDelete}
         actionLabel="Xóa"
+        disabledIds={queuedRemovalIds}
       />
     </div>
   );

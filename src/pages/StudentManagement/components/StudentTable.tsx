@@ -71,7 +71,9 @@ export function StudentTable({
           <tbody>
             {list.map((student: StudentOverview) => {
               const rowActions = [
-                canViewManagerSenior
+                canViewManagerSenior &&
+                student.classSchedules.length !== 0 &&
+                student.studentStatus === "ACTIVE"
                   ? {
                       id: "assign-class",
                       label: "Xếp lớp",

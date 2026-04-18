@@ -29,11 +29,13 @@ export type CoachStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "RETIRED";
 // ---------------------------------------------------------------------------
 export type ScheduleLevel =
   | "BASIC"
+  | "ADVANCED"
   | "KID"
   | "ADULT"
   | "ASSISTANT"
   | "PERFORMANCE"
   | "DAN"
+  | "SKILL"
   | "SPARRING_TEAM_TIER_1"
   | "SPARRING_TEAM_TIER_2"
   | "SPARRING_TEAM_TIER_3"
@@ -43,11 +45,13 @@ export type ScheduleLevel =
 
 export const ScheduleLevelLabel: Record<ScheduleLevel, string> = {
   BASIC: "Lớp Cơ Bản",
+  ADVANCED: "Lớp Nâng Cao",
   KID: "Lớp Kid",
   ADULT: "Lớp Người Lớn",
   ASSISTANT: "Lớp Trợ Giảng",
   PERFORMANCE: "Lớp Biểu Diễn",
   DAN: "Lớp Đẳng",
+  SKILL: "Lớp Kỹ Năng",
   // Đội tuyển đối kháng (Sparring/Kumite)
   SPARRING_TEAM_TIER_1: "Đội Tuyển Đối Kháng Tuyến 1",
   SPARRING_TEAM_TIER_2: "Đội Tuyển Đối Kháng Tuyến 2",

@@ -4,6 +4,7 @@ import { useGetStudents } from "@/features/student";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { StudentOverview } from "@/types";
 import { Search, X } from "lucide-react";
+import type { KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useRoleStudent } from "../../../../utils/roleUtils";
 import styles from "./StudentSearch.module.scss";
@@ -26,7 +27,6 @@ export default function StudentSearch({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const { canViewManagerSenior } = useRoleStudent();
@@ -95,50 +95,45 @@ export default function StudentSearch({
     };
   }, [showDropdown]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!showDropdown || filteredDropdown.length === 0) return;
-
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          setHighlightedIndex((prev) =>
-            prev < filteredDropdown.length - 1 ? prev + 1 : 0,
-          );
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          setHighlightedIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredDropdown.length - 1,
-          );
-          break;
-        case "Enter":
-          e.preventDefault();
-          if (
-            highlightedIndex >= 0 &&
-            highlightedIndex < filteredDropdown.length
-          ) {
-            handleSelectStudent(filteredDropdown[highlightedIndex]);
-            setHighlightedIndex(-1);
-          }
-          break;
-        case "Escape":
-          e.preventDefault();
-          setShowDropdown(false);
-          setHighlightedIndex(-1);
-          break;
-        default:
-          break;
-      }
-    };
-
-    if (showDropdown) {
-      inputRef.current?.addEventListener("keydown", handleKeyDown);
-      return () => {
-        inputRef.current?.removeEventListener("keydown", handleKeyDown);
-      };
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (!showDropdown) {
+      return;
     }
-  }, [showDropdown, highlightedIndex, filteredDropdown]);
+
+    switch (event.key) {
+      case "ArrowDown":
+        if (filteredDropdown.length === 0) return;
+        event.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < filteredDropdown.length - 1 ? prev + 1 : 0,
+        );
+        break;
+      case "ArrowUp":
+        if (filteredDropdown.length === 0) return;
+        event.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredDropdown.length - 1,
+        );
+        break;
+      case "Enter":
+        if (
+          highlightedIndex >= 0 &&
+          highlightedIndex < filteredDropdown.length
+        ) {
+          event.preventDefault();
+          handleSelectStudent(filteredDropdown[highlightedIndex]);
+          setHighlightedIndex(-1);
+        }
+        break;
+      case "Escape":
+        event.preventDefault();
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className={styles.field}>
@@ -154,6 +149,7 @@ export default function StudentSearch({
           className={styles.inputWithSearch}
           placeholder="Tìm kiếm Võ sinh theo tên hoặc mã..."
           value={search}
+          onKeyDown={handleInputKeyDown}
           onChange={(e) => {
             setSearch(e.target.value);
             setHighlightedIndex(-1);
@@ -170,6 +166,8 @@ export default function StudentSearch({
           className={styles.clearBtn}
           onClick={() => {
             setSearch("");
+            setShowDropdown(false);
+            setHighlightedIndex(-1);
             onClear();
           }}
           title="Xóa nội dung"
@@ -179,7 +177,7 @@ export default function StudentSearch({
 
         {/* Dropdown kết quả tìm kiếm, chỉ hiện khi có dữ liệu và đang focus */}
         {showDropdown && filteredDropdown.length > 0 && (
-          <div className={styles.autocomplete} ref={autocompleteRef}>
+          <div className={styles.autocomplete}>
             {filteredDropdown.map((student, index) => (
               <div
                 key={student.studentCode}
@@ -212,6 +210,16 @@ export default function StudentSearch({
             ))}
           </div>
         )}
+
+        {showDropdown &&
+          debouncedSearch.trim() &&
+          filteredDropdown.length === 0 && (
+            <div className={styles.autocomplete}>
+              <div className={styles.emptyState}>
+                Không tìm thấy võ sinh phù hợp.
+              </div>
+            </div>
+          )}
       </div>
 
       {selectedStudents.length > 0 && (

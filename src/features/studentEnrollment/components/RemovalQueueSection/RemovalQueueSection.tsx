@@ -1,12 +1,13 @@
 import { cn } from "@/components/ui/utils";
+// import type { EnrolledClassItem } from "@/types";
+import type { StudentEnrollmentResponse } from "@/types";
 import { Calendar, MapPin, X } from "lucide-react";
 import React from "react";
-import type { EnrolledClassItem } from "../ClassAssignmentModal/types";
 import styles from "./RemovalQueueSection.module.scss";
 
 interface RemovalQueueSectionProps {
   removalQueue: Set<string>;
-  toDeleteObjects: EnrolledClassItem[];
+  toDeleteObjects: StudentEnrollmentResponse[];
   onRemoveFromQueue: (id: string) => void;
   onConfirmRemoval: () => void;
   isProcessing?: boolean;
@@ -28,12 +29,12 @@ export const RemovalQueueSection: React.FC<RemovalQueueSectionProps> = ({
       </h3>
       <div className={styles.removalList}>
         {toDeleteObjects.map((cls) => (
-          <div key={cls.scheduleId} className={styles.classItem}>
+          <div key={cls.classSchedule.scheduleId} className={styles.classItem}>
             <div className={styles.classContent}>
-              <div className={styles.classLabel}>{cls.displayLabel}</div>
+              <div className={styles.classLabel}>{cls.classSchedule.scheduleId}</div>
 
               {/* Thông tin phụ: ngày nhập học & chi nhánh (Đồng bộ với ClassList) */}
-              {(cls.joinDate || cls.branchName) && (
+              {(cls.joinDate || cls.classSchedule.branchName) && (
                 <div className={styles.meta}>
                   {cls.joinDate && (
                     <span className={styles.metaItem}>
@@ -41,17 +42,17 @@ export const RemovalQueueSection: React.FC<RemovalQueueSectionProps> = ({
                       {cls.joinDate}
                     </span>
                   )}
-                  {cls.branchName && (
+                  {cls.classSchedule.branchName && (
                     <span className={styles.metaItem}>
                       <MapPin size={11} className={styles.metaIcon} />
-                      {cls.branchName}
+                      {cls.classSchedule.branchName}
                     </span>
                   )}
                 </div>
               )}
             </div>
             <button
-              onClick={() => onRemoveFromQueue(cls.scheduleId)}
+              onClick={() => onRemoveFromQueue(cls.classSchedule.scheduleId)}
               className={styles.btnSmallSquare}
               title="Bỏ khỏi danh sách chờ xóa"
               disabled={isProcessing}
