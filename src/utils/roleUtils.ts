@@ -10,7 +10,7 @@ const checkContains = (role: string | undefined, keyword: string) => {
 };
 
 export const isHeadCoach = (role?: string) => {
-  return checkContains(role, "HEAD_COACH") || checkContains(role, "ADMIN");
+  return role === "HEAD_COACH" || role === "ADMIN";
 };
 
 export const isManagerSenior = (role?: string) => {
@@ -23,6 +23,14 @@ export const isCoach = (role?: string) => {
     checkContains(role, "MANAGER") ||
     isManagerSenior(role)
   );
+};
+
+export const isAssistant = (role?: string) => {
+  return role === "ASSISTANT" || isCoach(role);
+};
+
+export const isStudent = (role?: string) => {
+  return role === "STUDENT" || isCoach(role);
 };
 
 // Đổi tên thành useRoleStudent để tuân thủ luật của React Hooks
@@ -56,13 +64,15 @@ export const useRoleStudent = () => {
   const canViewHeadCoach = isHeadCoach(idRole);
   const canViewManagerSenior = isManagerSenior(idRole);
   const canViewCoach = isCoach(idRole);
-  const canViewStudent = !canViewManagerSenior && !canViewCoach;
+  const canViewAssistant = isAssistant(idRole);
+  const canViewStudent = isStudent(idRole);
 
   // Trả về thêm isAuthenticated nếu component cần dùng để check đăng nhập
   return {
     canViewManagerSenior,
     canViewCoach,
     canViewStudent,
+    canViewAssistant,
     canViewHeadCoach,
   };
 };
@@ -76,7 +86,7 @@ export const useUserLevel = () => {
     })),
   );
 
-  let level: RoleLevel = ROLE_LEVELS.STUDENT; // Mặc định ai đăng nhập cũng ít nhất là Student
+  let level: RoleLevel = ROLE_LEVELS.GUEST; // Mặc định ai đăng nhập cũng ít nhất là Student
 
   if (isHeadCoach(idRole)) {
     level = ROLE_LEVELS.HEAD_COACH;
@@ -84,6 +94,10 @@ export const useUserLevel = () => {
     level = ROLE_LEVELS.MANAGER_SENIOR;
   } else if (isCoach(idRole)) {
     level = ROLE_LEVELS.COACH;
+  } else if (isAssistant(idRole)) {
+    level = ROLE_LEVELS.ASSISTANT;
+  } else if (isStudent(idRole)) {
+    level = ROLE_LEVELS.STUDENT;
   }
 
   return { level, isAuthenticated };

@@ -122,6 +122,13 @@ export default function AppRoutes() {
             <Route path="history" element={<AttendanceReports />} />
             <Route path="ai/check-in" element={<AICheckIn />} />
           </Route>
+
+          {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) CÓ THỂ ĐƯỢC XEM TRANG NÀY
+          NHƯNG CHỈ LÀ TRANG MẶC ĐỊNH CHO HỌ, KHÔNG PHẢI TRANG CỦA MANAGER/HEAD COACH */}
+          <Route>
+            <Route path = "home" element={<Navigate to="/schedules" replace />} />
+            <Route path = "{:userCode}" element={<Navigate to="/schedules" replace />} />
+          </Route>
         </Route>
 
         {/* --- CATCH ALL --- */}
