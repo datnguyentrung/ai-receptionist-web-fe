@@ -1,0 +1,134 @@
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tkd-text, #1a1d23);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--tkd-red-lt, #e74c3c);
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleSpacing {
+  margin-bottom: 16px;
+}
+
+.removalSection {
+  margin-top: 20px;
+  padding: 24px;
+  background: rgba(192, 57, 43, 0.04);
+  border: 2px dashed var(--tkd-red-lt, #e74c3c);
+  border-radius: var(--tkd-radius, 12px);
+  animation: fadeIn 0.3s ease;
+}
+
+.removalList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.classItem {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid rgba(192, 57, 43, 0.2);
+  border-radius: var(--tkd-radius, 12px);
+  padding: 13px 16px;
+  gap: 12px;
+
+  &:hover {
+    border-color: var(--tkd-red-lt, #e74c3c);
+  }
+}
+
+.classContent {
+  flex: 1;
+}
+
+.classLabel {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1a1d23;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: #8a92a6;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.metaIcon {
+  opacity: 0.6;
+}
+
+.btnSmallSquare {
+  background-color: var(--tkd-red-lt, #e74c3c);
+  color: white;
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(192, 57, 43, 0.2);
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.9);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.btnConfirmRemoval {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(
+    135deg,
+    var(--tkd-red-dk, #96281b),
+    var(--tkd-red-lt, #e74c3c)
+  );
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3);
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

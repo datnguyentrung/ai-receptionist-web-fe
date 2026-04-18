@@ -69,7 +69,7 @@ export function StudentTable({
             </tr>
           </thead>
           <tbody>
-            {list.map((student) => {
+            {list.map((student: StudentOverview) => {
               const rowActions = [
                 canViewManagerSenior
                   ? {

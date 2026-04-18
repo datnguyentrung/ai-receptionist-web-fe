@@ -1,14 +1,18 @@
 import { useGetStudents } from "@/features/student";
+import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
 import { useState } from "react";
 import { Pagination } from "../../components/Pagination";
 import StatusFilters from "../../components/StatusFilters";
 import type { StudentStatus } from "../../config/constants";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAuthStore } from "../../store/authStore";
+import type { StudentOverview } from "../../types";
 import styles from "./StudentManagement.module.scss";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
+
+type StudentMenuAction = "assign-class" | "view-info" | "view-history";
 
 const STUDENT_FILTER_OPTIONS = [
   { value: "all" as const, label: "Tất cả" },
@@ -24,6 +28,9 @@ export function StudentManagement() {
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [isClassAssignmentOpen, setIsClassAssignmentOpen] = useState(false);
+  const [studentForClassAssignment, setStudentForClassAssignment] =
+    useState<StudentOverview | null>(null);
   const userInfo = useAuthStore((state) => state.user);
 
   const debouncedSearch = useDebounce(search, 500);
@@ -78,6 +85,21 @@ export function StudentManagement() {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
+
+  const handleMenuAction = (
+    student: StudentOverview,
+    action: StudentMenuAction,
+  ) => {
+    if (action === "assign-class") {
+      setStudentForClassAssignment(student);
+      setIsClassAssignmentOpen(true);
+    }
+  };
+
+  const handleCloseClassAssignment = () => {
+    setIsClassAssignmentOpen(false);
+    setStudentForClassAssignment(null);
+  };
 
   return (
     <div className={styles.page}>
@@ -135,6 +157,7 @@ export function StudentManagement() {
           onToggleSelect={toggleSelect}
           onSelectAll={handleSelectAll}
           isFetching={isStudentsFetching}
+          onMenuAction={handleMenuAction}
         />
         <Pagination
           currentPage={page}
@@ -143,6 +166,23 @@ export function StudentManagement() {
           currentListLength={list.length}
         />
       </div>
+
+      {isClassAssignmentOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={handleCloseClassAssignment}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <ClassAssignmentModal
+              onClose={handleCloseClassAssignment}
+              initialStudent={studentForClassAssignment}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
