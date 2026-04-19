@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { showErrorToast, showSuccessToast } from "../ui/toast";
@@ -55,6 +55,7 @@ interface ConfirmModalProps {
   errorToastMessage?: string;
   showSuccessToastOnConfirm?: boolean;
   showErrorToastOnFail?: boolean;
+  children?: ReactNode;
   onCancel: () => void;
   onConfirm: () => void | Promise<void>;
 }
@@ -72,6 +73,7 @@ export default function ConfirmModal({
   errorToastMessage = "Thao tác thất bại. Vui lòng thử lại.",
   showSuccessToastOnConfirm = true,
   showErrorToastOnFail = true,
+  children,
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -179,6 +181,7 @@ export default function ConfirmModal({
               {description}
             </p>
           ) : null}
+          {children ? <div className={styles.bodySlot}>{children}</div> : null}
 
           <div className={styles.footer}>
             <button

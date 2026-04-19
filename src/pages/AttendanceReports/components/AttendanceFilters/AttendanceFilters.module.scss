@@ -4,6 +4,13 @@
   gap: 10px;
 }
 
+.barTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .barLeft {
   display: flex;
   align-items: center;
@@ -40,6 +47,24 @@
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.saveButton {
+  border: 0;
+  border-radius: 12px;
+  background: #111827;
+  color: #fff;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
   }
 }
 

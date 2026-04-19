@@ -30,6 +30,10 @@ export interface AttendanceFiltersProps {
   onScheduleLevelsChange: (v: ScheduleLevel[]) => void;
   resultCount: number;
   onClearAll: () => void;
+  showSaveButton?: boolean;
+  saveButtonLabel?: string;
+  isSaving?: boolean;
+  onSaveClick?: () => void;
 }
 
 type FilterTag = { key: string; label: string; onRemove: () => void };
@@ -51,6 +55,10 @@ export function AttendanceFilters(props: AttendanceFiltersProps) {
     scheduleLevels,
     onScheduleLevelsChange,
     onClearAll,
+    showSaveButton,
+    saveButtonLabel = "Lưu thay đổi",
+    isSaving,
+    onSaveClick,
   } = props;
 
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -111,17 +119,30 @@ export function AttendanceFilters(props: AttendanceFiltersProps) {
   return (
     <>
       <div className={styles.bar}>
-        <div className={styles.barLeft}>
-          <button
-            className={styles.filterToggleBtn}
-            onClick={() => setIsPanelOpen(true)}
-          >
-            <SlidersHorizontal size={14} />
-            Bộ lọc
-          </button>
-          {tags.length > 0 && (
-            <button className={styles.clearAllBtn} onClick={onClearAll}>
-              Xóa tất cả
+        <div className={styles.barTopRow}>
+          <div className={styles.barLeft}>
+            <button
+              className={styles.filterToggleBtn}
+              onClick={() => setIsPanelOpen(true)}
+            >
+              <SlidersHorizontal size={14} />
+              Bộ lọc
+            </button>
+            {tags.length > 0 && (
+              <button className={styles.clearAllBtn} onClick={onClearAll}>
+                Xóa tất cả
+              </button>
+            )}
+          </div>
+
+          {showSaveButton && onSaveClick && (
+            <button
+              type="button"
+              className={styles.saveButton}
+              onClick={onSaveClick}
+              disabled={isSaving}
+            >
+              {isSaving ? "Đang lưu..." : saveButtonLabel}
             </button>
           )}
         </div>

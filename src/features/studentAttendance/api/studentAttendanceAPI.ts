@@ -13,9 +13,24 @@ import type {
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
   StudentAttendanceResponse,
+  StudentAttendanceSimpleResponse,
 } from "@/types";
 
 export const studentAttendanceAPI = {
+  
+  updateAttendance: async (
+    data: StudentAttendanceSimpleResponse[],
+  ): Promise<StudentAttendanceResponse[]> => {
+    // Gọi method PUT vào đúng endpoint gốc
+    const response = await javaApi.put("/student-attendances", data);
+
+    // Đảm bảo dữ liệu trả về là một mảng an toàn
+    return ensureArray<StudentAttendanceResponse>(
+      response.data,
+      "studentAttendanceAPI.updateAttendance",
+    );
+  },
+
   /** PATCH /{attendanceId}/status — Cập nhật trạng thái điểm danh */
   updateStatus: async (
     attendanceId: string,

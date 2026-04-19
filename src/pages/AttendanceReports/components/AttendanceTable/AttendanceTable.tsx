@@ -1,10 +1,16 @@
 import Avatar from "@/components/Avatar";
 import { Pagination } from "@/components/Pagination";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
-import type { EvaluationStatus } from "@/config/constants";
-import { EvaluationStatusLabel } from "@/config/constants";
+import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
+import {
+  AttendanceStatusLabel,
+  EvaluationStatusLabel,
+} from "@/config/constants";
 import { AttendanceBadge, ClipboardList } from "@/features/studentAttendance";
-import type { AttendanceListResponse } from "@/types";
+import type {
+  AttendanceListResponse,
+  StudentAttendanceSimpleResponse,
+} from "@/types";
 import { formatDateDMY } from "@/utils/format";
 import styles from "./AttendanceTable.module.scss";
 
@@ -36,6 +42,16 @@ interface Props {
   currentPage: number;
   pageSize: number;
   setCurrentPage: (page: number) => void;
+  editedRows: Record<string, StudentAttendanceSimpleResponse>;
+  onAttendanceChange: (
+    row: AttendanceListResponse["attendances"]["content"][number],
+    status: AttendanceStatus,
+  ) => void;
+  onEvaluationChange: (
+    row: AttendanceListResponse["attendances"]["content"][number],
+    status: EvaluationStatus | null,
+  ) => void;
+  onUndoRow: (attendanceId: string) => void;
 }
 
 export function AttendanceTable({
@@ -43,9 +59,37 @@ export function AttendanceTable({
   currentPage,
   pageSize,
   setCurrentPage,
+  editedRows,
+  onAttendanceChange,
+  onEvaluationChange,
+  onUndoRow,
 }: Props) {
   const rows = data?.attendances.content ?? [];
   const totalPages = data?.attendances.totalPages ?? 1;
+
+  const ATTENDANCE_OPTIONS: AttendanceStatus[] = [
+    "PRESENT",
+    "MAKEUP",
+    "LATE",
+    "EXCUSED",
+    "ABSENT",
+  ];
+
+  const EVALUATION_OPTIONS: EvaluationStatus[] = [
+    "PENDING",
+    "GOOD",
+    "AVERAGE",
+    "WEAK",
+  ];
+
+  const getWorkingRow = (
+    row: AttendanceListResponse["attendances"]["content"][number],
+  ) => {
+    if (!row.attendanceId) {
+      return null;
+    }
+    return editedRows[row.attendanceId] ?? null;
+  };
 
   return (
     <div className={styles.tableCard}>
@@ -74,10 +118,25 @@ export function AttendanceTable({
           </thead>
           <tbody>
             {rows.map((a, index) => {
-              const attendanceStatus = a.attendanceStatus ?? "ABSENT";
+              const edited = getWorkingRow(a);
+              const attendanceStatus =
+                edited?.attendanceStatus ?? a.attendanceStatus;
+              const evaluationStatus =
+                edited?.evaluationStatus ?? a.evaluationStatus;
+              const isChanged = !!edited;
+              const attendanceDisplay = attendanceStatus ?? "ABSENT";
+              const canEvaluate =
+                attendanceStatus === "PRESENT" ||
+                attendanceStatus === "MAKEUP" ||
+                attendanceStatus === "LATE";
+              const blockedEvaluationReason =
+                "Chỉ có thể đánh giá khi điểm danh là Có mặt, Học bù hoặc Đi muộn.";
 
               return (
-                <tr key={a.attendanceId} className={styles.tr}>
+                <tr
+                  key={a.attendanceId ?? `${a.enrollmentId}-${a.studentId}`}
+                  className={`${styles.tr} ${isChanged ? styles.changedRow : ""}`}
+                >
                   {/* STT */}
                   <td className={styles.td}>
                     <p
@@ -157,31 +216,82 @@ export function AttendanceTable({
                   </td>
                   {/* Điểm danh */}
                   <td className={styles.td} style={{ textAlign: "center" }}>
-                    <AttendanceBadge status={attendanceStatus} />
+                    {a.attendanceId ? (
+                      <MiniActionPopover
+                        triggerClassName={styles.dropdownTrigger}
+                        contentClassName={styles.attendanceMenuContent}
+                        actions={ATTENDANCE_OPTIONS.map((status) => ({
+                          id: status,
+                          label: AttendanceStatusLabel[status],
+                        }))}
+                        onActionSelect={(actionId) => {
+                          const nextStatus = ATTENDANCE_OPTIONS.find(
+                            (status) => status === actionId,
+                          );
+                          if (nextStatus) {
+                            onAttendanceChange(a, nextStatus);
+                          }
+                        }}
+                      >
+                        <AttendanceBadge status={attendanceDisplay} />
+                      </MiniActionPopover>
+                    ) : (
+                      <AttendanceBadge status={attendanceDisplay} />
+                    )}
                   </td>
                   {/* Đánh giá */}
                   <td className={styles.td} style={{ textAlign: "center" }}>
-                    {a.evaluationStatus &&
-                    EVALUATION_STYLE[a.evaluationStatus] ? (
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          padding: "2px 8px",
-                          borderRadius: "9999px",
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          background: EVALUATION_STYLE[a.evaluationStatus].bg,
-                          color: EVALUATION_STYLE[a.evaluationStatus].color,
-                        }}
-                      >
-                        {EvaluationStatusLabel[a.evaluationStatus]}
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: "12px", color: "#D1D5DB" }}>
-                        —
-                      </span>
-                    )}
+                    <MiniActionPopover
+                      triggerClassName={styles.dropdownTrigger}
+                      contentClassName={styles.attendanceMenuContent}
+                      disabled={!canEvaluate || !a.attendanceId}
+                      title={!canEvaluate ? blockedEvaluationReason : undefined}
+                      actions={[
+                        ...EVALUATION_OPTIONS.filter(
+                          (status) => status !== "PENDING",
+                        ).map((status) => ({
+                          id: status,
+                          label: EvaluationStatusLabel[status],
+                        })),
+                        // { id: "__separator__", label: "---" },
+                        // { id: "__clear__", label: "Bỏ đánh giá" },
+                      ]}
+                      onActionSelect={(actionId) => {
+                        if (actionId === "__clear__") {
+                          onEvaluationChange(a, null);
+                          return;
+                        }
+
+                        const nextStatus = EVALUATION_OPTIONS.find(
+                          (status) => status === actionId,
+                        );
+                        if (nextStatus) {
+                          onEvaluationChange(a, nextStatus);
+                        }
+                      }}
+                    >
+                      {evaluationStatus &&
+                      EVALUATION_STYLE[evaluationStatus] ? (
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            padding: "2px 8px",
+                            borderRadius: "9999px",
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            background: EVALUATION_STYLE[evaluationStatus].bg,
+                            color: EVALUATION_STYLE[evaluationStatus].color,
+                          }}
+                        >
+                          {EvaluationStatusLabel[evaluationStatus]}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: "12px", color: "#D1D5DB" }}>
+                          —
+                        </span>
+                      )}
+                    </MiniActionPopover>
                   </td>
                   {/* Ghi chú */}
                   <td className={styles.td}>
@@ -197,7 +307,18 @@ export function AttendanceTable({
 
                   {/* Action buttons (e.g., view details) */}
                   <td className={styles.td}>
-                    <MiniActionPopover itemLabel={a.studentName} />
+                    <div className={styles.rowActions}>
+                      {isChanged && a.attendanceId ? (
+                        <button
+                          type="button"
+                          className={styles.undoButton}
+                          onClick={() => onUndoRow(a.attendanceId as string)}
+                        >
+                          Undo
+                        </button>
+                      ) : null}
+                      <MiniActionPopover itemLabel={a.studentName} />
+                    </div>
                   </td>
                 </tr>
               );

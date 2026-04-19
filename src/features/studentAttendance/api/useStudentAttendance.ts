@@ -3,6 +3,7 @@ import type {
   AttendanceManualLogRequest,
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
+  StudentAttendanceSimpleResponse,
 } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
@@ -132,5 +133,20 @@ export const useUpdateAttendanceEvaluation = () => {
       attendanceId: string;
       data: AttendanceUpdateEvaluationRequest;
     }) => studentAttendanceAPI.updateEvaluation(attendanceId, data),
+  });
+};
+
+// 6. Hook cập nhật điểm danh hàng loạt
+export const useUpdateAttendanceBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: StudentAttendanceSimpleResponse[]) =>
+      studentAttendanceAPI.updateAttendance(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ATTENDANCE_QUERY_KEY],
+      });
+    },
   });
 };

@@ -1,28 +1,12 @@
 import Avatar from "@/components/Avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { getDurationInMinutes } from "@/utils/format";
-import {
-  Calendar,
-  Clock,
-  EllipsisVertical,
-  Info,
-  MapPin,
-  Play,
-  PowerOff,
-  UserPlus,
-  Users,
-} from "lucide-react";
-import { memo, useState } from "react";
+import { Calendar, Clock, EllipsisVertical, MapPin, Users } from "lucide-react";
+import { memo } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
@@ -36,7 +20,6 @@ function ClassCardInner({
     currentStatus: ScheduleStatus,
   ) => void;
 }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const capacity = 40;
   const totalStudents = cls.totalStudents ?? 0;
   const occupancyRate = capacity > 0 ? totalStudents / capacity : 0;
@@ -46,25 +29,6 @@ function ClassCardInner({
     ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
   const locationLabel =
     ScheduleLocationLabel[cls.scheduleLocation] ?? "Địa điểm không xác định";
-
-  const handleMenuAction = (action: string) => {
-    switch (action) {
-      case "info":
-        console.log("Xem thông tin lớp:", cls.scheduleId);
-        break;
-      case "stop":
-        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
-        break;
-      case "start":
-        onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
-        break;
-      case "assign-coach":
-        console.log("Phân công HLV:", cls.scheduleId);
-        break;
-      default:
-        break;
-    }
-  };
 
   return (
     <div
@@ -98,69 +62,39 @@ function ClassCardInner({
                 : ""}
             </p>
           </div>
-          <DropdownMenu
-            modal={false}
-            open={isMenuOpen}
-            onOpenChange={setIsMenuOpen}
+          <MiniActionPopover
+            triggerClassName={styles.menuBtn}
+            contentClassName={styles.classMenuContent}
+            actions={[
+              { id: "info", label: "Thông tin" },
+              { id: "__separator__" },
+              ...(cls.scheduleStatus === "ACTIVE"
+                ? [{ id: "stop", label: "Dừng hoạt động lớp" }]
+                : cls.scheduleStatus === "INACTIVE"
+                  ? [{ id: "start", label: "Mở hoạt động lớp" }]
+                  : []),
+              { id: "__separator__" },
+              { id: "assign-coach", label: "Phân công HLV" },
+            ]}
+            onActionSelect={(action) => {
+              switch (action) {
+                case "info":
+                  console.log("Xem thông tin lớp:", cls.scheduleId);
+                  break;
+                case "stop":
+                case "start":
+                  onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+                  break;
+                case "assign-coach":
+                  console.log("Phân công HLV:", cls.scheduleId);
+                  break;
+                default:
+                  break;
+              }
+            }}
           >
-            <DropdownMenuTrigger asChild>
-              <button
-                className={styles.menuBtn}
-                aria-label="Thao tác lớp học"
-                title="Click chuột trái hoặc phải để mở menu"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMenuOpen(true);
-                }}
-              >
-                <EllipsisVertical size={16} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className={styles.classMenuContent}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DropdownMenuItem
-                onSelect={() => handleMenuAction("info")}
-                className={styles.menuItemWithIcon}
-              >
-                <Info size={14} />
-                <span>Thông tin</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {cls.scheduleStatus === "ACTIVE" && (
-                <DropdownMenuItem
-                  onSelect={() => handleMenuAction("stop")}
-                  className={styles.menuItemWithIcon}
-                >
-                  <PowerOff size={14} />
-                  <span>Dừng hoạt động lớp</span>
-                </DropdownMenuItem>
-              )}
-              {cls.scheduleStatus === "INACTIVE" && (
-                <DropdownMenuItem
-                  onSelect={() => handleMenuAction("start")}
-                  className={styles.menuItemWithIcon}
-                >
-                  <Play size={14} />
-                  <span>Mở hoạt động lớp</span>
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => handleMenuAction("assign-coach")}
-                className={styles.menuItemWithIcon}
-              >
-                <UserPlus size={14} />
-                <span>Phân công HLV</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <EllipsisVertical size={16} />
+          </MiniActionPopover>
         </div>
 
         {cls.coaches.length > 0 &&
