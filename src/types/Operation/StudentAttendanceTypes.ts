@@ -1,7 +1,28 @@
 import type { AttendanceStatus, EvaluationStatus } from '../../config/constants';
-import type { UserResponse } from '../index';
+import type { PageResponse, UserResponse } from '../index';
 export interface AttendanceRecord extends UserResponse {
   audio_base64?: string;
+}
+
+export interface AttendanceListResponse {
+  stats: AttendanceStats;
+  attendances: PageResponse<StudentAttendanceResponse>;
+}
+
+export interface AttendanceStats{
+  totalRecords: number;
+  attendanceRate: number; // Tỷ lệ điểm danh (0-100)
+
+  presentCount: number;
+  absentCount: number;
+  excusedCount: number;
+  makeupCount: number;
+  lateCount: number;
+
+  evalGoodCount: number;
+  evalAverageCount: number;
+  evalWeakCount: number;
+  evalPendingCount: number;
 }
 
 export interface StudentAttendanceResponse {

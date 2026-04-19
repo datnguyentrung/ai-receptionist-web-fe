@@ -25,6 +25,73 @@
   flex-shrink: 0;
 }
 
+.trendContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.evalSection {
+  margin-top: 10px;
+}
+
+.evalTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.evalBar {
+  width: 100%;
+  height: 10px;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.evalSegment {
+  height: 100%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.evalSegmentActive {
+  box-shadow: inset 0 0 0 2px rgba(17, 24, 39, 0.45);
+}
+
+.evalLegend {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.evalLegendItem {
+  font-size: 11px;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.evalLegendItemActive {
+  color: #111827;
+  font-weight: 600;
+}
+
+.evalDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
 .sparkBarsOuter {
   margin-left: auto;
   display: none;

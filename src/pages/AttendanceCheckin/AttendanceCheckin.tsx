@@ -90,7 +90,7 @@ export function AttendanceCheckin() {
     if (!data || !enrollments) return [];
     return mergeAttendanceData(
       enrollments.enrollments,
-      data.content,
+      data.attendances.content,
       CLASS_SESSION.date,
     );
   }, [data, enrollments]);

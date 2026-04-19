@@ -5,13 +5,13 @@ import type {
   ScheduleLevel,
 } from "@/config/constants";
 import { javaApi } from "@/lib/axiosInstance";
-import { ensureArray, ensurePageResponse } from "@/lib/runtimeGuards";
+import { ensureArray, ensureAttendanceListResponse } from "@/lib/runtimeGuards";
 import type {
   AttendanceBatchCreateRequest,
+  AttendanceListResponse,
   AttendanceManualLogRequest,
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
-  PageResponse,
   StudentAttendanceResponse,
 } from "@/types";
 
@@ -72,7 +72,7 @@ export const studentAttendanceAPI = {
     branchIds?: number[],
     scheduleLevels?: ScheduleLevel[],
     scheduleIds?: string[],
-  ): Promise<PageResponse<StudentAttendanceResponse>> => {
+  ): Promise<AttendanceListResponse> => {
     const response = await javaApi.get("/student-attendances", {
       params: {
         search,
@@ -90,7 +90,7 @@ export const studentAttendanceAPI = {
       },
     });
 
-    return ensurePageResponse<StudentAttendanceResponse>(
+    return ensureAttendanceListResponse(
       response.data,
       "studentAttendanceAPI.filter",
     );

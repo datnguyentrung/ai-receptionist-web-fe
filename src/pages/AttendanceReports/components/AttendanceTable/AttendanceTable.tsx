@@ -4,7 +4,7 @@ import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import type { EvaluationStatus } from "@/config/constants";
 import { EvaluationStatusLabel } from "@/config/constants";
 import { AttendanceBadge, ClipboardList } from "@/features/studentAttendance";
-import type { PageResponse, StudentAttendanceResponse } from "@/types";
+import type { AttendanceListResponse } from "@/types";
 import { formatDateDMY } from "@/utils/format";
 import styles from "./AttendanceTable.module.scss";
 
@@ -32,7 +32,7 @@ const EVALUATION_STYLE: Record<
 };
 
 interface Props {
-  data: PageResponse<StudentAttendanceResponse> | undefined;
+  data: AttendanceListResponse | undefined;
   currentPage: number;
   pageSize: number;
   setCurrentPage: (page: number) => void;
@@ -44,8 +44,8 @@ export function AttendanceTable({
   pageSize,
   setCurrentPage,
 }: Props) {
-  const rows = data?.content ?? [];
-  const totalPages = data?.totalPages ?? 1;
+  const rows = data?.attendances.content ?? [];
+  const totalPages = data?.attendances.totalPages ?? 1;
 
   return (
     <div className={styles.tableCard}>
@@ -221,7 +221,7 @@ export function AttendanceTable({
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          currentListLength={data?.totalElements ?? 0}
+          currentListLength={data?.attendances.totalElements ?? 0}
         />
       )}
     </div>

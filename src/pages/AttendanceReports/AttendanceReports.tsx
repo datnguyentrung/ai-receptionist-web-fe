@@ -9,10 +9,25 @@ import { AttendancePageHeader } from "@/pages/AttendanceReports/components/Atten
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
 import { AttendanceTable } from "@/pages/AttendanceReports/components/AttendanceTable";
 import { useAuthStore } from "@/store/authStore";
+import type { AttendanceStats } from "@/types";
 import { useState } from "react";
 import styles from "./AttendanceReports.module.scss";
 
 const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;
+
+const EMPTY_ATTENDANCE_STATS: AttendanceStats = {
+  totalRecords: 0,
+  attendanceRate: 0,
+  presentCount: 0,
+  absentCount: 0,
+  excusedCount: 0,
+  makeupCount: 0,
+  lateCount: 0,
+  evalGoodCount: 0,
+  evalAverageCount: 0,
+  evalWeakCount: 0,
+  evalPendingCount: 0,
+};
 
 export function AttendanceReports() {
   const [search, setSearch] = useState("");
@@ -30,6 +45,16 @@ export function AttendanceReports() {
   const user = useAuthStore((state) => state.user);
   const scheduleIds =
     user?.userInfo.assignedClasses.map((c) => c.classSchedule.scheduleId) ?? [];
+
+  const setAttendanceDrillDown = (nextStatuses: AttendanceStatus[] | null) => {
+    setAttendanceStatuses(nextStatuses ?? []);
+    setCurrentPage(1);
+  };
+
+  const setEvaluationDrillDown = (nextStatuses: EvaluationStatus[] | null) => {
+    setEvaluationStatuses(nextStatuses ?? []);
+    setCurrentPage(1);
+  };
 
   const { data } = useFilterAttendance(
     search,
@@ -57,8 +82,16 @@ export function AttendanceReports() {
 
   return (
     <div className={styles.page}>
-      <AttendancePageHeader totalRecords={data?.totalElements || 0} />
-      <AttendanceSummarySection />
+      <AttendancePageHeader
+        totalRecords={data?.attendances.totalElements || 0}
+      />
+      <AttendanceSummarySection
+        stats={data?.stats ?? EMPTY_ATTENDANCE_STATS}
+        activeAttendanceStatuses={attendanceStatuses}
+        activeEvaluationStatuses={evaluationStatuses}
+        onAttendanceFilterChange={setAttendanceDrillDown}
+        onEvaluationFilterChange={setEvaluationDrillDown}
+      />
       <AttendanceFilters
         search={search}
         onSearchChange={(v) => {
@@ -95,13 +128,13 @@ export function AttendanceReports() {
           setScheduleLevels(v);
           setCurrentPage(1);
         }}
-        resultCount={data?.totalElements || 0}
+        resultCount={data?.attendances.totalElements || 0}
         onClearAll={handleClearAll}
       />
       <AttendanceTable
         data={data}
         currentPage={currentPage}
-        pageSize={data?.size || PAGE_SIZE}
+        pageSize={data?.attendances.size || PAGE_SIZE}
         setCurrentPage={setCurrentPage}
       />
     </div>

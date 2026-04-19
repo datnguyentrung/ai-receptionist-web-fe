@@ -1,4 +1,9 @@
-import type { PageResponse, StudentListResponse } from "@/types";
+import type {
+  AttendanceListResponse,
+  AttendanceStats,
+  PageResponse,
+  StudentListResponse,
+} from "@/types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -110,5 +115,78 @@ export function ensureStudentListResponse(
     reservedStudentCount: 0,
     droppedStudentCount: 0,
     students: ensurePageResponse(undefined, `${context}.students`),
+  };
+}
+
+function ensureAttendanceStats(value: unknown): AttendanceStats {
+  if (isRecord(value)) {
+    return {
+      totalRecords:
+        typeof value.totalRecords === "number" ? value.totalRecords : 0,
+      attendanceRate:
+        typeof value.attendanceRate === "number" ? value.attendanceRate : 0,
+      presentCount:
+        typeof value.presentCount === "number" ? value.presentCount : 0,
+      absentCount:
+        typeof value.absentCount === "number" ? value.absentCount : 0,
+      excusedCount:
+        typeof value.excusedCount === "number" ? value.excusedCount : 0,
+      makeupCount:
+        typeof value.makeupCount === "number" ? value.makeupCount : 0,
+      lateCount: typeof value.lateCount === "number" ? value.lateCount : 0,
+      evalGoodCount:
+        typeof value.evalGoodCount === "number" ? value.evalGoodCount : 0,
+      evalAverageCount:
+        typeof value.evalAverageCount === "number" ? value.evalAverageCount : 0,
+      evalWeakCount:
+        typeof value.evalWeakCount === "number" ? value.evalWeakCount : 0,
+      evalPendingCount:
+        typeof value.evalPendingCount === "number" ? value.evalPendingCount : 0,
+    };
+  }
+
+  return {
+    totalRecords: 0,
+    attendanceRate: 0,
+    presentCount: 0,
+    absentCount: 0,
+    excusedCount: 0,
+    makeupCount: 0,
+    lateCount: 0,
+    evalGoodCount: 0,
+    evalAverageCount: 0,
+    evalWeakCount: 0,
+    evalPendingCount: 0,
+  };
+}
+
+export function ensureAttendanceListResponse(
+  value: unknown,
+  context: string,
+): AttendanceListResponse {
+  if (isRecord(value)) {
+    if (Array.isArray(value.content)) {
+      return {
+        stats: ensureAttendanceStats(value.stats),
+        attendances: ensurePageResponse(value, `${context}.attendances`),
+      };
+    }
+
+    return {
+      stats: ensureAttendanceStats(value.stats),
+      attendances: ensurePageResponse(
+        value.attendances,
+        `${context}.attendances`,
+      ),
+    };
+  }
+
+  console.warn(
+    `[runtime-guard] ${context}: expected attendance list response`,
+    value,
+  );
+  return {
+    stats: ensureAttendanceStats(undefined),
+    attendances: ensurePageResponse(undefined, `${context}.attendances`),
   };
 }
