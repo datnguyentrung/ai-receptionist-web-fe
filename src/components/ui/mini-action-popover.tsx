@@ -72,10 +72,14 @@ export function MiniActionPopover({
             triggerClassName,
           )}
           aria-label="Mo thao tac"
+          onPointerDown={(event) => {
+            event.stopPropagation();
+          }}
           onClick={(event) => {
+            event.stopPropagation();
+
             if (disabled) {
               event.preventDefault();
-              event.stopPropagation();
             }
           }}
         >
@@ -92,9 +96,9 @@ export function MiniActionPopover({
         className={cn(styles.popoverContent, contentClassName)}
       >
         <div className={styles.actionList}>
-          {resolvedActions.map((item) =>
+          {resolvedActions.map((item, index) =>
             !("label" in item) ? (
-              <div key="__separator__" className={styles.separator} />
+              <div key={`separator-${index}`} className={styles.separator} />
             ) : (
               (() => {
                 const actionItem = item as ActionItem;
