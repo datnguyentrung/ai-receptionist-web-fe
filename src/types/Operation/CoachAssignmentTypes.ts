@@ -45,5 +45,7 @@ export interface CoachAssignmentSimpleResponse {
   coach: CoachSummary;
   /** Format: "yyyy-MM-dd" */
   assignedDate: string;
+  /** Format: "yyyy-MM-dd" */
+  endDate: string;
   status: CoachAssignmentStatus;
 }

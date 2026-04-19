@@ -8,6 +8,7 @@ import { useDebounce } from "../../hooks/useDebounce";
 import { useAuthStore } from "../../store/authStore";
 import type { StudentOverview } from "../../types";
 import styles from "./StudentManagement.module.scss";
+import { AttendanceTableModal } from "./components/AttendanceTableModal/AttendanceTableModal";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
@@ -31,6 +32,10 @@ export function StudentManagement() {
   const [isClassAssignmentOpen, setIsClassAssignmentOpen] = useState(false);
   const [studentForClassAssignment, setStudentForClassAssignment] =
     useState<StudentOverview | null>(null);
+  const [isAttendanceHistoryOpen, setIsAttendanceHistoryOpen] = useState(false);
+  const [studentForHistory, setStudentForHistory] = useState<
+    StudentOverview | null
+  >(null);
   const userInfo = useAuthStore((state) => state.user);
 
   const debouncedSearch = useDebounce(search, 500);
@@ -39,7 +44,10 @@ export function StudentManagement() {
     {
       search: debouncedSearch,
       status: statusFilter === "all" ? undefined : statusFilter,
-      scheduleIds: userInfo?.userInfo.assignedClasses,
+      scheduleIds:
+        userInfo?.userInfo.assignedClasses.map(
+          (c) => c.classSchedule.scheduleId,
+        ) ?? [],
       page: page - 1,
       size: 10,
     },
@@ -93,12 +101,20 @@ export function StudentManagement() {
     if (action === "assign-class") {
       setStudentForClassAssignment(student);
       setIsClassAssignmentOpen(true);
+    } else if (action === "view-history") {
+      setStudentForHistory(student);
+      setIsAttendanceHistoryOpen(true);
     }
   };
 
   const handleCloseClassAssignment = () => {
     setIsClassAssignmentOpen(false);
     setStudentForClassAssignment(null);
+  };
+
+  const handleCloseAttendanceHistory = () => {
+    setIsAttendanceHistoryOpen(false);
+    setStudentForHistory(null);
   };
 
   return (
@@ -180,6 +196,20 @@ export function StudentManagement() {
               onClose={handleCloseClassAssignment}
               initialStudent={studentForClassAssignment}
             />
+          </div>
+        </div>
+      )}
+
+      {isAttendanceHistoryOpen && studentForHistory && (
+        <div
+          className={styles.modalOverlay}
+          onClick={handleCloseAttendanceHistory}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <AttendanceTableModal student={studentForHistory} />
           </div>
         </div>
       )}

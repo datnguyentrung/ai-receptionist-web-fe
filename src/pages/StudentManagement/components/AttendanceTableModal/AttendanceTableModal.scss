@@ -1,0 +1,140 @@
+.attendance-table-modal {
+  width: min(960px, 88vw);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 28px 60px rgba(17, 24, 39, 0.2);
+  overflow: visible;
+}
+
+.modal-header {
+  margin-bottom: 14px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #4b5563;
+  }
+}
+
+.student-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.overview-item {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.overview-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.overview-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.schedule-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.schedule-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.is-empty {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+}
+
+.modal-content {
+  max-height: 650px;
+  overflow: visible;
+}
+
+.attendance-table-shell {
+  overflow: visible;
+
+  > :global(.tableCard) {
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+
+    > :global(.tableWrap) {
+      flex: 1;
+      max-height: 480px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    > :global(.emptyState) {
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    > :last-child {
+      flex-shrink: 0;
+      padding-top: 12px;
+      border-top: 1px solid #f3f4f6;
+    }
+  }
+}
+
+// Ensure MiniActionPopover displays above the modal overlay
+:global([data-slot="popover-content"]) {
+  z-index: 1300 !important;
+}
+
+@media (max-width: 1024px) {
+  .student-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .attendance-table-modal {
+    width: 94vw;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .student-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    height: 400px;
+  }
+}

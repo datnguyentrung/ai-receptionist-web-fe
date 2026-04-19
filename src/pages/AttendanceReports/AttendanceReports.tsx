@@ -28,7 +28,8 @@ export function AttendanceReports() {
   const [scheduleLevels, setScheduleLevels] = useState<ScheduleLevel[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const user = useAuthStore((state) => state.user);
-  const scheduleIds = user?.userInfo.assignedClasses ?? [];
+  const scheduleIds =
+    user?.userInfo.assignedClasses.map((c) => c.classSchedule.scheduleId) ?? [];
 
   const { data } = useFilterAttendance(
     search,

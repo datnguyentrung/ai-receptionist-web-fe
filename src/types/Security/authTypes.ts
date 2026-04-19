@@ -1,4 +1,5 @@
 import type { Belt } from '../../config/constants';
+import type { CoachAssignmentResponse } from '../Operation/CoachAssignmentTypes';
 
 export interface ChangePasswordRequest {
   oldPassword: string;
@@ -28,8 +29,9 @@ export interface UserBase {
 
 export interface UserInfo {
   idUser: string;
+  userCode: string;
   idRole: string;
-  assignedClasses: string[]; // Danh sách ID lớp mà user này được phân công (dành cho HLV)
+  assignedClasses: CoachAssignmentResponse[]; // Danh sách ID lớp mà user này được phân công (dành cho HLV)
 }
 
 export interface UserProfile {
