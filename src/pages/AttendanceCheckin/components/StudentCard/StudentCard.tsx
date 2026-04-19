@@ -41,6 +41,7 @@ export function StudentCardInner({
   onOpenEval,
 }: StudentCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const changeAttendance = !student?.attendanceId;
 
   return (
     <motion.div
@@ -106,29 +107,52 @@ export function StudentCardInner({
         </div>
 
         {/* Nút Eye kèm Popover */}
-        <HoverCard openDelay={0} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <button className={`${styles.expandBtn}`}>
-              <Eye size={14} className={`${styles.chevron}`} />
-            </button>
-          </HoverCardTrigger>
+        {changeAttendance ? (
+          <HoverCard openDelay={0} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <div className={styles.disabledExpandTriggerWrap}>
+                <button
+                  disabled
+                  className={`${styles.expandBtn} ${styles.expandBtnDisabled}`}
+                >
+                  <Eye size={14} className={`${styles.chevron}`} />
+                </button>
+              </div>
+            </HoverCardTrigger>
 
-          {/* Nội dung sẽ hiển thị khi di chuột vào con mắt */}
-          <HoverCardContent
-            side="top"
-            align="center"
-            className={styles.evalHoverCard}
-          >
-            <EvalQuick
-              value={student.evaluationStatus}
-              onChange={(v) => onUpdateEval(student.studentId, v)}
-              studentName={student.studentName}
-            />
-          </HoverCardContent>
-        </HoverCard>
+            <HoverCardContent
+              side="top"
+              align="center"
+              className={styles.missingAttendanceHoverCard}
+            >
+              Học viên này chưa có bản ghi điểm danh hôm nay
+            </HoverCardContent>
+          </HoverCard>
+        ) : (
+          <HoverCard openDelay={0} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button className={`${styles.expandBtn}`}>
+                <Eye size={14} className={`${styles.chevron}`} />
+              </button>
+            </HoverCardTrigger>
+
+            {/* Nội dung sẽ hiển thị khi di chuột vào con mắt */}
+            <HoverCardContent
+              side="top"
+              align="center"
+              className={styles.evalHoverCard}
+            >
+              <EvalQuick
+                value={student.evaluationStatus}
+                onChange={(v) => onUpdateEval(student.studentId, v)}
+                studentName={student.studentName}
+              />
+            </HoverCardContent>
+          </HoverCard>
+        )}
 
         {/* Expand toggle */}
-        {!student || !student.attendanceId ? (
+        {changeAttendance ? (
           <HoverCard openDelay={0} closeDelay={100}>
             <HoverCardTrigger asChild>
               {/* Phải bọc div vì button disabled bị mất pointer-events, không trigger được hover */}

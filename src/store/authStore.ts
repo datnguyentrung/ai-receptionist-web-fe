@@ -7,6 +7,7 @@ interface AuthState {
   user: UserResponse | null;
   isAuthenticated: boolean;
   setAuth: (token: string, user: UserResponse) => void;
+  setAccessToken: (token: string) => void;
   setUserProfile: (userInfo: UserResponse) => void;
   clearAuth: () => void;
 }
@@ -33,6 +34,9 @@ export const useAuthStore = create<AuthState>()(
       // 1. Dùng lúc Login xong
       setAuth: (token, user) =>
         set({ accessToken: token, user, isAuthenticated: true }),
+
+      setAccessToken: (token) =>
+        set({ accessToken: token, isAuthenticated: true }),
 
       // 2. Dùng lúc gọi /users/me xong
       setUserProfile: (fullUserData) => set({ user: fullUserData }),

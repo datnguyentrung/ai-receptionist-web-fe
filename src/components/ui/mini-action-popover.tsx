@@ -14,9 +14,9 @@ interface MiniActionPopoverProps {
 }
 
 const ACTION_ITEMS = [
-  { id: "class", label: "Lop hoc" },
-  { id: "info", label: "Thong tin" },
-  { id: "note", label: "Ghi chu" },
+  { id: "class", label: "Lớp học" },
+  { id: "info", label: "Thông tin" },
+  { id: "note", label: "Ghi chú" },
 ] as const;
 
 export function MiniActionPopover({
