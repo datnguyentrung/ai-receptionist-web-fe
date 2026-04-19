@@ -7,6 +7,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { authApi } from "./authApi";
 
+const POST_LOGIN_LOADING_MS = 900;
+
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+
 const getLoginErrorMessage = (error: unknown) => {
   if (!error) {
     return "Đăng nhập thất bại. Vui lòng thử lại.";
@@ -71,6 +78,10 @@ export const useLogin = () => {
 
         // 3. Set toàn bộ data
         setAuth(data.accessToken, fullUserData);
+
+        // Giữ trạng thái loading ngắn để UI trang sau có thời gian ổn định dữ liệu.
+        await wait(POST_LOGIN_LOADING_MS);
+
         showSuccessToast("Đăng nhập thành công");
         navigate("/");
       } catch (error) {

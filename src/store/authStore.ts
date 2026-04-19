@@ -26,7 +26,7 @@ const clearRoleDebugSessionFlags = () => {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, _get, api) => ({
       accessToken: null,
       user: null,
       isAuthenticated: false,
@@ -44,6 +44,7 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () => {
         clearRoleDebugSessionFlags();
         set({ accessToken: null, user: null, isAuthenticated: false });
+        api.persist.clearStorage();
       },
     }),
     {

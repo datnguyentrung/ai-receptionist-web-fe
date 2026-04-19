@@ -3,7 +3,7 @@ import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bot, LogOut, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { NavLink } from "react-router";
 import Avatar from "../Avatar";
 import ConfirmModal from "../ConfirmModal";
@@ -20,46 +20,37 @@ export default function Sidebar({
   const nav_items = useNavItems();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutPending, setIsLogoutPending] = useState(false);
-  const logoutTimeoutRef = useRef<number | null>(null);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    return () => {
-      if (logoutTimeoutRef.current !== null) {
-        window.clearTimeout(logoutTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const openLogoutModal = useCallback(() => {
     setIsLogoutModalOpen(true);
   }, []);
 
   const cancelLogout = useCallback(() => {
-    if (logoutTimeoutRef.current !== null) {
-      window.clearTimeout(logoutTimeoutRef.current);
-      logoutTimeoutRef.current = null;
-    }
-
     setIsLogoutPending(false);
     setIsLogoutModalOpen(false);
   }, []);
 
-  const confirmLogout = useCallback(() => {
+  const confirmLogout = useCallback(async () => {
     if (isLogoutPending) {
       return;
     }
 
     setIsLogoutPending(true);
 
-    // Small delay keeps feedback visible before auth state changes.
-    logoutTimeoutRef.current = window.setTimeout(() => {
-      setIsLogoutPending(false);
-      setIsLogoutModalOpen(false);
+    try {
+      // Keep loading feedback visible briefly before finishing logout.
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 900);
+      });
+
       clearAuth();
       queryClient.clear();
-      logoutTimeoutRef.current = null;
-    }, 900);
+
+      setIsLogoutModalOpen(false);
+    } finally {
+      setIsLogoutPending(false);
+    }
   }, [clearAuth, isLogoutPending, queryClient]);
 
   return (
