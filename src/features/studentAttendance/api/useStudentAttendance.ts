@@ -1,11 +1,17 @@
 import type {
   AttendanceBatchCreateRequest,
+  AttendanceListResponse,
   AttendanceManualLogRequest,
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
   StudentAttendanceSimpleResponse,
 } from "@/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import type {
   AttendanceStatus,
   Belt,
@@ -30,7 +36,7 @@ export const useFilterAttendance = (
   size?: number,
   sortBy?: string,
   sortDir?: "asc" | "desc",
-) => {
+): UseQueryResult<AttendanceListResponse, Error> => {
   return useQuery({
     queryKey: [
       ATTENDANCE_QUERY_KEY,

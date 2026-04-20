@@ -138,8 +138,9 @@ export function AttendanceReports() {
       };
 
       if (isSamePayload(next, base)) {
-        const { [base.attendanceId]: _removed, ...rest } = prev;
-        return rest;
+        const nextEditedRows = { ...prev };
+        delete nextEditedRows[base.attendanceId];
+        return nextEditedRows;
       }
       return {
         ...prev,
@@ -243,8 +244,9 @@ export function AttendanceReports() {
 
   const handleUndoRow = (attendanceId: string) => {
     setEditedRows((prev) => {
-      const { [attendanceId]: _removed, ...rest } = prev;
-      return rest;
+      const nextEditedRows = { ...prev };
+      delete nextEditedRows[attendanceId];
+      return nextEditedRows;
     });
   };
 
