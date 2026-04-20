@@ -1,13 +1,14 @@
 // ── Top header ───────────────────────────────────────────────
 .header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
   background: white;
   border-bottom: 1px solid #e8ebf0;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .headerLeft {
@@ -15,11 +16,14 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1 1 0;
 }
 
-.headerCenter {
+.titleBlock {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  min-width: 0;
 }
 
 .menuBtn {
@@ -47,57 +51,103 @@
   color: #1f2937;
   font-size: 18px;
   font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pageSubtitle {
   font-size: 12px;
   color: #9ca3af;
+  margin: 2px 0 0;
+  line-height: 1.4;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 8px;
-  justify-self: end;
+  gap: 10px;
+  margin-left: auto;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .searchBar {
-  display: none;
+  display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
   border-radius: 12px;
   border: 1px solid #e8ebf0;
   background: #f4f6fa;
-  width: 380px;
-  max-width: min(52vw, 480px);
-
-  @media (min-width: 640px) {
-    display: flex;
-  }
+  width: clamp(220px, 28vw, 420px);
+  min-width: 0;
 }
 
 .searchInput {
   background: transparent;
   flex: 1;
+  min-width: 0;
   outline: none;
   border: none;
   font-size: 13px;
   color: #374151;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1199px) {
   .header {
-    display: flex;
-    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
   }
 
-  .headerCenter {
-    display: none;
+  .pageTitle {
+    font-size: 17px;
+  }
+
+  .searchBar {
+    width: clamp(200px, 32vw, 340px);
+  }
+}
+
+@media (max-width: 992px) {
+  .searchBar {
+    width: clamp(180px, 34vw, 280px);
+  }
+
+  .pageSubtitle {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 639px) {
+  .header {
+    padding: 12px;
+    gap: 10px;
   }
 
   .headerLeft {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .pageTitle {
+    font-size: 16px;
+  }
+
+  .pageSubtitle {
+    display: none;
+  }
+
+  .iconBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .searchBar {
+    display: none;
   }
 }
 
@@ -138,6 +188,7 @@
   right: 0;
   top: 44px;
   width: 288px;
+  max-width: calc(100vw - 24px);
   background: white;
   border-radius: 16px;
   box-shadow:
@@ -146,6 +197,13 @@
   border: 1px solid #e8ebf0;
   padding: 8px 0;
   z-index: 50;
+}
+
+@media (max-width: 639px) {
+  .notifDropdown {
+    right: -6px;
+    width: min(288px, calc(100vw - 20px));
+  }
 }
 
 .notifTitle {

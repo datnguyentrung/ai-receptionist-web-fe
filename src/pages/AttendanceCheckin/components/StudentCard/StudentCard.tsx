@@ -13,6 +13,17 @@ import {
 } from "../../../../components/ui/hover-card";
 import styles from "./StudentCard.module.scss";
 
+function getEvalClassName(status: EvaluationStatus | null): string {
+  if (!status) return "";
+  const classMap: Record<EvaluationStatus, string> = {
+    GOOD: "good",
+    AVERAGE: "average",
+    WEAK: "weak",
+    PENDING: "pending",
+  };
+  return classMap[status];
+}
+
 function evalLabel(e: EvaluationStatus | null): string | null {
   if (!e) return null;
   return (
@@ -76,11 +87,6 @@ export function StudentCardInner({
         <div className={styles.studentInfo}>
           <div className={styles.nameRow}>
             <p className={styles.studentName}>{student.studentName}</p>
-            {student.evaluationStatus && (
-              <span className={styles.evalBadge}>
-                {evalLabel(student.evaluationStatus)}
-              </span>
-            )}
           </div>
           <div className={styles.metaRow}>
             {student.checkInTime && (
@@ -110,10 +116,12 @@ export function StudentCardInner({
         {changeAttendance ? (
           <HoverCard openDelay={0} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <div className={styles.disabledExpandTriggerWrap}>
+              <div
+                className={`${styles.disabledExpandTriggerWrap} ${styles.quickEvalWrap}`}
+              >
                 <button
                   disabled
-                  className={`${styles.expandBtn} ${styles.expandBtnDisabled}`}
+                  className={`${styles.expandBtn} ${styles.quickEvalBtn} ${styles.expandBtnDisabled}`}
                 >
                   <Eye size={14} className={`${styles.chevron}`} />
                 </button>
@@ -131,8 +139,16 @@ export function StudentCardInner({
         ) : (
           <HoverCard openDelay={0} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <button className={`${styles.expandBtn}`}>
-                <Eye size={14} className={`${styles.chevron}`} />
+              <button className={`${styles.expandBtn} ${styles.quickEvalBtn}`}>
+                {student.evaluationStatus ? (
+                  <span
+                    className={`${styles.evalLabel} ${styles[getEvalClassName(student.evaluationStatus)]}`}
+                  >
+                    {evalLabel(student.evaluationStatus)}
+                  </span>
+                ) : (
+                  <Eye size={14} className={`${styles.chevron}`} />
+                )}
               </button>
             </HoverCardTrigger>
 
@@ -159,7 +175,7 @@ export function StudentCardInner({
               <div className={styles.disabledExpandTriggerWrap}>
                 <button
                   disabled
-                  className={`${styles.expandBtn} ${styles.expandBtnDisabled}`}
+                  className={`${styles.expandBtn} ${styles.expandToggleBtn} ${styles.expandBtnDisabled}`}
                 >
                   <ChevronDown size={14} className={styles.chevron} />
                 </button>
@@ -177,7 +193,7 @@ export function StudentCardInner({
         ) : (
           <button
             onClick={() => setExpanded((prev) => !prev)}
-            className={`${styles.expandBtn} ${expanded ? styles.expanded : ""}`}
+            className={`${styles.expandBtn} ${styles.expandToggleBtn} ${expanded ? styles.expanded : ""}`}
           >
             <ChevronDown
               size={14}

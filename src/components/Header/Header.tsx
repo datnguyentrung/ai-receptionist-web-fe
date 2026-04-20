@@ -56,7 +56,7 @@ export default function Header({
         </button>
 
         {/* Title & Date */}
-        <div>
+        <div className={styles.titleBlock}>
           <h1 className={styles.pageTitle}>{pageTitle}</h1>
           <p className={styles.pageSubtitle}>
             Thứ 4, ngày 04 tháng 03 năm 2026
@@ -64,15 +64,13 @@ export default function Header({
         </div>
       </div>
 
-      <div className={styles.headerCenter}>
+      <div className={styles.headerRight}>
         {/* Search */}
         <div className={styles.searchBar}>
           <Search size={15} style={{ color: "#9CA3AF" }} />
           <input placeholder="Tìm kiếm..." className={styles.searchInput} />
         </div>
-      </div>
 
-      <div className={styles.headerRight}>
         {/* Notif */}
         <div className={styles.notifContainer}>
           <button

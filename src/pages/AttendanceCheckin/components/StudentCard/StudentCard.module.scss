@@ -1,60 +1,106 @@
-// ── Student Card ──────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// STUDENT CARD - Attendance Card Component
+// ─────────────────────────────────────────────────────────────
+
+// ── Color & Spacing Variables ────────────────────────────────
+$color-white: #ffffff;
+$color-border-light: #f3f4f6;
+$color-text-dark: #111827;
+$color-text-light: #9ca3af;
+$color-text-muted: #6b7280;
+$color-text-gray: #374151;
+$color-bg-light: #f9fafb;
+$color-bg-very-light: #fef2f2;
+$color-red-primary: #e02020;
+$color-red-dark: #b91c1c;
+$color-red-light: #fecaca;
+$color-red-accent: #bbf7d0;
+$color-green: #16a34a;
+$color-yellow: #d97706;
+$color-yellow-light: #fde68a;
+$color-yellow-bg: #fef3c7;
+$gap-base: 12px;
+$gap-sm: 8px;
+$gap-lg: 16px;
+$gap-xs: 3px;
+
+// ── Student Card Main Container ───────────────────────────
 
 .studentCard {
-  background: white;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: $color-white;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #f3f4f6;
+  border: 1px solid $color-border-light;
   border-left-width: 4px;
-  transition: box-shadow 0.15s;
+  box-sizing: border-box;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 
+  // ── Status indicators ──────────────────────────────────
   &.present {
-    border-color: #bbf7d0;
-    border-left-color: #16a34a;
+    border-color: $color-red-accent;
+    border-left-color: $color-green;
   }
 
   &.absent {
-    border-color: #fecaca;
-    border-left-color: #e02020;
+    border-color: $color-red-light;
+    border-left-color: $color-red-primary;
   }
 
   &.excused {
-    border-color: #fde68a;
-    border-left-color: #d97706;
+    border-color: $color-yellow-light;
+    border-left-color: $color-yellow;
   }
 
   &.unmarked {
-    border-color: #f3f4f6;
+    border-color: $color-border-light;
     border-left-color: #e5e7eb;
   }
 }
 
+// ── Main Student Row ──────────────────────────────────────
+
 .studentRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 14px 14px 12px;
+  gap: $gap-base;
+  padding: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
+
+// ── Avatar Section ────────────────────────────────────────
 
 .avatarWrap {
   position: relative;
   flex-shrink: 0;
+  height: 46px;
+  width: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar {
-  width: 46px;
-  height: 46px;
+  width: 100%;
+  height: 100%;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: $color-white;
   font-size: 12px;
   font-weight: 800;
+  line-height: 1;
 }
 
 .streakBadge {
@@ -67,106 +113,163 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fef3c7;
-  border: 2px solid white;
+  background: $color-yellow-bg;
+  border: 2px solid $color-white;
+  font-size: 10px;
+  font-weight: 700;
+  color: $color-yellow;
+  flex-shrink: 0;
 }
+
+// ── Student Info Section ──────────────────────────────────
 
 .studentInfo {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-xs;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $gap-sm;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .studentName {
   font-size: 11px;
   font-weight: 700;
-  color: #111827;
-  // white-space: nowrap;
+  color: $color-text-dark;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .evalBadge {
   font-size: 11px;
-  color: #9ca3af;
+  color: $color-text-light;
+  margin: 0;
 }
 
 .metaRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 3px;
+  gap: $gap-sm;
+  margin: 0;
   flex-wrap: wrap;
 }
 
 .checkInTime {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: $gap-xs;
   font-size: 11px;
-  color: #16a34a;
+  color: $color-green;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .streakText {
   font-size: 11px;
-  color: #9ca3af;
+  color: $color-text-light;
+  white-space: nowrap;
 }
+
+// ── Pill Wrapper ──────────────────────────────────────────
 
 .pillWrap {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
+
+// ── Expand Button Section ─────────────────────────────────
 
 .expandBtn {
   flex-shrink: 0;
-  width: 30px;
-  height: 30px;
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
-  transition: background 0.15s;
-  background: #f9fafb;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  background: $color-bg-light;
+  padding: 0;
+  color: $color-text-light;
 
   &:hover {
-    background: #f3f4f6;
+    background: $color-border-light;
+    color: $color-text-gray;
   }
 
   &.expanded {
-    background: #fef2f2;
+    background: $color-bg-very-light;
   }
-}
 
-.chevron {
-  transition: transform 0.2s;
-  color: #9ca3af;
-
-  &.rotated {
-    transform: rotate(180deg);
-    color: #e02020;
+  &:active {
+    background: #e5e7eb;
   }
-}
-
-.evalHoverCard {
-  width: 12rem;
-  padding: 0.75rem;
-}
-
-.disabledExpandTriggerWrap {
-  display: flex;
 }
 
 .expandBtnDisabled {
   opacity: 0.5;
   cursor: not-allowed;
+
+  &:hover {
+    background: $color-bg-light;
+    color: $color-text-light;
+  }
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+  color: inherit;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.rotated {
+    transform: rotate(180deg);
+    color: $color-red-primary;
+  }
+}
+
+.disabledExpandTriggerWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickEvalWrap {
+  display: flex;
+}
+
+.quickEvalBtn {
+  display: flex;
+}
+
+.expandToggleBtn {
+  display: flex;
+}
+
+// ── Hover Cards ───────────────────────────────────────────
+
+.evalHoverCard {
+  width: 12rem;
+  padding: 0.75rem;
+  box-sizing: border-box;
 }
 
 .missingAttendanceHoverCard {
@@ -175,76 +278,205 @@
   font-size: 0.875rem;
   text-align: center;
   line-height: 1.5;
-  color: #374151;
+  color: $color-text-gray;
+  box-sizing: border-box;
 }
 
-// ── Expanded Panel ────────────────────────────────────────────
+// ── Expanded Panel Section ────────────────────────────────
 
 .expandedPanel {
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .expandedInner {
-  padding: 4px 14px 14px;
-  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-base;
+  padding: 12px 14px 14px;
+  border-top: 1px solid $color-border-light;
+  box-sizing: border-box;
+  width: 100%;
 }
+
+// ── Meta Information ──────────────────────────────────────
 
 .studentMeta {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  align-items: flex-start;
+  gap: $gap-lg;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: $gap-sm;
+  }
 }
 
 .metaItem {
   font-size: 12px;
-  color: #9ca3af;
+  color: $color-text-light;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .metaValue {
-  color: #374151;
+  color: $color-text-gray;
   font-weight: 600;
 }
 
+// ── Notes Preview ─────────────────────────────────────────
+
 .notesPreview {
-  margin-bottom: 12px;
+  margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #f9fafb;
-  border-left: 3px solid #e02020;
+  background: $color-bg-light;
+  border-left: 3px solid $color-red-primary;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .notesText {
   font-size: 12px;
-  color: #6b7280;
+  color: $color-text-muted;
   font-style: italic;
   line-height: 1.5;
+  margin: 0;
 }
+
+// ── Evaluation Button ─────────────────────────────────────
 
 .evalBtn {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px;
+  gap: $gap-sm;
+  padding: 10px 12px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
-  border: none;
+  border: 1.5px solid transparent;
   cursor: pointer;
-  transition: opacity 0.15s;
-  background: linear-gradient(135deg, #e02020, #b91c1c);
-  color: white;
-
-  &.evaluated {
-    background: #fef2f2;
-    color: #e02020;
-    border: 1.5px solid #fecaca;
-  }
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+  background: linear-gradient(135deg, $color-red-primary, $color-red-dark);
+  color: $color-white;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+
+  &.evaluated {
+    background: $color-bg-very-light;
+    color: $color-red-primary;
+    border-color: $color-red-light;
+  }
+}
+
+// ── Evaluation Label Styles ───────────────────────────────
+
+.evalLabel {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin: 0;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  &.good {
+    background: #86efac;
+    color: #16a34a;
+    border: 1px solid #22c55e;
+  }
+
+  &.average {
+    background: #fbbf24;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+  }
+
+  &.weak {
+    background: #f87171;
+    color: $color-white;
+    border: 1px solid #fca5a5;
+  }
+
+  &.pending {
+    background: #d1d5db;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+@media (max-width: 420px) {
+  .studentRow {
+    gap: 6px;
+    padding: 10px 8px;
+  }
+
+  .studentInfo {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+
+  .studentName {
+    font-size: 12px;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .metaRow {
+    display: none;
+  }
+
+  .pillWrap {
+    transform: scale(0.82);
+    transform-origin: right center;
+  }
+
+  .expandBtn {
+    min-width: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .quickEvalWrap,
+  .quickEvalBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .studentInfo {
+    min-width: 100px;
+  }
+
+  .pillWrap {
+    transform: scale(0.76);
   }
 }

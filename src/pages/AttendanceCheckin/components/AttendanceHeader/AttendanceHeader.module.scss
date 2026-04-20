@@ -1,21 +1,45 @@
-// ── Sidebar Header ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE HEADER - Sidebar Component
+// ─────────────────────────────────────────────────────────────
+
+// ── Color & Spacing Variables ────────────────────────────────
+$color-white: #ffffff;
+$color-red-primary: #e02020;
+$color-red-dark: #7b0000;
+$color-text-dark: #111827;
+$color-text-light: #9ca3af;
+$color-bg-light: #f9fafb;
+$color-border-light: #f3f4f6;
+$gap-sm: 8px;
+$gap-base: 12px;
+$gap-lg: 16px;
+$gap-xl: 20px;
+
+// ── Header Container ────────────────────────────────────────
 
 .header {
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: white;
+  background: $color-white;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  width: 100%;
+  box-sizing: border-box;
 }
+
+// ── Top Navigation Bar ─────────────────────────────────────
 
 .topBar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid #f3f4f6;
+  gap: $gap-base;
+  padding: $gap-xl $gap-xl ($gap-lg) $gap-xl;
+  border-bottom: 1px solid $color-border-light;
+  box-sizing: border-box;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .backBtn {
@@ -25,35 +49,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3f4f6;
+  background: $color-border-light;
   border: none;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
 
   &:hover {
     background: #e5e7eb;
+  }
+
+  &:active {
+    background: #d1d5db;
   }
 }
 
 .headerTitle {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .className {
   font-size: 16px;
   font-weight: 800;
-  color: #111827;
+  color: $color-text-dark;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
 .classCode {
   font-size: 12px;
-  color: #9ca3af;
-  margin-top: 2px;
+  color: $color-text-light;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .statusPill {
@@ -66,7 +100,7 @@
   background: #fef2f2;
   font-size: 11px;
   font-weight: 700;
-  color: #e02020;
+  color: $color-red-primary;
   border: 1px solid #fecaca;
 }
 
@@ -74,8 +108,9 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #e02020;
+  background: $color-red-primary;
   animation: pulse 1.5s infinite;
+  flex-shrink: 0;
 }
 
 @keyframes pulse {
@@ -88,18 +123,24 @@
   }
 }
 
-// ── Class Info Card ───────────────────────────────────────────
+// ── Class Info Card ───────────────────────────────────────
 
 .classInfoCard {
-  margin: 16px 20px;
-  padding: 16px;
-  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: linear-gradient(135deg, #e02020 0%, #7b0000 100%);
+  gap: $gap-base;
+  background: linear-gradient(
+    135deg,
+    $color-red-primary 0%,
+    $color-red-dark 100%
+  );
+  border-radius: 16px;
+  padding: $gap-lg;
+  margin: $gap-lg;
   position: relative;
   overflow: hidden;
+  width: auto;
+  box-sizing: border-box;
 }
 
 .classInfoDecor {
@@ -109,14 +150,17 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: white;
+  background: $color-white;
   opacity: 0.08;
+  pointer-events: none;
 }
 
 .classInfoItem {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $gap-base;
+  position: relative;
+  z-index: 1;
 }
 
 .classInfoIcon {
@@ -133,78 +177,96 @@
 .classInfoText {
   font-size: 13px;
   font-weight: 600;
-  color: white;
+  color: $color-white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
-// ── Progress ──────────────────────────────────────────────────
+// ── Progress Section ──────────────────────────────────────
 
 .progressSection {
-  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-sm;
+  padding: 0 $gap-xl $gap-lg;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .progressHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  gap: $gap-base;
 }
 
 .progressLabel {
   font-size: 13px;
   font-weight: 600;
   color: #374151;
+  margin: 0;
 }
 
 .progressCount {
   font-size: 13px;
   font-weight: 700;
-  color: #e02020;
+  color: $color-red-primary;
+  margin: 0;
 }
 
 .progressTrack {
   height: 8px;
   border-radius: 9999px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: $color-border-light;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .progressBar {
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, #e02020, #f87171);
+  background: linear-gradient(90deg, $color-red-primary, #f87171);
 }
 
-// ── Stat Cards ────────────────────────────────────────────────
+// ── Statistics Row ────────────────────────────────────────
 
 .statRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 12px;
+  gap: $gap-sm;
+  margin-top: $gap-sm;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  background: #f9fafb;
+  background: $color-bg-light;
   border-radius: 10px;
   padding: 8px 4px;
+  min-height: 52px;
+  box-sizing: border-box;
 }
 
 .statValue {
   font-size: 18px;
   font-weight: 800;
   line-height: 1;
+  margin: 0;
 }
 
 .statLabel {
   font-size: 10px;
-  color: #9ca3af;
+  color: $color-text-light;
+  margin: 0;
+  line-height: 1;
 }
 
 .evalCount {
@@ -214,25 +276,31 @@
   justify-content: flex-end;
   gap: 4px;
   margin-top: 4px;
+  padding: 0;
 }
 
 .evalCountText {
   font-size: 12px;
-  color: #9ca3af;
+  color: $color-text-light;
+  margin: 0;
 }
 
-// ── Quick Actions ─────────────────────────────────────────────
+// ── Quick Actions Section ────────────────────────────────
 
 .quickActions {
-  padding: 0 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $gap-base;
+  padding: 0 $gap-xl $gap-lg;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .actionBtns {
   display: flex;
-  gap: 8px;
+  gap: $gap-sm;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btnMarkAll {
@@ -249,30 +317,45 @@
   font-weight: 700;
   border: 1px solid #bbf7d0;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
+  height: 36px;
+  box-sizing: border-box;
 
   &:hover {
     background: #dcfce7;
+  }
+
+  &:active {
+    background: #c6f6d5;
   }
 }
 
 .btnReset {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 9px 14px;
   border-radius: 12px;
-  background: #f9fafb;
-  color: #9ca3af;
+  background: $color-bg-light;
+  color: $color-text-light;
   font-size: 12px;
   font-weight: 600;
   border: 1px solid #e5e7eb;
   cursor: pointer;
-  transition: background 0.15s;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  height: 36px;
+  box-sizing: border-box;
 
   &:hover {
     background: #f3f4f6;
     color: #6b7280;
+  }
+
+  &:active {
+    background: #e5e7eb;
   }
 }
 
@@ -280,11 +363,15 @@
   display: none;
 }
 
+// ── Filter Tabs ────────────────────────────────────────────
+
 .filterTabs {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $gap-sm;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .filterBtn {
@@ -292,23 +379,193 @@
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
-  background: #f3f4f6;
+  background: $color-border-light;
   color: #6b7280;
   border: 1px solid transparent;
   cursor: pointer;
   transition:
-    background 0.15s,
-    color 0.15s,
-    border-color 0.15s;
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
 
   &:hover {
     background: #e5e7eb;
     color: #374151;
   }
 
+  &:active {
+    background: #d1d5db;
+  }
+
   &.active {
     background: #fef2f2;
-    color: #e02020;
+    color: $color-red-primary;
     border-color: #fecaca;
+  }
+}
+
+@media (max-width: 1200px) {
+  .topBar {
+    padding: 16px 16px 14px;
+  }
+
+  .classInfoCard {
+    margin: 12px 16px;
+    padding: 14px;
+  }
+
+  .progressSection,
+  .quickActions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    border-radius: 16px;
+  }
+
+  .topBar {
+    gap: 10px;
+  }
+
+  .className {
+    font-size: 15px;
+  }
+
+  .statRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .evalCount {
+    justify-content: flex-start;
+  }
+
+  .actionBtns {
+    flex-wrap: wrap;
+  }
+
+  .btnMarkAll,
+  .btnReset {
+    min-width: 140px;
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .headerTitle {
+    min-width: 0;
+    flex: 1 1 180px;
+  }
+
+  .statusPill {
+    order: 3;
+    margin-left: 0;
+  }
+
+  .classInfoText {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.35;
+  }
+
+  .filterTabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filterBtn {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .topBar {
+    padding: 14px 12px;
+  }
+
+  .className {
+    font-size: 14px;
+  }
+
+  .classCode {
+    font-size: 11px;
+  }
+
+  .backBtn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .statusPill {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  .classInfoCard {
+    margin: 10px 12px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .classInfoIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .progressSection,
+  .quickActions {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+  }
+
+  .progressLabel,
+  .progressCount {
+    font-size: 12px;
+  }
+
+  .statItem {
+    min-height: 46px;
+    padding: 6px 4px;
+  }
+
+  .statValue {
+    font-size: 16px;
+  }
+
+  .statLabel {
+    font-size: 10px;
+  }
+
+  .btnMarkAll,
+  .btnReset {
+    height: 34px;
+    font-size: 11px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .filterBtn {
+    height: 30px;
+    font-size: 11px;
+    padding: 6px 12px;
   }
 }

@@ -1,71 +1,181 @@
-// -- AttendanceCheckin page-level styles ----------------------
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE CHECKIN - Main Layout
+// ─────────────────────────────────────────────────────────────
 
-.page {
-  min-height: 100vh;
-  background: #f4f6fa;
+// ── Global box-sizing reset ──────────────────────────────────
+* {
+  box-sizing: border-box;
 }
 
-// -- Two-column desktop grid ----------------------------------
+// ── Color & Spacing Variables ────────────────────────────────
+$color-bg-page: #f4f6fa;
+$color-gap-primary: 28px;
+$color-gap-secondary: 24px;
+$color-gap-tertiary: 12px;
+$sidebar-width: 350px;
+
+// ── Page Container ───────────────────────────────────────────
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  background: $color-bg-page;
+  overflow: visible;
+}
+
+// ── Main Content Grid ────────────────────────────────────────
 
 .grid {
   display: grid;
-  grid-template-columns: 350px 1fr;
-  max-width: 1440px;
-  margin: 0 auto;
-  min-height: 100vh;
-  // padding: 0 32px;
-  gap: 28px;
-}
+  grid-template-columns: minmax(300px, $sidebar-width) minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  gap: $color-gap-primary;
+  padding: $color-gap-secondary;
+  box-sizing: border-box;
+  overflow: visible;
 
-// -- Left sidebar ---------------------------------------------
+  // Responsive: the page sits inside MainLayout content area, so stack earlier
+  @media (max-width: 1280px) {
+    grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
 
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 24px 0;
-  display: flex;
-  flex-direction: column;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
+  @media (max-width: 1180px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
   }
 }
 
-// -- Right main area ------------------------------------------
+// ── Left Sidebar Section ─────────────────────────────────────
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  max-height: calc(100vh - 2 * $color-gap-secondary);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+
+  // Custom scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    max-height: calc(100vh - 2 * 20px);
+  }
+
+  @media (max-width: 1180px) {
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+// ── Right Main Content Area ──────────────────────────────────
 
 .main {
   display: flex;
   flex-direction: column;
-  padding: 24px 0 0;
-  min-height: 100vh;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  padding: 0;
 }
 
-// -- Student Grid ---------------------------------------------
+// ── Student Cards Grid ───────────────────────────────────────
 
 .studentList {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 12px;
+  gap: $color-gap-tertiary;
   align-content: start;
-  padding-bottom: 24px;
+  width: 100%;
+  padding: 0 0 24px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+
+  @media (max-width: 1180px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: visible;
+  }
 }
+
+// ── Empty State ─────────────────────────────────────────────
 
 .emptyState {
   grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
   text-align: center;
-  padding: 80px 0;
+  padding: 80px 24px;
+  box-sizing: border-box;
 }
 
 .emptyText {
   font-size: 14px;
+  font-weight: 500;
   color: #9ca3af;
+  margin: 0;
 }
 
-// -- Skeleton loading states ----------------------------------
+// ── Skeleton Loading States ──────────────────────────────────
 
 .skeletonSidebar {
   display: flex;
@@ -74,41 +184,50 @@
   padding: 24px 16px;
   background: #fff;
   border-radius: 16px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .skeletonTitle {
   height: 22px;
   width: 70%;
   border-radius: 6px;
+  background: #e5e7eb;
 }
 
 .skeletonSubtitle {
   height: 16px;
   width: 50%;
   border-radius: 6px;
+  background: #e5e7eb;
 }
 
 .skeletonProgress {
   height: 10px;
   width: 100%;
   border-radius: 99px;
+  background: #e5e7eb;
+  margin: 8px 0;
 }
 
 .skeletonStatRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  width: 100%;
 }
 
 .skeletonStat {
   height: 52px;
   border-radius: 10px;
+  background: #e5e7eb;
 }
 
 .skeletonFilterBar {
   height: 36px;
   width: 100%;
   border-radius: 8px;
+  background: #e5e7eb;
 }
 
 .skeletonCard {
@@ -119,12 +238,15 @@
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .skeletonCardRow {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 .skeletonAvatar {
@@ -132,6 +254,7 @@
   height: 44px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: #e5e7eb;
 }
 
 .skeletonCardInfo {
@@ -139,27 +262,33 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .skeletonName {
   height: 16px;
   width: 60%;
   border-radius: 5px;
+  background: #e5e7eb;
 }
 
 .skeletonMeta {
   height: 13px;
   width: 40%;
   border-radius: 5px;
+  background: #e5e7eb;
 }
 
 .skeletonPills {
   display: flex;
   gap: 8px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .skeletonPill {
   height: 28px;
   width: 72px;
   border-radius: 99px;
+  background: #e5e7eb;
 }

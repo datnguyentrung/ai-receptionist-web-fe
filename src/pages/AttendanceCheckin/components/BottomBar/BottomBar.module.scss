@@ -1,39 +1,69 @@
-// ── Bottom Submit Bar ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// BOTTOM BAR - Submit Component
+// ─────────────────────────────────────────────────────────────
+
+// ── Color & Spacing Variables ────────────────────────────────
+$color-red-primary: #e02020;
+$color-red-dark: #b91c1c;
+$color-red-light: #fef2f2;
+$color-warning-bg: #fffbeb;
+$color-warning-border: #fde68a;
+$color-warning-text: #92400e;
+$color-text-gray: #9ca3af;
+$color-bg-page: #f4f6fa;
+$gap-base: 12px;
+
+// ── Bottom Submit Bar ──────────────────────────────────────
 
 .bottomBar {
   position: sticky;
   bottom: 0;
   z-index: 20;
+  width: 100%;
   padding: 16px 0 24px;
-  background: linear-gradient(to top, #f4f6fa 70%, transparent);
+  background: linear-gradient(to top, $color-bg-page 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: $gap-base;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
+
+// ── Warning Banner ────────────────────────────────────────
 
 .warningBanner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: $gap-base;
+  margin: 0;
   padding: 10px 14px;
   border-radius: 12px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: $color-warning-bg;
+  border: 1px solid $color-warning-border;
+  box-sizing: border-box;
 }
 
 .warningText {
   font-size: 13px;
-  color: #92400e;
+  color: $color-warning-text;
+  margin: 0;
+  flex: 1;
 }
 
 .warningCount {
   font-weight: 700;
+  color: inherit;
 }
+
+// ── Submit Button ─────────────────────────────────────────
 
 .btnSubmit {
   width: 100%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: $gap-base;
   padding: 16px;
   border-radius: 14px;
   color: white;
@@ -42,19 +72,34 @@
   letter-spacing: 0.3px;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #e02020 0%, #b91c1c 100%);
+  background: linear-gradient(
+    135deg,
+    $color-red-primary 0%,
+    $color-red-dark 100%
+  );
   box-shadow: 0 6px 20px rgba(224, 32, 32, 0.35);
   transition:
-    opacity 0.15s,
-    box-shadow 0.15s;
+    opacity 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover:not(:disabled) {
     opacity: 0.92;
     box-shadow: 0 8px 24px rgba(224, 32, 32, 0.45);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(224, 32, 32, 0.3);
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: $color-text-gray;
     box-shadow: none;
     opacity: 0.7;
     cursor: not-allowed;
