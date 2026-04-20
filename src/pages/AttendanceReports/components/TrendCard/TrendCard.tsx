@@ -112,10 +112,7 @@ export function TrendCard({
                   ? Math.round((segment.count / evaluationBaseTotal) * 100)
                   : 0;
 
-              const suffix =
-                segment.key === "PENDING"
-                  ? `(${segment.count}/${evaluationBaseTotal})`
-                  : `(${percent}%)`;
+              const suffix = segment.key === "PENDING" ? null : `(${percent}%)`;
 
               return (
                 <button
