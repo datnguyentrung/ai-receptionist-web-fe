@@ -1,5 +1,5 @@
 import { EllipsisVertical } from "lucide-react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { toast } from "sonner";
 import styles from "./mini-action-popover.module.scss";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -47,15 +47,24 @@ export function MiniActionPopover({
           : { id: "__separator__" as const },
       ) ?? ACTION_ITEMS.map(({ id, label }) => ({ id, label }));
 
-  const handleActionClick = (actionId: string, actionLabel: string) => {
+  const handleActionClick = (
+    event: MouseEvent<HTMLButtonElement>,
+    actionId: string,
+    actionLabel: string,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (onActionSelect) {
       onActionSelect(actionId);
       setOpen(false);
       return;
     }
 
-    const suffix = itemLabel ? `: ${itemLabel}` : "";
-    toast.info(`Da chon ${actionLabel}${suffix}`);
+    const suffix = itemLabel ? ` (${itemLabel})` : "";
+    toast.message("Chức năng đang được phát triển", {
+      description: `Bạn đã chọn ${actionLabel}${suffix} nhưng chức năng này đang được phát triển. Vui lòng chờ trong giây lát!`,
+    });
     setOpen(false);
   };
 
@@ -94,6 +103,12 @@ export function MiniActionPopover({
         collisionPadding={8}
         avoidCollisions
         className={cn(styles.popoverContent, contentClassName)}
+        onPointerDown={(event) => {
+          event.stopPropagation();
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
       >
         <div className={styles.actionList}>
           {resolvedActions.map((item, index) =>
@@ -107,8 +122,11 @@ export function MiniActionPopover({
                     key={actionItem.id}
                     type="button"
                     className={styles.actionBtn}
-                    onClick={() =>
-                      handleActionClick(actionItem.id, actionItem.label)
+                    onPointerDown={(event) => {
+                      event.stopPropagation();
+                    }}
+                    onClick={(event) =>
+                      handleActionClick(event, actionItem.id, actionItem.label)
                     }
                   >
                     <span>{actionItem.label}</span>

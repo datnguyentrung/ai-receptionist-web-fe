@@ -5,6 +5,7 @@ import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { getDurationInMinutes } from "@/utils/format";
+import { useRoleStudent } from "@/utils/roleUtils";
 import { Calendar, Clock, EllipsisVertical, MapPin, Users } from "lucide-react";
 import { memo } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
@@ -25,6 +26,7 @@ function ClassCardInner({
   const occupancyRate = capacity > 0 ? totalStudents / capacity : 0;
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
+  const { canViewManagerSenior } = useRoleStudent();
   const shiftLabel =
     ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
   const locationLabel =
@@ -67,14 +69,18 @@ function ClassCardInner({
             contentClassName={styles.classMenuContent}
             actions={[
               { id: "info", label: "Thông tin" },
-              { id: "__separator__" },
-              ...(cls.scheduleStatus === "ACTIVE"
-                ? [{ id: "stop", label: "Dừng hoạt động lớp" }]
-                : cls.scheduleStatus === "INACTIVE"
-                  ? [{ id: "start", label: "Mở hoạt động lớp" }]
-                  : []),
-              { id: "__separator__" },
-              { id: "assign-coach", label: "Phân công HLV" },
+              ...(canViewManagerSenior
+                ? [
+                    { id: "__separator__" as const },
+                    ...(cls.scheduleStatus === "ACTIVE"
+                      ? [{ id: "stop", label: "Dừng hoạt động lớp" }]
+                      : cls.scheduleStatus === "INACTIVE"
+                        ? [{ id: "start", label: "Mở hoạt động lớp" }]
+                        : []),
+                    { id: "__separator__" as const },
+                    { id: "assign-coach", label: "Phân công HLV" },
+                  ]
+                : []),
             ]}
             onActionSelect={(action) => {
               switch (action) {
@@ -83,10 +89,14 @@ function ClassCardInner({
                   break;
                 case "stop":
                 case "start":
-                  onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+                  if (canViewManagerSenior) {
+                    onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+                  }
                   break;
                 case "assign-coach":
-                  console.log("Phân công HLV:", cls.scheduleId);
+                  if (canViewManagerSenior) {
+                    console.log("Phân công HLV:", cls.scheduleId);
+                  }
                   break;
                 default:
                   break;

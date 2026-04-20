@@ -12,6 +12,7 @@ import type {
   StudentAttendanceSimpleResponse,
 } from "@/types";
 import { formatDateDMY } from "@/utils/format";
+import { useState } from "react";
 import styles from "./AttendanceTable.module.scss";
 
 const TABLE_HEADERS = [
@@ -51,6 +52,10 @@ interface Props {
     row: AttendanceListResponse["attendances"]["content"][number],
     status: EvaluationStatus | null,
   ) => void;
+  onNoteChange?: (
+    row: AttendanceListResponse["attendances"]["content"][number],
+    note: string | null,
+  ) => void;
   onUndoRow?: (attendanceId: string) => void;
 }
 
@@ -62,10 +67,15 @@ export function AttendanceTable({
   editedRows = {},
   onAttendanceChange,
   onEvaluationChange,
+  onNoteChange,
   onUndoRow,
 }: Props) {
   const rows = data?.attendances.content ?? [];
   const totalPages = data?.attendances.totalPages ?? 1;
+  const [editingNoteAttendanceId, setEditingNoteAttendanceId] = useState<
+    string | null
+  >(null);
+  const [noteDraft, setNoteDraft] = useState("");
 
   const ATTENDANCE_OPTIONS: AttendanceStatus[] = [
     "PRESENT",
@@ -89,6 +99,30 @@ export function AttendanceTable({
       return null;
     }
     return editedRows[row.attendanceId] ?? null;
+  };
+
+  const beginNoteEdit = (
+    row: AttendanceListResponse["attendances"]["content"][number],
+    note: string | null | undefined,
+  ) => {
+    if (!onNoteChange || !row.attendanceId) {
+      return;
+    }
+
+    setEditingNoteAttendanceId(row.attendanceId);
+    setNoteDraft(note ?? "");
+  };
+
+  const commitNoteEdit = (
+    row: AttendanceListResponse["attendances"]["content"][number],
+  ) => {
+    if (!onNoteChange || !row.attendanceId) {
+      return;
+    }
+
+    const normalizedNote = noteDraft.trim() === "" ? null : noteDraft;
+    onNoteChange(row, normalizedNote);
+    setEditingNoteAttendanceId(null);
   };
 
   return (
@@ -125,6 +159,7 @@ export function AttendanceTable({
                 edited?.evaluationStatus ?? a.evaluationStatus;
               const isChanged = !!edited;
               const attendanceDisplay = attendanceStatus ?? "ABSENT";
+              const noteValue = edited?.note ?? a.note;
               const canEvaluate =
                 attendanceStatus === "PRESENT" ||
                 attendanceStatus === "MAKEUP" ||
@@ -298,14 +333,53 @@ export function AttendanceTable({
                   </td>
                   {/* Ghi chú */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: a.note ? "#374151" : "#D1D5DB",
-                      }}
-                    >
-                      {a.note ?? "—"}
-                    </p>
+                    {editingNoteAttendanceId === a.attendanceId ? (
+                      <input
+                        autoFocus
+                        value={noteDraft}
+                        onChange={(event) => setNoteDraft(event.target.value)}
+                        onBlur={() => setEditingNoteAttendanceId(null)}
+                        onClick={(event) => event.stopPropagation()}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            commitNoteEdit(a);
+                          }
+                          if (event.key === "Escape") {
+                            event.preventDefault();
+                            setEditingNoteAttendanceId(null);
+                          }
+                        }}
+                        style={{
+                          width: "100%",
+                          minWidth: "120px",
+                          fontSize: "12px",
+                          color: "#374151",
+                          border: "1px solid #E5E7EB",
+                          borderRadius: "6px",
+                          padding: "4px 6px",
+                          outline: "none",
+                        }}
+                        placeholder="Nhập ghi chú"
+                      />
+                    ) : (
+                      <p
+                        onDoubleClick={() => beginNoteEdit(a, noteValue)}
+                        style={{
+                          fontSize: "12px",
+                          color: noteValue ? "#374151" : "#D1D5DB",
+                          cursor:
+                            onNoteChange && a.attendanceId ? "text" : "default",
+                        }}
+                        title={
+                          onNoteChange && a.attendanceId
+                            ? "Đúp chuột để chỉnh sửa ghi chú"
+                            : undefined
+                        }
+                      >
+                        {noteValue ?? "—"}
+                      </p>
+                    )}
                   </td>
 
                   {/* Action buttons (e.g., view details) */}

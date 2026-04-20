@@ -33,9 +33,8 @@ export function StudentManagement() {
   const [studentForClassAssignment, setStudentForClassAssignment] =
     useState<StudentOverview | null>(null);
   const [isAttendanceHistoryOpen, setIsAttendanceHistoryOpen] = useState(false);
-  const [studentForHistory, setStudentForHistory] = useState<
-    StudentOverview | null
-  >(null);
+  const [studentForHistory, setStudentForHistory] =
+    useState<StudentOverview | null>(null);
   const userInfo = useAuthStore((state) => state.user);
 
   const debouncedSearch = useDebounce(search, 500);
@@ -45,7 +44,7 @@ export function StudentManagement() {
       search: debouncedSearch,
       status: statusFilter === "all" ? undefined : statusFilter,
       scheduleIds:
-        userInfo?.userInfo.assignedClasses.map(
+        userInfo?.userInfo.assignedClasses?.map(
           (c) => c.classSchedule.scheduleId,
         ) ?? [],
       page: page - 1,

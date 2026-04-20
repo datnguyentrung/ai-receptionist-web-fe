@@ -4,6 +4,7 @@ import { ScheduleLocationLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
+import { useRoleStudent } from "@/utils/roleUtils";
 import { EllipsisVertical, MapPin, Users } from "lucide-react";
 import { memo } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
@@ -21,6 +22,7 @@ function ClassWeekItemInner({
 }) {
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
+  const { canViewManagerSenior } = useRoleStudent();
 
   return (
     <div
@@ -67,14 +69,18 @@ function ClassWeekItemInner({
         contentClassName={styles.weekMenuContent}
         actions={[
           { id: "info", label: "Thông tin" },
-          { id: "__separator__" },
-          ...(cls.scheduleStatus === "ACTIVE"
-            ? [{ id: "stop", label: "Dừng hoạt động lớp" }]
-            : cls.scheduleStatus === "INACTIVE"
-              ? [{ id: "start", label: "Mở hoạt động lớp" }]
-              : []),
-          { id: "__separator__" },
-          { id: "assign-coach", label: "Phân công HLV" },
+          ...(canViewManagerSenior
+            ? [
+                { id: "__separator__" as const },
+                ...(cls.scheduleStatus === "ACTIVE"
+                  ? [{ id: "stop", label: "Dừng hoạt động lớp" }]
+                  : cls.scheduleStatus === "INACTIVE"
+                    ? [{ id: "start", label: "Mở hoạt động lớp" }]
+                    : []),
+                { id: "__separator__" as const },
+                { id: "assign-coach", label: "Phân công HLV" },
+              ]
+            : []),
         ]}
         onActionSelect={(action) => {
           switch (action) {
@@ -83,10 +89,14 @@ function ClassWeekItemInner({
               break;
             case "stop":
             case "start":
-              onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+              if (canViewManagerSenior) {
+                onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+              }
               break;
             case "assign-coach":
-              console.log("Phân công HLV:", cls.scheduleId);
+              if (canViewManagerSenior) {
+                console.log("Phân công HLV:", cls.scheduleId);
+              }
               break;
             default:
               break;

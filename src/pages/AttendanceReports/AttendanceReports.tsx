@@ -60,7 +60,8 @@ export function AttendanceReports() {
     useUpdateAttendanceBatch();
   const user = useAuthStore((state) => state.user);
   const scheduleIds =
-    user?.userInfo.assignedClasses.map((c) => c.classSchedule.scheduleId) ?? [];
+    user?.userInfo.assignedClasses?.map((c) => c.classSchedule.scheduleId) ??
+    [];
 
   const setAttendanceDrillDown = (nextStatuses: AttendanceStatus[] | null) => {
     setAttendanceStatuses(nextStatuses ?? []);
@@ -172,6 +173,15 @@ export function AttendanceReports() {
   ) => {
     setRowDraft(row, {
       evaluationStatus: status,
+    });
+  };
+
+  const handleNoteChange = (
+    row: StudentAttendanceResponse,
+    note: string | null,
+  ) => {
+    setRowDraft(row, {
+      note,
     });
   };
 
@@ -313,6 +323,7 @@ export function AttendanceReports() {
         editedRows={editedRows}
         onAttendanceChange={handleAttendanceChange}
         onEvaluationChange={handleEvaluationChange}
+        onNoteChange={handleNoteChange}
         onUndoRow={handleUndoRow}
       />
 
