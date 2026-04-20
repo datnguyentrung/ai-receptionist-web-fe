@@ -394,7 +394,13 @@ export function AttendanceTable({
                           Undo
                         </button>
                       ) : null}
-                      <MiniActionPopover itemLabel={a.studentName} />
+                      <MiniActionPopover
+                        itemLabel={a.studentName}
+                        actions={[
+                          { id: "info", label: "Thông tin" },
+                          { id: "note", label: "Ghi chú" },
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>

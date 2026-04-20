@@ -1,4 +1,5 @@
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
+import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
@@ -85,7 +86,7 @@ function ClassWeekItemInner({
         onActionSelect={(action) => {
           switch (action) {
             case "info":
-              console.log("Xem thông tin lớp:", cls.scheduleId);
+              showComingSoonActionToast("Thông tin", cls.scheduleId);
               break;
             case "stop":
             case "start":
@@ -95,7 +96,7 @@ function ClassWeekItemInner({
               break;
             case "assign-coach":
               if (canViewManagerSenior) {
-                console.log("Phân công HLV:", cls.scheduleId);
+                showComingSoonActionToast("Phân công HLV", cls.scheduleId);
               }
               break;
             default:

@@ -1,7 +1,7 @@
 import { EllipsisVertical } from "lucide-react";
 import { useState, type MouseEvent } from "react";
-import { toast } from "sonner";
 import styles from "./mini-action-popover.module.scss";
+import { showComingSoonActionToast } from "./mini-action-popover.toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { cn } from "./utils";
 
@@ -11,7 +11,7 @@ type PopoverActionItem = ActionItem | SeparatorItem;
 
 interface MiniActionPopoverProps {
   itemLabel?: string;
-  actions?: ReadonlyArray<ActionItem | SeparatorItem | null | undefined>;
+  actions: ReadonlyArray<ActionItem | SeparatorItem | null | undefined>;
   onActionSelect?: (actionId: string) => void;
   triggerClassName?: string;
   contentClassName?: string;
@@ -19,12 +19,6 @@ interface MiniActionPopoverProps {
   title?: string;
   children?: React.ReactNode;
 }
-
-const ACTION_ITEMS = [
-  { id: "class", label: "Lớp học" },
-  { id: "info", label: "Thông tin" },
-  { id: "note", label: "Ghi chú" },
-] as const;
 
 export function MiniActionPopover({
   itemLabel,
@@ -45,7 +39,7 @@ export function MiniActionPopover({
         "label" in action
           ? { id: action.id, label: action.label }
           : { id: "__separator__" as const },
-      ) ?? ACTION_ITEMS.map(({ id, label }) => ({ id, label }));
+      ) ?? [];
 
   const handleActionClick = (
     event: MouseEvent<HTMLButtonElement>,
@@ -61,10 +55,7 @@ export function MiniActionPopover({
       return;
     }
 
-    const suffix = itemLabel ? ` (${itemLabel})` : "";
-    toast.message("Chức năng đang được phát triển", {
-      description: `Bạn đã chọn ${actionLabel}${suffix} nhưng chức năng này đang được phát triển. Vui lòng chờ trong giây lát!`,
-    });
+    showComingSoonActionToast(actionLabel, itemLabel);
     setOpen(false);
   };
 

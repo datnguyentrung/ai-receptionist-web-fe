@@ -1,5 +1,6 @@
 import Avatar from "@/components/Avatar";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
+import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
@@ -85,7 +86,7 @@ function ClassCardInner({
             onActionSelect={(action) => {
               switch (action) {
                 case "info":
-                  console.log("Xem thông tin lớp:", cls.scheduleId);
+                  showComingSoonActionToast("Thông tin", cls.scheduleId);
                   break;
                 case "stop":
                 case "start":
@@ -95,7 +96,7 @@ function ClassCardInner({
                   break;
                 case "assign-coach":
                   if (canViewManagerSenior) {
-                    console.log("Phân công HLV:", cls.scheduleId);
+                    showComingSoonActionToast("Phân công HLV", cls.scheduleId);
                   }
                   break;
                 default:
