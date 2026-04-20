@@ -42,16 +42,16 @@ interface Props {
   currentPage: number;
   pageSize: number;
   setCurrentPage: (page: number) => void;
-  editedRows: Record<string, StudentAttendanceSimpleResponse>;
-  onAttendanceChange: (
+  editedRows?: Record<string, StudentAttendanceSimpleResponse>;
+  onAttendanceChange?: (
     row: AttendanceListResponse["attendances"]["content"][number],
     status: AttendanceStatus,
   ) => void;
-  onEvaluationChange: (
+  onEvaluationChange?: (
     row: AttendanceListResponse["attendances"]["content"][number],
     status: EvaluationStatus | null,
   ) => void;
-  onUndoRow: (attendanceId: string) => void;
+  onUndoRow?: (attendanceId: string) => void;
 }
 
 export function AttendanceTable({
@@ -59,7 +59,7 @@ export function AttendanceTable({
   currentPage,
   pageSize,
   setCurrentPage,
-  editedRows,
+  editedRows = {},
   onAttendanceChange,
   onEvaluationChange,
   onUndoRow,
@@ -220,6 +220,7 @@ export function AttendanceTable({
                       <MiniActionPopover
                         triggerClassName={styles.dropdownTrigger}
                         contentClassName={styles.attendanceMenuContent}
+                        disabled={!onAttendanceChange}
                         actions={ATTENDANCE_OPTIONS.map((status) => ({
                           id: status,
                           label: AttendanceStatusLabel[status],
@@ -228,7 +229,7 @@ export function AttendanceTable({
                           const nextStatus = ATTENDANCE_OPTIONS.find(
                             (status) => status === actionId,
                           );
-                          if (nextStatus) {
+                          if (nextStatus && onAttendanceChange) {
                             onAttendanceChange(a, nextStatus);
                           }
                         }}
@@ -244,7 +245,9 @@ export function AttendanceTable({
                     <MiniActionPopover
                       triggerClassName={styles.dropdownTrigger}
                       contentClassName={styles.attendanceMenuContent}
-                      disabled={!canEvaluate || !a.attendanceId}
+                      disabled={
+                        !canEvaluate || !a.attendanceId || !onEvaluationChange
+                      }
                       title={!canEvaluate ? blockedEvaluationReason : undefined}
                       actions={[
                         ...EVALUATION_OPTIONS.filter(
@@ -258,14 +261,14 @@ export function AttendanceTable({
                       ]}
                       onActionSelect={(actionId) => {
                         if (actionId === "__clear__") {
-                          onEvaluationChange(a, null);
+                          onEvaluationChange?.(a, null);
                           return;
                         }
 
                         const nextStatus = EVALUATION_OPTIONS.find(
                           (status) => status === actionId,
                         );
-                        if (nextStatus) {
+                        if (nextStatus && onEvaluationChange) {
                           onEvaluationChange(a, nextStatus);
                         }
                       }}
@@ -308,7 +311,7 @@ export function AttendanceTable({
                   {/* Action buttons (e.g., view details) */}
                   <td className={styles.td}>
                     <div className={styles.rowActions}>
-                      {isChanged && a.attendanceId ? (
+                      {isChanged && a.attendanceId && onUndoRow ? (
                         <button
                           type="button"
                           className={styles.undoButton}
