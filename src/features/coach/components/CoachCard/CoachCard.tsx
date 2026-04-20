@@ -13,7 +13,12 @@ import { formatDateDMY } from "../../../../utils/format";
 import StatusBadge from "../StatusBadge/StatusBadge";
 import styles from "./CoachCard.module.scss";
 
-export default function CoachCard({ coach }: { coach: CoachDetail }) {
+type CoachCardProps = {
+  coach: CoachDetail;
+  onOpenUpdate?: (coach: CoachDetail) => void;
+};
+
+export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
   return (
     <div className={styles.coachCard}>
       {/* Card top bar */}
@@ -52,7 +57,12 @@ export default function CoachCard({ coach }: { coach: CoachDetail }) {
               </p>
             </div>
           </div>
-          <button className={styles.moreBtn}>
+          <button
+            type="button"
+            className={styles.moreBtn}
+            onClick={() => onOpenUpdate?.(coach)}
+            aria-label={`Cập nhật ${coach.fullName}`}
+          >
             <MoreVertical size={15} style={{ color: "#9CA3AF" }} />
           </button>
         </div>

@@ -1,11 +1,9 @@
-import { Plus, RotateCcw, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import ClassList from "../ClassList/ClassList";
-import StepProgress from "../StepProgress/StepProgress";
+import { CoachAssignmentSection } from "@/features/studentEnrollment/components/CoachAssignmentSection/CoachAssignmentSection";
+import { StudentAssignmentSection } from "../StudentAssignmentSection/StudentAssignmentSection";
 
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
-import { cn } from "@/components/ui/utils";
 import type {
   ScheduleLevel,
   ScheduleLocation,
@@ -25,13 +23,10 @@ import {
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
+  CoachAssignmentCreateRequest,
   StudentEnrollmentResponse,
-  //  EnrolledClassItem, --- IGNORE ---
   StudentOverview,
 } from "@/types";
-import { RemovalQueueSection } from "../RemovalQueueSection/RemovalQueueSection";
-import { StudentScheduleSection } from "../StudentScheduleSection/StudentScheduleSection";
-import styles from "./ClassAssignmentModal.module.scss";
 
 const CLASS_SCHEDULE_CACHE_KEY = "student-enrollment.active-class-schedules";
 
@@ -40,7 +35,6 @@ const formatToday = () => {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
-
   return `${year}-${month}-${day}`;
 };
 
@@ -88,15 +82,32 @@ type BranchOption = {
   branchName: string;
 };
 
-interface ClassAssignmentModalProps {
+interface StudentClassAssignmentModalProps {
+  mode?: "student";
   onClose?: () => void;
   initialStudent?: StudentOverview | null;
 }
 
-export const ClassAssignmentModal = ({
-  onClose,
-  initialStudent,
-}: ClassAssignmentModalProps) => {
+interface CoachInlineClassAssignmentModalProps {
+  mode: "coach-inline";
+  assignmentRequest: CoachAssignmentCreateRequest;
+  onAssignmentChange: (next: CoachAssignmentCreateRequest) => void;
+  disabled?: boolean;
+}
+
+type ClassAssignmentModalProps =
+  | StudentClassAssignmentModalProps
+  | CoachInlineClassAssignmentModalProps;
+
+export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
+  const isCoachInline = props.mode === "coach-inline";
+  const initialStudent = isCoachInline ? null : (props.initialStudent ?? null);
+  const coachAssignmentRequest = isCoachInline ? props.assignmentRequest : null;
+  const onCoachAssignmentChange = isCoachInline
+    ? props.onAssignmentChange
+    : null;
+  const isCoachInlineDisabled = isCoachInline ? !!props.disabled : false;
+
   const [selectedBranchId, setSelectedBranchId] = useState<string>("");
   const [selectedScheduleIds, setSelectedScheduleIds] = useState<Set<string>>(
     () => new Set(),
@@ -117,9 +128,7 @@ export const ClassAssignmentModal = ({
 
   const { data: fetchedSchedules } = useGetAllClassSchedules(
     { scheduleStatus: "ACTIVE" },
-    {
-      enabled: shouldFetchSchedules,
-    },
+    { enabled: shouldFetchSchedules },
   );
 
   const { data: detailedEnrollments, isLoading: isStudentEnrollmentsLoading } =
@@ -129,16 +138,14 @@ export const ClassAssignmentModal = ({
   const deleteEnrollmentMutation = useDeleteStudentEnrollment();
 
   useEffect(() => {
-    if (!fetchedSchedules?.length) {
+    if (!fetchedSchedules?.length || typeof window === "undefined") {
       return;
     }
 
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem(
-        CLASS_SCHEDULE_CACHE_KEY,
-        JSON.stringify(fetchedSchedules),
-      );
-    }
+    window.sessionStorage.setItem(
+      CLASS_SCHEDULE_CACHE_KEY,
+      JSON.stringify(fetchedSchedules),
+    );
   }, [fetchedSchedules]);
 
   useEffect(() => {
@@ -157,18 +164,20 @@ export const ClassAssignmentModal = ({
     [cachedSchedules, fetchedSchedules],
   );
 
-  const activeEnrollments = useMemo<StudentEnrollmentResponse[]>(() => {
-    return (
+  const activeEnrollments = useMemo<StudentEnrollmentResponse[]>(
+    () =>
       detailedEnrollments?.filter(
         (enrollment) => enrollment.status === "ACTIVE",
-      ) ?? []
-    );
-  }, [detailedEnrollments]);
+      ) ?? [],
+    [detailedEnrollments],
+  );
 
   const activeScheduleIds = useMemo(
     () =>
       new Set(
-        activeEnrollments.map((item) => getSelectionKey(item.classSchedule.scheduleId)),
+        activeEnrollments.map((item) =>
+          getSelectionKey(item.classSchedule.scheduleId),
+        ),
       ),
     [activeEnrollments],
   );
@@ -231,17 +240,61 @@ export const ClassAssignmentModal = ({
   );
 
   const hasBranchData = branchOptions.length > 0;
-  const selectedAddCount = selectedScheduleIds.size;
+  const selectedCoachScheduleIds = useMemo(
+    () => new Set(coachAssignmentRequest?.scheduleIds ?? []),
+    [coachAssignmentRequest?.scheduleIds],
+  );
+  const selectedCoachClasses = useMemo(
+    () =>
+      classSchedules.filter((schedule) =>
+        selectedCoachScheduleIds.has(schedule.scheduleId),
+      ),
+    [classSchedules, selectedCoachScheduleIds],
+  );
+  const selectedAddCount = isCoachInline
+    ? selectedCoachScheduleIds.size
+    : selectedScheduleIds.size;
   const queuedRemovalCount = removalQueue.size;
-  const currentStep = initialStudent ? 2 : 1;
 
   const selectedBranchSelectionCount = useMemo(() => {
+    const selectedSet = isCoachInline
+      ? selectedCoachScheduleIds
+      : selectedScheduleIds;
+
     return selectedBranchClasses.filter((item) =>
-      selectedScheduleIds.has(item.scheduleId),
+      selectedSet.has(item.scheduleId),
     ).length;
-  }, [selectedBranchClasses, selectedScheduleIds]);
+  }, [
+    isCoachInline,
+    selectedBranchClasses,
+    selectedCoachScheduleIds,
+    selectedScheduleIds,
+  ]);
 
   const handleToggleSchedule = (scheduleId: string) => {
+    if (isCoachInline) {
+      if (
+        !coachAssignmentRequest ||
+        !onCoachAssignmentChange ||
+        isCoachInlineDisabled
+      ) {
+        return;
+      }
+
+      const next = new Set(coachAssignmentRequest.scheduleIds);
+      if (next.has(scheduleId)) {
+        next.delete(scheduleId);
+      } else {
+        next.add(scheduleId);
+      }
+
+      onCoachAssignmentChange({
+        ...coachAssignmentRequest,
+        scheduleIds: Array.from(next),
+      });
+      return;
+    }
+
     if (activeScheduleIds.has(scheduleId)) {
       return;
     }
@@ -258,9 +311,7 @@ export const ClassAssignmentModal = ({
     });
   };
 
-  const handleQuickResetDate = () => {
-    setJoinDate(today);
-  };
+  const handleQuickResetDate = () => setJoinDate(today);
 
   const handleAddSelectedClasses = async () => {
     if (!initialStudent) {
@@ -336,213 +387,58 @@ export const ClassAssignmentModal = ({
     setSelectedBranchId("");
   };
 
-  return (
-    <div className={styles.modal}>
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.iconBadge}>
-            <span>🥋</span>
-          </div>
-          <div>
-            <h1 className={styles.title}>Ghi Danh Võ Sinh</h1>
-            <p className={styles.subtitle}>
-              Xếp lớp, xóa lớp và điều chỉnh ngày nhập học
-            </p>
-          </div>
-        </div>
-        {onClose && (
-          <button type="button" className={styles.iconBtn} onClick={onClose}>
-            <X size={16} />
-          </button>
-        )}
-      </header>
+  if (isCoachInline && coachAssignmentRequest && onCoachAssignmentChange) {
+    return (
+      <CoachAssignmentSection
+        assignmentRequest={coachAssignmentRequest}
+        onAssignmentChange={onCoachAssignmentChange}
+        disabled={isCoachInlineDisabled}
+        hasBranchData={hasBranchData}
+        resolvedBranchId={resolvedBranchId}
+        branchOptions={branchOptions}
+        selectedBranchClasses={selectedBranchClasses}
+        selectedCoachScheduleIds={selectedCoachScheduleIds}
+        selectedCoachClasses={selectedCoachClasses}
+        selectedBranchSelectionCount={selectedBranchSelectionCount}
+        selectedAddCount={selectedAddCount}
+        shouldFetchSchedules={shouldFetchSchedules}
+        classSchedulesLength={classSchedules.length}
+        today={today}
+        onSelectBranch={setSelectedBranchId}
+        onToggleSchedule={handleToggleSchedule}
+      />
+    );
+  }
 
-      <StepProgress currentStep={currentStep} />
-
-      <div className={styles.modalBody}>
-        {initialStudent && (
-          <section className={styles.studentHero}>
-            <div className={styles.fieldLabelRow}>
-              <label className={styles.fieldLabel}>
-                Võ sinh <span className={styles.redText}>*</span>
-              </label>
-              <span className={styles.helperPill}>
-                {initialStudent.studentStatus}
-              </span>
-            </div>
-            <div className={styles.studentInfoBox}>
-              <div className={styles.studentInitial}>
-                {initialStudent.fullName.slice(0, 2).toUpperCase()}
-              </div>
-              <div className={styles.studentInfoText}>
-                <div className={styles.studentNameText}>
-                  {initialStudent.fullName}
-                </div>
-                <div className={styles.studentMetaText}>
-                  Mã: {initialStudent.studentCode} · {initialStudent.branchName}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <div className={styles.contentStack}>
-          <section className={styles.assignmentPanel}>
-            <div className={styles.filterRow}>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Chi nhánh</label>
-                <select
-                  className={styles.inputField}
-                  value={resolvedBranchId}
-                  onChange={(event) => setSelectedBranchId(event.target.value)}
-                  disabled={!hasBranchData}
-                >
-                  {!hasBranchData ? (
-                    <option value="">— Không có chi nhánh khả dụng —</option>
-                  ) : (
-                    <>
-                      <option value="">— Chọn chi nhánh —</option>
-                      {branchOptions.map((branch) => (
-                        <option key={branch.branchId} value={branch.branchId}>
-                          {branch.branchName}
-                        </option>
-                      ))}
-                    </>
-                  )}
-                </select>
-              </div>
-
-              <div className={styles.field}>
-                <div className={styles.fieldLabelRow}>
-                  <label className={styles.fieldLabel}>Ngày nhập học</label>
-                  <button
-                    type="button"
-                    className={styles.inlineTextButton}
-                    onClick={handleQuickResetDate}
-                  >
-                    <RotateCcw size={13} /> Hôm nay
-                  </button>
-                </div>
-                <input
-                  type="date"
-                  className={styles.inputField}
-                  value={joinDate}
-                  onChange={(event) => setJoinDate(event.target.value)}
-                />
-                <span className={styles.fieldHint}>
-                  Mặc định là hôm nay, nhưng bạn có thể chọn ngày khác nếu cần.
-                </span>
-              </div>
-
-              <button
-                type="button"
-                className={styles.btnAdd}
-                disabled={
-                  selectedAddCount === 0 ||
-                  !initialStudent ||
-                  createEnrollmentMutation.isPending
-                }
-                onClick={handleAddSelectedClasses}
-              >
-                <Plus size={18} />
-                {createEnrollmentMutation.isPending
-                  ? "Đang xếp lớp..."
-                  : `Thêm ${selectedAddCount > 0 ? `(${selectedAddCount})` : ""}`}
-              </button>
-
-              <div className={styles.classSelectionArea}>
-                <div className={styles.classSelectionHeader}>
-                  <label className={styles.fieldLabel}>
-                    Lịch học chi nhánh
-                  </label>
-                  <span className={styles.selectionMeta}>
-                    {selectedBranchSelectionCount}/
-                    {selectedBranchClasses.length} đã chọn
-                  </span>
-                </div>
-                <div
-                  className={cn(
-                    styles.branchScheduleBox,
-                    !hasBranchData && styles.branchScheduleDisabled,
-                  )}
-                >
-                  <ClassList
-                    hasBranch={hasBranchData}
-                    isLoading={
-                      shouldFetchSchedules && classSchedules.length === 0
-                    }
-                    classList={selectedBranchClasses}
-                    selectedIds={selectedScheduleIds}
-                    disabledIds={activeScheduleIds}
-                    onToggle={handleToggleSchedule}
-                    isCompact
-                    variant="grid"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.selectionSummaryBar}>
-              <div>
-                <strong>{selectedAddCount}</strong> lớp đang chờ xếp
-              </div>
-              <div>
-                <strong>{queuedRemovalCount}</strong> lớp đang chờ xóa
-              </div>
-            </div>
-          </section>
-
-          <section
-            className={cn(
-              styles.manageSection,
-              !initialStudent && styles.manageSectionDisabled,
-            )}
-          >
-            <StudentScheduleSection
-              isLoading={isStudentEnrollmentsLoading}
-              hasStudent={!!initialStudent}
-              activeDisplayClasses={activeEnrollments}
-              onDelete={handleToggleRemoval}
-              queuedRemovalIds={removalQueue}
-            />
-
-            <RemovalQueueSection
-              removalQueue={removalQueue}
-              toDeleteObjects={activeEnrollments.filter((item) =>
-                removalQueue.has(item.enrollmentId),
-              )}
-              onRemoveFromQueue={handleRemoveFromQueue}
-              onConfirmRemoval={handleConfirmRemoval}
-              isProcessing={deleteEnrollmentMutation.isPending}
-            />
-          </section>
-        </div>
-      </div>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerCaption}>
-          {initialStudent ? (
-            <>
-              Võ sinh:{" "}
-              <strong className={styles.footerStrong}>
-                {initialStudent.fullName}
-              </strong>{" "}
-              · {activeEnrollments.length} lớp học hiện tại
-            </>
-          ) : (
-            "Không có học viên được chọn"
-          )}
-        </div>
-        <div className={styles.footerActions}>
-          <button
-            type="button"
-            onClick={handleReset}
-            className={cn(styles.btn, styles.btnGhost)}
-          >
-            Đặt lại
-          </button>
-        </div>
-      </footer>
-    </div>
-  );
+  return initialStudent ? (
+    <StudentAssignmentSection
+      student={initialStudent}
+      hasBranchData={hasBranchData}
+      branchOptions={branchOptions}
+      resolvedBranchId={resolvedBranchId}
+      selectedBranchClasses={selectedBranchClasses}
+      selectedScheduleIds={selectedScheduleIds}
+      activeScheduleIds={activeScheduleIds}
+      selectedBranchSelectionCount={selectedBranchSelectionCount}
+      selectedAddCount={selectedAddCount}
+      queuedRemovalCount={queuedRemovalCount}
+      shouldFetchSchedules={shouldFetchSchedules}
+      classSchedulesLength={classSchedules.length}
+      joinDate={joinDate}
+      isStudentEnrollmentsLoading={isStudentEnrollmentsLoading}
+      activeEnrollments={activeEnrollments}
+      removalQueue={removalQueue}
+      createEnrollmentPending={createEnrollmentMutation.isPending}
+      deleteEnrollmentPending={deleteEnrollmentMutation.isPending}
+      onSelectBranch={setSelectedBranchId}
+      onJoinDateChange={setJoinDate}
+      onQuickResetDate={handleQuickResetDate}
+      onToggleSchedule={handleToggleSchedule}
+      onAddSelectedClasses={handleAddSelectedClasses}
+      onToggleRemoval={handleToggleRemoval}
+      onRemoveFromQueue={handleRemoveFromQueue}
+      onConfirmRemoval={handleConfirmRemoval}
+      onReset={handleReset}
+    />
+  ) : null;
 };

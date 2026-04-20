@@ -1,3 +1,4 @@
+import { ModalLayout } from "@/components/ui/modal-layout";
 import { useGetStudents } from "@/features/student";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
 import { useState } from "react";
@@ -182,36 +183,32 @@ export function StudentManagement() {
         />
       </div>
 
-      {isClassAssignmentOpen && (
-        <div
-          className={styles.modalOverlay}
-          onClick={handleCloseClassAssignment}
-        >
-          <div
-            className={styles.modalContainer}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <ClassAssignmentModal
-              onClose={handleCloseClassAssignment}
-              initialStudent={studentForClassAssignment}
-            />
-          </div>
+      <ModalLayout
+        open={isClassAssignmentOpen}
+        onClose={handleCloseClassAssignment}
+        withSurface={false}
+        maxWidth={1020}
+      >
+        <div className={styles.modalContainer}>
+          <ClassAssignmentModal
+            onClose={handleCloseClassAssignment}
+            initialStudent={studentForClassAssignment}
+          />
         </div>
-      )}
+      </ModalLayout>
 
-      {isAttendanceHistoryOpen && studentForHistory && (
-        <div
-          className={styles.modalOverlay}
-          onClick={handleCloseAttendanceHistory}
+      {studentForHistory ? (
+        <ModalLayout
+          open={isAttendanceHistoryOpen}
+          onClose={handleCloseAttendanceHistory}
+          withSurface={false}
+          maxWidth={980}
         >
-          <div
-            className={styles.modalContainer}
-            onClick={(event) => event.stopPropagation()}
-          >
+          <div className={styles.modalContainer}>
             <AttendanceTableModal student={studentForHistory} />
           </div>
-        </div>
-      )}
+        </ModalLayout>
+      ) : null}
     </div>
   );
 }

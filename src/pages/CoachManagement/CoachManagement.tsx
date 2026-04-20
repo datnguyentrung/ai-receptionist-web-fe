@@ -1,21 +1,40 @@
+import { ModalLayout } from "@/components/ui/modal-layout";
 import {
   CoachCard,
+  CoachCreateModal,
   CoachFilters,
+  CoachUpdateModal,
   useCoachesGroupedByRole,
   useGetAllCoaches,
 } from "@/features/coach";
 import { Plus, Users } from "lucide-react";
 import { useState } from "react";
 import type { CoachStatus } from "../../config/constants";
+import type { CoachDetail } from "../../types";
 import styles from "./CoachManagement.module.scss";
 
 export function CoachManagement() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | CoachStatus>("all");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [coachForUpdate, setCoachForUpdate] = useState<CoachDetail | null>(
+    null,
+  );
 
   const { data: coaches, isLoading } = useGetAllCoaches();
 
   const coachGroups = useCoachesGroupedByRole(coaches || [], search, filter);
+
+  const handleOpenUpdateModal = (coach: CoachDetail) => {
+    setCoachForUpdate(coach);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalOpen(false);
+    setCoachForUpdate(null);
+  };
 
   // Calculate filteredCoaches from groups to ensure consistency
   const filteredCoaches = coachGroups.flatMap((group) => group.coaches);
@@ -38,7 +57,11 @@ export function CoachManagement() {
             hoạt động
           </p>
         </div>
-        <button className={styles.addBtn}>
+        <button
+          type="button"
+          className={styles.addBtn}
+          onClick={() => setIsCreateModalOpen(true)}
+        >
           <Plus size={16} /> Thêm HLV mới
         </button>
       </div>
@@ -59,7 +82,11 @@ export function CoachManagement() {
               <h3 className={styles.roleGroupHeader}>{group.label}</h3>
               <div className={styles.coachGrid}>
                 {group.coaches.map((coach) => (
-                  <CoachCard key={coach.staffCode} coach={coach} />
+                  <CoachCard
+                    key={coach.staffCode}
+                    coach={coach}
+                    onOpenUpdate={handleOpenUpdateModal}
+                  />
                 ))}
               </div>
             </div>
@@ -76,6 +103,27 @@ export function CoachManagement() {
           </p>
         </div>
       )}
+
+      <CoachCreateModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {coachForUpdate ? (
+        <ModalLayout
+          open={isUpdateModalOpen}
+          onClose={handleCloseUpdateModal}
+          withSurface={false}
+          maxWidth={1020}
+        >
+          <div className={styles.modalContainer}>
+            <CoachUpdateModal
+              coach={coachForUpdate}
+              onClose={handleCloseUpdateModal}
+            />
+          </div>
+        </ModalLayout>
+      ) : null}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ModalLayout } from "@/components/ui/modal-layout";
 import rubricRaw from "@/store/mau_kiem_tra.json?raw";
 import type { CalculatedEntranceExamResult } from "@/utils/calculateUtils";
 import "./ModalDetailExam.scss";
@@ -573,8 +574,12 @@ export default function ModalDetailExam({
   ];
 
   return (
-    <div className="detail-exam-modal" role="dialog" aria-modal="true">
-      <div className="detail-exam-modal__backdrop" onClick={onClose} />
+    <ModalLayout
+      open={isOpen}
+      onClose={onClose}
+      withSurface={false}
+      maxWidth={1200}
+    >
       <div className="detail-exam-modal__content">
         <header className="detail-exam-modal__header">
           <div>
@@ -631,6 +636,6 @@ export default function ModalDetailExam({
           />
         </div>
       </div>
-    </div>
+    </ModalLayout>
   );
 }

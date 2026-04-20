@@ -191,6 +191,47 @@
   line-height: 1.5;
 }
 
+.coachInlineSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--tkd-border);
+  border-radius: var(--tkd-radius);
+  background: var(--tkd-bg3);
+  padding: 14px;
+}
+
+.coachInlineGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.textAreaField {
+  width: 100%;
+  border: 1px solid var(--tkd-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tkd-text);
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 9px 10px;
+  resize: vertical;
+  min-height: 74px;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(192, 57, 43, 0.4);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.08);
+  }
+
+  &:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
 .studentInfoText {
   min-width: 0;
 }

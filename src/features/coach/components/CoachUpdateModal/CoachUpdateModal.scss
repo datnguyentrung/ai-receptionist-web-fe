@@ -1,0 +1,67 @@
+.coach-update-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #f0f0f5;
+}
+
+.coach-update-modal__header {
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+}
+
+.coach-update-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn {
+  min-width: 130px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn--ghost {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #e02020, #7b0000);
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .coach-update-modal {
+    padding: 12px;
+  }
+
+  .coach-update-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

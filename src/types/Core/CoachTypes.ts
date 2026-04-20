@@ -1,4 +1,5 @@
 import type { Belt, CoachStatus } from "../../config/constants";
+import type { CoachAssignmentCreateRequest } from '../Operation/CoachAssignmentTypes';
 
 export interface CoachCreateRequest {
   coachStatus?: CoachStatus;
@@ -7,6 +8,10 @@ export interface CoachCreateRequest {
   /** Format: "yyyy-MM-dd" */
   birthDate: string;
   belt: Belt;
+  roleCode: string; // e.g., "COACH_TRAINEE", "HEAD_COACH"
+  email: string;
+
+  assignmentRequest: CoachAssignmentCreateRequest;
 }
 
 export interface CoachUpdateRequest {

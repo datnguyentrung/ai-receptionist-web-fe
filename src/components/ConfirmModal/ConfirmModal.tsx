@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
-import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { ModalLayout } from "../ui/modal-layout";
 import { showErrorToast, showSuccessToast } from "../ui/toast";
 import styles from "./ConfirmModal.module.scss";
 
@@ -111,29 +111,9 @@ export default function ConfirmModal({
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
     cancelButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        if (!isLoading) {
-          onCancel();
-        }
-      }
-
       if (event.key === "Enter" && !isLoading) {
         const activeTagName = (document.activeElement as HTMLElement | null)
           ?.tagName;
@@ -155,20 +135,17 @@ export default function ConfirmModal({
     return null;
   }
 
-  return createPortal(
-    <div
-      className={`${styles.overlay} ${isLoading ? styles.overlayLoading : ""}`}
-      onMouseDown={(event) => {
-        if (!isLoading && event.target === event.currentTarget) {
-          onCancel();
-        }
-      }}
-      aria-hidden={false}
+  return (
+    <ModalLayout
+      open={open}
+      onClose={onCancel}
+      withSurface={false}
+      closeOnBackdrop={!isLoading}
+      closeOnEscape={!isLoading}
+      overlayClassName={`${styles.overlay} ${isLoading ? styles.overlayLoading : ""}`}
+      dialogClassName={styles.modal}
     >
       <section
-        className={styles.modal}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="confirm-modal-title"
         aria-describedby="confirm-modal-description"
       >
@@ -215,7 +192,6 @@ export default function ConfirmModal({
           </div>
         </div>
       </section>
-    </div>,
-    document.body,
+    </ModalLayout>
   );
 }
