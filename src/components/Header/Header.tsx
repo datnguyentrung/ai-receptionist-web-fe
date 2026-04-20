@@ -1,7 +1,11 @@
+import { useLogout } from "@/features/auth/api/useAuthentication";
 import { useNavItems } from "@/hooks/useNavItems";
 import { Bell, Menu, Search, Settings } from "lucide-react";
 import { useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSettingsMenu } from "../../config/constants/ListActionDropDown";
+import { MiniActionPopover } from "../ui/mini-action-popover";
+import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
 import styles from "./Header.module.scss";
 
 export default function Header({
@@ -11,7 +15,10 @@ export default function Header({
 }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const nav_items = useNavItems();
+  const settingsItems = useSettingsMenu();
+  const logoutMutation = useLogout();
 
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
@@ -20,6 +27,26 @@ export default function Header({
         ? location.pathname === "/"
         : location.pathname.startsWith(n.path),
     )?.label ?? "Dashboard";
+
+  const handleSettingsActionSelect = async (actionId: string) => {
+    const selectedItem = settingsItems.find((item) => item.id === actionId);
+
+    if (!selectedItem) {
+      return;
+    }
+
+    if (selectedItem.id === "logout") {
+      logoutMutation.mutate();
+      return;
+    }
+
+    if (selectedItem.id === "profile" && selectedItem.navigateTo) {
+      navigate(selectedItem.navigateTo);
+      return;
+    }
+
+    showComingSoonActionToast(selectedItem.label, "Cài đặt");
+  };
 
   return (
     <header className={styles.header}>
@@ -94,9 +121,22 @@ export default function Header({
           )}
         </div>
 
-        <button className={styles.iconBtn}>
+        {/* Settings Dropdown */}
+        <MiniActionPopover
+          itemLabel="Cài đặt"
+          title="Mở menu cài đặt"
+          triggerClassName={styles.iconBtn}
+          contentClassName={styles.settingsMenuContent}
+          actions={settingsItems.map((setting) => ({
+            id: setting.id,
+            label: setting.label,
+            icon: setting.lucideIcon,
+            isDanger: setting.isDanger,
+          }))}
+          onActionSelect={handleSettingsActionSelect}
+        >
           <Settings size={17} style={{ color: "#374151" }} />
-        </button>
+        </MiniActionPopover>
       </div>
     </header>
   );

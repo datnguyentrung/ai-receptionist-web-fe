@@ -5,7 +5,12 @@ import { showComingSoonActionToast } from "./mini-action-popover.toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { cn } from "./utils";
 
-type ActionItem = { id: string; label: string };
+type ActionItem = {
+  id: string;
+  label: string;
+  icon?: React.ElementType;
+  isDanger?: boolean;
+};
 type SeparatorItem = { id: "__separator__" };
 type PopoverActionItem = ActionItem | SeparatorItem;
 
@@ -108,11 +113,15 @@ export function MiniActionPopover({
             ) : (
               (() => {
                 const actionItem = item as ActionItem;
+                const ActionIcon = actionItem.icon;
                 return (
                   <button
                     key={actionItem.id}
                     type="button"
-                    className={styles.actionBtn}
+                    className={cn(
+                      styles.actionBtn,
+                      actionItem.isDanger ? styles.actionBtnDanger : "",
+                    )}
                     onPointerDown={(event) => {
                       event.stopPropagation();
                     }}
@@ -120,6 +129,9 @@ export function MiniActionPopover({
                       handleActionClick(event, actionItem.id, actionItem.label)
                     }
                   >
+                    {ActionIcon ? (
+                      <ActionIcon size={14} className={styles.actionIcon} />
+                    ) : null}
                     <span>{actionItem.label}</span>
                   </button>
                 );

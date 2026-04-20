@@ -176,3 +176,24 @@
   margin-top: 6px;
   flex-shrink: 0;
 }
+
+.dropdownTrigger {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.attendanceMenuContent,
+.settingsMenuContent {
+  min-width: 200px;
+  padding: 6px 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid #dadce0;
+}

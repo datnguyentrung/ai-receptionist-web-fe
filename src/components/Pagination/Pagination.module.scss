@@ -10,6 +10,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: nowrap;
 }
 
 .btn {
@@ -28,4 +29,59 @@
   transition:
     background 0.12s,
     color 0.12s;
+}
+
+.arrowBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    opacity 0.12s;
+
+  &:hover:not(:disabled) {
+    background: #f3f4f6;
+    color: #111827;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+.ellipsis {
+  width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 12px;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .btns {
+    gap: 2px;
+  }
+
+  .btn,
+  .arrowBtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+  }
 }

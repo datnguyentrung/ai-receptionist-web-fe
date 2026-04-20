@@ -2,6 +2,7 @@ import { RequireRole } from "@/config/RequireRole";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
 
@@ -66,10 +67,17 @@ function RouteLoadingFallback() {
 }
 
 export default function AppRoutes() {
+  // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
   const { canViewManagerSenior, canViewCoach } = useRoleStudent();
+
+  // Xác định đường dẫn trang cá nhân của user hiện tại
+  const personalPageRoute = user?.userInfo?.userCode
+    ? `/${user.userInfo.userCode}`
+    : "/welcome";
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
@@ -94,12 +102,12 @@ export default function AppRoutes() {
           }
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
-          {/* Nếu Coach cố tình truy cập "/", đẩy họ sang trang mặc định của họ là "/schedules" */}
           <Route
             element={
               <RequireRole
                 isAllowed={canViewManagerSenior}
-                fallbackPath="/students"
+                // Nếu không phải Manager, đẩy xuống kiểm tra xem có phải Coach không (vào schedules)
+                fallbackPath="/schedules"
               />
             }
           >
@@ -107,11 +115,14 @@ export default function AppRoutes() {
             <Route path="coaches" element={<CoachManagement />} />
           </Route>
 
-          {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM (Manager/Head Coach tất nhiên cũng xem được do logic isCoach) */}
-          {/* Nếu ai đó role thấp hơn Coach (VD: Học sinh) cố tình vào, đẩy ra /welcome */}
+          {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
           <Route
             element={
-              <RequireRole isAllowed={canViewCoach} fallbackPath="/welcome" />
+              <RequireRole
+                isAllowed={canViewCoach}
+                // QUAN TRỌNG: Nếu không phải Coach (tức là Student), đẩy về trang cá nhân của họ
+                fallbackPath={personalPageRoute}
+              />
             }
           >
             <Route path="students" element={<StudentManagement />} />
@@ -124,14 +135,9 @@ export default function AppRoutes() {
             <Route path="ai/check-in" element={<AICheckIn />} />
           </Route>
 
-          {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) CÓ THỂ ĐƯỢC XEM TRANG NÀY
-          NHƯNG CHỈ LÀ TRANG MẶC ĐỊNH CHO HỌ, KHÔNG PHẢI TRANG CỦA MANAGER/HEAD COACH */}
+          {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
           <Route>
-            <Route path="home" element={<Navigate to="/schedules" replace />} />
-            <Route
-              path="{:userCode}"
-              element={<Navigate to="/schedules" replace />}
-            />
+            <Route path=":userCode" element={<PersonalPage />} />
             <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>

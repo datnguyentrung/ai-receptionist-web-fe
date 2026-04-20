@@ -7,6 +7,7 @@
 
 .tableWrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
@@ -65,6 +66,44 @@
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .td,
+  .th {
+    padding: 10px 12px;
+  }
+
+  .studentCol {
+    width: 160px;
+    max-width: 160px;
+  }
+
+  .avatarCell {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .studentName {
+    max-width: 100%;
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 390px) {
+  .studentCol {
+    width: 140px;
+    max-width: 140px;
+  }
+
+  .studentName {
+    font-size: 10px;
+  }
 }
 
 .avatar {

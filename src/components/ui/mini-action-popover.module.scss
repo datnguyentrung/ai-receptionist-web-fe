@@ -72,6 +72,14 @@
   }
 }
 
+.actionBtnDanger {
+  color: #b91c1c;
+
+  &:hover {
+    background: #fef2f2;
+  }
+}
+
 .actionIcon {
   color: #9ca3af;
   flex-shrink: 0;
