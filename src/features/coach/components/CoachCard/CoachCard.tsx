@@ -1,10 +1,12 @@
 import Avatar from "@/components/Avatar";
+import { MiniActionPopover } from "@/components/ui/mini-action-popover";
+import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { CoachDetail } from "@/types";
 import {
   Award,
   BookOpen,
+  EllipsisVertical,
   Mail,
-  MoreVertical,
   Phone,
   Star,
   Users,
@@ -57,14 +59,31 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            className={styles.moreBtn}
-            onClick={() => onOpenUpdate?.(coach)}
-            aria-label={`Cập nhật ${coach.fullName}`}
+          <MiniActionPopover
+            itemLabel={coach.fullName}
+            triggerClassName={styles.moreBtn}
+            title={`Tùy chọn cho ${coach.fullName}`}
+            actions={[
+              { id: "info", label: "Thông tin" },
+              { id: "assign-class", label: "Phân lớp dạy" },
+              { id: "assignment-history", label: "Lịch sử phân lớp" },
+            ]}
+            onActionSelect={(action) => {
+              if (action === "assign-class") {
+                onOpenUpdate?.(coach);
+                return;
+              }
+
+              if (action === "info") {
+                showComingSoonActionToast("Thông tin", coach.fullName);
+                return;
+              }
+
+              showComingSoonActionToast("Lịch sử phân lớp", coach.fullName);
+            }}
           >
-            <MoreVertical size={15} style={{ color: "#9CA3AF" }} />
-          </button>
+            <EllipsisVertical size={15} />
+          </MiniActionPopover>
         </div>
 
         <div className={styles.statusSection}>

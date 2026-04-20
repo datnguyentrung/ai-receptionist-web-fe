@@ -14,6 +14,8 @@ interface StudentScheduleSectionProps {
   queuedRemovalIds?: Set<string>;
   title?: string;
   actionLabel?: string;
+  variant?: "stack" | "grid";
+  gridColumns?: 2 | 3 | "auto";
 }
 
 export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
@@ -26,6 +28,8 @@ export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
   queuedRemovalIds = new Set(),
   title = "🥋 Lịch học của học viên",
   actionLabel = "Xóa",
+  variant = "stack",
+  gridColumns = "auto",
 }) => {
   const resolvedHasOwner = hasOwner ?? hasStudent ?? false;
   const resolvedClassList =
@@ -42,6 +46,8 @@ export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
         onAction={onDelete}
         actionLabel={actionLabel}
         disabledIds={queuedRemovalIds}
+        variant={variant}
+        gridColumns={gridColumns}
       />
     </div>
   );

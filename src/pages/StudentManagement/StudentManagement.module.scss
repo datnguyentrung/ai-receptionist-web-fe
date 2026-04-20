@@ -272,4 +272,7 @@
 .modalContainer {
   width: 100%;
   max-width: 1020px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  overflow: hidden;
 }

@@ -179,6 +179,7 @@ export function CoachAssignmentSection({
             onToggle={onToggleSchedule}
             isCompact
             variant="grid"
+            gridColumns={3}
           />
         </div>
       </div>
@@ -190,6 +191,8 @@ export function CoachAssignmentSection({
         classList={selectedCoachClasses}
         actionLabel="Bỏ chọn"
         onDelete={onToggleSchedule}
+        variant="grid"
+        gridColumns={2}
       />
 
       <div className={styles.selectionSummaryBar}>

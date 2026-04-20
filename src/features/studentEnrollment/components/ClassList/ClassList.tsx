@@ -20,6 +20,7 @@ interface ClassListProps {
   actionLabel?: string;
   isCompact?: boolean;
   variant?: "stack" | "grid";
+  gridColumns?: 2 | 3 | "auto";
 }
 
 /**
@@ -37,6 +38,7 @@ export default function ClassList({
   actionLabel,
   isCompact = false,
   variant = "stack",
+  gridColumns = "auto",
 }: ClassListProps) {
   return (
     <div
@@ -72,6 +74,8 @@ export default function ClassList({
           className={cn(
             styles.listRoot,
             variant === "grid" && styles.listRootGrid,
+            variant === "grid" && gridColumns === 2 && styles.listRootGridTwo,
+            variant === "grid" && gridColumns === 3 && styles.listRootGridThree,
           )}
         >
           {classList.map((cls) => {

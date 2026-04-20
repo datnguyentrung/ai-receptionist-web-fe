@@ -172,6 +172,7 @@ export function StudentAssignmentSection({
                   onToggle={onToggleSchedule}
                   isCompact
                   variant="grid"
+                  gridColumns={3}
                 />
               </div>
             </div>

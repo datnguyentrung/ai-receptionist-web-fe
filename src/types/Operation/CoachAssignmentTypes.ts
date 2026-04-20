@@ -43,6 +43,7 @@ export interface CoachAssignmentResponse {
 export interface CoachAssignmentSimpleResponse {
   assignmentId: string;
   coach: CoachSummary;
+  classSchedule: ClassScheduleSummary;
   /** Format: "yyyy-MM-dd" */
   assignedDate: string;
   /** Format: "yyyy-MM-dd" */

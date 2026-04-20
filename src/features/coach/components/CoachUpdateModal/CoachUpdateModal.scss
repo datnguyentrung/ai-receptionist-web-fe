@@ -3,9 +3,21 @@
   flex-direction: column;
   gap: 14px;
   padding: 18px;
+  max-height: calc(100vh - 48px);
   background: #fff;
   border-radius: 18px;
   border: 1px solid #f0f0f5;
+  overflow: hidden;
+}
+
+.coach-update-modal__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 4px;
 }
 
 .coach-update-modal__header {
@@ -24,6 +36,7 @@
 }
 
 .coach-update-modal__actions {
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
@@ -39,6 +52,11 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .btn--ghost {
@@ -55,6 +73,11 @@
 @media (max-width: 720px) {
   .coach-update-modal {
     padding: 12px;
+    max-height: calc(100vh - 24px);
+  }
+
+  .coach-update-modal__content {
+    padding-right: 0;
   }
 
   .coach-update-modal__actions {

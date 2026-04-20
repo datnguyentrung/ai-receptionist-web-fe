@@ -28,6 +28,8 @@ import type {
   StudentOverview,
 } from "@/types";
 
+import styles from "./ClassAssignmentModal.module.scss";
+
 const CLASS_SCHEDULE_CACHE_KEY = "student-enrollment.active-class-schedules";
 
 const formatToday = () => {
@@ -411,34 +413,38 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
   }
 
   return initialStudent ? (
-    <StudentAssignmentSection
-      student={initialStudent}
-      hasBranchData={hasBranchData}
-      branchOptions={branchOptions}
-      resolvedBranchId={resolvedBranchId}
-      selectedBranchClasses={selectedBranchClasses}
-      selectedScheduleIds={selectedScheduleIds}
-      activeScheduleIds={activeScheduleIds}
-      selectedBranchSelectionCount={selectedBranchSelectionCount}
-      selectedAddCount={selectedAddCount}
-      queuedRemovalCount={queuedRemovalCount}
-      shouldFetchSchedules={shouldFetchSchedules}
-      classSchedulesLength={classSchedules.length}
-      joinDate={joinDate}
-      isStudentEnrollmentsLoading={isStudentEnrollmentsLoading}
-      activeEnrollments={activeEnrollments}
-      removalQueue={removalQueue}
-      createEnrollmentPending={createEnrollmentMutation.isPending}
-      deleteEnrollmentPending={deleteEnrollmentMutation.isPending}
-      onSelectBranch={setSelectedBranchId}
-      onJoinDateChange={setJoinDate}
-      onQuickResetDate={handleQuickResetDate}
-      onToggleSchedule={handleToggleSchedule}
-      onAddSelectedClasses={handleAddSelectedClasses}
-      onToggleRemoval={handleToggleRemoval}
-      onRemoveFromQueue={handleRemoveFromQueue}
-      onConfirmRemoval={handleConfirmRemoval}
-      onReset={handleReset}
-    />
+    <div className={styles.studentModalShell}>
+      <div className={styles.studentModalBody}>
+        <StudentAssignmentSection
+          student={initialStudent}
+          hasBranchData={hasBranchData}
+          branchOptions={branchOptions}
+          resolvedBranchId={resolvedBranchId}
+          selectedBranchClasses={selectedBranchClasses}
+          selectedScheduleIds={selectedScheduleIds}
+          activeScheduleIds={activeScheduleIds}
+          selectedBranchSelectionCount={selectedBranchSelectionCount}
+          selectedAddCount={selectedAddCount}
+          queuedRemovalCount={queuedRemovalCount}
+          shouldFetchSchedules={shouldFetchSchedules}
+          classSchedulesLength={classSchedules.length}
+          joinDate={joinDate}
+          isStudentEnrollmentsLoading={isStudentEnrollmentsLoading}
+          activeEnrollments={activeEnrollments}
+          removalQueue={removalQueue}
+          createEnrollmentPending={createEnrollmentMutation.isPending}
+          deleteEnrollmentPending={deleteEnrollmentMutation.isPending}
+          onSelectBranch={setSelectedBranchId}
+          onJoinDateChange={setJoinDate}
+          onQuickResetDate={handleQuickResetDate}
+          onToggleSchedule={handleToggleSchedule}
+          onAddSelectedClasses={handleAddSelectedClasses}
+          onToggleRemoval={handleToggleRemoval}
+          onRemoveFromQueue={handleRemoveFromQueue}
+          onConfirmRemoval={handleConfirmRemoval}
+          onReset={handleReset}
+        />
+      </div>
+    </div>
   ) : null;
 };

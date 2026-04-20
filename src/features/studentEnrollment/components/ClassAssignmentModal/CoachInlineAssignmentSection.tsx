@@ -154,6 +154,7 @@ export function CoachInlineAssignmentSection({
             onToggle={onToggleSchedule}
             isCompact
             variant="grid"
+            gridColumns={3}
           />
         </div>
       </div>
@@ -165,6 +166,8 @@ export function CoachInlineAssignmentSection({
         classList={selectedCoachClasses}
         onDelete={onToggleSchedule}
         actionLabel="Bỏ chọn"
+        variant="grid"
+        gridColumns={2}
       />
 
       <div className={styles.selectionSummaryBar}>

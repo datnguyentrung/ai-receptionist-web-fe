@@ -1,9 +1,16 @@
 import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
 import { StudentScheduleSection } from "@/components/StudentScheduleSection/StudentScheduleSection";
 import { showErrorToast, showInfoToast } from "@/components/ui/toast";
-import { useGetCoachAssignmentsByCoachId } from "@/features/coach/api/useCoachAssignment";
+import {
+  useCreateCoachAssignment,
+  useGetCoachAssignmentsByCoachId,
+} from "@/features/coach/api/useCoachAssignment";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
-import type { CoachAssignmentCreateRequest, CoachDetail } from "@/types";
+import type {
+  CoachAssignmentCreateRequest,
+  CoachAssignmentSimpleResponse,
+  CoachDetail,
+} from "@/types";
 import { useEffect, useMemo, useState } from "react";
 
 import "./CoachUpdateModal.scss";
@@ -56,9 +63,16 @@ export default function CoachUpdateModal({
     () =>
       coachAssignments
         .filter((assignment) => assignment.status === "ACTIVE")
-        .map((assignment) => assignment.classSchedule),
+        .map((assignment) => assignment.classSchedule)
+        .sort(
+          (a, b) =>
+            a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
+        ),
     [coachAssignments],
   );
+
+  const { mutate: createCoachAssignment, isPending: isCreatingAssignment } =
+    useCreateCoachAssignment();
 
   const handleSubmit = () => {
     if (!coach) {
@@ -80,10 +94,20 @@ export default function CoachUpdateModal({
       return;
     }
 
-    showInfoToast(
-      "Đã lưu cấu hình phân lớp dạy tạm thời. Chờ tích hợp API cập nhật HLV.",
-    );
-    onClose();
+    createCoachAssignment(assignmentRequest, {
+      onSuccess: (data: CoachAssignmentSimpleResponse[]) => {
+        const text =
+          "Đã phân công thêm cho HLV " +
+          coach.fullName +
+          " các lớp: " +
+          data.map((d) => d.classSchedule.scheduleId).join(", ");
+        showInfoToast(text);
+        onClose();
+      },
+      onError: () => {
+        showErrorToast("Có lỗi xảy ra khi cập nhật phân công huấn luyện viên.");
+      },
+    });
   };
 
   if (!coach) {
@@ -92,28 +116,33 @@ export default function CoachUpdateModal({
 
   return (
     <div className="coach-update-modal">
-      <AssignmentSubjectHero
-        subjectLabel="Huấn luyện viên"
-        statusText={coach.coachStatus}
-        name={coach.fullName}
-        codeLabel="Mã"
-        codeValue={coach.staffCode}
-        secondaryText={coach.email || coach.phoneNumber}
-      />
+      <div className="coach-update-modal__content">
+        <AssignmentSubjectHero
+          subjectLabel="Huấn luyện viên"
+          statusText={coach.coachStatus}
+          name={coach.fullName}
+          codeLabel="Mã"
+          codeValue={coach.staffCode}
+          secondaryText={coach.email || coach.phoneNumber}
+        />
 
-      <StudentScheduleSection
-        isLoading={isCoachAssignmentsLoading}
-        hasOwner
-        title="🥋 Lịch dạy hiện tại"
-        classList={activeAssignmentSchedules}
-        actionLabel="Bỏ"
-      />
+        <StudentScheduleSection
+          isLoading={isCoachAssignmentsLoading}
+          hasOwner
+          title="🥋 Lịch dạy hiện tại"
+          classList={activeAssignmentSchedules}
+          actionLabel="Bỏ"
+          variant="grid"
+          gridColumns={2}
+        />
 
-      <ClassAssignmentModal
-        mode="coach-inline"
-        assignmentRequest={assignmentRequest}
-        onAssignmentChange={setAssignmentRequest}
-      />
+        <ClassAssignmentModal
+          mode="coach-inline"
+          assignmentRequest={assignmentRequest}
+          onAssignmentChange={setAssignmentRequest}
+          disabled={isCreatingAssignment}
+        />
+      </div>
 
       <div className="coach-update-modal__actions">
         <button type="button" className="btn btn--ghost" onClick={onClose}>
@@ -123,8 +152,9 @@ export default function CoachUpdateModal({
           type="button"
           className="btn btn--primary"
           onClick={handleSubmit}
+          disabled={isCreatingAssignment}
         >
-          Lưu phân lớp dạy
+          {isCreatingAssignment ? "Đang lưu phân lớp..." : "Lưu phân lớp dạy"}
         </button>
       </div>
     </div>

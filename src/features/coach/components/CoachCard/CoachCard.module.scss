@@ -11,10 +11,6 @@
   &:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
-
-  &:hover .moreBtn {
-    opacity: 1;
-  }
 }
 
 .cardAccent {
@@ -51,8 +47,8 @@
 }
 
 .moreBtn {
-  opacity: 0;
-  transition: opacity 0.2s;
+  opacity: 1;
+  transition: background-color 0.2s;
   padding: 6px;
   border-radius: 8px;
   border: none;
