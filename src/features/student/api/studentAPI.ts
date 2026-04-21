@@ -44,8 +44,10 @@ export const studentAPI = {
     return ensureStudentListResponse(response.data, "studentAPI.getStudents");
   },
 
-  getStudentById: async (id: string): Promise<StudentDetail> => {
-    const response = await javaApi.get(`/students/${id}`);
+  getStudentByStudentCode: async (
+    studentCode: string,
+  ): Promise<StudentDetail> => {
+    const response = await javaApi.get(`/students/${studentCode}`);
     return response.data;
   },
 

@@ -1,0 +1,16 @@
+.personal-page__header-block,
+.personal-page__content-block {
+  min-width: 0;
+  animation-name: personal-page-fade-up;
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+}
+
+.personal-page__header-block {
+  animation-duration: 0.45s;
+}
+
+.personal-page__content-block {
+  animation-duration: 0.7s;
+  animation-delay: 0.12s;
+}

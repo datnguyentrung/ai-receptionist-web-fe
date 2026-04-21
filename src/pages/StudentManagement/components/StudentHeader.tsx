@@ -5,11 +5,13 @@ import styles from "../StudentManagement.module.scss";
 interface StudentHeaderProps {
   totalStudents: number;
   activeCount: number;
+  onAddStudent?: () => void;
 }
 
 export function StudentHeader({
   totalStudents,
   activeCount,
+  onAddStudent,
 }: StudentHeaderProps) {
   const { canViewManagerSenior } = useRoleStudent();
   return (
@@ -23,7 +25,7 @@ export function StudentHeader({
         </p>
       </div>
       {canViewManagerSenior && (
-        <button className={styles.addBtn}>
+        <button type="button" className={styles.addBtn} onClick={onAddStudent}>
           <Plus size={16} /> Thêm học viên
         </button>
       )}

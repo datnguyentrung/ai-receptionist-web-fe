@@ -1,5 +1,10 @@
 import type { Belt, StudentStatus } from "../../config/constants";
+import type {
+  StudentEnrollmentCreateRequest,
+  StudentEnrollmentSimpleResponse,
+} from "../Operation/StudentEnrollmentTypes";
 import type { PageResponse } from "../pagination";
+import type { UserDetail } from "../Security/authTypes";
 import type { ClassScheduleSummary } from "./ClassScheduleTypes";
 
 // Type cho params lọc
@@ -48,6 +53,8 @@ export interface StudentCreateRequest {
   /** Format: "yyyy-MM-dd" */
   birthDate: string;
   belt: Belt;
+
+  enrollmentRequest: StudentEnrollmentCreateRequest;
 }
 
 export interface StudentUpdateRequest {
@@ -69,28 +76,17 @@ export interface StudentUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một học viên */
-export interface StudentDetail {
-  userId: string;
-  /** Format: "yyyy-MM-dd" */
-  birthDate: string;
-  phoneNumber: string;
-  belt: Belt;
-  /** Trạng thái tài khoản hệ thống */
-  status: string; // UserStatus
-  /** Format: ISO 8601 UTC */
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string;
-  roleName: string;
+export interface StudentDetail extends UserDetail {
   studentCode: string;
   nationalCode: string | null;
-  fullName: string;
   /** Format: "yyyy-MM-dd" */
   startDate: string;
   studentStatus: StudentStatus;
   branchId: number;
   branchName: string;
   branchAddress: string;
+
+  enrollments: StudentEnrollmentSimpleResponse[];
 }
 
 /** Tóm tắt học viên dùng trong danh sách / dropdown */

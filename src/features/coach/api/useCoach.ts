@@ -13,11 +13,11 @@ export const useGetAllCoaches = () => {
 };
 
 // 2. Hook lấy thông tin chi tiết một HLV theo ID
-export const useGetCoachById = (id: number) => {
+export const useGetCoachByStaffCode = (staffCode: string) => {
   return useQuery({
-    queryKey: [COACH_QUERY_KEY, id],
-    queryFn: () => coachAPI.getCoachById(id),
-    enabled: !!id,
+    queryKey: [COACH_QUERY_KEY, staffCode],
+    queryFn: () => coachAPI.getCoachByStaffCode(staffCode),
+    enabled: !!staffCode,
   });
 };
 

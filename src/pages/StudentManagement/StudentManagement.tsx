@@ -10,6 +10,7 @@ import { useAuthStore } from "../../store/authStore";
 import type { StudentOverview } from "../../types";
 import styles from "./StudentManagement.module.scss";
 import { AttendanceTableModal } from "./components/AttendanceTableModal/AttendanceTableModal";
+import { StudentCreateModal } from "./components/StudentCreateModal";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
@@ -30,6 +31,7 @@ export function StudentManagement() {
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isClassAssignmentOpen, setIsClassAssignmentOpen] = useState(false);
   const [studentForClassAssignment, setStudentForClassAssignment] =
     useState<StudentOverview | null>(null);
@@ -101,6 +103,8 @@ export function StudentManagement() {
     if (action === "assign-class") {
       setStudentForClassAssignment(student);
       setIsClassAssignmentOpen(true);
+    } else if (action === "view-info") {
+      window.open(`/${student.studentCode}`, "_blank");
     } else if (action === "view-history") {
       setStudentForHistory(student);
       setIsAttendanceHistoryOpen(true);
@@ -123,6 +127,7 @@ export function StudentManagement() {
       <StudentHeader
         totalStudents={totalStudents}
         activeCount={data?.activeStudentCount ?? 0}
+        onAddStudent={() => setIsCreateModalOpen(true)}
       />
 
       {/* 2. Thống kê */}
@@ -182,6 +187,11 @@ export function StudentManagement() {
           currentListLength={list.length}
         />
       </div>
+
+      <StudentCreateModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
 
       <ModalLayout
         open={isClassAssignmentOpen}

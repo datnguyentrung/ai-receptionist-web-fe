@@ -5,6 +5,7 @@ import {
   History,
   LayoutDashboard,
   ScanFace,
+  Trophy,
   UserRoundCheck,
   Users,
 } from "lucide-react";
@@ -44,11 +45,16 @@ export const NAV_ITEMS = [
     path: "/ai/check-in",
     label: "Trợ lý AI Check-in",
     icon: ScanFace,
-    minLevel: ROLE_LEVELS.STUDENT,
+    minLevel: ROLE_LEVELS.COACH,
   },
   {
     path: "/public/exam",
     label: "Quản lý Khảo thí",
     icon: ClipboardCheck,
+  },
+  {
+    path: "/rankings",
+    label: "Bảng xếp hạng",
+    icon: Trophy,
   },
 ];

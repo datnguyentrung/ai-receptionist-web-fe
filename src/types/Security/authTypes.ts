@@ -1,4 +1,4 @@
-import type { Belt } from "../../config/constants";
+import type { Belt, UserStatus } from "../../config/constants";
 import type { CoachAssignmentResponse } from "../Operation/CoachAssignmentTypes";
 
 export interface ChangePasswordRequest {
@@ -45,4 +45,18 @@ export interface UserProfile {
 export interface UserResponse {
   userInfo: UserInfo;
   userProfile: UserProfile;
+}
+
+export interface UserDetail {
+  userId: string;
+  birthDate: Date | string;
+  phoneNumber: string;
+  belt: Belt;
+  status: UserStatus;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  lastLogin: Date | string | null;
+  role: string;
+  fullName: string;
+  gender?: boolean;
 }

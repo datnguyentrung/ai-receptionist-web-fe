@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { BeltLabel, type UserStatus } from "@/config/constants";
+import type { CoachDetail, StudentDetail } from "@/types";
 import {
   Award,
   Calendar,
@@ -19,10 +21,15 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import type { Coach, Student } from "../../mockData";
+import Avatar from "../../../../components/Avatar";
+import { formatDateDMY } from "../../../../utils/format";
 import "./ProfileHeader.scss";
 
-export function ProfileHeader({ profile }: { profile: Student | Coach }) {
+export function ProfileHeader({
+  profile,
+}: {
+  profile: StudentDetail | CoachDetail;
+}) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPassOpen, setIsPassOpen] = useState(false);
 
@@ -38,14 +45,23 @@ export function ProfileHeader({ profile }: { profile: Student | Coach }) {
           <div className="profile-header__cover-overlay" />
           <div className="profile-header__avatar-wrap">
             <div className="profile-header__avatar-box">
-              <img
+              {/* <img
                 src={profile.avatar}
                 alt={profile.fullName}
                 className="profile-header__avatar-image"
+              /> */}
+              <Avatar
+                fullName={profile.fullName}
+                fontSize="14px"
+                fontWeight={500}
+                width="5.75rem"
+                height="5.75rem"
               />
               <Badge
                 variant={
-                  profile.status === "Active" ? "default" : "destructive"
+                  profile.status === ("ACTIVE" as UserStatus)
+                    ? "default"
+                    : "destructive"
                 }
                 className="profile-header__status-badge"
               >
@@ -66,9 +82,9 @@ export function ProfileHeader({ profile }: { profile: Student | Coach }) {
                 </span>
               </div>
               <Badge variant="outline" className="profile-header__role-badge">
-                {profile.role === "STUDENT"
+                {(profile as StudentDetail)
                   ? "Học viên"
-                  : profile.role === "MANAGER"
+                  : (profile as CoachDetail)
                     ? "Quản lý"
                     : "Huấn luyện viên"}
               </Badge>
@@ -93,7 +109,7 @@ export function ProfileHeader({ profile }: { profile: Student | Coach }) {
               <div className="profile-header__detail-text">
                 <p className="profile-header__detail-label">Ngày sinh</p>
                 <p className="profile-header__detail-value">
-                  {new Date(profile.birthDate).toLocaleDateString("vi-VN")}
+                  {formatDateDMY(profile.birthDate)}
                 </p>
               </div>
             </div>
@@ -110,15 +126,32 @@ export function ProfileHeader({ profile }: { profile: Student | Coach }) {
               </div>
             </div>
 
-            <div className="profile-header__detail-item">
-              <div className="profile-header__detail-icon profile-header__detail-icon--rose">
-                <Mail size={16} />
+            {"email" in profile && profile.email ? (
+              <div className="profile-header__detail-item">
+                <div className="profile-header__detail-icon profile-header__detail-icon--rose">
+                  <Mail size={16} />
+                </div>
+                <div className="profile-header__detail-text">
+                  <p className="profile-header__detail-label">Email</p>
+                  <p className="profile-header__detail-value profile-header__detail-value--truncate">
+                    {profile.email}
+                  </p>
+                </div>
               </div>
-              <div className="profile-header__detail-text">
-                <p className="profile-header__detail-label">Email</p>
-                <p className="profile-header__detail-value profile-header__detail-value--truncate">
-                  {profile.email}
-                </p>
+            ) : null}
+
+            {/* Cấp đai */}
+            <div>
+              <div>
+                <div className="profile-header__detail-icon profile-header__detail-icon--amber">
+                  <Award size={16} />
+                </div>
+                <div className="profile-header__detail-text">
+                  <p className="profile-header__detail-label">Cấp đai</p>
+                  <p className="profile-header__detail-value">
+                    {BeltLabel[profile.belt]}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -160,10 +193,12 @@ export function ProfileHeader({ profile }: { profile: Student | Coach }) {
               <label className="profile-header__label">Số điện thoại</label>
               <Input defaultValue={profile.phoneNumber} type="tel" />
             </div>
-            <div>
-              <label className="profile-header__label">Email</label>
-              <Input defaultValue={profile.email} type="email" />
-            </div>
+            {"email" in profile && (
+              <div>
+                <label className="profile-header__label">Email</label>
+                <Input defaultValue={profile.email} type="email" />
+              </div>
+            )}
             <div className="profile-header__dialog-actions">
               <Button
                 variant="ghost"

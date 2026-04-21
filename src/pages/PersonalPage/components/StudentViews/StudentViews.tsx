@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { StudentDetail } from "@/types";
 import { format } from "date-fns";
 import {
   Activity,
@@ -11,21 +12,70 @@ import {
   MapPin,
 } from "lucide-react";
 import type { ComponentProps } from "react";
-import type { Student } from "../../mockData";
 import "./StudentViews.scss";
 
-export function StudentViews({ data }: { data: Student }) {
+type AttendanceItem = {
+  id: string;
+  sessionDate: string;
+  attendanceStatus: string;
+  checkInTime?: string;
+  evaluationStatus: string;
+  note?: string;
+};
+
+type TuitionItem = {
+  id: string;
+  totalAmount: number;
+  createdAt: string;
+  forMonth: number;
+  forYear: number;
+  enrollment: string;
+  amountAllocated: number;
+};
+
+type StudentViewsData = StudentDetail & {
+  branch?: string;
+  attendance?: AttendanceItem[] | null;
+  tuition?: TuitionItem[] | null;
+};
+
+function formatDateSafe(
+  value: string | Date | null | undefined,
+  pattern: string,
+) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return format(date, pattern);
+}
+
+export function StudentViews({ data }: { data: StudentViewsData }) {
+  const enrollments = Array.isArray(data.enrollments) ? data.enrollments : [];
+  const attendance = Array.isArray(data.attendance) ? data.attendance : [];
+  const tuition = Array.isArray(data.tuition) ? data.tuition : [];
+  const branchName = data.branch ?? data.branchName;
+
   const getStatusBadgeVariant = (
     status: string,
   ): ComponentProps<typeof Badge>["variant"] => {
     switch (status) {
       case "Đang học":
       case "Active":
+      case "ACTIVE":
       case "Có mặt":
         return "default";
       case "Bảo lưu":
+      case "RESERVED":
+      case "TRANSFERRED":
         return "secondary";
       case "Nghỉ học":
+      case "DROPPED":
       case "Kết thúc":
       case "Vắng":
         return "destructive";
@@ -38,11 +88,15 @@ export function StudentViews({ data }: { data: Student }) {
     switch (status) {
       case "Đang học":
       case "Active":
+      case "ACTIVE":
       case "Có mặt":
         return "student-views__status-badge student-views__status-badge--success";
       case "Bảo lưu":
+      case "RESERVED":
+      case "TRANSFERRED":
         return "student-views__status-badge student-views__status-badge--warning";
       case "Nghỉ học":
+      case "DROPPED":
       case "Kết thúc":
       case "Vắng":
         return "student-views__status-badge student-views__status-badge--danger";
@@ -84,7 +138,7 @@ export function StudentViews({ data }: { data: Student }) {
                 <div>
                   <p className="student-views__meta-label">Ngày bắt đầu tập</p>
                   <p className="student-views__meta-value">
-                    {format(new Date(data.startDate), "dd/MM/yyyy")}
+                    {formatDateSafe(data.startDate, "dd/MM/yyyy")}
                   </p>
                 </div>
               </CardContent>
@@ -100,7 +154,7 @@ export function StudentViews({ data }: { data: Student }) {
                     <p className="student-views__meta-label">
                       Chi nhánh theo học
                     </p>
-                    <p className="student-views__meta-value">{data.branch}</p>
+                    <p className="student-views__meta-value">{branchName}</p>
                   </div>
                 </div>
                 <div className="student-views__meta-stack student-views__meta-stack--right">
@@ -129,39 +183,42 @@ export function StudentViews({ data }: { data: Student }) {
           <h3 className="student-views__section-title student-views__section-title--with-gap">
             Danh sách lớp đăng ký
           </h3>
-          {data.enrollments.map((enrollment) => (
-            <Card
-              key={enrollment.id}
-              className="student-views__enrollment-card"
-            >
+          {enrollments.length === 0 ? (
+            <Card className="student-views__enrollment-card">
               <CardContent className="student-views__enrollment-content">
-                <div className="student-views__enrollment-row">
-                  <div className="student-views__enrollment-main">
-                    <h4 className="student-views__enrollment-title">
-                      {enrollment.classSchedule}
-                    </h4>
-                    <p className="student-views__enrollment-subline">
-                      <Clock size={14} /> Tham gia:{" "}
-                      {format(new Date(enrollment.joinDate), "dd/MM/yyyy")}
-                    </p>
-                  </div>
-                  <div className="student-views__enrollment-side">
-                    <Badge
-                      variant={getStatusBadgeVariant(enrollment.status)}
-                      className={getStatusBadgeClass(enrollment.status)}
-                    >
-                      {enrollment.status}
-                    </Badge>
-                    {enrollment.note && (
-                      <span className="student-views__enrollment-note">
-                        "{enrollment.note}"
-                      </span>
-                    )}
-                  </div>
-                </div>
+                Chưa có dữ liệu lớp đăng ký.
               </CardContent>
             </Card>
-          ))}
+          ) : (
+            enrollments.map((enrollment) => (
+              <Card
+                key={enrollment.enrollmentId}
+                className="student-views__enrollment-card"
+              >
+                <CardContent className="student-views__enrollment-content">
+                  <div className="student-views__enrollment-row">
+                    <div className="student-views__enrollment-main">
+                      <h4 className="student-views__enrollment-title">
+                        {enrollment.classScheduleSummary.scheduleId}
+                      </h4>
+                      <p className="student-views__enrollment-subline">
+                        <Clock size={14} /> Tham gia:{" "}
+                        {formatDateSafe(enrollment.joinDate, "dd/MM/yyyy")}
+                      </p>
+                    </div>
+                    <div className="student-views__enrollment-side">
+                      <Badge
+                        variant={getStatusBadgeVariant(enrollment.status)}
+                        className={getStatusBadgeClass(enrollment.status)}
+                      >
+                        {enrollment.status}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       ),
     },
@@ -187,41 +244,49 @@ export function StudentViews({ data }: { data: Student }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.attendance.map((record) => (
-                    <tr key={record.id} className="student-views__tr">
-                      <td className="student-views__td student-views__td--strong">
-                        {format(new Date(record.sessionDate), "dd/MM/yyyy")}
-                      </td>
-                      <td className="student-views__td">
-                        <Badge
-                          variant={getStatusBadgeVariant(
-                            record.attendanceStatus,
-                          )}
-                          className={getStatusBadgeClass(
-                            record.attendanceStatus,
-                          )}
-                        >
-                          {record.attendanceStatus}
-                        </Badge>
-                      </td>
-                      <td className="student-views__td student-views__td--mono">
-                        {record.checkInTime || "-"}
-                      </td>
-                      <td className="student-views__td">
-                        <span
-                          className={`student-views__evaluation ${record.evaluationStatus === "Tốt" ? "student-views__evaluation--good" : record.evaluationStatus === "Không đạt" ? "student-views__evaluation--bad" : "student-views__evaluation--pass"}`}
-                        >
-                          {record.evaluationStatus}
-                        </span>
-                      </td>
-                      <td
-                        className="student-views__td student-views__td--note"
-                        title={record.note}
-                      >
-                        {record.note || "-"}
+                  {attendance.length === 0 ? (
+                    <tr className="student-views__tr">
+                      <td className="student-views__td" colSpan={5}>
+                        Chưa có dữ liệu điểm danh.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    attendance.map((record) => (
+                      <tr key={record.id} className="student-views__tr">
+                        <td className="student-views__td student-views__td--strong">
+                          {formatDateSafe(record.sessionDate, "dd/MM/yyyy")}
+                        </td>
+                        <td className="student-views__td">
+                          <Badge
+                            variant={getStatusBadgeVariant(
+                              record.attendanceStatus,
+                            )}
+                            className={getStatusBadgeClass(
+                              record.attendanceStatus,
+                            )}
+                          >
+                            {record.attendanceStatus}
+                          </Badge>
+                        </td>
+                        <td className="student-views__td student-views__td--mono">
+                          {record.checkInTime || "-"}
+                        </td>
+                        <td className="student-views__td">
+                          <span
+                            className={`student-views__evaluation ${record.evaluationStatus === "Tốt" ? "student-views__evaluation--good" : record.evaluationStatus === "Không đạt" ? "student-views__evaluation--bad" : "student-views__evaluation--pass"}`}
+                          >
+                            {record.evaluationStatus}
+                          </span>
+                        </td>
+                        <td
+                          className="student-views__td student-views__td--note"
+                          title={record.note}
+                        >
+                          {record.note || "-"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -239,51 +304,59 @@ export function StudentViews({ data }: { data: Student }) {
             Lịch sử đóng học phí
           </h3>
           <div className="student-views__tuition-grid">
-            {data.tuition.map((record) => (
-              <Card key={record.id} className="student-views__tuition-card">
+            {tuition.length === 0 ? (
+              <Card className="student-views__tuition-card">
                 <CardContent className="student-views__tuition-content">
-                  <div className="student-views__tuition-main">
-                    <div className="student-views__tuition-amount-row">
-                      <h4 className="student-views__tuition-amount">
+                  Chưa có dữ liệu học phí.
+                </CardContent>
+              </Card>
+            ) : (
+              tuition.map((record) => (
+                <Card key={record.id} className="student-views__tuition-card">
+                  <CardContent className="student-views__tuition-content">
+                    <div className="student-views__tuition-main">
+                      <div className="student-views__tuition-amount-row">
+                        <h4 className="student-views__tuition-amount">
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(record.totalAmount)}
+                        </h4>
+                        <Badge
+                          variant="default"
+                          className="student-views__paid-badge"
+                        >
+                          Đã thanh toán
+                        </Badge>
+                      </div>
+                      <p className="student-views__tuition-time">
+                        Thanh toán lúc:{" "}
+                        {formatDateSafe(record.createdAt, "dd/MM/yyyy HH:mm")}
+                      </p>
+                    </div>
+                    <div className="student-views__tuition-meta">
+                      <p>
+                        <span className="student-views__tuition-key">
+                          Tháng học:
+                        </span>{" "}
+                        {record.forMonth}/{record.forYear}
+                      </p>
+                      <p>
+                        <span className="student-views__tuition-key">Lớp:</span>{" "}
+                        {record.enrollment}
+                      </p>
+                      <p className="student-views__tuition-allocation">
+                        Phân bổ:{" "}
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
                           currency: "VND",
-                        }).format(record.totalAmount)}
-                      </h4>
-                      <Badge
-                        variant="default"
-                        className="student-views__paid-badge"
-                      >
-                        Đã thanh toán
-                      </Badge>
+                        }).format(record.amountAllocated)}
+                      </p>
                     </div>
-                    <p className="student-views__tuition-time">
-                      Thanh toán lúc:{" "}
-                      {format(new Date(record.createdAt), "dd/MM/yyyy HH:mm")}
-                    </p>
-                  </div>
-                  <div className="student-views__tuition-meta">
-                    <p>
-                      <span className="student-views__tuition-key">
-                        Tháng học:
-                      </span>{" "}
-                      {record.forMonth}/{record.forYear}
-                    </p>
-                    <p>
-                      <span className="student-views__tuition-key">Lớp:</span>{" "}
-                      {record.enrollment}
-                    </p>
-                    <p className="student-views__tuition-allocation">
-                      Phân bổ:{" "}
-                      {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(record.amountAllocated)}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       ),

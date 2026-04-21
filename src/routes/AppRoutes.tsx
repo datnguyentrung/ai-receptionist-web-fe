@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
+import { AccessDeniedView } from '../components/AccessDeniedView';
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -85,6 +86,8 @@ export default function AppRoutes() {
         {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/403" element={<AccessDeniedView />} />
 
         <Route path="/public" element={<MainLayout />}>
           <Route path="exam" element={<ExaminationManagement />} />

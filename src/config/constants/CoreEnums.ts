@@ -20,6 +20,29 @@ export type Belt =
   | "D9"
   | "D10";
 
+export const BeltLabel: Record<Belt, string> = {
+  C10: "Trắng",
+  C9: "Vàng 1",
+  C8: "Vàng 2",
+  C7: "Xanh lá",
+  C6: "Xanh dương 1",
+  C5: "Xanh dương 2",
+  C4: "Đỏ 1",
+  C3: "Đỏ 2",
+  C2: "Đỏ 3",
+  C1: "Đỏ 4",
+  D1: "Đen 1 đẳng",
+  D2: "Đen 2 đẳng",
+  D3: "Đen 3 đẳng",
+  D4: "Đen 4 đẳng",
+  D5: "Đen 5 đẳng",
+  D6: "Đen 6 đẳng",
+  D7: "Đen 7 đẳng",
+  D8: "Đen 8 đẳng",
+  D9: "Đen 9 đẳng",
+  D10: "Đen 10 đẳng",
+}
+
 export type BranchStatus = "OPERATING" | "CLOSED" | "MAINTENANCE";
 
 export type CoachStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "RETIRED";

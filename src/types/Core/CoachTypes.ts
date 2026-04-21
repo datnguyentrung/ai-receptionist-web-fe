@@ -1,5 +1,6 @@
 import type { Belt, CoachStatus } from "../../config/constants";
-import type { CoachAssignmentCreateRequest } from '../Operation/CoachAssignmentTypes';
+import type { CoachAssignmentCreateRequest, CoachAssignmentSimpleResponse } from '../Operation/CoachAssignmentTypes';
+import type { UserDetail } from '../Security/authTypes';
 
 export interface CoachCreateRequest {
   coachStatus?: CoachStatus;
@@ -30,27 +31,15 @@ export interface CoachUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một HLV */
-export interface CoachDetail {
-  userId: string;
+export interface CoachDetail extends UserDetail {
   /** Format: "yyyy-MM-dd" */
-  birthDate: string;
-  phoneNumber: string;
-  belt: Belt;
   email: string;
-  /** Trạng thái tài khoản hệ thống */
-  status: string; // UserStatus — imported from Security if needed
-  /** Format: ISO 8601 UTC */
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string;
-  /** Role code/name từ API (e.g., "COACH_TRAINEE", "HEAD_COACH") */
-  roleName: string;
-  /** Optional roleCode field (for future use) */
-  roleCode?: string;
+
   staffCode: string;
-  fullName: string;
   /** Trạng thái công việc */
   coachStatus: CoachStatus;
+
+  currentAssignments: CoachAssignmentSimpleResponse[];
 }
 
 /** Tóm tắt HLV dùng trong danh sách / dropdown */

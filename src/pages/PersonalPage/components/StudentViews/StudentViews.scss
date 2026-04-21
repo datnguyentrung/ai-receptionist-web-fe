@@ -10,7 +10,7 @@
 
 .student-views__tabs-list {
   width: 100%;
-  min-height: 2.75rem;
+  min-height: 3rem;
   display: flex;
   align-items: stretch;
   gap: 0.5rem;
@@ -32,8 +32,11 @@
 }
 
 .student-views__tab-trigger {
+  display: flex;
+  align-items: center;
   flex: 0 0 auto;
   min-width: 9.25rem;
+  min-height: calc(3rem - 0.8rem);
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
@@ -43,6 +46,7 @@
   font-weight: 600;
   color: v.$brand-dark;
   box-shadow: 0 2px 8px rgba(26, 26, 46, 0.05);
+  line-height: 1.15;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -53,6 +57,10 @@
     background: linear-gradient(135deg, v.$brand-red 0%, v.$brand-red-700 100%);
     color: #ffffff;
     box-shadow: 0 10px 22px rgba(224, 32, 32, 0.22);
+
+    .student-views__tab-icon {
+      color: #ffffff;
+    }
   }
 }
 

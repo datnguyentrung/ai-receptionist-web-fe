@@ -28,11 +28,11 @@ export const useGetStudents = (
 };
 
 // 2. Hook lấy chi tiết 1 Học viên
-export const useGetStudentById = (id: string) => {
+export const useGetStudentByStudentCode = (studentCode: string) => {
   return useQuery({
-    queryKey: [STUDENT_QUERY_KEY, id],
-    queryFn: () => studentAPI.getStudentById(id),
-    enabled: !!id, // Chỉ gọi API khi id tồn tại
+    queryKey: [STUDENT_QUERY_KEY, studentCode],
+    queryFn: () => studentAPI.getStudentByStudentCode(studentCode),
+    enabled: !!studentCode, // Chỉ gọi API khi studentCode tồn tại
   });
 };
 

@@ -13,8 +13,8 @@ export const coachAPI = {
     return response.data;
   },
 
-  getCoachById: async (id: number): Promise<CoachDetail> => {
-    const response = await javaApi.get(`/coaches/${id}`);
+  getCoachByStaffCode: async (staffCode: string): Promise<CoachDetail> => {
+    const response = await javaApi.get(`/coaches/${staffCode}`);
     return response.data;
   },
 
