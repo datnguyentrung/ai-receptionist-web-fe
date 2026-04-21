@@ -2,10 +2,14 @@ import { RequireRole } from "@/config/RequireRole";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { AccessDeniedView } from "../components/AccessDeniedView";
+import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
+import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
+import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
+import UserInfomation from "../pages/PersonalPage/components/UserInfomation";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
-import { AccessDeniedView } from '../components/AccessDeniedView';
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -140,7 +144,19 @@ export default function AppRoutes() {
 
           {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
           <Route>
-            <Route path=":userCode" element={<PersonalPage />} />
+            <Route path="/:userCode" element={<PersonalPage />}>
+              {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
+              <Route index element={<UserInfomation />} />
+
+              {/* Các tab con của STUDENT */}
+              <Route path="classes" element={<ScheduleAssignments />} />
+              <Route path="progress" element={<AttendanceTab />} />
+              <Route path="tuition" element={<TuitionTab />} />
+
+              {/* Các tab con cả COACH */}
+              {/* <Route path="timesheet" element={<CoachTimeSheet />} /> */}
+            </Route>
+
             <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>

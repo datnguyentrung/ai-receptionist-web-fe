@@ -33,6 +33,7 @@ export const useGetStudentByStudentCode = (studentCode: string) => {
     queryKey: [STUDENT_QUERY_KEY, studentCode],
     queryFn: () => studentAPI.getStudentByStudentCode(studentCode),
     enabled: !!studentCode, // Chỉ gọi API khi studentCode tồn tại
+    staleTime: 5 * 60 * 1000, // 5 phút
   });
 };
 

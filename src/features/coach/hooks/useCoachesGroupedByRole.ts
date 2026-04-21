@@ -36,7 +36,7 @@ export function useCoachesGroupedByRole(
     const grouped = new Map<CoachRoleCode, CoachDetail[]>();
     filtered.forEach((coach) => {
       // Use roleName if roleCode is not provided (for API compatibility)
-      const roleCode = (coach.roleCode || coach.roleName) as CoachRoleCode;
+      const roleCode = coach.role as CoachRoleCode;
       if (!grouped.has(roleCode)) {
         grouped.set(roleCode, []);
       }

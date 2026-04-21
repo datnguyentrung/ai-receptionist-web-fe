@@ -1,8 +1,12 @@
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import {
+  Activity,
+  BookOpen,
   CalendarRange,
   ClipboardCheck,
+  CreditCard,
   History,
+  Info,
   LayoutDashboard,
   ScanFace,
   Trophy,
@@ -56,5 +60,53 @@ export const NAV_ITEMS = [
     path: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,
+  },
+];
+
+export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [
+  {
+    id: "profile",
+    label: "Hồ sơ cá nhân",
+    icon: Info,
+    linkTo: `/${studentCode}`,
+  },
+  {
+    id: "classes",
+    label: "Lớp học & Lịch sử",
+    icon: BookOpen,
+    linkTo: `/${studentCode}/classes`,
+  },
+  {
+    id: "progress",
+    label: "Tiến trình & Điểm danh",
+    icon: Activity,
+    linkTo: `/${studentCode}/progress`,
+  },
+  {
+    id: "tuition",
+    label: "Học phí",
+    icon: CreditCard,
+    linkTo: `/${studentCode}/tuition`,
+  },
+];
+
+export const COACH_TABS = ({ coachCode }: { coachCode: string }) => [
+  {
+    id: "profile",
+    label: "Hồ sơ cá nhân",
+    icon: Info,
+    linkTo: `/${coachCode}`,
+  },
+  {
+    id: "classes",
+    label: "Lớp phụ trách",
+    icon: Users,
+    linkTo: `/${coachCode}/classes`,
+  },
+  {
+    id: "timesheet",
+    label: "Bảng chấm công",
+    icon: CalendarRange,
+    linkTo: `/${coachCode}/timesheet`,
   },
 ];

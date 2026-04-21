@@ -1,6 +1,6 @@
 import { useGetStudentByStudentCode } from "@/features/student";
-import { StudentViews } from "../StudentViews";
 import { ProfileHeader } from "../ProfileHeader";
+import { TabViews } from "../TabViews";
 
 export default function StudentProfile({ userCode }: { userCode: string }) {
   const { data: studentData, isFetching } =
@@ -15,7 +15,7 @@ export default function StudentProfile({ userCode }: { userCode: string }) {
         <ProfileHeader profile={studentData} />
       </section>
       <section className="personal-page__content-block">
-        <StudentViews data={studentData} />
+        <TabViews userInfo={studentData} userType="student" />
       </section>
     </>
   );

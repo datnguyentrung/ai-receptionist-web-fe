@@ -1,17 +1,20 @@
 import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
-import { StudentScheduleSection } from "@/components/StudentScheduleSection/StudentScheduleSection";
+import ConfirmModal from "@/components/ConfirmModal";
 import { showErrorToast, showInfoToast } from "@/components/ui/toast";
 import {
   useCreateCoachAssignment,
+  useDeleteCoachAssignment,
   useGetCoachAssignmentsByCoachId,
 } from "@/features/coach/api/useCoachAssignment";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
 import type {
   CoachAssignmentCreateRequest,
+  CoachAssignmentResponse,
   CoachAssignmentSimpleResponse,
   CoachDetail,
 } from "@/types";
 import { useEffect, useMemo, useState } from "react";
+import CoachAssignmentList from "./CoachAssignmentList";
 
 import "./CoachUpdateModal.scss";
 
@@ -56,23 +59,80 @@ export default function CoachUpdateModal({
     setAssignmentRequest(initialAssignment);
   }, [initialAssignment]);
 
+  const [deletingAssignmentIds, setDeletingAssignmentIds] = useState<
+    Set<string>
+  >(new Set());
+  const [pendingDeleteAssignment, setPendingDeleteAssignment] =
+    useState<CoachAssignmentResponse | null>(null);
+
   const { data: coachAssignments = [], isLoading: isCoachAssignmentsLoading } =
     useGetCoachAssignmentsByCoachId(coach?.userId ?? "");
 
-  const activeAssignmentSchedules = useMemo(
+  const activeAssignments = useMemo(
     () =>
       coachAssignments
         .filter((assignment) => assignment.status === "ACTIVE")
-        .map((assignment) => assignment.classSchedule)
         .sort(
           (a, b) =>
-            a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
+            a.classSchedule.weekday - b.classSchedule.weekday ||
+            a.classSchedule.startTime.localeCompare(b.classSchedule.startTime),
         ),
     [coachAssignments],
   );
 
   const { mutate: createCoachAssignment, isPending: isCreatingAssignment } =
     useCreateCoachAssignment();
+
+  const {
+    mutateAsync: deleteCoachAssignment,
+    isPending: isDeletingAssignment,
+  } = useDeleteCoachAssignment();
+
+  const handleOpenDeleteConfirm = (assignment: CoachAssignmentResponse) => {
+    setPendingDeleteAssignment(assignment);
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    if (isDeletingAssignment) {
+      return;
+    }
+
+    setPendingDeleteAssignment(null);
+  };
+
+  const handleConfirmDeleteAssignment = async () => {
+    if (!coach) {
+      return;
+    }
+
+    if (!pendingDeleteAssignment) {
+      return;
+    }
+
+    const assignment = pendingDeleteAssignment;
+
+    const assignmentId = pendingDeleteAssignment.assignmentId;
+
+    setDeletingAssignmentIds((prev) => new Set(prev).add(assignmentId));
+
+    try {
+      await deleteCoachAssignment(assignmentId);
+
+      showInfoToast(
+        `Đã xóa lớp ${assignment.classSchedule.scheduleId} khỏi phân công của ${coach.fullName}.`,
+      );
+
+      setPendingDeleteAssignment(null);
+    } catch {
+      showErrorToast("Có lỗi xảy ra khi xóa lớp đã phân công.");
+    } finally {
+      setDeletingAssignmentIds((prev) => {
+        const next = new Set(prev);
+        next.delete(assignmentId);
+        return next;
+      });
+    }
+  };
 
   const handleSubmit = () => {
     if (!coach) {
@@ -126,14 +186,11 @@ export default function CoachUpdateModal({
           secondaryText={coach.email || coach.phoneNumber}
         />
 
-        <StudentScheduleSection
+        <CoachAssignmentList
           isLoading={isCoachAssignmentsLoading}
-          hasOwner
-          title="🥋 Lịch dạy hiện tại"
-          classList={activeAssignmentSchedules}
-          actionLabel="Bỏ"
-          variant="grid"
-          gridColumns={2}
+          assignments={activeAssignments}
+          deletingAssignmentIds={deletingAssignmentIds}
+          onDeleteAssignment={handleOpenDeleteConfirm}
         />
 
         <ClassAssignmentModal
@@ -157,6 +214,23 @@ export default function CoachUpdateModal({
           {isCreatingAssignment ? "Đang lưu phân lớp..." : "Lưu phân lớp dạy"}
         </button>
       </div>
+
+      <ConfirmModal
+        open={!!pendingDeleteAssignment}
+        title="Xóa lớp đã phân công?"
+        description={
+          pendingDeleteAssignment
+            ? `Bạn có chắc muốn xóa lớp ${pendingDeleteAssignment.classSchedule.scheduleId} khỏi huấn luyện viên ${coach.fullName}?`
+            : ""
+        }
+        confirmText="Xóa lớp"
+        loadingText="Đang xóa lớp..."
+        isLoading={isDeletingAssignment}
+        showSuccessToastOnConfirm={false}
+        showErrorToastOnFail={false}
+        onCancel={handleCloseDeleteConfirm}
+        onConfirm={handleConfirmDeleteAssignment}
+      />
     </div>
   );
 }

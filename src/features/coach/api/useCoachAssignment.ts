@@ -1,8 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { coachAssignmentAPI } from "./coachAssignmentAPI";
+import { queryClient } from "@/lib/react-query";
 import type { CoachAssignmentCreateRequest } from "@/types";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from '@/lib/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { coachAssignmentAPI } from "./coachAssignmentAPI";
 
 const COACH_ASSIGNMENT_QUERY_KEY = "coach-assignments";
 
@@ -14,7 +13,7 @@ export const useGetCoachAssignmentsByCoachId = (coachId: string) => {
   });
 };
 
-export  const useCreateCoachAssignment = () => {
+export const useCreateCoachAssignment = () => {
   const mutation = useMutation({
     mutationFn: (request: CoachAssignmentCreateRequest) =>
       coachAssignmentAPI.createCoachAssignment(request),
@@ -25,4 +24,14 @@ export  const useCreateCoachAssignment = () => {
   });
 
   return mutation;
-}
+};
+
+export const useDeleteCoachAssignment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => coachAssignmentAPI.deleteCoachAssignment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [COACH_ASSIGNMENT_QUERY_KEY] });
+    },
+  });
+};

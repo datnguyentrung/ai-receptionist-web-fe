@@ -19,4 +19,8 @@ export const coachAssignmentAPI = {
     const response = await javaApi.post("/coach-assignments", request);
     return response.data;
   },
+
+  deleteCoachAssignment: async (assignmentId: string): Promise<void> => {
+    await javaApi.delete(`/coach-assignments/${assignmentId}`);
+  }
 };

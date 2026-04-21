@@ -18,6 +18,7 @@ export const useGetCoachByStaffCode = (staffCode: string) => {
     queryKey: [COACH_QUERY_KEY, staffCode],
     queryFn: () => coachAPI.getCoachByStaffCode(staffCode),
     enabled: !!staffCode,
+    staleTime: 5 * 60 * 1000, // 5 phút
   });
 };
 

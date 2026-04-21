@@ -77,6 +77,8 @@ export const useFilterAttendance = (
       !!branchIds ||
       !!scheduleLevels ||
       !!scheduleIds,
+
+    staleTime: 5 * 60 * 1000, // 5 phút
   });
 };
 

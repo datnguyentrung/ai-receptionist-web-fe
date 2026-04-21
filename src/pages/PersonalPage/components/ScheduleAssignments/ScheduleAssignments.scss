@@ -1,0 +1,225 @@
+@use "../../../../styles/variables" as v;
+
+.schedule-assignments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  animation: fade-in 0.25s ease;
+}
+
+.schedule-assignments__hero-card,
+.schedule-assignments__item-card,
+.schedule-assignments__empty-card,
+.schedule-assignments__empty-state-card {
+  border: 1px solid #f1e4e4;
+  box-shadow: 0 8px 24px rgba(26, 26, 46, 0.05);
+}
+
+.schedule-assignments__hero-card {
+  background: linear-gradient(135deg, #fffdfd 0%, #fff6f6 52%, #fefefe 100%);
+}
+
+.schedule-assignments__hero-content {
+  padding: 1.25rem;
+}
+
+.schedule-assignments__hero-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.schedule-assignments__hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.schedule-assignments__eyebrow,
+.schedule-assignments__footer-label,
+.schedule-assignments__meta-label {
+  margin: 0;
+  color: v.$text-muted;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.schedule-assignments__title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 700;
+  color: v.$text-heading;
+  line-height: 1.2;
+}
+
+.schedule-assignments__subtitle {
+  margin: 0;
+  color: v.$text-secondary;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.schedule-assignments__count-badge,
+.schedule-assignments__status-badge {
+  border: 0;
+  font-weight: 700;
+}
+
+.schedule-assignments__summary-grid,
+.schedule-assignments__meta-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.schedule-assignments__summary-grid {
+  margin-top: 1rem;
+}
+
+.schedule-assignments__meta-grid {
+  margin-top: 1rem;
+}
+
+.schedule-assignments__meta-item {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  border: 1px solid #f4e9e9;
+  background: #fffdfd;
+  border-radius: 0.95rem;
+  padding: 0.9rem 0.95rem;
+}
+
+.schedule-assignments__meta-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  color: v.$brand-red-700;
+  flex-shrink: 0;
+}
+
+.schedule-assignments__meta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.schedule-assignments__meta-value {
+  margin: 0;
+  color: v.$text-primary;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.schedule-assignments__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.schedule-assignments__item-card {
+  overflow: hidden;
+  border-left: 4px solid v.$brand-red;
+}
+
+.schedule-assignments__item-content {
+  padding: 1rem;
+}
+
+.schedule-assignments__item-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.schedule-assignments__item-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.schedule-assignments__item-title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  color: v.$text-heading;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.schedule-assignments__item-subtitle {
+  margin: 0;
+  color: v.$text-secondary;
+  font-size: 0.88rem;
+}
+
+.schedule-assignments__footer-note {
+  margin-top: 1rem;
+  border-top: 1px solid #f4e9e9;
+  padding-top: 0.9rem;
+}
+
+.schedule-assignments__footer-value {
+  margin: 0.2rem 0 0;
+  color: v.$text-primary;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.schedule-assignments__empty-card,
+.schedule-assignments__empty-state-card {
+  background: linear-gradient(135deg, #fffdfd 0%, #fff7f7 100%);
+}
+
+.schedule-assignments__empty-content,
+.schedule-assignments__empty-state-content {
+  padding: 1.35rem;
+}
+
+.schedule-assignments__empty-title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  font-size: 1rem;
+  font-weight: 700;
+  color: v.$text-heading;
+}
+
+.schedule-assignments__empty-text {
+  margin: 0.35rem 0 0;
+  color: v.$text-secondary;
+  font-size: 0.92rem;
+}
+
+@media (min-width: 720px) {
+  .schedule-assignments__hero-top,
+  .schedule-assignments__item-head {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .schedule-assignments__summary-grid,
+  .schedule-assignments__meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1080px) {
+  .schedule-assignments__summary-grid,
+  .schedule-assignments__meta-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

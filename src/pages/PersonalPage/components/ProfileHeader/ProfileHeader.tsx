@@ -140,18 +140,15 @@ export function ProfileHeader({
               </div>
             ) : null}
 
-            {/* Cấp đai */}
-            <div>
-              <div>
-                <div className="profile-header__detail-icon profile-header__detail-icon--amber">
-                  <Award size={16} />
-                </div>
-                <div className="profile-header__detail-text">
-                  <p className="profile-header__detail-label">Cấp đai</p>
-                  <p className="profile-header__detail-value">
-                    {BeltLabel[profile.belt]}
-                  </p>
-                </div>
+            <div className="profile-header__detail-item">
+              <div className="profile-header__detail-icon profile-header__detail-icon--slate">
+                <Award size={16} />
+              </div>
+              <div className="profile-header__detail-text">
+                <p className="profile-header__detail-label">Cấp đai</p>
+                <p className="profile-header__detail-value">
+                  {BeltLabel[profile.belt]}
+                </p>
               </div>
             </div>
           </div>

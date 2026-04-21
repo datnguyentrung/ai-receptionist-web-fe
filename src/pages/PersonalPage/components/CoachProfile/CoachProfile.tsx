@@ -1,6 +1,6 @@
 import { useGetCoachByStaffCode } from "@/features/coach";
-import { CoachViews } from '../CoachViews';
 import { ProfileHeader } from "../ProfileHeader";
+import { TabViews } from '../TabViews';
 
 export default function CoachProfile({ userCode }: { userCode: string }) {
   // Không cần enabled, vì component này đã render thì chắc chắn là Coach
@@ -15,7 +15,7 @@ export default function CoachProfile({ userCode }: { userCode: string }) {
         <ProfileHeader profile={coachData} />
       </section>
       <section className="personal-page__content-block">
-        <CoachViews data={coachData} />
+        <TabViews userInfo={coachData} userType="coach" />
       </section>
     </>
   );

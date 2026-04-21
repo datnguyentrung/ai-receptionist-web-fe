@@ -1,0 +1,115 @@
+.coach-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #ececf2;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fafbff;
+}
+
+.coach-assignment-list__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.coach-assignment-list__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.coach-assignment-list__subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.coach-assignment-list__state {
+  border: 1px dashed #d8dbe7;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.coach-assignment-list__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.coach-assignment-list__card {
+  border: 1px solid #e5e7ef;
+  border-radius: 12px;
+  padding: 10px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coach-assignment-list__card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.coach-assignment-list__schedule-id {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.coach-assignment-list__remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #f8b4b4;
+  color: #b42318;
+  background: #fff5f5;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.coach-assignment-list__meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+
+  p {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #4b5563;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+@media (max-width: 900px) {
+  .coach-assignment-list__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-assignment-list__meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
