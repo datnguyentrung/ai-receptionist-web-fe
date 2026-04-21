@@ -53,14 +53,19 @@ export const useCreateStudent = () => {
 export const useUpdateStudent = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: StudentUpdateRequest }) =>
-      studentAPI.updateStudent(id, data),
+    mutationFn: (variables: {
+      id: number;
+      studentCode?: string;
+      data: StudentUpdateRequest;
+    }) => studentAPI.updateStudent(variables.id, variables.data),
     onSuccess: (_result, variables) => {
       // Cập nhật xong thì refetch lại danh sách tổng VÀ cả chi tiết của chính thằng đó
       queryClient.invalidateQueries({ queryKey: [STUDENT_QUERY_KEY] });
-      queryClient.invalidateQueries({
-        queryKey: [STUDENT_QUERY_KEY, variables.id.toString()],
-      });
+      if (variables.studentCode) {
+        queryClient.invalidateQueries({
+          queryKey: [STUDENT_QUERY_KEY, variables.studentCode],
+        });
+      }
     },
   });
 };

@@ -37,13 +37,18 @@ export const useCreateCoach = () => {
 export const useUpdateCoach = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: CoachUpdateRequest }) =>
-      coachAPI.updateCoach(id, data),
+    mutationFn: (variables: {
+      id: number;
+      staffCode?: string;
+      data: CoachUpdateRequest;
+    }) => coachAPI.updateCoach(variables.id, variables.data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({ queryKey: [COACH_QUERY_KEY] });
-      queryClient.invalidateQueries({
-        queryKey: [COACH_QUERY_KEY, variables.id],
-      });
+      if (variables.staffCode) {
+        queryClient.invalidateQueries({
+          queryKey: [COACH_QUERY_KEY, variables.staffCode],
+        });
+      }
     },
   });
 };

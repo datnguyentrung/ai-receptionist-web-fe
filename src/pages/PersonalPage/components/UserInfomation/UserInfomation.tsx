@@ -1,14 +1,29 @@
 import Avatar from "@/components/Avatar";
 import { BeltBadge } from "@/components/BeltBadge";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
+import {
+  BeltLabel,
+  type Belt,
   type CoachStatus,
   type StudentStatus,
   type UserStatus,
 } from "@/config/constants";
+import { useUpdateCoach } from "@/features/coach";
+import { useUpdateStudent } from "@/features/student";
 import type { CoachDetail, StudentDetail } from "@/types";
 import { formatDateDMY, formatDateDMYHM } from "@/utils/format";
+import { useRoleStudent } from "@/utils/roleUtils";
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
@@ -24,6 +39,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import "./UserInfomation.scss";
 
@@ -35,8 +51,41 @@ type FieldItem = {
   label: string;
   value: string;
   icon: LucideIcon;
-  tone: "blue" | "emerald" | "amber" | "violet";
+  tone: "red" | "rose" | "wine" | "neutral";
 };
+
+type StudentFormState = {
+  fullName: string;
+  phoneNumber: string;
+  birthDate: string;
+  belt: Belt;
+  nationalCode: string;
+  startDate: string;
+  studentStatus: StudentStatus;
+};
+
+type CoachFormState = {
+  fullName: string;
+  phoneNumber: string;
+  birthDate: string;
+  belt: Belt;
+  coachStatus: CoachStatus;
+};
+
+const BELT_OPTIONS = Object.keys(BeltLabel) as Belt[];
+
+const coachStatusOptions: Array<{ value: CoachStatus; label: string }> = [
+  { value: "ACTIVE", label: "Đang công tác" },
+  { value: "INACTIVE", label: "Tạm nghỉ" },
+  { value: "SUSPENDED", label: "Tạm ngưng" },
+  { value: "RETIRED", label: "Nghỉ hưu" },
+];
+
+const studentStatusOptions: Array<{ value: StudentStatus; label: string }> = [
+  { value: "ACTIVE", label: "Đang học" },
+  { value: "RESERVED", label: "Bảo lưu" },
+  { value: "DROPPED", label: "Nghỉ học" },
+];
 
 const userStatusLabel: Record<UserStatus, string> = {
   ACTIVE: "Đang hoạt động",
@@ -100,6 +149,48 @@ function getToneClass(tone: FieldItem["tone"]) {
   return `personal-info__field-icon--${tone}`;
 }
 
+function toDateInputValue(value: string | Date | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function isValidPhone(phone: string) {
+  return /^\d{9,11}$/.test(phone.trim());
+}
+
+function createStudentForm(profile: StudentDetail): StudentFormState {
+  return {
+    fullName: profile.fullName,
+    phoneNumber: profile.phoneNumber,
+    birthDate: toDateInputValue(profile.birthDate),
+    belt: profile.belt,
+    nationalCode: profile.nationalCode ?? "",
+    startDate: toDateInputValue(profile.startDate),
+    studentStatus: profile.studentStatus,
+  };
+}
+
+function createCoachForm(profile: CoachDetail): CoachFormState {
+  return {
+    fullName: profile.fullName,
+    phoneNumber: profile.phoneNumber,
+    birthDate: toDateInputValue(profile.birthDate),
+    belt: profile.belt,
+    coachStatus: profile.coachStatus,
+  };
+}
+
 function DetailField({ label, value, icon: Icon, tone }: FieldItem) {
   return (
     <div className="personal-info__field">
@@ -115,8 +206,14 @@ function DetailField({ label, value, icon: Icon, tone }: FieldItem) {
 }
 
 export default function UserInfomation() {
+  const { canViewHeadCoach, canViewManagerSenior } = useRoleStudent();
   const context = useOutletContext<OutletContextType>();
   const profile = context?.data;
+  const updateStudentMutation = useUpdateStudent();
+  const updateCoachMutation = useUpdateCoach();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [studentForm, setStudentForm] = useState<StudentFormState | null>(null);
+  const [coachForm, setCoachForm] = useState<CoachFormState | null>(null);
 
   if (!profile) {
     return (
@@ -135,34 +232,39 @@ export default function UserInfomation() {
     );
   }
 
-  const isStudent = "studentCode" in profile;
+  const studentProfile = "studentCode" in profile ? profile : null;
+  const coachProfile = "staffCode" in profile ? profile : null;
+  const isStudent = !!studentProfile;
   const userRoleLabel = isStudent ? "Học viên" : "Huấn luyện viên";
-  const userIdentifier = isStudent ? profile.studentCode : profile.staffCode;
-  const enrollments =
-    isStudent && Array.isArray(profile.enrollments) ? profile.enrollments : [];
-  const currentAssignments =
-    !isStudent && Array.isArray(profile.currentAssignments)
-      ? profile.currentAssignments
-      : [];
+  const userIdentifier =
+    studentProfile?.studentCode ?? coachProfile?.staffCode ?? "";
+  const canUpdateProfile = studentProfile
+    ? studentProfile.studentCode.includes("VQ_") && canViewManagerSenior
+    : (coachProfile?.staffCode.includes("VQT") ?? false) && canViewHeadCoach;
+  const isSubmitting =
+    updateStudentMutation.isPending || updateCoachMutation.isPending;
+
+  const enrollments = studentProfile?.enrollments ?? [];
+  const currentAssignments = coachProfile?.currentAssignments ?? [];
 
   const commonFields: FieldItem[] = [
     {
       label: "Mã người dùng",
       value: profile.userId,
       icon: CreditCard,
-      tone: "blue",
+      tone: "red",
     },
     {
       label: "Họ và tên",
       value: profile.fullName,
       icon: User,
-      tone: "emerald",
+      tone: "rose",
     },
     {
       label: "Vai trò",
       value: formatValue(profile.role),
       icon: BadgeCheck,
-      tone: "amber",
+      tone: "wine",
     },
     {
       label: "Giới tính",
@@ -173,118 +275,266 @@ export default function UserInfomation() {
             ? "Nam"
             : "Nữ",
       icon: CircleUserRound,
-      tone: "violet",
+      tone: "neutral",
     },
     {
       label: "Ngày sinh",
       value: formatDateValue(profile.birthDate),
       icon: CalendarClock,
-      tone: "blue",
+      tone: "red",
     },
     {
       label: "Số điện thoại",
       value: profile.phoneNumber,
       icon: Phone,
-      tone: "emerald",
+      tone: "rose",
     },
-    { label: "Cấp đai", value: profile.belt, icon: ShieldCheck, tone: "amber" },
+    {
+      label: "Cấp đai",
+      value: BeltLabel[profile.belt],
+      icon: ShieldCheck,
+      tone: "wine",
+    },
     {
       label: "Ngày tạo",
       value: formatDateTimeValue(profile.createdAt),
       icon: Sparkles,
-      tone: "violet",
+      tone: "neutral",
     },
     {
       label: "Cập nhật gần nhất",
       value: formatDateTimeValue(profile.updatedAt),
       icon: CalendarClock,
-      tone: "blue",
+      tone: "red",
     },
     {
       label: "Đăng nhập gần nhất",
       value: formatDateTimeValue(profile.lastLogin),
       icon: Landmark,
-      tone: "emerald",
+      tone: "rose",
     },
   ];
 
-  const detailFields: FieldItem[] = isStudent
+  const detailFields: FieldItem[] = studentProfile
     ? [
         {
           label: "Mã học viên",
-          value: profile.studentCode,
+          value: studentProfile.studentCode,
           icon: Users,
-          tone: "blue",
+          tone: "red",
         },
         {
           label: "Mã định danh quốc gia",
-          value: formatValue(profile.nationalCode),
+          value: formatValue(studentProfile.nationalCode),
           icon: CreditCard,
-          tone: "emerald",
+          tone: "rose",
         },
         {
           label: "Ngày bắt đầu",
-          value: formatDateValue(profile.startDate),
+          value: formatDateValue(studentProfile.startDate),
           icon: CalendarClock,
-          tone: "amber",
+          tone: "wine",
         },
         {
           label: "Trạng thái học viên",
-          value: studentStatusLabel[profile.studentStatus],
+          value: studentStatusLabel[studentProfile.studentStatus],
           icon: BadgeCheck,
-          tone: "violet",
+          tone: "neutral",
         },
         {
           label: "Chi nhánh",
-          value: profile.branchName,
+          value: studentProfile.branchName,
           icon: MapPin,
-          tone: "blue",
+          tone: "red",
         },
         {
           label: "Địa chỉ chi nhánh",
-          value: profile.branchAddress,
+          value: studentProfile.branchAddress,
           icon: Landmark,
-          tone: "emerald",
+          tone: "rose",
         },
         {
           label: "Mã chi nhánh",
-          value: formatValue(profile.branchId),
+          value: formatValue(studentProfile.branchId),
           icon: CreditCard,
-          tone: "amber",
+          tone: "wine",
         },
         {
           label: "Số lớp đã đăng ký",
           value: `${enrollments.length} lớp`,
           icon: Users,
-          tone: "violet",
+          tone: "neutral",
         },
       ]
     : [
         {
           label: "Mã HLV",
-          value: profile.staffCode,
+          value: coachProfile?.staffCode ?? "Chưa cập nhật",
           icon: Users,
-          tone: "blue",
+          tone: "red",
         },
         {
           label: "Email",
-          value: formatValue(profile.email),
+          value: formatValue(coachProfile?.email),
           icon: Mail,
-          tone: "emerald",
+          tone: "rose",
         },
         {
           label: "Trạng thái HLV",
-          value: coachStatusLabel[profile.coachStatus],
+          value: coachProfile
+            ? coachStatusLabel[coachProfile.coachStatus]
+            : "Chưa cập nhật",
           icon: BadgeCheck,
-          tone: "amber",
+          tone: "wine",
         },
         {
           label: "Số phân công hiện tại",
           value: `${currentAssignments.length} lớp`,
           icon: Users,
-          tone: "violet",
+          tone: "neutral",
         },
       ];
+
+  const groupedCommonFields = [commonFields.slice(0, 5), commonFields.slice(5)];
+
+  const handleStudentFieldChange = <K extends keyof StudentFormState>(
+    key: K,
+    value: StudentFormState[K],
+  ) => {
+    setStudentForm((previous) =>
+      previous
+        ? {
+            ...previous,
+            [key]: value,
+          }
+        : previous,
+    );
+  };
+
+  const handleCoachFieldChange = <K extends keyof CoachFormState>(
+    key: K,
+    value: CoachFormState[K],
+  ) => {
+    setCoachForm((previous) =>
+      previous
+        ? {
+            ...previous,
+            [key]: value,
+          }
+        : previous,
+    );
+  };
+
+  const onEnterEdit = () => {
+    if (!canUpdateProfile) {
+      showErrorToast("Bạn không có quyền cập nhật hồ sơ này.");
+      return;
+    }
+
+    if (studentProfile) {
+      setStudentForm(createStudentForm(studentProfile));
+      setCoachForm(null);
+    }
+
+    if (coachProfile) {
+      setCoachForm(createCoachForm(coachProfile));
+      setStudentForm(null);
+    }
+
+    setIsEditMode(true);
+  };
+
+  const onCancelEdit = () => {
+    setIsEditMode(false);
+    setStudentForm(null);
+    setCoachForm(null);
+  };
+
+  const onSubmitUpdate = async () => {
+    if (!canUpdateProfile) {
+      showErrorToast("Bạn không có quyền cập nhật hồ sơ này.");
+      return;
+    }
+
+    const numericUserId = Number(profile.userId);
+    if (!Number.isFinite(numericUserId)) {
+      showErrorToast("Không thể cập nhật do mã người dùng không hợp lệ.");
+      return;
+    }
+
+    try {
+      if (studentProfile && studentForm) {
+        if (!studentForm.fullName.trim()) {
+          showErrorToast("Vui lòng nhập họ và tên học viên.");
+          return;
+        }
+
+        if (!isValidPhone(studentForm.phoneNumber)) {
+          showErrorToast(
+            "Số điện thoại không hợp lệ. Chỉ cho phép 9-11 chữ số.",
+          );
+          return;
+        }
+
+        if (!studentForm.birthDate || !studentForm.startDate) {
+          showErrorToast("Vui lòng chọn đầy đủ ngày sinh và ngày bắt đầu.");
+          return;
+        }
+
+        await updateStudentMutation.mutateAsync({
+          id: numericUserId,
+          studentCode: studentProfile.studentCode,
+          data: {
+            userId: profile.userId,
+            fullName: studentForm.fullName.trim(),
+            phoneNumber: studentForm.phoneNumber.trim(),
+            birthDate: studentForm.birthDate,
+            belt: studentForm.belt,
+            nationalCode: studentForm.nationalCode.trim() || undefined,
+            startDate: studentForm.startDate,
+            studentStatus: studentForm.studentStatus,
+          },
+        });
+      }
+
+      if (coachProfile && coachForm) {
+        if (!coachForm.fullName.trim()) {
+          showErrorToast("Vui lòng nhập họ và tên huấn luyện viên.");
+          return;
+        }
+
+        if (!isValidPhone(coachForm.phoneNumber)) {
+          showErrorToast(
+            "Số điện thoại không hợp lệ. Chỉ cho phép 9-11 chữ số.",
+          );
+          return;
+        }
+
+        if (!coachForm.birthDate) {
+          showErrorToast("Vui lòng chọn ngày sinh.");
+          return;
+        }
+
+        await updateCoachMutation.mutateAsync({
+          id: numericUserId,
+          staffCode: coachProfile.staffCode,
+          data: {
+            userId: profile.userId,
+            fullName: coachForm.fullName.trim(),
+            phoneNumber: coachForm.phoneNumber.trim(),
+            birthDate: coachForm.birthDate,
+            belt: coachForm.belt,
+            coachStatus: coachForm.coachStatus,
+          },
+        });
+      }
+
+      showSuccessToast("Cập nhật thông tin thành công.");
+      onCancelEdit();
+    } catch {
+      showErrorToast("Không thể cập nhật thông tin. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className="personal-info">
@@ -305,7 +555,7 @@ export default function UserInfomation() {
                   variant={getStatusVariant(profile.status)}
                   className="personal-info__status-badge"
                 >
-                  {userStatusLabel[profile.status]}
+                  {userStatusLabel[profile.status] ?? "Chưa cập nhật"}
                 </Badge>
               </div>
               <div className="personal-info__hero-meta">
@@ -327,8 +577,239 @@ export default function UserInfomation() {
               </div>
             </div>
           </div>
+
+          <div className="personal-info__hero-actions">
+            {canUpdateProfile ? (
+              isEditMode ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="personal-info__action-button personal-info__action-button--cancel"
+                    onClick={onCancelEdit}
+                    disabled={isSubmitting}
+                  >
+                    Hủy chỉnh sửa
+                  </Button>
+                  <Button
+                    className="personal-info__action-button personal-info__action-button--save"
+                    onClick={onSubmitUpdate}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Đang cập nhật..." : "Lưu thay đổi"}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="personal-info__action-button personal-info__action-button--edit"
+                  onClick={onEnterEdit}
+                >
+                  Cập nhật thông tin
+                </Button>
+              )
+            ) : (
+              <p className="personal-info__permission-note">
+                {studentProfile
+                  ? 'Hồ sơ học viên mã chứa "VQ_" cần quyền Manager Senior để cập nhật.'
+                  : 'Hồ sơ huấn luyện viên mã chứa "VQT" cần quyền Head Coach để cập nhật.'}
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
+
+      {isEditMode ? (
+        <section className="personal-info__section">
+          <div className="personal-info__section-heading">
+            <h4 className="personal-info__section-title">Chế độ cập nhật</h4>
+            <p className="personal-info__section-description">
+              Chỉnh sửa thông tin cốt lõi và lưu trực tiếp vào hệ thống.
+            </p>
+          </div>
+
+          {studentProfile && studentForm ? (
+            <div className="personal-info__form-grid">
+              <label className="personal-info__form-field">
+                <span>Họ và tên</span>
+                <Input
+                  value={studentForm.fullName}
+                  onChange={(event) =>
+                    handleStudentFieldChange("fullName", event.target.value)
+                  }
+                  placeholder="Nhập họ và tên"
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Số điện thoại</span>
+                <Input
+                  value={studentForm.phoneNumber}
+                  onChange={(event) =>
+                    handleStudentFieldChange("phoneNumber", event.target.value)
+                  }
+                  placeholder="Ví dụ: 0912345678"
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Ngày sinh</span>
+                <Input
+                  type="date"
+                  value={studentForm.birthDate}
+                  onChange={(event) =>
+                    handleStudentFieldChange("birthDate", event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Cấp đai</span>
+                <Select
+                  value={studentForm.belt}
+                  onValueChange={(value) =>
+                    handleStudentFieldChange("belt", value as Belt)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn cấp đai" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BELT_OPTIONS.map((belt) => (
+                      <SelectItem key={belt} value={belt}>
+                        {BeltLabel[belt]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Mã định danh quốc gia</span>
+                <Input
+                  value={studentForm.nationalCode}
+                  onChange={(event) =>
+                    handleStudentFieldChange("nationalCode", event.target.value)
+                  }
+                  placeholder="Tùy chọn"
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Ngày bắt đầu</span>
+                <Input
+                  type="date"
+                  value={studentForm.startDate}
+                  onChange={(event) =>
+                    handleStudentFieldChange("startDate", event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="personal-info__form-field personal-info__form-field--full">
+                <span>Trạng thái học viên</span>
+                <Select
+                  value={studentForm.studentStatus}
+                  onValueChange={(value) =>
+                    handleStudentFieldChange(
+                      "studentStatus",
+                      value as StudentStatus,
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {studentStatusOptions.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+            </div>
+          ) : null}
+
+          {coachProfile && coachForm ? (
+            <div className="personal-info__form-grid">
+              <label className="personal-info__form-field">
+                <span>Họ và tên</span>
+                <Input
+                  value={coachForm.fullName}
+                  onChange={(event) =>
+                    handleCoachFieldChange("fullName", event.target.value)
+                  }
+                  placeholder="Nhập họ và tên"
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Số điện thoại</span>
+                <Input
+                  value={coachForm.phoneNumber}
+                  onChange={(event) =>
+                    handleCoachFieldChange("phoneNumber", event.target.value)
+                  }
+                  placeholder="Ví dụ: 0912345678"
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Ngày sinh</span>
+                <Input
+                  type="date"
+                  value={coachForm.birthDate}
+                  onChange={(event) =>
+                    handleCoachFieldChange("birthDate", event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="personal-info__form-field">
+                <span>Cấp đai</span>
+                <Select
+                  value={coachForm.belt}
+                  onValueChange={(value) =>
+                    handleCoachFieldChange("belt", value as Belt)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn cấp đai" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BELT_OPTIONS.map((belt) => (
+                      <SelectItem key={belt} value={belt}>
+                        {BeltLabel[belt]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+
+              <label className="personal-info__form-field personal-info__form-field--full">
+                <span>Trạng thái huấn luyện viên</span>
+                <Select
+                  value={coachForm.coachStatus}
+                  onValueChange={(value) =>
+                    handleCoachFieldChange("coachStatus", value as CoachStatus)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {coachStatusOptions.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className="personal-info__summary-grid">
         <Card className="personal-info__summary-card">
@@ -341,7 +822,7 @@ export default function UserInfomation() {
           <CardContent className="personal-info__summary-content">
             <div className="personal-info__summary-label">Trạng thái</div>
             <div className="personal-info__summary-value">
-              {userStatusLabel[profile.status]}
+              {userStatusLabel[profile.status] ?? "Chưa cập nhật"}
             </div>
           </CardContent>
         </Card>
@@ -372,13 +853,18 @@ export default function UserInfomation() {
             Toàn bộ dữ liệu hồ sơ và tài khoản đang được sử dụng.
           </p>
         </div>
-        <div className="personal-info__grid">
-          {commonFields.map((field) => (
-            <Card key={field.label} className="personal-info__field-card">
-              <CardContent className="personal-info__field-content">
-                <DetailField {...field} />
-              </CardContent>
-            </Card>
+        <div className="personal-info__panel-grid">
+          {groupedCommonFields.map((group, groupIndex) => (
+            <div
+              key={`common-group-${groupIndex}`}
+              className="personal-info__panel"
+            >
+              {group.map((field) => (
+                <div key={field.label} className="personal-info__panel-row">
+                  <DetailField {...field} />
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       </section>
@@ -386,7 +872,9 @@ export default function UserInfomation() {
       <section className="personal-info__section">
         <div className="personal-info__section-heading">
           <h4 className="personal-info__section-title">
-            {isStudent ? "Thông tin học viên" : "Thông tin huấn luyện viên"}
+            {studentProfile
+              ? "Thông tin học viên"
+              : "Thông tin huấn luyện viên"}
           </h4>
           <p className="personal-info__section-description">
             Các trường nghiệp vụ đặc thù cho loại hồ sơ này.
@@ -394,11 +882,9 @@ export default function UserInfomation() {
         </div>
         <div className="personal-info__grid personal-info__grid--compact">
           {detailFields.map((field) => (
-            <Card key={field.label} className="personal-info__field-card">
-              <CardContent className="personal-info__field-content">
-                <DetailField {...field} />
-              </CardContent>
-            </Card>
+            <div key={field.label} className="personal-info__detail-item">
+              <DetailField {...field} />
+            </div>
           ))}
         </div>
       </section>
