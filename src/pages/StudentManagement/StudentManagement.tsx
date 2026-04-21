@@ -47,9 +47,9 @@ export function StudentManagement() {
       search: debouncedSearch,
       status: statusFilter === "all" ? undefined : statusFilter,
       scheduleIds:
-        userInfo?.userInfo.assignedClasses?.map(
-          (c) => c.classSchedule.scheduleId,
-        ) ?? [],
+        userInfo?.userInfo?.assignedClasses
+          ?.map((c) => c?.classSchedule?.scheduleId)
+          ?.filter((id): id is string => Boolean(id)) ?? [],
       page: page - 1,
       size: 10,
     },

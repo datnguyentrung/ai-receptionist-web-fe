@@ -56,8 +56,9 @@ export function AttendanceCheckin() {
   const { scheduleId } = useParams();
   const user = useAuthStore((state) => state.user);
   const allowedScheduleIds =
-    user?.userInfo.assignedClasses?.map((c) => c.classSchedule.scheduleId) ??
-    [];
+    user?.userInfo?.assignedClasses
+      ?.map((c) => c?.classSchedule?.scheduleId)
+      ?.filter((id): id is string => Boolean(id)) ?? [];
   const hasScheduleParam = !!scheduleId;
   const hasScheduleAccess =
     hasScheduleParam &&

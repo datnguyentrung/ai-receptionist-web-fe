@@ -139,10 +139,14 @@ export function StudentCardInner({
         ) : (
           <HoverCard openDelay={0} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <button className={`${styles.expandBtn} ${styles.quickEvalBtn}`}>
+              <button
+                className={`${styles.expandBtn} ${styles.quickEvalBtn} ${
+                  student.evaluationStatus ? styles.quickEvalBtnWithLabel : ""
+                }`}
+              >
                 {student.evaluationStatus ? (
                   <span
-                    className={`${styles.evalLabel} ${styles[getEvalClassName(student.evaluationStatus)]}`}
+                    className={`${styles.evalLabel} ${styles.quickEvalLabel} ${styles[getEvalClassName(student.evaluationStatus)]}`}
                   >
                     {evalLabel(student.evaluationStatus)}
                   </span>

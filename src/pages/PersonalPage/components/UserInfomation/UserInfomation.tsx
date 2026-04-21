@@ -1,6 +1,3 @@
-import Avatar from "@/components/Avatar";
-import { BeltBadge } from "@/components/BeltBadge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -131,20 +128,6 @@ function formatDateTimeValue(value: string | Date | null | undefined) {
   return formatDateDMYHM(value);
 }
 
-function getStatusVariant(status: UserStatus) {
-  switch (status) {
-    case "ACTIVE":
-      return "default";
-    case "PENDING":
-      return "secondary";
-    case "DEACTIVATED":
-    case "BANNED":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
 function getToneClass(tone: FieldItem["tone"]) {
   return `personal-info__field-icon--${tone}`;
 }
@@ -236,8 +219,6 @@ export default function UserInfomation() {
   const coachProfile = "staffCode" in profile ? profile : null;
   const isStudent = !!studentProfile;
   const userRoleLabel = isStudent ? "Học viên" : "Huấn luyện viên";
-  const userIdentifier =
-    studentProfile?.studentCode ?? coachProfile?.staffCode ?? "";
   const canUpdateProfile = studentProfile
     ? studentProfile.studentCode.includes("VQ_") && canViewManagerSenior
     : (coachProfile?.staffCode.includes("VQT") ?? false) && canViewHeadCoach;
@@ -540,7 +521,7 @@ export default function UserInfomation() {
     <div className="personal-info">
       <Card className="personal-info__hero-card">
         <CardContent className="personal-info__hero-content">
-          <div className="personal-info__hero-identity">
+          {/* <div className="personal-info__hero-identity">
             <Avatar
               fullName={profile.fullName}
               fontSize="1.25rem"
@@ -576,7 +557,7 @@ export default function UserInfomation() {
                 </Badge>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="personal-info__hero-actions">
             {canUpdateProfile ? (
@@ -609,8 +590,8 @@ export default function UserInfomation() {
             ) : (
               <p className="personal-info__permission-note">
                 {studentProfile
-                  ? 'Hồ sơ học viên mã chứa "VQ_" cần quyền Manager Senior để cập nhật.'
-                  : 'Hồ sơ huấn luyện viên mã chứa "VQT" cần quyền Head Coach để cập nhật.'}
+                  ? 'Hồ sơ học viên mã chứa "VQ_" cần quyền Quản Lý Cấp Cao để cập nhật.'
+                  : 'Hồ sơ huấn luyện viên mã chứa "VQT" cần quyền Huấn Luyện Viên Trưởng để cập nhật.'}
               </p>
             )}
           </div>

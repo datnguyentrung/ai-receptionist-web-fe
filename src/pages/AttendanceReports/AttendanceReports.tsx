@@ -60,8 +60,9 @@ export function AttendanceReports() {
     useUpdateAttendanceBatch();
   const user = useAuthStore((state) => state.user);
   const scheduleIds =
-    user?.userInfo.assignedClasses?.map((c) => c.classSchedule.scheduleId) ??
-    [];
+    user?.userInfo?.assignedClasses
+      ?.map((c) => c?.classSchedule?.scheduleId)
+      ?.filter((id): id is string => Boolean(id)) ?? [];
 
   const setAttendanceDrillDown = (nextStatuses: AttendanceStatus[] | null) => {
     setAttendanceStatuses(nextStatuses ?? []);

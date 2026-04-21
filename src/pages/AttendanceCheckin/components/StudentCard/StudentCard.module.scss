@@ -260,6 +260,28 @@ $gap-xs: 3px;
   display: flex;
 }
 
+.quickEvalBtnWithLabel {
+  width: auto;
+  min-width: 88px;
+  padding: 0 10px;
+  border-radius: 999px;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.quickEvalLabel {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: none;
+  transform: none;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 .expandToggleBtn {
   display: flex;
 }
@@ -400,13 +422,7 @@ $gap-xs: 3px;
   font-weight: 600;
   white-space: nowrap;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin: 0;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  }
 
   &.good {
     background: #86efac;

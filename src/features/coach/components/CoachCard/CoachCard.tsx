@@ -1,16 +1,14 @@
 import Avatar from "@/components/Avatar";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
-import type { CoachDetail } from "@/types";
 import {
-  Award,
-  BookOpen,
-  EllipsisVertical,
-  Mail,
-  Phone,
-  Star,
-  Users,
-} from "lucide-react";
+  ScheduleLevelLabel,
+  ScheduleShiftLabel,
+  WeekdayCodeToLabel,
+} from "@/config/constants";
+import type { CoachDetail } from "@/types";
+import { openInNewTab } from "@/utils/windowOpenTab";
+import { EllipsisVertical, Mail, Phone, Star } from "lucide-react";
 import { formatDateDMY } from "../../../../utils/format";
 import StatusBadge from "../StatusBadge/StatusBadge";
 import styles from "./CoachCard.module.scss";
@@ -21,6 +19,8 @@ type CoachCardProps = {
 };
 
 export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
+  const currentAssignments = coach.currentAssignments ?? [];
+
   return (
     <div className={styles.coachCard}>
       {/* Card top bar */}
@@ -75,7 +75,7 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
               }
 
               if (action === "info") {
-                showComingSoonActionToast("Thông tin", coach.fullName);
+                openInNewTab(`/${coach.staffCode}`);
                 return;
               }
 
@@ -90,42 +90,53 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
           <StatusBadge status={coach.coachStatus} />
         </div>
 
-        {/* Stats row */}
-        <div className={styles.statsGrid}>
-          {[
-            {
-              icon: Users,
-              value: 0,
-              label: "Học viên",
-            },
-            {
-              icon: BookOpen,
-              value: 0,
-              label: "Lớp học",
-            },
-            {
-              icon: Award,
-              value: `${0} năm`,
-              label: "Kinh nghiệm",
-            },
-          ].map(({ icon: Icon, value, label }) => (
-            <div key={label} className={styles.statItem}>
-              <Icon
-                size={14}
-                style={{ color: "#E02020", margin: "0 auto 2px" }}
-              />
-              <p
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  color: "#111827",
-                }}
-              >
-                {value}
-              </p>
-              <p style={{ fontSize: "10px", color: "#9CA3AF" }}>{label}</p>
+        {/* Current assignments */}
+        <div className={styles.assignmentsSection}>
+          <div className={styles.assignmentsHeader}>
+            <p className={styles.assignmentsTitle}>Lớp đang dạy</p>
+            <span className={styles.assignmentsCount}>
+              {currentAssignments.length}
+            </span>
+          </div>
+
+          {currentAssignments.length === 0 ? (
+            <p className={styles.assignmentsEmpty}>
+              Hiện chưa có lớp đang dạy.
+            </p>
+          ) : (
+            <div className={styles.assignmentsList}>
+              {currentAssignments.slice(0, 3).map((assignment) => {
+                const schedule = assignment.classSchedule;
+                const weekdayLabel =
+                  WeekdayCodeToLabel[schedule.weekday] ??
+                  `Thứ ${schedule.weekday}`;
+
+                return (
+                  <div
+                    key={assignment.assignmentId}
+                    className={styles.assignmentItem}
+                  >
+                    <div className={styles.assignmentTopRow}>
+                      <p className={styles.assignmentName}>
+                        {schedule.scheduleId}
+                      </p>
+                      <span className={styles.assignmentBadge}>
+                        {weekdayLabel}
+                      </span>
+                    </div>
+                    <p className={styles.assignmentMeta}>
+                      {ScheduleLevelLabel[schedule.scheduleLevel]} ·{" "}
+                      {ScheduleShiftLabel[schedule.scheduleShift]}
+                    </p>
+                    <p className={styles.assignmentLocation}>
+                      {schedule.branchName} · {schedule.startTime} -{" "}
+                      {schedule.endTime}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
 
         {/* Rating */}

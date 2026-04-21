@@ -22,8 +22,9 @@ export function ClassSchedules() {
 
   const user = useAuthStore((state) => state.user);
   const scheduleIds =
-    user?.userInfo.assignedClasses?.map((c) => c.classSchedule.scheduleId) ??
-    [];
+    user?.userInfo?.assignedClasses
+      ?.map((c) => c?.classSchedule?.scheduleId)
+      ?.filter((id): id is string => Boolean(id)) ?? [];
   const {
     mutateAsync: changeClassScheduleStatus,
     isPending: isChangingStatus,
