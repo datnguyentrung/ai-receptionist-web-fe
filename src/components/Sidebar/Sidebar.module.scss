@@ -11,7 +11,9 @@
   background: #1a1a2e;
   flex-shrink: 0;
   transform: translateX(-100%);
-  transition: transform 300ms;
+  transition:
+    transform 300ms,
+    width 250ms ease;
 
   @media (min-width: 768px) {
     position: static;
@@ -23,13 +25,89 @@
   transform: translateX(0);
 }
 
+// ── Trạng thái Thu hẹp (Collapsed) cho Desktop ─────────────────
+.collapsed {
+  @media (min-width: 768px) {
+    width: 80px;
+
+    .brandText,
+    .aiBadgeLabel,
+    .aiDot,
+    .navLabel,
+    .navLinkText,
+    .userInfo {
+      display: none;
+    }
+
+    // Xếp Logo và nút Toggle dọc nhau để không bị tràn 80px
+    .sidebarLogo {
+      flex-direction: column;
+      padding: 16px 0;
+      gap: 16px;
+    }
+
+    .logoGroup {
+      gap: 0;
+    }
+
+    .closeBtn {
+      margin-left: 0;
+    }
+
+    // Căn giữa AI Badge
+    .aiBadge {
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .sidebarBottom {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .nav {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .navLink {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+      gap: 0;
+    }
+
+    .navActiveIndicator {
+      display: none;
+    }
+
+    // Xếp dọc Avatar và nút đăng xuất
+    // .userCard {
+    //   flex-direction: column;
+    //   justify-content: center;
+    //   gap: 12px;
+    //   padding: 12px 0;
+    // }
+    .userCard {
+      justify-content: center;
+      gap: 8px;
+    }
+  }
+}
+
 // ── Sidebar logo area ────────────────────────────────────────
 .sidebarLogo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logoGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logoIconWrapper {
@@ -50,11 +128,16 @@
   object-fit: contain;
 }
 
+.brandText {
+  min-width: 0;
+}
+
 .brandName {
   color: white;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
+  margin: 0;
 }
 
 .brandSub {
@@ -62,8 +145,10 @@
   color: #e02020;
   font-weight: 600;
   letter-spacing: 1px;
+  margin: 0;
 }
 
+// ── Toggle / Close Buttons ──────────────────────────────────
 .closeBtn {
   margin-left: auto;
   color: rgba(255, 255, 255, 0.4);
@@ -80,9 +165,19 @@
   &:hover {
     color: white;
   }
+}
 
+.mobileCloseIcon {
+  display: block;
   @media (min-width: 768px) {
     display: none;
+  }
+}
+
+.desktopToggleIcon {
+  display: none;
+  @media (min-width: 768px) {
+    display: block;
   }
 }
 
@@ -159,6 +254,11 @@
   }
 }
 
+.navLinkText {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 .navLinkActive {
   color: white;
   background: #e02020;
@@ -185,6 +285,30 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.userCardTrigger {
+  width: 100%;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 2px;
+    border-radius: 12px;
+  }
+}
+
+.userMenuContent {
+  width: 220px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #dadce0;
+  background: white;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+}
+
 .userCard {
   display: flex;
   align-items: center;
@@ -199,20 +323,6 @@
   }
 }
 
-.userAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  background: #e02020;
-  flex-shrink: 0;
-}
-
 .userInfo {
   flex: 1;
   min-width: 0;
@@ -225,36 +335,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
 .userRole {
   font-size: 10px;
   color: rgba(255, 255, 255, 0.4);
-}
-
-.logoutButton {
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.35);
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 1px;
-  }
+  margin: 0;
 }

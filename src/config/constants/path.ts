@@ -61,6 +61,11 @@ export const NAV_ITEMS = [
     label: "Bảng xếp hạng",
     icon: Trophy,
   },
+  {
+    path: "/:userCode",
+    label: "Trang cá nhân",
+    icon: UserRoundCheck,
+  },
 ];
 
 export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [

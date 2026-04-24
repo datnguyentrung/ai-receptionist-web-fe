@@ -8,6 +8,7 @@ interface BottomBarProps {
   totalCount: number;
   submitted: boolean;
   onSubmit: () => void;
+  evalCount: number;
 }
 
 function BottomBarInner({
@@ -16,6 +17,7 @@ function BottomBarInner({
   totalCount,
   submitted,
   onSubmit,
+  evalCount,
 }: BottomBarProps) {
   return (
     <div className={styles.bottomBar}>
@@ -24,26 +26,22 @@ function BottomBarInner({
           <Info size={14} style={{ color: "#D97706", flexShrink: 0 }} />
           <p className={styles.warningText}>
             Còn <span className={styles.warningCount}>{unmarkedCount}</span> học
-            viên chưa được điểm danh
+            viên chưa được đánh giá
           </p>
         </div>
       )}
 
-      <button
-        onClick={onSubmit}
-        disabled={submitted}
-        className={styles.btnSubmit}
-      >
+      <div className={styles.btnSubmit}>
         {submitted ? (
           <>
-            <Check size={20} /> Đã nộp điểm danh
+            <Check size={20} /> Đã nộp đánh giá
           </>
         ) : (
           <>
-            <Send size={18} /> Nộp đánh giá ({markedCount}/{totalCount})
+            <Send size={18} /> Tiến trình đánh giá ({unmarkedCount}/{evalCount})
           </>
         )}
-      </button>
+      </div>
     </div>
   );
 }

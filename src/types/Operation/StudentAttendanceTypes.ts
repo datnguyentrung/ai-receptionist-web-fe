@@ -87,7 +87,7 @@ export interface AttendanceUpdateStatusRequest {
 
 /** Cập nhật đánh giá / nhận xét */
 export interface AttendanceUpdateEvaluationRequest {
-  evaluationStatus?: EvaluationStatus;
+  evaluationStatus: EvaluationStatus;
   note?: string;
 }
 

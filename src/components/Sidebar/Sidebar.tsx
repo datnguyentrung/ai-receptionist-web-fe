@@ -1,12 +1,15 @@
 import logoImage from "@/assets/taekwondo.jpg";
+import { useSettingsMenu } from "@/config/constants/ListActionDropDown";
 import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bot, LogOut, X } from "lucide-react";
+import { Bot, ListIndentDecrease, ListIndentIncrease, X } from "lucide-react";
 import { useCallback, useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import Avatar from "../Avatar";
 import ConfirmModal from "../ConfirmModal";
+import { MiniActionPopover } from "../ui/mini-action-popover";
+import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
 import styles from "./Sidebar.module.scss";
 
 export default function Sidebar({
@@ -18,13 +21,46 @@ export default function Sidebar({
 }) {
   const { user, clearAuth } = useAuthStore((state) => state);
   const nav_items = useNavItems();
+  const settingsItems = useSettingsMenu();
+  const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutPending, setIsLogoutPending] = useState(false);
   const queryClient = useQueryClient();
 
-  const openLogoutModal = useCallback(() => {
-    setIsLogoutModalOpen(true);
-  }, []);
+  const handleSidebarToggle = useCallback(() => {
+    // Nếu màn hình lớn, thao tác là thu hẹp/mở rộng
+    if (window.innerWidth >= 768) {
+      setIsCollapsed((prev) => !prev);
+      return;
+    }
+    // Nếu màn hình nhỏ, thao tác là đóng sidebar
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
+
+  const openLogoutModal = useCallback(() => setIsLogoutModalOpen(true), []);
+  const handleSettingsActionSelect = useCallback(
+    (actionId: string) => {
+      const selectedItem = settingsItems.find((item) => item.id === actionId);
+
+      if (!selectedItem) {
+        return;
+      }
+
+      if (selectedItem.id === "logout") {
+        openLogoutModal();
+        return;
+      }
+
+      if (selectedItem.navigateTo) {
+        navigate(selectedItem.navigateTo);
+        return;
+      }
+
+      showComingSoonActionToast(selectedItem.label, "Tài khoản");
+    },
+    [navigate, openLogoutModal, settingsItems],
+  );
 
   const cancelLogout = useCallback(() => {
     setIsLogoutPending(false);
@@ -32,21 +68,12 @@ export default function Sidebar({
   }, []);
 
   const confirmLogout = useCallback(async () => {
-    if (isLogoutPending) {
-      return;
-    }
-
+    if (isLogoutPending) return;
     setIsLogoutPending(true);
-
     try {
-      // Keep loading feedback visible briefly before finishing logout.
-      await new Promise<void>((resolve) => {
-        window.setTimeout(resolve, 900);
-      });
-
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 900));
       clearAuth();
       queryClient.clear();
-
       setIsLogoutModalOpen(false);
     } finally {
       setIsLogoutPending(false);
@@ -56,29 +83,43 @@ export default function Sidebar({
   return (
     <>
       <aside
-        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""} ${isCollapsed ? styles.collapsed : ""}`}
       >
         {/* Logo */}
         <div className={styles.sidebarLogo}>
-          <div className={styles.logoIconWrapper}>
-            <img src={logoImage} alt="Logo" className={styles.logoImg} />
+          <div className={styles.logoGroup}>
+            <div className={styles.logoIconWrapper}>
+              <img src={logoImage} alt="Logo" className={styles.logoImg} />
+            </div>
+            <div className={styles.brandText}>
+              <p className={styles.brandName}>Taekwondo</p>
+              <p className={styles.brandSub}>VĂN QUÁN</p>
+            </div>
           </div>
-          <div>
-            <p className={styles.brandName}>Taekwondo</p>
-            <p className={styles.brandSub}>VĂN QUÁN</p>
-          </div>
+
           <button
             className={styles.closeBtn}
-            onClick={() => setSidebarOpen(false)}
+            onClick={handleSidebarToggle}
             type="button"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <X size={18} />
+            {/* Render cả 2 và dùng CSS để quyết định cái nào hiện tùy kích thước màn hình */}
+            <span className={styles.mobileCloseIcon}>
+              <X size={18} />
+            </span>
+            <span className={styles.desktopToggleIcon}>
+              {isCollapsed ? (
+                <ListIndentIncrease size={18} />
+              ) : (
+                <ListIndentDecrease size={18} />
+              )}
+            </span>
           </button>
         </div>
 
         {/* AI Receptionist badge */}
         <div className={styles.aiBadge}>
-          <Bot size={16} style={{ color: "#E02020" }} />
+          <Bot size={16} style={{ color: "#E02020", flexShrink: 0 }} />
           <span className={styles.aiBadgeLabel}>AI RECEPTIONIST</span>
           <span className={styles.aiDot} />
         </div>
@@ -91,7 +132,10 @@ export default function Sidebar({
               key={path}
               to={path}
               end={path === "/"}
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => {
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+              title={label}
               className={({ isActive }) =>
                 `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
               }
@@ -106,8 +150,8 @@ export default function Sidebar({
                     }}
                   />
                   <span
+                    className={styles.navLinkText}
                     style={{
-                      fontSize: "13px",
                       fontWeight: isActive ? 600 : 400,
                     }}
                   >
@@ -122,31 +166,48 @@ export default function Sidebar({
 
         {/* Bottom user card */}
         <div className={styles.sidebarBottom}>
-          <div className={styles.userCard}>
-            <Avatar
-              fullName={user?.userProfile?.name || ""}
-              fontSize="14px"
-              fontWeight={500}
-              width="32px"
-              height="32px"
-            />
-            <div className={styles.userInfo}>
-              <p className={styles.userName}>
-                {user?.userProfile?.name || "Khách"}
-              </p>
-              <p className={styles.userRole}>
-                {user?.userInfo?.idRole || "Guest"}
-              </p>
+          <MiniActionPopover
+            itemLabel="Tài khoản"
+            title="Mở menu tài khoản"
+            triggerClassName={styles.userCardTrigger}
+            contentClassName={styles.userMenuContent}
+            side="top"
+            align="start"
+            sideOffset={10}
+            actions={settingsItems.flatMap((setting) => {
+              const action = {
+                id: setting.id,
+                label: setting.label,
+                icon: setting.lucideIcon,
+                isDanger: setting.isDanger,
+              };
+
+              if (setting.id === "logout") {
+                return [{ id: "__separator__" as const }, action];
+              }
+
+              return [action];
+            })}
+            onActionSelect={handleSettingsActionSelect}
+          >
+            <div className={styles.userCard}>
+              <Avatar
+                fullName={user?.userProfile?.name || ""}
+                fontSize="14px"
+                fontWeight={500}
+                width="32px"
+                height="32px"
+              />
+              <div className={styles.userInfo}>
+                <p className={styles.userName}>
+                  {user?.userProfile?.name || "Khách"}
+                </p>
+                <p className={styles.userRole}>
+                  {user?.userInfo?.idRole || "Guest"}
+                </p>
+              </div>
             </div>
-            <button
-              type="button"
-              className={styles.logoutButton}
-              onClick={openLogoutModal}
-              aria-label="Logout"
-            >
-              <LogOut size={14} />
-            </button>
-          </div>
+          </MiniActionPopover>
         </div>
       </aside>
 

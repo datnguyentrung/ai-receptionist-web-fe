@@ -23,6 +23,9 @@ interface MiniActionPopoverProps {
   disabled?: boolean;
   title?: string;
   children?: React.ReactNode;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
 }
 
 export function MiniActionPopover({
@@ -34,6 +37,9 @@ export function MiniActionPopover({
   disabled,
   title,
   children,
+  side = "bottom",
+  align = "end",
+  sideOffset = 6,
 }: MiniActionPopoverProps) {
   const [open, setOpen] = useState(false);
 
@@ -42,7 +48,12 @@ export function MiniActionPopover({
       ?.filter((action): action is PopoverActionItem => !!action)
       .map((action) =>
         "label" in action
-          ? { id: action.id, label: action.label }
+          ? {
+              id: action.id,
+              label: action.label,
+              icon: action.icon,
+              isDanger: action.isDanger,
+            }
           : { id: "__separator__" as const },
       ) ?? [];
 
@@ -93,9 +104,9 @@ export function MiniActionPopover({
       </PopoverTrigger>
 
       <PopoverContent
-        side="bottom"
-        align="end"
-        sideOffset={6}
+        side={side}
+        align={align}
+        sideOffset={sideOffset}
         collisionPadding={8}
         avoidCollisions
         className={cn(styles.popoverContent, contentClassName)}

@@ -1,11 +1,8 @@
-import { useLogout } from "@/features/auth/api/useAuthentication";
+import { WeekdayCodeToLabel } from "@/config/constants";
 import { useNavItems } from "@/hooks/useNavItems";
-import { Bell, Menu, Search, Settings } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useSettingsMenu } from "../../config/constants/ListActionDropDown";
-import { MiniActionPopover } from "../ui/mini-action-popover";
-import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
+import { matchPath, useLocation } from "react-router-dom";
 import styles from "./Header.module.scss";
 
 export default function Header({
@@ -15,37 +12,26 @@ export default function Header({
 }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const nav_items = useNavItems();
-  const settingsItems = useSettingsMenu();
-  const logoutMutation = useLogout();
 
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
-    nav_items.find((n) =>
-      n.path === "/"
-        ? location.pathname === "/"
-        : location.pathname.startsWith(n.path),
-    )?.label ?? "Dashboard";
+    nav_items.find((n) => {
+      if (n.path === "/") {
+        return location.pathname === "/";
+      }
 
-  const handleSettingsActionSelect = async (actionId: string) => {
-    const selectedItem = settingsItems.find((item) => item.id === actionId);
+      // matchPath sẽ hiểu "/:userCode" có thể match với "/TQC" hoặc "/VQT_123"
+      // end: false giúp nó match cả các path con như "/TQC/classes" nếu có
+      return matchPath({ path: n.path, end: false }, location.pathname);
+    })?.label ?? "Dashboard";
 
-    if (!selectedItem) {
-      return;
-    }
+  const formatVietnameseDate = (date: Date = new Date()): string => {
+    const weekday = WeekdayCodeToLabel[date.getDay() + 1];
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
 
-    if (selectedItem.id === "logout") {
-      logoutMutation.mutate();
-      return;
-    }
-
-    if (selectedItem.id === "profile" && selectedItem.navigateTo) {
-      navigate(selectedItem.navigateTo);
-      return;
-    }
-
-    showComingSoonActionToast(selectedItem.label, "Cài đặt");
+    return `${weekday}, ngày ${day} tháng ${month} năm ${date.getFullYear()}`;
   };
 
   return (
@@ -58,9 +44,7 @@ export default function Header({
         {/* Title & Date */}
         <div className={styles.titleBlock}>
           <h1 className={styles.pageTitle}>{pageTitle}</h1>
-          <p className={styles.pageSubtitle}>
-            Thứ 4, ngày 04 tháng 03 năm 2026
-          </p>
+          <p className={styles.pageSubtitle}>{formatVietnameseDate()}</p>
         </div>
       </div>
 
@@ -118,23 +102,6 @@ export default function Header({
             </div>
           )}
         </div>
-
-        {/* Settings Dropdown */}
-        <MiniActionPopover
-          itemLabel="Cài đặt"
-          title="Mở menu cài đặt"
-          triggerClassName={styles.iconBtn}
-          contentClassName={styles.settingsMenuContent}
-          actions={settingsItems.map((setting) => ({
-            id: setting.id,
-            label: setting.label,
-            icon: setting.lucideIcon,
-            isDanger: setting.isDanger,
-          }))}
-          onActionSelect={handleSettingsActionSelect}
-        >
-          <Settings size={17} style={{ color: "#374151" }} />
-        </MiniActionPopover>
       </div>
     </header>
   );

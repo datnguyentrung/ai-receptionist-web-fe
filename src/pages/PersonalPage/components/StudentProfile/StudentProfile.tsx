@@ -1,5 +1,5 @@
 import { useGetStudentByStudentCode } from "@/features/student";
-import { ProfileHeader } from "../ProfileHeader";
+import  ProfileHeader  from "../ProfileHeader";
 import { TabViews } from "../TabViews";
 
 export default function StudentProfile({ userCode }: { userCode: string }) {

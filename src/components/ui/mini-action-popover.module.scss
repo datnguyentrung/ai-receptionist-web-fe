@@ -73,10 +73,14 @@
 }
 
 .actionBtnDanger {
-  color: #b91c1c;
+  color: #e02020;
 
   &:hover {
     background: #fef2f2;
+  }
+
+  .actionIcon {
+    color: #e02020;
   }
 }
 

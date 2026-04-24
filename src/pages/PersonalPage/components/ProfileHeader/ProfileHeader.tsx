@@ -1,254 +1,127 @@
-import coverImage from "@/assets/taekwondo.jpg";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { BeltLabel, type UserStatus } from "@/config/constants";
-import type { CoachDetail, StudentDetail } from "@/types";
 import {
   Award,
   Calendar,
-  Edit2,
+  Edit3,
   KeyRound,
   Mail,
   Phone,
   User,
 } from "lucide-react";
-import { useState } from "react";
-import Avatar from "../../../../components/Avatar";
-import { formatDateDMY } from "../../../../utils/format";
-import "./ProfileHeader.scss";
+import S from "./ProfileHeader.module.scss";
 
-export function ProfileHeader({
-  profile,
-}: {
-  profile: StudentDetail | CoachDetail;
-}) {
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isPassOpen, setIsPassOpen] = useState(false);
+interface ProfileHeaderProps {
+  user: {
+    fullName: string;
+    belt: string;
+    role: string;
+    gender: string;
+    birthDate: string;
+    phone: string;
+    email: string;
+    avatarUrl: string;
+    coverUrl: string;
+  };
+}
 
+export default function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
-    <>
-      <Card className="profile-header-card">
-        <div className="profile-header__cover">
-          <img
-            src={coverImage}
-            alt="Center Cover"
-            className="profile-header__cover-image"
-          />
-          <div className="profile-header__cover-overlay" />
-          <div className="profile-header__avatar-wrap">
-            <div className="profile-header__avatar-box">
-              {/* <img
-                src={profile.avatar}
-                alt={profile.fullName}
-                className="profile-header__avatar-image"
-              /> */}
-              <Avatar
-                fullName={profile.fullName}
-                fontSize="14px"
-                fontWeight={500}
-                width="5.75rem"
-                height="5.75rem"
+    <div className={S.card}>
+      {/* Cover Photo */}
+      <div className={S.coverPhoto}>
+        <img
+          src={user.coverUrl}
+          alt="Cover"
+        />
+        <div className={S.coverOverlay}></div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className={S.mainContent}>
+        {/* Avatar Setup */}
+        <div className={S.topRow}>
+          <div className={S.avatarWrapper}>
+            <div className={S.avatar}>
+              <img
+                src={user.avatarUrl}
+                alt={user.fullName}
               />
-              <Badge
-                variant={
-                  profile.status === ("ACTIVE" as UserStatus)
-                    ? "default"
-                    : "destructive"
-                }
-                className="profile-header__status-badge"
-              >
-                {profile.status}
-              </Badge>
             </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className={S.actions}>
+            <button className={S.btnChangePassword}>
+              <KeyRound size={16} />
+              <span>Change Password</span>
+            </button>
+            <button className={S.btnEditProfile}>
+              <Edit3 size={16} />
+              <span>Edit Profile</span>
+            </button>
           </div>
         </div>
 
-        <div className="profile-header__content">
-          <div className="profile-header__identity">
-            <h2 className="profile-header__name">{profile.fullName}</h2>
-            <div className="profile-header__chips">
-              <div className="profile-header__belt-chip">
-                <Award size={16} className="profile-header__belt-icon" />
-                <span className="profile-header__belt-text">
-                  {profile.belt}
-                </span>
+        {/* Identity & Details */}
+        <div className={S.identitySection}>
+          <div className={S.nameRow}>
+            <h1 className={S.name}>
+              {user.fullName}
+            </h1>
+
+            <div className={S.badges}>
+              {/* Belt Chip */}
+              <div className={S.beltChip}>
+                <Award size={14} />
+                {user.belt}
               </div>
-              <Badge variant="outline" className="profile-header__role-badge">
-                {(profile as StudentDetail)
-                  ? "Học viên"
-                  : (profile as CoachDetail)
-                    ? "Quản lý"
-                    : "Huấn luyện viên"}
-              </Badge>
+
+              {/* Role Badge */}
+              <div className={S.roleBadge}>
+                {user.role}
+              </div>
             </div>
           </div>
 
-          <div className="profile-header__details-grid">
-            <div className="profile-header__detail-item">
-              <div className="profile-header__detail-icon profile-header__detail-icon--blue">
+          {/* Quick Details Grid */}
+          <div className={S.detailsGrid}>
+            <div className={S.detailItem}>
+              <div className={`${S.detailIcon} ${S.blue}`}>
                 <User size={16} />
               </div>
-              <div className="profile-header__detail-text">
-                <p className="profile-header__detail-label">Giới tính</p>
-                <p className="profile-header__detail-value">{profile.gender}</p>
-              </div>
+              <span className={S.detailText}>
+                {user.gender}
+              </span>
             </div>
 
-            <div className="profile-header__detail-item">
-              <div className="profile-header__detail-icon profile-header__detail-icon--emerald">
+            <div className={S.detailItem}>
+              <div className={`${S.detailIcon} ${S.rose}`}>
                 <Calendar size={16} />
               </div>
-              <div className="profile-header__detail-text">
-                <p className="profile-header__detail-label">Ngày sinh</p>
-                <p className="profile-header__detail-value">
-                  {formatDateDMY(profile.birthDate)}
-                </p>
-              </div>
+              <span className={S.detailText}>
+                {user.birthDate}
+              </span>
             </div>
 
-            <div className="profile-header__detail-item">
-              <div className="profile-header__detail-icon profile-header__detail-icon--slate">
+            <div className={S.detailItem}>
+              <div className={`${S.detailIcon} ${S.emerald}`}>
                 <Phone size={16} />
               </div>
-              <div className="profile-header__detail-text">
-                <p className="profile-header__detail-label">Điện thoại</p>
-                <p className="profile-header__detail-value">
-                  {profile.phoneNumber}
-                </p>
-              </div>
+              <span className={S.detailText}>
+                {user.phone}
+              </span>
             </div>
 
-            {"email" in profile && profile.email ? (
-              <div className="profile-header__detail-item">
-                <div className="profile-header__detail-icon profile-header__detail-icon--rose">
-                  <Mail size={16} />
-                </div>
-                <div className="profile-header__detail-text">
-                  <p className="profile-header__detail-label">Email</p>
-                  <p className="profile-header__detail-value profile-header__detail-value--truncate">
-                    {profile.email}
-                  </p>
-                </div>
+            <div className={S.detailItem}>
+              <div className={`${S.detailIcon} ${S.purple}`}>
+                <Mail size={16} />
               </div>
-            ) : null}
-
-            <div className="profile-header__detail-item">
-              <div className="profile-header__detail-icon profile-header__detail-icon--slate">
-                <Award size={16} />
-              </div>
-              <div className="profile-header__detail-text">
-                <p className="profile-header__detail-label">Cấp đai</p>
-                <p className="profile-header__detail-value">
-                  {BeltLabel[profile.belt]}
-                </p>
-              </div>
+              <span className={S.detailText}>
+                {user.email}
+              </span>
             </div>
-          </div>
-
-          <div className="profile-header__actions">
-            <Button
-              variant="outline"
-              className="profile-header__action-btn profile-header__action-btn--edit"
-              onClick={() => setIsEditOpen(true)}
-            >
-              <Edit2 size={16} />
-              <span className="profile-header__action-text">Chỉnh sửa</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="profile-header__action-btn profile-header__action-btn--password"
-              onClick={() => setIsPassOpen(true)}
-            >
-              <KeyRound size={16} />
-              <span className="profile-header__action-text">Đổi mật khẩu</span>
-            </Button>
           </div>
         </div>
-      </Card>
-
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="profile-header__dialog">
-          <DialogHeader>
-            <DialogTitle>Chỉnh sửa liên hệ</DialogTitle>
-          </DialogHeader>
-          <form
-            className="profile-header__form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setIsEditOpen(false);
-            }}
-          >
-            <div>
-              <label className="profile-header__label">Số điện thoại</label>
-              <Input defaultValue={profile.phoneNumber} type="tel" />
-            </div>
-            {"email" in profile && (
-              <div>
-                <label className="profile-header__label">Email</label>
-                <Input defaultValue={profile.email} type="email" />
-              </div>
-            )}
-            <div className="profile-header__dialog-actions">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => setIsEditOpen(false)}
-              >
-                Hủy
-              </Button>
-              <Button type="submit">Lưu thay đổi</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isPassOpen} onOpenChange={setIsPassOpen}>
-        <DialogContent className="profile-header__dialog">
-          <DialogHeader>
-            <DialogTitle>Đổi mật khẩu</DialogTitle>
-          </DialogHeader>
-          <form
-            className="profile-header__form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setIsPassOpen(false);
-            }}
-          >
-            <div>
-              <label className="profile-header__label">Mật khẩu hiện tại</label>
-              <Input type="password" />
-            </div>
-            <div>
-              <label className="profile-header__label">Mật khẩu mới</label>
-              <Input type="password" />
-            </div>
-            <div>
-              <label className="profile-header__label">
-                Nhập lại mật khẩu mới
-              </label>
-              <Input type="password" />
-            </div>
-            <div className="profile-header__dialog-actions">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => setIsPassOpen(false)}
-              >
-                Hủy
-              </Button>
-              <Button type="submit">Cập nhật</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+      </div>
+    </div>
   );
 }

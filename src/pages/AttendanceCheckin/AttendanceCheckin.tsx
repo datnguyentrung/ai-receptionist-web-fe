@@ -128,6 +128,7 @@ export function AttendanceCheckin() {
     presentCount,
     absentCount,
     excusedCount,
+    makeupCount,
     unmarkedCount,
     totalCount,
     markedCount,
@@ -141,10 +142,22 @@ export function AttendanceCheckin() {
     const absent = students.filter(
       (s) => s.attendanceStatus === "ABSENT",
     ).length;
+    const late: number = students.filter(
+      (s) => s.attendanceStatus === "LATE",
+    ).length;
+    const makeup: number = students.filter(
+      (s) => s.attendanceStatus === "MAKEUP",
+    ).length;
     const excused = students.filter(
       (s) => s.attendanceStatus === "EXCUSED",
     ).length;
-    const unmarked = students.filter((s) => s.attendanceStatus === null).length;
+    const unmarked = students.filter(
+      (s) =>
+        s.evaluationStatus === null &&
+        (s.attendanceStatus === "PRESENT" ||
+          s.attendanceStatus === "LATE" ||
+          s.attendanceStatus === "MAKEUP"),
+    ).length;
     const total = students.length;
     const marked = total - unmarked;
     const evaluated = students.filter(
@@ -159,6 +172,8 @@ export function AttendanceCheckin() {
       totalCount: total,
       markedCount: marked,
       evalCount: evaluated,
+      lateCount: late,
+      makeupCount: makeup,
       progress: total > 0 ? Math.round((marked / total) * 100) : 0,
       filtered:
         filter === "all"
@@ -365,6 +380,8 @@ export function AttendanceCheckin() {
     );
   }
 
+  console.log("Enrollments: ", enrollments);
+
   return (
     <div className={styles.page}>
       <div className={styles.grid}>
@@ -427,6 +444,7 @@ export function AttendanceCheckin() {
               totalCount={totalCount}
               submitted={submitted}
               onSubmit={openSubmitModal}
+              evalCount={presentCount + absentCount + makeupCount}
             />
           </RenderProfiler>
         </main>

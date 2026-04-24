@@ -18,7 +18,7 @@ export interface UserLogin {
   userId: string;
   status: string;
   role: string | null;
-  startDate: Date | string;
+  // startDate: Date | string;
 }
 
 export interface UserBase {

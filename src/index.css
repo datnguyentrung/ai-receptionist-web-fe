@@ -1,59 +1,58 @@
 @import "./styles/tailwind.css";
 @import "./styles/fonts.css";
-@import "./styles/theme.css";
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-}
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+  }
 
-:root {
-  font-family: "Inter", "Poppins", system-ui, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  :root {
+    font-family: "Inter", "Poppins", system-ui, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  min-width: 320px;
-  background-color: #f4f6fa;
-  color: #111827;
-}
+  body {
+    min-width: 320px;
+  }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 
-img {
-  display: block;
-  max-width: 100%;
-}
+  img {
+    display: block;
+    max-width: 100%;
+  }
 
-table {
-  border-collapse: collapse;
-}
+  table {
+    border-collapse: collapse;
+  }
 
-svg {
-  flex-shrink: 0;
+  svg {
+    flex-shrink: 0;
+  }
 }
