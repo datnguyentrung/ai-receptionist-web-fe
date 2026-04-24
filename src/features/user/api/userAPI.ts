@@ -2,7 +2,7 @@ import { javaApi, pythonApi } from "@/lib/axiosInstance";
 import type { ApiResponse, ChangePasswordRequest, UserResponse } from "@/types";
 
 export const userAPI = {
-  getUserInfo: async (accessToken?: string): Promise<UserResponse> => {
+  getUserInfo: async (accessToken?: string): Promise<UserResponse[]> => {
     const response = await javaApi.get("/users/me", {
       headers: accessToken
         ? { Authorization: `Bearer ${accessToken}` }

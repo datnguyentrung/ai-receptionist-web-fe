@@ -5,7 +5,7 @@ import { userAPI } from "./userAPI";
 const USER_QUERY_KEY = "user-info";
 
 export const useGetUserInfo = () => {
-  return useQuery<UserResponse>({
+  return useQuery<UserResponse[]>({
     queryKey: [USER_QUERY_KEY],
     queryFn: () => userAPI.getUserInfo(),
     retry: false,
