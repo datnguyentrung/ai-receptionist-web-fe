@@ -5,11 +5,10 @@ import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import {
   EvalSheet,
-  useFilterAttendance,
-  useUpdateAttendanceEvaluation,
-  useUpdateAttendanceStatus,
 } from "@/features/studentAttendance";
-import { useGetStudentEnrollmentsByClassScheduleId } from "@/features/studentEnrollment";
+import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
+import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import type {
   AttendanceUpdateEvaluationRequest,
@@ -54,7 +53,7 @@ export function AttendanceCheckin() {
   const { canViewManagerSenior } = useRoleStudent();
 
   const { scheduleId } = useParams();
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.activeProfile);
   const allowedScheduleIds =
     user?.userInfo?.assignedClasses
       ?.map((c) => c?.classSchedule?.scheduleId)
@@ -67,23 +66,39 @@ export function AttendanceCheckin() {
   const attendanceScheduleIds = hasScheduleAccess ? [scheduleId] : undefined;
 
   const { data: enrollments, isLoading: enrollmentsLoading } =
-    useGetStudentEnrollmentsByClassScheduleId(selectedScheduleId);
+    useGetQuery(
+      ["student-enrollments", "class-schedule", selectedScheduleId],
+      () => studentEnrollmentAPI.getStudentEnrollmentsByClassScheduleId(selectedScheduleId),
+      { enabled: !!selectedScheduleId },
+    );
 
-  // console.log("Enrollments:", enrollments);
-
-  const { data: data, isLoading: attendanceLoading } = useFilterAttendance(
-    undefined,
-    formatDateYMD(new Date()),
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    attendanceScheduleIds,
+  const { data: data, isLoading: attendanceLoading } = useGetQuery(
+    ["student-attendance", { sessionDate: formatDateYMD(new Date()), scheduleIds: attendanceScheduleIds }],
+    () => studentAttendanceAPI.filter(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      formatDateYMD(new Date()),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      attendanceScheduleIds,
+    ),
+    { enabled: !!attendanceScheduleIds },
   );
 
-  const { mutate: updateAttendance } = useUpdateAttendanceStatus();
-  const { mutate: updateEvaluation } = useUpdateAttendanceEvaluation();
+  const { mutate: updateAttendance } = usePlainMutation(
+    ({ attendanceId, data: updateData }: { attendanceId: string; data: AttendanceUpdateStatusRequest }) =>
+      studentAttendanceAPI.updateStatus(attendanceId, updateData),
+  );
+  const { mutate: updateEvaluation } = usePlainMutation(
+    ({ attendanceId, data: updateData }: { attendanceId: string; data: AttendanceUpdateEvaluationRequest }) =>
+      studentAttendanceAPI.updateEvaluation(attendanceId, updateData),
+  );
 
   // console.log("Attendance data:", data);
 

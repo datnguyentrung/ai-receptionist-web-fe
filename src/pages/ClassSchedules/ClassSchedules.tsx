@@ -5,11 +5,12 @@ import {
   ClassGrid,
   ClassHeader,
   ClassWeekView,
-  useGetAllClassSchedules,
 } from "@/features/classSchedule";
-import { useChangeClassScheduleStatus } from "@/features/classSchedule/api/useClassSchedule";
+import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
+import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import styles from "./ClassSchedules.module.scss";
 
 export function ClassSchedules() {
@@ -20,7 +21,8 @@ export function ClassSchedules() {
     currentStatus: ScheduleStatus;
   } | null>(null);
 
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.activeProfile);
+  const queryClient = useQueryClient();
   const scheduleIds =
     user?.userInfo?.assignedClasses
       ?.map((c) => c?.classSchedule?.scheduleId)
@@ -28,7 +30,15 @@ export function ClassSchedules() {
   const {
     mutateAsync: changeClassScheduleStatus,
     isPending: isChangingStatus,
-  } = useChangeClassScheduleStatus();
+  } = usePlainMutation<
+    void,
+    { id: string; newStatus: ScheduleStatus }
+  >(({ id, newStatus }) => classScheduleAPI.changeClassScheduleStatus(id, newStatus), {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["class-schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["class-schedules", variables.id] });
+    },
+  });
 
   const openChangeStatusModal = useCallback(
     (scheduleId: string, currentStatus: ScheduleStatus) => {
@@ -68,11 +78,10 @@ export function ClassSchedules() {
     data: classSchedules,
     isLoading,
     error,
-  } = useGetAllClassSchedules(
-    { scheduleIds },
-    {
-      enabled: !!user,
-    },
+  } = useGetQuery(
+    ["class-schedules", { scheduleIds }],
+    () => classScheduleAPI.getAllClassSchedules({ scheduleIds }),
+    { enabled: !!user },
   );
 
   if (isLoading) {

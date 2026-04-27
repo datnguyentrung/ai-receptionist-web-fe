@@ -1,1 +1,1 @@
-export * from "../api/useStudentEnrollment";
+// Hooks removed — use useGetQuery / useGenericMutation from @/hooks/useCrud

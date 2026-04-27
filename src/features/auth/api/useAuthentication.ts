@@ -64,22 +64,20 @@ export const useGetAccount = () => {
 // 2. Hook xử lý Đăng nhập (Dùng useMutation vì là POST)
 export const useLogin = () => {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const login = useAuthStore((state) => state.login);
   return useMutation({
     mutationFn: (data: UserBase) => authApi.login(data),
     onSuccess: async (data) => {
       try {
-        // 1. Lưu token mới vào store TRƯỚC để các Axios Interceptor (nếu có) kịp cập nhật
-        // Chú ý: Bạn có thể cần tạo thêm hàm setTokenOnly trong store nếu muốn.
+        // 1. Lưu token mới vào store TRƯỚC để các Axios Interceptor kịp cập nhật
         useAuthStore.setState({ accessToken: data.accessToken });
 
-        // 2. Ép hàm getUserInfo phải dùng token mới truyền vào (Hãy kiểm tra lại ruột hàm này nhé)
-        const fullUserData = await userAPI.getUserInfo(data.accessToken);
+        // 2. getUserInfo trả về UserResponse[] (multi-profile)
+        const profiles = await userAPI.getUserInfo(data.accessToken);
 
-        // 3. Set toàn bộ data
-        setAuth(data.accessToken, fullUserData);
+        // 3. Set toàn bộ data — login() tự resolve activeProfile từ localStorage
+        login(data.accessToken, profiles);
 
-        // Giữ trạng thái loading ngắn để UI trang sau có thời gian ổn định dữ liệu.
         await wait(POST_LOGIN_LOADING_MS);
 
         showSuccessToast("Đăng nhập thành công");
@@ -99,22 +97,13 @@ export const useLogin = () => {
 // 3. Hook xử lý Đăng xuất (Dùng useMutation)
 export const useLogout = () => {
   const navigate = useNavigate();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const logout = useAuthStore((state) => state.logout);
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // 1. Xóa token và user trong Zustand
-      clearAuth();
-
-      // 2. XOÁ SẠCH CACHE CỦA REACT QUERY
-      // Cách A: Xóa toàn bộ mọi cache (rất sạch sẽ khi user logout)
+      logout();
       queryClient.clear();
-
-      // Cách B: Nếu bạn chỉ muốn xóa riêng cache của user-info
-      // queryClient.removeQueries({ queryKey: ["user-info"] });
-
-      // 3. Đá về trang login
       navigate("/login");
     },
   });

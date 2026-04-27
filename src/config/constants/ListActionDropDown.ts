@@ -17,15 +17,15 @@ export interface ListActionDropDownItem {
 
 // Chuyển thành Custom Hook để có thể gọi useAuthStore
 export const useSettingsMenu = (): ListActionDropDownItem[] => {
-  const { user } = useAuthStore();
+  const activeProfile = useAuthStore((s) => s.activeProfile);
 
   return [
     {
       lucideIcon: UserRound,
       label: "Trang cá nhân",
       id: "profile",
-      ...(user?.userInfo?.userCode && {
-        navigateTo: `/${user.userInfo.userCode}`,
+      ...(activeProfile?.userInfo?.userCode && {
+        navigateTo: `/${activeProfile.userInfo.userCode}`,
       }),
     },
     {

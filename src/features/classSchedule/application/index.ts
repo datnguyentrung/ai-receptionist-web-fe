@@ -1,1 +1,1 @@
-export * from "../api/useClassSchedule";
+// Hooks removed — use useGetQuery / useGenericMutation from @/hooks/useCrud

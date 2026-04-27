@@ -10,6 +10,7 @@ import Avatar from "../Avatar";
 import ConfirmModal from "../ConfirmModal";
 import { MiniActionPopover } from "../ui/mini-action-popover";
 import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
+import SidebarSettings from "./SidebarSettings";
 import styles from "./Sidebar.module.scss";
 
 export default function Sidebar({
@@ -19,7 +20,7 @@ export default function Sidebar({
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }) {
-  const { user, clearAuth } = useAuthStore((state) => state);
+  const { activeProfile, logout } = useAuthStore((state) => state);
   const nav_items = useNavItems();
   const settingsItems = useSettingsMenu();
   const navigate = useNavigate();
@@ -72,13 +73,13 @@ export default function Sidebar({
     setIsLogoutPending(true);
     try {
       await new Promise<void>((resolve) => window.setTimeout(resolve, 900));
-      clearAuth();
+      logout();
       queryClient.clear();
       setIsLogoutModalOpen(false);
     } finally {
       setIsLogoutPending(false);
     }
-  }, [clearAuth, isLogoutPending, queryClient]);
+  }, [isLogoutPending, logout, queryClient]);
 
   return (
     <>
@@ -164,6 +165,9 @@ export default function Sidebar({
           ))}
         </nav>
 
+        {/* Profile switcher (visible only when multi-profile) */}
+        <SidebarSettings />
+
         {/* Bottom user card */}
         <div className={styles.sidebarBottom}>
           <MiniActionPopover
@@ -192,7 +196,7 @@ export default function Sidebar({
           >
             <div className={styles.userCard}>
               <Avatar
-                fullName={user?.userProfile?.name || ""}
+                fullName={activeProfile?.userProfile?.name || ""}
                 fontSize="14px"
                 fontWeight={500}
                 width="32px"
@@ -200,10 +204,10 @@ export default function Sidebar({
               />
               <div className={styles.userInfo}>
                 <p className={styles.userName}>
-                  {user?.userProfile?.name || "Khách"}
+                  {activeProfile?.userProfile?.name || "Khách"}
                 </p>
                 <p className={styles.userRole}>
-                  {user?.userInfo?.idRole || "Guest"}
+                  {activeProfile?.userInfo?.idRole || "Guest"}
                 </p>
               </div>
             </div>

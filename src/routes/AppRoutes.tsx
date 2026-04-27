@@ -74,7 +74,7 @@ function RouteLoadingFallback() {
 export default function AppRoutes() {
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.activeProfile);
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
   const { canViewManagerSenior, canViewCoach } = useRoleStudent();

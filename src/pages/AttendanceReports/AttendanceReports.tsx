@@ -4,10 +4,8 @@ import type {
   AttendanceStatus,
   EvaluationStatus,
 } from "@/config/constants/OperationEnums";
-import {
-  useFilterAttendance,
-  useUpdateAttendanceBatch,
-} from "@/features/studentAttendance";
+import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
@@ -57,8 +55,11 @@ export function AttendanceReports() {
   >({});
 
   const { mutateAsync: updateAttendanceBatch, isPending: isSaving } =
-    useUpdateAttendanceBatch();
-  const user = useAuthStore((state) => state.user);
+    useGenericMutation<StudentAttendanceResponse[], StudentAttendanceSimpleResponse[]>(
+      (data) => studentAttendanceAPI.updateAttendance(data),
+      [["student-attendance"]],
+    );
+  const user = useAuthStore((state) => state.activeProfile);
   const scheduleIds =
     user?.userInfo?.assignedClasses
       ?.map((c) => c?.classSchedule?.scheduleId)
@@ -74,17 +75,26 @@ export function AttendanceReports() {
     setCurrentPage(1);
   };
 
-  const { data } = useFilterAttendance(
-    search,
-    dateFilter,
-    attendanceStatuses,
-    evaluationStatuses,
-    belts,
-    branches,
-    scheduleLevels,
-    scheduleIds,
-    currentPage - 1, // Spring Boot dùng 0-based page
-    PAGE_SIZE,
+  const { data } = useGetQuery(
+    ["student-attendance", { search, dateFilter, attendanceStatuses, evaluationStatuses, belts, branches, scheduleLevels, scheduleIds, page: currentPage - 1, size: PAGE_SIZE }],
+    () => studentAttendanceAPI.filter(
+      search,
+      currentPage - 1,
+      PAGE_SIZE,
+      undefined,
+      undefined,
+      dateFilter ?? undefined,
+      attendanceStatuses,
+      evaluationStatuses,
+      belts,
+      branches,
+      scheduleLevels,
+      scheduleIds,
+    ),
+    {
+      enabled: !!search || !!dateFilter || !!attendanceStatuses || !!evaluationStatuses || !!belts || !!branches || !!scheduleLevels || !!scheduleIds,
+      staleTime: 5 * 60 * 1000,
+    },
   );
 
   const toCheckInString = (value: Date | string | null): string | null => {

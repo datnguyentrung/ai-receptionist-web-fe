@@ -1,1 +1,1 @@
-export * from "../api/useStudentAttendance";
+// Hooks removed — use useGetQuery / useGenericMutation from @/hooks/useCrud

@@ -31,7 +31,13 @@ function BottomBarInner({
         </div>
       )}
 
-      <div className={styles.btnSubmit}>
+      <button
+        type="button"
+        className={styles.btnSubmit}
+        onClick={onSubmit}
+        disabled={submitted}
+        title={`Đã đánh giá ${markedCount}/${totalCount} học viên`}
+      >
         {submitted ? (
           <>
             <Check size={20} /> Đã nộp đánh giá
@@ -39,9 +45,10 @@ function BottomBarInner({
         ) : (
           <>
             <Send size={18} /> Tiến trình đánh giá ({unmarkedCount}/{evalCount})
+            - đã đánh giá {markedCount}/{totalCount}
           </>
         )}
-      </div>
+      </button>
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { useFilterAttendance } from "@/features/studentAttendance";
+import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { useGetQuery } from "@/hooks/useCrud";
 import type { StudentOverview } from "@/types";
 import { useState } from "react";
 import { AttendanceTable } from "../../../AttendanceReports/components/AttendanceTable";
@@ -26,17 +27,14 @@ export function AttendanceTableModal({ student }: Props) {
     (schedule) => schedule.scheduleId,
   );
 
-  const { data } = useFilterAttendance(
-    student.studentCode,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    currentPage - 1, // Spring Boot dùng 0-based page
-    PAGE_SIZE,
+  const { data } = useGetQuery(
+    ["student-attendance", student.studentCode, { page: currentPage - 1, size: PAGE_SIZE }],
+    () => studentAttendanceAPI.filter(
+      student.studentCode,
+      currentPage - 1,
+      PAGE_SIZE,
+    ),
+    { enabled: !!student.studentCode, staleTime: 5 * 60 * 1000 },
   );
 
   return (

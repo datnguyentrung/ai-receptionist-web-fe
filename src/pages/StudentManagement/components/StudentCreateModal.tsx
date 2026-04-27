@@ -3,13 +3,15 @@ import { ModalLayout } from "@/components/ui/modal-layout";
 import { Textarea } from "@/components/ui/textarea";
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import type { Belt, StudentStatus } from "@/config/constants";
-import { useGetAllClassSchedules } from "@/features/classSchedule";
-import { useCreateStudent } from "@/features/student";
+import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
+import { studentAPI } from "@/features/student/api/studentAPI";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import ClassList from "@/features/studentEnrollment/components/ClassList/ClassList";
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
   StudentCreateRequest,
+  StudentDetail,
 } from "@/types";
 import { useMemo, useState } from "react";
 import styles from "./StudentCreateModal.module.scss";
@@ -167,9 +169,16 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
     () => new Set(),
   );
 
-  const { mutateAsync: createStudent, isPending } = useCreateStudent();
-  const { data: schedules, isFetching: isSchedulesFetching } =
-    useGetAllClassSchedules({ scheduleStatus: "ACTIVE" }, { enabled: open });
+  const { mutateAsync: createStudent, isPending } = useGenericMutation<
+    StudentDetail,
+    StudentCreateRequest
+  >((data) => studentAPI.createStudent(data), [["students"]]);
+
+  const { data: schedules, isFetching: isSchedulesFetching } = useGetQuery(
+    ["class-schedules", { scheduleStatus: "ACTIVE" }],
+    () => classScheduleAPI.getAllClassSchedules({ scheduleStatus: "ACTIVE" }),
+    { enabled: open },
+  );
 
   const branchOptions = useMemo<BranchOption[]>(() => {
     const branchMap = new Map<number, string>();

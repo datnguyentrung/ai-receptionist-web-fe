@@ -1,0 +1,87 @@
+.profileSection {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+.sectionIcon {
+  margin-left: auto;
+  opacity: 0.4;
+}
+
+.profileList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profileItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-size: 13px;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.profileItemActive {
+  background: rgba(224, 32, 32, 0.15);
+  color: white;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(224, 32, 32, 0.2);
+    color: white;
+  }
+}
+
+.profileAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+}
+
+.profileName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

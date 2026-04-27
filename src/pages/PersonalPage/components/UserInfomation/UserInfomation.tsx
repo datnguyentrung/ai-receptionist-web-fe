@@ -16,9 +16,11 @@ import {
   type StudentStatus,
   type UserStatus,
 } from "@/config/constants";
-import { useUpdateCoach } from "@/features/coach";
-import { useUpdateStudent } from "@/features/student";
-import type { CoachDetail, StudentDetail } from "@/types";
+import { coachAPI } from "@/features/coach/api/coachAPI";
+import { studentAPI } from "@/features/student/api/studentAPI";
+import { usePlainMutation } from "@/hooks/useCrud";
+import { useQueryClient } from "@tanstack/react-query";
+import type { CoachDetail, CoachUpdateRequest, StudentDetail, StudentUpdateRequest } from "@/types";
 import { formatDateDMY, formatDateDMYHM } from "@/utils/format";
 import { useRoleStudent } from "@/utils/roleUtils";
 import type { LucideIcon } from "lucide-react";
@@ -192,8 +194,29 @@ export default function UserInfomation() {
   const { canViewHeadCoach, canViewManagerSenior } = useRoleStudent();
   const context = useOutletContext<OutletContextType>();
   const profile = context?.data;
-  const updateStudentMutation = useUpdateStudent();
-  const updateCoachMutation = useUpdateCoach();
+  const queryClient = useQueryClient();
+  const updateStudentMutation = usePlainMutation<
+    StudentDetail,
+    { id: number; studentCode?: string; data: StudentUpdateRequest }
+  >(({ id, data }) => studentAPI.updateStudent(id, data), {
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      if (variables.studentCode) {
+        queryClient.invalidateQueries({ queryKey: ["students", variables.studentCode] });
+      }
+    },
+  });
+  const updateCoachMutation = usePlainMutation<
+    CoachDetail,
+    { id: number; staffCode?: string; data: CoachUpdateRequest }
+  >(({ id, data }) => coachAPI.updateCoach(id, data), {
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["coaches"] });
+      if (variables.staffCode) {
+        queryClient.invalidateQueries({ queryKey: ["coaches", variables.staffCode] });
+      }
+    },
+  });
   const [isEditMode, setIsEditMode] = useState(false);
   const [studentForm, setStudentForm] = useState<StudentFormState | null>(null);
   const [coachForm, setCoachForm] = useState<CoachFormState | null>(null);

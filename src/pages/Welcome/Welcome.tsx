@@ -8,7 +8,7 @@ export default function Welcome() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.activeProfile);
 
   const hasToken = Boolean(accessToken) && isAuthenticated;
   const canViewExamResult = isCoach(user?.userInfo?.idRole);

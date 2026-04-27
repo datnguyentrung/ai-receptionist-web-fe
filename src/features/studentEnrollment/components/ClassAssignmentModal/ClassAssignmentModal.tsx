@@ -14,16 +14,14 @@ import {
   ScheduleShiftLabel,
   WeekdayCodeToLabel,
 } from "@/config/constants";
-import { useGetAllClassSchedules } from "@/features/classSchedule";
-import {
-  useCreateStudentEnrollment,
-  useDeleteStudentEnrollment,
-  useGetDetailedStudentEnrollmentsByStudentCode,
-} from "@/features/studentEnrollment";
+import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
+import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
   CoachAssignmentCreateRequest,
+  StudentEnrollmentCreateRequest,
   StudentEnrollmentResponse,
   StudentOverview,
 } from "@/types";
@@ -128,16 +126,33 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
   const shouldFetchSchedules = cachedSchedules.length === 0;
   const studentCode = initialStudent?.studentCode ?? "";
 
-  const { data: fetchedSchedules } = useGetAllClassSchedules(
-    { scheduleStatus: "ACTIVE" },
+  const { data: fetchedSchedules } = useGetQuery(
+    ["class-schedules", { scheduleStatus: "ACTIVE" }],
+    () => classScheduleAPI.getAllClassSchedules({ scheduleStatus: "ACTIVE" }),
     { enabled: shouldFetchSchedules },
   );
 
   const { data: detailedEnrollments, isLoading: isStudentEnrollmentsLoading } =
-    useGetDetailedStudentEnrollmentsByStudentCode(studentCode);
+    useGetQuery(
+      ["student-enrollments", "student", studentCode, "detailed"],
+      () =>
+        studentEnrollmentAPI.getDetailedStudentEnrollmentsByStudentCode(
+          studentCode,
+        ),
+      { enabled: !!studentCode },
+    );
 
-  const createEnrollmentMutation = useCreateStudentEnrollment();
-  const deleteEnrollmentMutation = useDeleteStudentEnrollment();
+  const createEnrollmentMutation = useGenericMutation<
+    StudentEnrollmentResponse[],
+    StudentEnrollmentCreateRequest
+  >(
+    (data) => studentEnrollmentAPI.createStudentEnrollment(data),
+    [["student-enrollments"]],
+  );
+  const deleteEnrollmentMutation = useGenericMutation<void, string>(
+    (id) => studentEnrollmentAPI.deleteStudentEnrollment(id),
+    [["student-enrollments"]],
+  );
 
   useEffect(() => {
     if (!fetchedSchedules?.length || typeof window === "undefined") {

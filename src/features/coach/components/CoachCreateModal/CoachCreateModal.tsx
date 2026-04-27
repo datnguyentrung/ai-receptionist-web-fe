@@ -8,10 +8,11 @@ import {
   type CoachStatus,
 } from "@/config/constants";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal";
-import type { CoachAssignmentCreateRequest, CoachCreateRequest } from "@/types";
+import type { CoachAssignmentCreateRequest, CoachCreateRequest, CoachDetail } from "@/types";
 import { useState } from "react";
 
-import { useCreateCoach } from "../../api/useCoach";
+import { coachAPI } from "../../api/coachAPI";
+import { useGenericMutation } from "@/hooks/useCrud";
 import "./CoachCreateModal.scss";
 
 type CoachCreateModalProps = {
@@ -126,7 +127,10 @@ function isFutureDate(value: string) {
 }
 
 export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
-  const { mutateAsync: createCoach, isPending } = useCreateCoach();
+  const { mutateAsync: createCoach, isPending } = useGenericMutation<CoachDetail, CoachCreateRequest>(
+    (data) => coachAPI.createCoach(data),
+    [["coaches"]],
+  );
   const [form, setForm] = useState<CoachCreateRequest>(INITIAL_FORM);
 
   const setField = <K extends keyof CoachCreateRequest>(

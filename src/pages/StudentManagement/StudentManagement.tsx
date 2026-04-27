@@ -1,5 +1,6 @@
 import { ModalLayout } from "@/components/ui/modal-layout";
-import { useGetStudents } from "@/features/student";
+import { studentAPI } from "@/features/student/api/studentAPI";
+import { useGetQuery } from "@/hooks/useCrud";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
 import { useState } from "react";
 import { Pagination } from "../../components/Pagination";
@@ -38,12 +39,13 @@ export function StudentManagement() {
   const [isAttendanceHistoryOpen, setIsAttendanceHistoryOpen] = useState(false);
   const [studentForHistory, setStudentForHistory] =
     useState<StudentOverview | null>(null);
-  const userInfo = useAuthStore((state) => state.user);
+  const userInfo = useAuthStore((state) => state.activeProfile);
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isFetching: isStudentsFetching } = useGetStudents(
-    {
+  const { data, isFetching: isStudentsFetching } = useGetQuery(
+    ["students", { search: debouncedSearch, status: statusFilter, scheduleIds: userInfo?.userInfo?.assignedClasses?.map((c) => c?.classSchedule?.scheduleId)?.filter((id): id is string => Boolean(id)) ?? [], page: page - 1, size: 10 }],
+    () => studentAPI.getStudents({
       search: debouncedSearch,
       status: statusFilter === "all" ? undefined : statusFilter,
       scheduleIds:
@@ -52,10 +54,8 @@ export function StudentManagement() {
           ?.filter((id): id is string => Boolean(id)) ?? [],
       page: page - 1,
       size: 10,
-    },
-    {
-      enabled: !!userInfo,
-    },
+    }),
+    { enabled: !!userInfo },
   );
 
   const list = data?.students.content ?? [];

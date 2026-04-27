@@ -5,8 +5,9 @@ import {
   CoachFilters,
   CoachUpdateModal,
   useCoachesGroupedByRole,
-  useGetAllCoaches,
 } from "@/features/coach";
+import { coachAPI } from "@/features/coach/api/coachAPI";
+import { useGetQuery } from "@/hooks/useCrud";
 import { Plus, Users } from "lucide-react";
 import { useState } from "react";
 import type { CoachStatus } from "../../config/constants";
@@ -22,7 +23,10 @@ export function CoachManagement() {
     null,
   );
 
-  const { data: coaches, isLoading } = useGetAllCoaches();
+  const { data: coaches, isLoading } = useGetQuery(
+    ["coaches"],
+    coachAPI.getAllCoaches,
+  );
 
   const coachGroups = useCoachesGroupedByRole(coaches || [], search, filter);
 

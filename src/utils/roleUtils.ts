@@ -38,9 +38,9 @@ export const useRoleStudent = () => {
   // Destructure { idRole, isAuthenticated } ra khỏi object trả về
   const { user, idRole, idUser } = useAuthStore(
     useShallow((state) => ({
-      user: state.user,
-      idRole: state.user?.userInfo?.idRole,
-      idUser: state.user?.userInfo?.idUser,
+      user: state.activeProfile,
+      idRole: state.activeProfile?.userInfo?.idRole,
+      idUser: state.activeProfile?.userInfo?.idUser,
     })),
   );
 
@@ -82,7 +82,7 @@ export const useUserLevel = () => {
   const { idRole, isAuthenticated } = useAuthStore(
     useShallow((state) => ({
       isAuthenticated: state.isAuthenticated,
-      idRole: state.user?.userInfo?.idRole,
+      idRole: state.activeProfile?.userInfo?.idRole,
     })),
   );
 

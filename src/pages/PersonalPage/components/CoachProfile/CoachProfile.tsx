@@ -1,10 +1,15 @@
-import { useGetCoachByStaffCode } from "@/features/coach";
+import { coachAPI } from "@/features/coach/api/coachAPI";
+import { useGetQuery } from "@/hooks/useCrud";
 import { ProfileHeader } from "../ProfileHeader";
 import { TabViews } from '../TabViews';
 
 export default function CoachProfile({ userCode }: { userCode: string }) {
   // Không cần enabled, vì component này đã render thì chắc chắn là Coach
-  const { data: coachData, isFetching } = useGetCoachByStaffCode(userCode);
+  const { data: coachData, isFetching } = useGetQuery(
+    ["coaches", userCode],
+    () => coachAPI.getCoachByStaffCode(userCode),
+    { enabled: !!userCode, staleTime: 5 * 60 * 1000 },
+  );
 
   if (isFetching) return <div>Đang tải thông tin HLV...</div>;
   if (!coachData) return <div>Không tìm thấy HLV.</div>;

@@ -1,6 +1,7 @@
 import { cn } from "@/components/ui/utils";
 import type { StudentStatus } from "@/config/constants";
-import { useGetStudents } from "@/features/student";
+import { studentAPI } from "@/features/student/api/studentAPI";
+import { useGetQuery } from "@/hooks/useCrud";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { StudentOverview } from "@/types";
 import { Search, X } from "lucide-react";
@@ -31,14 +32,15 @@ export default function StudentSearch({
   const debouncedSearch = useDebounce(search, 500);
   const { canViewManagerSenior } = useRoleStudent();
 
-  const { data } = useGetStudents(
-    {
+  const { data } = useGetQuery(
+    ["students", { search: debouncedSearch, status: "ACTIVE" }],
+    () => studentAPI.getStudents({
       search: debouncedSearch,
       status: "ACTIVE" as StudentStatus,
       scheduleIds: undefined,
       page: 0,
       size: 10,
-    },
+    }),
     {
       enabled: canViewManagerSenior && !!debouncedSearch.trim(),
     },

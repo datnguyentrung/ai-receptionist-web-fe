@@ -1,12 +1,9 @@
 import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
 import ConfirmModal from "@/components/ConfirmModal";
 import { showErrorToast, showInfoToast } from "@/components/ui/toast";
-import {
-  useCreateCoachAssignment,
-  useDeleteCoachAssignment,
-  useGetCoachAssignmentsByCoachId,
-} from "@/features/coach/api/useCoachAssignment";
+import { coachAssignmentAPI } from "@/features/coach/api/coachAssignmentAPI";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
+import { useGetQuery, useGenericMutation } from "@/hooks/useCrud";
 import type {
   CoachAssignmentCreateRequest,
   CoachAssignmentResponse,
@@ -66,7 +63,11 @@ export default function CoachUpdateModal({
     useState<CoachAssignmentResponse | null>(null);
 
   const { data: coachAssignments = [], isLoading: isCoachAssignmentsLoading } =
-    useGetCoachAssignmentsByCoachId(coach?.userId ?? "");
+    useGetQuery(
+      ["coach-assignments", coach?.userId ?? ""],
+      () => coachAssignmentAPI.getAssignmentsByCoachId(coach?.userId ?? ""),
+      { enabled: !!coach?.userId },
+    );
 
   const activeAssignments = useMemo(
     () =>
@@ -81,12 +82,18 @@ export default function CoachUpdateModal({
   );
 
   const { mutate: createCoachAssignment, isPending: isCreatingAssignment } =
-    useCreateCoachAssignment();
+    useGenericMutation<CoachAssignmentSimpleResponse[], CoachAssignmentCreateRequest>(
+      (request) => coachAssignmentAPI.createCoachAssignment(request),
+      [["coach-assignments"]],
+    );
 
   const {
     mutateAsync: deleteCoachAssignment,
     isPending: isDeletingAssignment,
-  } = useDeleteCoachAssignment();
+  } = useGenericMutation<void, string>(
+    (id) => coachAssignmentAPI.deleteCoachAssignment(id),
+    [["coach-assignments"]],
+  );
 
   const handleOpenDeleteConfirm = (assignment: CoachAssignmentResponse) => {
     setPendingDeleteAssignment(assignment);
