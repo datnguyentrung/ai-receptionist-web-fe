@@ -1,525 +1,496 @@
 @use "../../../../styles/variables" as v;
 
+// Optional: Mixin nhỏ giúp gom nhanh flex
+@mixin flex-center($justify: flex-start, $gap: 0) {
+  display: flex;
+  align-items: center;
+  justify-content: $justify;
+  gap: $gap;
+}
+
 .views {
+  $root: &; // Lưu lại base class ".views" để dùng ở các nested scope
+
   display: flex;
   flex-direction: column;
   gap: 1rem;
   font-family: v.$font-sans;
   min-width: 0;
-}
 
-.views__tabs-list {
-  width: 100%;
-  min-height: 3rem;
-  display: flex;
-  align-items: stretch;
-  gap: 0.5rem;
-  padding: 0.4rem;
-  border-radius: 1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 241, 241, 0.96) 0%,
-    rgba(255, 248, 248, 0.96) 55%,
-    rgba(245, 244, 250, 0.96) 100%
-  );
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
+  // ================= TABS =================
+  &__tabs-list {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 0.5rem;
   }
-}
 
-.views__tab-trigger {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  min-width: 9.25rem;
-  min-height: calc(3rem - 0.8rem);
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(226, 203, 203, 0.9);
-  font-weight: 600;
-  color: v.$brand-dark;
-  box-shadow: 0 2px 8px rgba(26, 26, 46, 0.05);
-  line-height: 1.15;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+  &__tab-trigger {
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
 
-  &[data-state="active"] {
-    background: linear-gradient(135deg, v.$brand-red 0%, v.$brand-red-700 100%);
-    color: #ffffff;
-    box-shadow: 0 10px 22px rgba(224, 32, 32, 0.22);
+    &.active {
+      color: #e02020;
 
-    .views__tab-icon {
-      color: #ffffff;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #e02020;
+        border-radius: 9999px 9999px 0 0;
+        box-shadow: 0 -2px 8px rgba(224, 32, 32, 0.4);
+      }
+    }
+
+    &.inactive {
+      color: #6b7280;
+
+      &:hover {
+        color: #374151;
+      }
     }
   }
-}
 
-.views__tab-icon {
-  display: inline-flex;
-  align-items: center;
-  color: v.$brand-red;
-}
+  &__tab-icon {
+    display: inline-flex;
+    align-items: center;
+    color: v.$brand-red;
 
-.views__tab-content {
-  margin-top: 0.5rem;
-  min-width: 0;
-}
-
-.views__tab-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  animation: fade-in 0.25s ease;
-  min-width: 0;
-}
-
-.views__tab-panel--tight {
-  gap: 1rem;
-}
-
-.views__section-title {
-  margin: 0;
-  font-size: 1rem;
-  font-family: "Poppins", v.$font-sans;
-  font-weight: 700;
-  color: v.$text-heading;
-  line-height: 1.25;
-}
-
-.views__section-title--with-gap {
-  margin-bottom: 0.25rem;
-}
-
-.views__info-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-.views__full-width-card {
-  grid-column: 1 / -1;
-}
-
-.views__card-content {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.views__card-content--compact {
-  align-items: center;
-  padding: 0.9rem;
-}
-
-.views__card-content--split {
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0.9rem;
-}
-
-.views__branch-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.views__meta-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.views__meta-stack--right {
-  align-items: flex-start;
-}
-
-.views__icon-box {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.625rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.views__icon-box--blue {
-  background: #fcecec;
-  color: v.$brand-red-700;
-}
-
-.views__icon-box--emerald {
-  background: #fff1f1;
-  color: v.$brand-red;
-}
-
-.views__icon-box--amber {
-  background: #f8f4ef;
-  color: v.$brand-dark;
-}
-
-.views__meta-label {
-  margin: 0;
-  font-size: 0.72rem;
-  color: v.$text-muted;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.views__meta-value {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: v.$text-primary;
-}
-
-.views__status-badge {
-  border: 0;
-  padding: 0.2rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.views__status-badge--success {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.views__status-badge--warning {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.views__status-badge--danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.views__status-badge--neutral {
-  background: #e5e7eb;
-  color: #1f2937;
-}
-
-.views__enrollment-card {
-  overflow: hidden;
-  border-left: 4px solid v.$brand-red;
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 10px 24px rgba(26, 26, 46, 0.09);
+    @media (max-width: 640px) {
+      width: 1rem;
+      height: 1rem;
+    }
   }
-}
 
-.views__enrollment-content {
-  padding: 1rem;
-}
+  &__tab-content {
+    margin-top: 0.5rem;
+    min-width: 0;
+  }
 
-.views__enrollment-row {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+  &__tab-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fade-in 0.25s ease;
+    min-width: 0;
 
-.views__enrollment-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+    &--tight {
+      gap: 1rem;
+    }
+  }
 
-.views__enrollment-title {
-  margin: 0;
-  font-size: 1rem;
-  color: v.$text-primary;
-  font-weight: 700;
-}
+  // ================= GENERAL TYPOGRAPHY & LAYOUT =================
+  &__section-title {
+    margin: 0;
+    font-size: 1rem;
+    font-family: "Poppins", v.$font-sans;
+    font-weight: 700;
+    color: v.$text-heading;
+    line-height: 1.25;
 
-.views__enrollment-subline {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: v.$text-secondary;
-  font-size: 0.875rem;
-}
+    &--with-gap {
+      margin-bottom: 0.25rem;
+    }
+    @media (max-width: 640px) {
+      font-size: 0.95rem;
+    }
+  }
 
-.views__enrollment-side {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
+  &__info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
 
-.views__enrollment-note {
-  font-size: 0.75rem;
-  color: v.$text-muted;
-  font-style: italic;
-}
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 
-.views__table-card {
-  border: 1px solid #f0dfdf;
-  border-radius: 1rem;
-  background: #ffffff;
-  box-shadow: 0 3px 12px rgba(26, 26, 46, 0.05);
-  overflow: hidden;
-}
+  &__full-width-card {
+    grid-column: 1 / -1;
+  }
 
-.views__table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
+  // ================= CARDS & META DATA =================
+  &__card-content {
+    display: flex;
+    gap: 0.75rem;
 
-.views__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-}
+    &--compact {
+      align-items: center;
+      padding: 0.9rem;
+      @media (max-width: 640px) {
+        padding: 0.875rem;
+      }
+    }
 
-.views__table-head-row {
-  background: #fff8f8;
-  border-bottom: 1px solid #f0dfdf;
+    &--split {
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 0.9rem;
 
-  th {
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+      @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+      }
+      @media (max-width: 640px) {
+        padding: 0.875rem;
+      }
+    }
+  }
+
+  &__branch-wrap {
+    @include flex-center(flex-start, 0.75rem);
+  }
+
+  &__meta-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &--right {
+      align-items: flex-start;
+      @media (min-width: 768px) {
+        align-items: flex-end;
+      }
+    }
+  }
+
+  &__icon-box {
+    @include flex-center(center);
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+
+    &--blue {
+      background: #fcecec;
+      color: v.$brand-red-700;
+    }
+    &--emerald {
+      background: #fff1f1;
+      color: v.$brand-red;
+    }
+    &--amber {
+      background: #f8f4ef;
+      color: v.$brand-dark;
+    }
+  }
+
+  &__meta-label {
+    margin: 0;
+    font-size: 0.72rem;
     color: v.$text-muted;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__meta-value {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: v.$text-primary;
+  }
+
+  // ================= BADGES =================
+  &__status-badge {
+    border: 0;
+    padding: 0.2rem 0.625rem;
     font-size: 0.75rem;
+    font-weight: 700;
+
+    &--success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    &--warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    &--danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    &--neutral {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+  }
+
+  &__paid-badge {
+    border: 0;
+    padding: 0.125rem 0.5rem;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 0.625rem;
+    font-weight: 700;
+  }
+
+  // ================= ENROLLMENT =================
+  &__enrollment-card {
+    overflow: hidden;
+    border-left: 4px solid v.$brand-red;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 10px 24px rgba(26, 26, 46, 0.09);
+    }
+  }
+
+  &__enrollment-content {
+    padding: 1rem;
+    @media (max-width: 640px) {
+      padding: 0.875rem;
+    }
+  }
+
+  &__enrollment-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__enrollment-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__enrollment-title {
+    margin: 0;
+    font-size: 1rem;
+    color: v.$text-primary;
+    font-weight: 700;
+  }
+
+  &__enrollment-subline {
+    @include flex-center(flex-start, 0.5rem);
+    margin: 0;
+    color: v.$text-secondary;
+    font-size: 0.875rem;
+  }
+
+  &__enrollment-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    @media (min-width: 768px) {
+      align-items: flex-end;
+    }
+  }
+
+  &__enrollment-note {
+    font-size: 0.75rem;
+    color: v.$text-muted;
+    font-style: italic;
+  }
+
+  // ================= TABLES =================
+  &__table-card {
+    border: 1px solid #f0dfdf;
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: 0 3px 12px rgba(26, 26, 46, 0.05);
+    overflow: hidden;
+  }
+
+  &__table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    @media (max-width: 640px) {
+      font-size: 0.78rem;
+    }
+  }
+
+  &__table-head-row {
+    background: #fff8f8;
+    border-bottom: 1px solid #f0dfdf;
+
+    th {
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: v.$text-muted;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+  }
+
+  &__th,
+  &__td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    @media (max-width: 640px) {
+      padding: 0.7rem 0.85rem;
+    }
+  }
+
+  &__td {
+    border-top: 1px solid #f8ecec;
+    color: v.$text-secondary;
+
+    &--strong {
+      font-weight: 600;
+      color: v.$text-primary;
+    }
+    &--mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    &--note {
+      max-width: 13rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-style: italic;
+      @media (max-width: 640px) {
+        max-width: 10rem;
+      }
+    }
+  }
+
+  &__tr {
+    transition: background-color 0.15s ease;
+    &:hover {
+      background: #fff8f8;
+    }
+  }
+
+  // ================= EVALUATIONS =================
+  &__evaluation {
+    font-weight: 600;
+    &--good {
+      color: #059669;
+    }
+    &--bad {
+      color: #dc2626;
+    }
+    &--pass {
+      color: #2563eb;
+    }
+  }
+
+  // ================= TUITION =================
+  &__tuition-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  &__tuition-card {
+    border-left: 4px solid v.$brand-red;
+    transition: box-shadow 0.2s ease;
+    &:hover {
+      box-shadow: 0 8px 20px rgba(26, 26, 46, 0.08);
+    }
+  }
+
+  &__tuition-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    @media (max-width: 640px) {
+      padding: 0.875rem;
+    }
+  }
+
+  &__tuition-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__tuition-amount-row {
+    @include flex-center(flex-start, 0.625rem);
+  }
+
+  &__tuition-amount {
+    margin: 0;
+    font-size: 1rem;
+    font-family: "Poppins", v.$font-sans;
+    color: v.$text-primary;
+    font-weight: 700;
+  }
+
+  &__tuition-time {
+    margin: 0;
+    font-size: 0.875rem;
+    color: v.$text-secondary;
+  }
+
+  &__tuition-meta {
+    width: 100%;
+    border: 1px solid #f1e4e4;
+    border-radius: 0.625rem;
+    background: #fff9f9;
+    padding: 0.75rem;
+    color: v.$text-secondary;
+    font-size: 0.875rem;
+
+    @media (min-width: 768px) {
+      width: auto;
+      min-width: 16rem;
+    }
+
+    p {
+      margin: 0;
+      + p {
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  &__tuition-key {
+    color: v.$text-muted;
+    font-weight: 600;
+  }
+
+  &__tuition-allocation {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #d0d5dd;
+    color: #047857;
     font-weight: 700;
   }
 }
 
-.views__th,
-.views__td {
-  padding: 0.8rem 1rem;
-  text-align: left;
-}
-
-.views__td {
-  border-top: 1px solid #f8ecec;
-  color: v.$text-secondary;
-}
-
-.views__tr {
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background: #fff8f8;
-  }
-}
-
-.views__td--strong {
-  font-weight: 600;
-  color: v.$text-primary;
-}
-
-.views__td--mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-.views__td--note {
-  max-width: 13rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-style: italic;
-}
-
-.views__evaluation {
-  font-weight: 600;
-}
-
-.views__evaluation--good {
-  color: #059669;
-}
-
-.views__evaluation--bad {
-  color: #dc2626;
-}
-
-.views__evaluation--pass {
-  color: #2563eb;
-}
-
-.views__tuition-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.views__tuition-card {
-  border-left: 4px solid v.$brand-red;
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 8px 20px rgba(26, 26, 46, 0.08);
-  }
-}
-
-.views__tuition-content {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-}
-
-.views__tuition-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.views__tuition-amount-row {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-}
-
-.views__tuition-amount {
-  margin: 0;
-  font-size: 1rem;
-  font-family: "Poppins", v.$font-sans;
-  color: v.$text-primary;
-  font-weight: 700;
-}
-
-.views__paid-badge {
-  border: 0;
-  padding: 0.125rem 0.5rem;
-  background: #d1fae5;
-  color: #065f46;
-  font-size: 0.625rem;
-  font-weight: 700;
-}
-
-.views__tuition-time {
-  margin: 0;
-  font-size: 0.875rem;
-  color: v.$text-secondary;
-}
-
-.views__tuition-meta {
-  width: 100%;
-  border: 1px solid #f1e4e4;
-  border-radius: 0.625rem;
-  background: #fff9f9;
-  padding: 0.75rem;
-  color: v.$text-secondary;
-  font-size: 0.875rem;
-
-  p {
-    margin: 0;
-
-    + p {
-      margin-top: 0.25rem;
-    }
-  }
-}
-
-.views__tuition-key {
-  color: v.$text-muted;
-  font-weight: 600;
-}
-
-.views__tuition-allocation {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #d0d5dd;
-  color: #047857;
-  font-weight: 700;
-}
-
+// Global Keyframes
 @keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(0.5rem);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media (min-width: 768px) {
-  .views__tabs-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-    overflow-x: visible;
-  }
-
-  .views__tab-trigger {
-    min-width: 0;
-  }
-
-  .views__info-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .views__card-content--split {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .views__meta-stack--right,
-  .views__enrollment-side {
-    align-items: flex-end;
-  }
-
-  .views__enrollment-row,
-  .views__tuition-content {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .views__tuition-meta {
-    width: auto;
-    min-width: 16rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .views__tab-trigger {
-    min-width: 8.75rem;
-    padding: 0.7rem 0.9rem;
-    font-size: 0.85rem;
-  }
-
-  .views__tab-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  .views__section-title {
-    font-size: 0.95rem;
-  }
-
-  .views__card-content--compact,
-  .views__card-content--split,
-  .views__enrollment-content,
-  .views__tuition-content {
-    padding: 0.875rem;
-  }
-
-  .views__table {
-    font-size: 0.78rem;
-  }
-
-  .views__th,
-  .views__td {
-    padding: 0.7rem 0.85rem;
-  }
-
-  .views__td--note {
-    max-width: 10rem;
   }
 }

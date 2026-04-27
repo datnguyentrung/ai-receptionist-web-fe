@@ -1,0 +1,225 @@
+@use "../../../../styles/variables" as v;
+
+.attendance-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  animation: fade-in 0.25s ease;
+}
+
+.attendance-tab__hero-card,
+.attendance-tab__item-card,
+.attendance-tab__empty-card,
+.attendance-tab__empty-state-card {
+  border: 1px solid #f1e4e4;
+  box-shadow: 0 8px 24px rgba(26, 26, 46, 0.05);
+}
+
+.attendance-tab__hero-card {
+  background: linear-gradient(135deg, #fffdfd 0%, #fff6f6 52%, #fefefe 100%);
+}
+
+.attendance-tab__hero-content {
+  padding: 1.25rem;
+}
+
+.attendance-tab__hero-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.attendance-tab__hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.attendance-tab__eyebrow,
+.attendance-tab__footer-label,
+.attendance-tab__meta-label {
+  margin: 0;
+  color: v.$text-muted;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.attendance-tab__title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 700;
+  color: v.$text-heading;
+  line-height: 1.2;
+}
+
+.attendance-tab__subtitle {
+  margin: 0;
+  color: v.$text-secondary;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.attendance-tab__count-badge,
+.attendance-tab__status-badge {
+  border: 0;
+  font-weight: 700;
+}
+
+.attendance-tab__summary-grid,
+.attendance-tab__meta-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.attendance-tab__summary-grid {
+  margin-top: 1rem;
+}
+
+.attendance-tab__meta-grid {
+  margin-top: 1rem;
+}
+
+.attendance-tab__meta-item {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  border: 1px solid #f4e9e9;
+  background: #fffdfd;
+  border-radius: 0.95rem;
+  padding: 0.9rem 0.95rem;
+}
+
+.attendance-tab__meta-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  color: v.$brand-red-700;
+  flex-shrink: 0;
+}
+
+.attendance-tab__meta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.attendance-tab__meta-value {
+  margin: 0;
+  color: v.$text-primary;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.attendance-tab__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.attendance-tab__item-card {
+  overflow: hidden;
+  border-left: 4px solid v.$brand-red;
+}
+
+.attendance-tab__item-content {
+  padding: 1rem;
+}
+
+.attendance-tab__item-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.attendance-tab__item-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.attendance-tab__item-title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  color: v.$text-heading;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.attendance-tab__item-subtitle {
+  margin: 0;
+  color: v.$text-secondary;
+  font-size: 0.88rem;
+}
+
+.attendance-tab__footer-note {
+  margin-top: 1rem;
+  border-top: 1px solid #f4e9e9;
+  padding-top: 0.9rem;
+}
+
+.attendance-tab__footer-value {
+  margin: 0.2rem 0 0;
+  color: v.$text-primary;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.attendance-tab__empty-card,
+.attendance-tab__empty-state-card {
+  background: linear-gradient(135deg, #fffdfd 0%, #fff7f7 100%);
+}
+
+.attendance-tab__empty-content,
+.attendance-tab__empty-state-content {
+  padding: 1.35rem;
+}
+
+.attendance-tab__empty-title {
+  margin: 0;
+  font-family: "Poppins", v.$font-sans;
+  font-size: 1rem;
+  font-weight: 700;
+  color: v.$text-heading;
+}
+
+.attendance-tab__empty-text {
+  margin: 0.35rem 0 0;
+  color: v.$text-secondary;
+  font-size: 0.92rem;
+}
+
+@media (min-width: 720px) {
+  .attendance-tab__hero-top,
+  .attendance-tab__item-head {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .attendance-tab__summary-grid,
+  .attendance-tab__meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1080px) {
+  .attendance-tab__summary-grid,
+  .attendance-tab__meta-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

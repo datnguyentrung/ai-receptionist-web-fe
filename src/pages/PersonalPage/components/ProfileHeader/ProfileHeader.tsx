@@ -1,3 +1,7 @@
+import img from "@/assets/taekwondo.jpg";
+import Avatar from "@/components/Avatar";
+import type { CoachDetail, StudentDetail, UserResponse } from "@/types";
+import { formatDateDMY } from "@/utils/format";
 import {
   Award,
   Calendar,
@@ -7,31 +11,26 @@ import {
   Phone,
   User,
 } from "lucide-react";
+import { BeltBadge } from "../../../../components/BeltBadge";
 import S from "./ProfileHeader.module.scss";
 
 interface ProfileHeaderProps {
-  user: {
-    fullName: string;
-    belt: string;
-    role: string;
-    gender: string;
-    birthDate: string;
-    phone: string;
-    email: string;
-    avatarUrl: string;
-    coverUrl: string;
-  };
+  user: StudentDetail | CoachDetail;
+  currentUserData: UserResponse | null; // Thêm prop để nhận thông tin user đã đăng nhập
 }
 
-export default function ProfileHeader({ user }: ProfileHeaderProps) {
+export default function ProfileHeader({
+  user,
+  currentUserData,
+}: ProfileHeaderProps) {
+  console.log("ProfileHeader received user:", user); // Debug: Kiểm tra dữ liệu nhận được từ props
+  console.log("ProfileHeader received currentUserData:", currentUserData); // Debug: Kiểm tra dữ liệu user đã đăng nhập
+
   return (
     <div className={S.card}>
       {/* Cover Photo */}
       <div className={S.coverPhoto}>
-        <img
-          src={user.coverUrl}
-          alt="Cover"
-        />
+        <img src={img} alt="Cover" />
         <div className={S.coverOverlay}></div>
       </div>
 
@@ -40,12 +39,14 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         {/* Avatar Setup */}
         <div className={S.topRow}>
           <div className={S.avatarWrapper}>
-            <div className={S.avatar}>
-              <img
-                src={user.avatarUrl}
-                alt={user.fullName}
-              />
-            </div>
+            <Avatar
+              fullName={user.fullName || ""}
+              fontSize="31px"
+              fontWeight={500}
+              width="8rem"
+              height="8rem"
+              className={S.avatar}
+            />
           </div>
 
           {/* Action Buttons */}
@@ -64,21 +65,17 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         {/* Identity & Details */}
         <div className={S.identitySection}>
           <div className={S.nameRow}>
-            <h1 className={S.name}>
-              {user.fullName}
-            </h1>
+            <h1 className={S.name}>{user.fullName}</h1>
 
             <div className={S.badges}>
               {/* Belt Chip */}
               <div className={S.beltChip}>
                 <Award size={14} />
-                {user.belt}
+                <BeltBadge belt={user.belt} size="md" />
               </div>
 
               {/* Role Badge */}
-              <div className={S.roleBadge}>
-                {user.role}
-              </div>
+              <div className={S.roleBadge}>{user.role}</div>
             </div>
           </div>
 
@@ -89,7 +86,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
                 <User size={16} />
               </div>
               <span className={S.detailText}>
-                {user.gender}
+                {user.gender === true ? "Nam" : "Nữ"}
               </span>
             </div>
 
@@ -98,7 +95,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
                 <Calendar size={16} />
               </div>
               <span className={S.detailText}>
-                {user.birthDate}
+                {formatDateDMY(user.birthDate)}
               </span>
             </div>
 
@@ -107,18 +104,19 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
                 <Phone size={16} />
               </div>
               <span className={S.detailText}>
-                {user.phone}
+                {currentUserData?.userProfile.phone}{" "}
+                {/* Sử dụng số điện thoại từ currentUserData thay vì user */}
               </span>
             </div>
 
-            <div className={S.detailItem}>
-              <div className={`${S.detailIcon} ${S.purple}`}>
-                <Mail size={16} />
+            {"email" in user && user.email && (
+              <div className={S.detailItem}>
+                <div className={`${S.detailIcon} ${S.purple}`}>
+                  <Mail size={16} />
+                </div>
+                <span className={S.detailText}>{user.email}</span>
               </div>
-              <span className={S.detailText}>
-                {user.email}
-              </span>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -21,19 +21,16 @@ import {
   CalendarDays,
   Clock,
   CreditCard,
-  GraduationCap,
   Landmark,
   MapPinned,
   Route,
   School2,
-  UserCheck,
-  Users,
 } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import "./ScheduleAssignments.scss";
 
 type OutletContextType = {
-  data?: StudentDetail | CoachDetail;
+  user?: StudentDetail | CoachDetail;
 };
 
 type TimelineRecord =
@@ -52,14 +49,6 @@ const enrollmentStatusLabel: Record<StudentEnrollmentStatus, string> = {
   TRANSFERRED: "Chuyển lớp",
   DROPPED: "Nghỉ học",
 };
-
-function formatValue(value: unknown) {
-  if (value === null || value === undefined || value === "") {
-    return "Chưa cập nhật";
-  }
-
-  return String(value);
-}
 
 function getStatusBadgeVariant(status: string) {
   switch (status) {
@@ -146,7 +135,7 @@ function MetaItem({ label, value, icon: Icon }: MetaItemProps) {
 
 export default function ScheduleAssignments() {
   const context = useOutletContext<OutletContextType>();
-  const profile = context?.data;
+  const profile = context?.user;
 
   if (!profile) {
     return (
@@ -198,33 +187,6 @@ export default function ScheduleAssignments() {
             >
               {records.length} {getRecordLabel(profile)}
             </Badge>
-          </div>
-
-          <div className="schedule-assignments__summary-grid">
-            <MetaItem
-              label="Người dùng"
-              value={profile.fullName}
-              icon={UserCheck}
-            />
-            <MetaItem
-              label="Mã định danh"
-              value={
-                "studentCode" in profile
-                  ? profile.studentCode
-                  : profile.staffCode
-              }
-              icon={Users}
-            />
-            <MetaItem
-              label="Cấp đai"
-              value={formatValue(profile.belt)}
-              icon={GraduationCap}
-            />
-            <MetaItem
-              label="Cập nhật"
-              value={formatDateDMY(profile.updatedAt)}
-              icon={CalendarDays}
-            />
           </div>
         </CardContent>
       </Card>

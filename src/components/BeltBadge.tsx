@@ -1,68 +1,124 @@
+import { type Belt, BeltLabel } from "../config/constants";
+
 const BELT_MAP: Record<
-  string,
+  Belt,
   { bg: string; color: string; border: string; dot: string }
 > = {
-  "Đai Trắng": {
+  C10: {
     bg: "#FFFFFF",
     color: "#374151",
     border: "#D1D5DB",
     dot: "#9CA3AF",
   },
-  "Đai Vàng": {
+  C9: {
     bg: "#FFFBEB",
     color: "#92400E",
     border: "#FDE68A",
     dot: "#F59E0B",
   },
-  "Đai Xanh Lá": {
+  C8: {
+    bg: "#FFFBEB",
+    color: "#92400E",
+    border: "#FDE68A",
+    dot: "#F59E0B",
+  },
+  C7: {
     bg: "#F0FDF4",
     color: "#166534",
     border: "#86EFAC",
     dot: "#22C55E",
   },
-  "Đai Xanh Lam": {
+  C6: {
     bg: "#EFF6FF",
     color: "#1E40AF",
     border: "#93C5FD",
     dot: "#3B82F6",
   },
-  "Đai Đỏ": {
+  C5: {
+    bg: "#EFF6FF",
+    color: "#1E40AF",
+    border: "#93C5FD",
+    dot: "#3B82F6",
+  },
+  C4: {
     bg: "#FFF1F2",
     color: "#9F1239",
     border: "#FDA4AF",
     dot: "#F43F5E",
   },
-  "Đai Đen 1 Đẳng": {
+  C3: {
+    bg: "#FFF1F2",
+    color: "#9F1239",
+    border: "#FDA4AF",
+    dot: "#F43F5E",
+  },
+  C2: {
+    bg: "#FFF1F2",
+    color: "#9F1239",
+    border: "#FDA4AF",
+    dot: "#F43F5E",
+  },
+  C1: {
+    bg: "#FFF1F2",
+    color: "#9F1239",
+    border: "#FDA4AF",
+    dot: "#F43F5E",
+  },
+  D1: {
     bg: "#1F2937",
     color: "#F9FAFB",
     border: "#374151",
     dot: "#6B7280",
   },
-  "Đai Đen 2 Đẳng": {
+  D2: {
     bg: "#111827",
     color: "#F9FAFB",
     border: "#1F2937",
     dot: "#6B7280",
   },
-  "Đai Đen 3 Đẳng": {
+  D3: {
     bg: "#111827",
     color: "#F9FAFB",
     border: "#1F2937",
     dot: "#6B7280",
   },
-  "Đai Đen 4 Đẳng": {
+  D4: {
     bg: "#030712",
     color: "#F9FAFB",
     border: "#1F2937",
     dot: "#9CA3AF",
   },
-  "Đai Đen 5 Đẳng": {
+  D5: {
     bg: "#030712",
     color: "#F9FAFB",
     border: "#1F2937",
     dot: "#9CA3AF",
   },
-  "Đai Đen 7 Đẳng": {
+  D6: {
+    bg: "#030712",
+    color: "#F9FAFB",
+    border: "#1F2937",
+    dot: "#D1D5DB",
+  },
+  D7: {
+    bg: "#030712",
+    color: "#F9FAFB",
+    border: "#1F2937",
+    dot: "#D1D5DB",
+  },
+  D8: {
+    bg: "#030712",
+    color: "#F9FAFB",
+    border: "#1F2937",
+    dot: "#D1D5DB",
+  },
+  D9: {
+    bg: "#030712",
+    color: "#F9FAFB",
+    border: "#1F2937",
+    dot: "#D1D5DB",
+  },
+  D10: {
     bg: "#030712",
     color: "#F9FAFB",
     border: "#1F2937",
@@ -74,7 +130,7 @@ export function BeltBadge({
   belt,
   size = "sm",
 }: {
-  belt: string;
+  belt: Belt;
   size?: "xs" | "sm" | "md";
 }) {
   const style = BELT_MAP[belt] ?? {
@@ -111,7 +167,7 @@ export function BeltBadge({
           background: style.dot,
         }}
       />
-      {belt}
+      {BeltLabel[belt]}
     </span>
   );
 }

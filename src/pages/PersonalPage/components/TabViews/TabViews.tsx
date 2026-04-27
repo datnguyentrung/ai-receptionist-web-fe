@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "./TabViews.scss";
 
-import { STUDENT_TABS, COACH_TABS } from "@/config/constants/path";
+import { COACH_TABS, STUDENT_TABS } from "@/config/constants/path";
+import type { CoachDetail, StudentDetail } from "@/types";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import type { CoachDetail, StudentDetail } from '@/types';
 
 type TabViewsProps =
   | { userType: "student"; userInfo: StudentDetail }
@@ -39,7 +39,7 @@ export function TabViews({ userInfo, userType }: TabViewsProps) {
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="views__tab-trigger"
+              className={`views__tab-trigger ${location.pathname === tab.linkTo ? "active" : "inactive"}`}
             >
               <span className="views__tab-icon">
                 <Icon />
@@ -56,7 +56,7 @@ export function TabViews({ userInfo, userType }: TabViewsProps) {
         Giữ nguyên className "views__tab-content" để ăn CSS cũ.
       */}
       <TabsContent value={activeTabId} className="views__tab-content">
-        <Outlet context={{ data: userInfo }} />
+        <Outlet context={{ user: userInfo }} />
       </TabsContent>
     </Tabs>
   );

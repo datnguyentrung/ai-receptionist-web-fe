@@ -10,7 +10,7 @@ import type {
 export const studentEnrollmentAPI = {
   createStudentEnrollment: async (
     data: StudentEnrollmentCreateRequest,
-  ): Promise<StudentEnrollmentResponse> => {
+  ): Promise<StudentEnrollmentResponse[]> => {
     const response = await javaApi.post("/student-enrollments", data);
     return response.data;
   },

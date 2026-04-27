@@ -55,7 +55,7 @@ export interface UserDetail {
   status: UserStatus;
   createdAt: Date | string;
   updatedAt: Date | string;
-  lastLogin: Date | string | null;
+  lastLoginAt: Date | string;
   role: string;
   fullName: string;
   gender?: boolean;

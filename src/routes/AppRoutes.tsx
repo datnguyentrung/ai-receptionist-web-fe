@@ -4,9 +4,9 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
+import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
 import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
 import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
-import UserInfomation from "../pages/PersonalPage/components/UserInfomation";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
@@ -146,7 +146,7 @@ export default function AppRoutes() {
           <Route>
             <Route path="/:userCode" element={<PersonalPage />}>
               {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
-              <Route index element={<UserInfomation />} />
+              <Route index element={<PersonalInfoTab />} />
 
               {/* Các tab con của STUDENT */}
               <Route path="classes" element={<ScheduleAssignments />} />
