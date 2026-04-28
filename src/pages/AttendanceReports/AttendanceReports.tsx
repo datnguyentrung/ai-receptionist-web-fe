@@ -95,20 +95,18 @@ export function AttendanceReports() {
       },
     ],
     () =>
-      studentAttendanceAPI.filter(
+      studentAttendanceAPI.filter({
         search,
-        currentPage - 1,
-        PAGE_SIZE,
-        undefined,
-        undefined,
-        dateFilter ?? undefined,
+        page: currentPage - 1,
+        size: PAGE_SIZE,
+        sessionDate: dateFilter ?? undefined,
         attendanceStatuses,
         evaluationStatuses,
         belts,
-        branches,
+        branchIds: branches,
         scheduleLevels,
         scheduleIds,
-      ),
+      }),
     {
       enabled:
         !!search ||
