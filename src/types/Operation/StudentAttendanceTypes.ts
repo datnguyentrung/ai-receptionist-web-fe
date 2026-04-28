@@ -1,5 +1,10 @@
-import type { AttendanceStatus, EvaluationStatus } from '../../config/constants';
-import type { PageResponse, UserResponse } from '../index';
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+  ScheduleLevel,
+} from "../../config/constants";
+import type { PageResponse, UserResponse } from "../index";
 export interface AttendanceRecord extends UserResponse {
   audio_base64?: string;
 }
@@ -9,7 +14,7 @@ export interface AttendanceListResponse {
   attendances: PageResponse<StudentAttendanceResponse>;
 }
 
-export interface AttendanceStats{
+export interface AttendanceStats {
   totalRecords: number;
   attendanceRate: number; // Tỷ lệ điểm danh (0-100)
 
@@ -96,4 +101,19 @@ export interface AttendanceFullUpdateRequest {
   attendanceStatus?: AttendanceStatus;
   evaluationStatus?: EvaluationStatus;
   note?: string;
+}
+
+export interface AttendanceFilterParams {
+  search?: string;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+  sessionDate?: string | Date;
+  attendanceStatuses?: AttendanceStatus[];
+  evaluationStatuses?: EvaluationStatus[];
+  belts?: Belt[];
+  branchIds?: number[];
+  scheduleLevels?: ScheduleLevel[];
+  scheduleIds?: string[];
 }

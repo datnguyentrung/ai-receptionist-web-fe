@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { CoachAssignmentSection } from "@/features/studentEnrollment/components/CoachAssignmentSection/CoachAssignmentSection";
+import { CoachAssignmentSection } from "@/features/studentEnrollment/components/ClassAssignmentModal/CoachAssignmentSection";
 import { StudentAssignmentSection } from "../StudentAssignmentSection/StudentAssignmentSection";
 
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";

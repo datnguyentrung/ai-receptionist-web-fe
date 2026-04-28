@@ -60,21 +60,24 @@ export interface ClassScheduleCreateRequest {
   branchId: number;
   weekday: Weekday;
 
-  scheduleLevel: ScheduleLevel;
-  scheduleShift: ScheduleShift;
-  scheduleLocation: ScheduleLocation;
+  level: ScheduleLevel;
+  shift: ScheduleShift;
+  location: ScheduleLocation;
   scheduleStatus: ScheduleStatus;
 
   startTime: string; // Format: "HH:mm"
   endTime: string; // Format: "HH:mm"
+
+  monthlyFee: number;
+  quarterlyFee: number;
 }
 
 export interface ClassScheduleUpdateRequest {
   branchId?: number;
   coachIds?: number[];
-  scheduleLevel?: ScheduleLevel;
-  scheduleShift?: ScheduleShift;
-  scheduleLocation?: ScheduleLocation;
+  level?: ScheduleLevel;
+  shift?: ScheduleShift;
+  location?: ScheduleLocation;
   scheduleStatus?: ScheduleStatus;
   weekday?: Weekday;
   startTime?: string; // Format: "HH:mm"

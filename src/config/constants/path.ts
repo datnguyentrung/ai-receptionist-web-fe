@@ -36,6 +36,7 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     label: "Trang cá nhân",
     icon: UserRoundCheck, // Thay icon tùy ý bạn
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+    display: false, // Ẩn khỏi menu chính, chỉ dùng để điều hướng khi cần thiết
   },
   {
     path: "/",

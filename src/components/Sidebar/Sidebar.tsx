@@ -129,43 +129,47 @@ export default function Sidebar({
         {/* Nav */}
         <nav className={styles.nav}>
           <p className={styles.navLabel}>MENU CHÍNH</p>
-          {nav_items.map(({ path, label, icon: Icon }) => (
-            <NavLink
-              key={path}
-              to={path}
-              end={
-                path === "/" || (!!studentCode && path === `/${studentCode}`)
-              }
-              onClick={() => {
-                if (window.innerWidth < 768) setSidebarOpen(false);
-              }}
-              title={label}
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon
-                    size={18}
-                    style={{
-                      flexShrink: 0,
-                      color: isActive ? "white" : "rgba(255,255,255,0.5)",
-                    }}
-                  />
-                  <span
-                    className={styles.navLinkText}
-                    style={{
-                      fontWeight: isActive ? 600 : 400,
-                    }}
-                  >
-                    {label}
-                  </span>
-                  {isActive && <div className={styles.navActiveIndicator} />}
-                </>
-              )}
-            </NavLink>
-          ))}
+          {nav_items.map(({ path, label, icon: Icon, display = true }) => {
+            if (!display) return null;
+
+            return (
+              <NavLink
+                key={path}
+                to={path}
+                end={
+                  path === "/" || (!!studentCode && path === `/${studentCode}`)
+                }
+                onClick={() => {
+                  if (window.innerWidth < 768) setSidebarOpen(false);
+                }}
+                title={label}
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      size={18}
+                      style={{
+                        flexShrink: 0,
+                        color: isActive ? "white" : "rgba(255,255,255,0.5)",
+                      }}
+                    />
+                    <span
+                      className={styles.navLinkText}
+                      style={{
+                        fontWeight: isActive ? 600 : 400,
+                      }}
+                    >
+                      {label}
+                    </span>
+                    {isActive && <div className={styles.navActiveIndicator} />}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* Profile switcher (visible only when multi-profile) */}

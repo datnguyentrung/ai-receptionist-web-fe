@@ -40,6 +40,8 @@ export default function ClassList({
   variant = "stack",
   gridColumns = "auto",
 }: ClassListProps) {
+  console.log("Rendering ClassList with classList:", classList);
+
   return (
     <div
       className={cn(
@@ -78,81 +80,83 @@ export default function ClassList({
             variant === "grid" && gridColumns === 3 && styles.listRootGridThree,
           )}
         >
-          {classList.map((cls) => {
-            const isSelected = selectedIds.has(cls.scheduleId);
-            const isDisabled = disabledIds.has(cls.scheduleId);
+          {classList
+            .sort((a, b) => a.scheduleId.localeCompare(b.scheduleId))
+            .map((cls) => {
+              const isSelected = selectedIds.has(cls.scheduleId);
+              const isDisabled = disabledIds.has(cls.scheduleId);
 
-            return (
-              <div
-                key={cls.scheduleId}
-                className={cn(
-                  styles.classItem,
-                  variant === "grid" && styles.classItemGrid,
-                  isCompact && styles.classItemCompact,
-                  isSelected && styles.classItemSelected,
-                  isDisabled && styles.classItemDisabled,
-                  onAction && styles.classItemStaticAction,
-                )}
-                onClick={() => {
-                  if (onAction || isDisabled) {
-                    return;
-                  }
+              return (
+                <div
+                  key={cls.scheduleId}
+                  className={cn(
+                    styles.classItem,
+                    variant === "grid" && styles.classItemGrid,
+                    isCompact && styles.classItemCompact,
+                    isSelected && styles.classItemSelected,
+                    isDisabled && styles.classItemDisabled,
+                    onAction && styles.classItemStaticAction,
+                  )}
+                  onClick={() => {
+                    if (onAction || isDisabled) {
+                      return;
+                    }
 
-                  onToggle?.(cls.scheduleId);
-                }}
-              >
-                {!onAction && (
-                  <div className={styles.classCheck}>
-                    {isSelected && (
-                      <Check className={styles.checkIcon} strokeWidth={3} />
-                    )}
-                  </div>
-                )}
-
-                <div className={styles.content}>
-                  <div
-                    className={cn(
-                      styles.title,
-                      isCompact && styles.titleCompact,
-                    )}
-                  >
-                    {getLabelClassSchedule(cls.scheduleId)}
-                  </div>
-                  {cls.branchName && (
-                    <div className={styles.meta}>
-                      {cls.weekday && (
-                        <span className={styles.metaItem}>
-                          <Calendar size={11} className={styles.metaIcon} />
-                          {ScheduleLocationLabel[cls.scheduleLocation]}{" "}
-                          {formatTimeStringHM(cls.startTime)}
-                        </span>
+                    onToggle?.(cls.scheduleId);
+                  }}
+                >
+                  {!onAction && (
+                    <div className={styles.classCheck}>
+                      {isSelected && (
+                        <Check className={styles.checkIcon} strokeWidth={3} />
                       )}
-                      <span className={styles.metaItem}>
-                        <MapPin size={11} className={styles.metaIcon} />
-                        {ScheduleLevelLabel[cls.scheduleLevel] ||
-                          cls.branchName}
-                      </span>
+                    </div>
+                  )}
+
+                  <div className={styles.content}>
+                    <div
+                      className={cn(
+                        styles.title,
+                        isCompact && styles.titleCompact,
+                      )}
+                    >
+                      {getLabelClassSchedule(cls.scheduleId)}
+                    </div>
+                    {cls.branchName && (
+                      <div className={styles.meta}>
+                        {cls.weekday && (
+                          <span className={styles.metaItem}>
+                            <Calendar size={11} className={styles.metaIcon} />
+                            {ScheduleLocationLabel[cls.scheduleLocation]}{" "}
+                            {formatTimeStringHM(cls.startTime)}
+                          </span>
+                        )}
+                        <span className={styles.metaItem}>
+                          <MapPin size={11} className={styles.metaIcon} />
+                          {ScheduleLevelLabel[cls.scheduleLevel] ||
+                            cls.branchName}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {onAction && (
+                    <div className={styles.deleteWrapper}>
+                      <button
+                        type="button"
+                        className={styles.btnDelete}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onAction(cls.scheduleId);
+                        }}
+                      >
+                        {actionLabel || "Hành động"}
+                      </button>
                     </div>
                   )}
                 </div>
-
-                {onAction && (
-                  <div className={styles.deleteWrapper}>
-                    <button
-                      type="button"
-                      className={styles.btnDelete}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onAction(cls.scheduleId);
-                      }}
-                    >
-                      {actionLabel || "Hành động"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       )}
     </div>

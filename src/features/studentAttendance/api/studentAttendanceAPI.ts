@@ -1,13 +1,8 @@
-import type {
-  AttendanceStatus,
-  Belt,
-  EvaluationStatus,
-  ScheduleLevel,
-} from "@/config/constants";
 import { javaApi } from "@/lib/axiosInstance";
 import { ensureArray, ensureAttendanceListResponse } from "@/lib/runtimeGuards";
 import type {
   AttendanceBatchCreateRequest,
+  AttendanceFilterParams,
   AttendanceListResponse,
   AttendanceManualLogRequest,
   AttendanceUpdateEvaluationRequest,
@@ -17,7 +12,6 @@ import type {
 } from "@/types";
 
 export const studentAttendanceAPI = {
-  
   updateAttendance: async (
     data: StudentAttendanceSimpleResponse[],
   ): Promise<StudentAttendanceResponse[]> => {
@@ -74,35 +68,11 @@ export const studentAttendanceAPI = {
 
   /** GET /filter — Lọc danh sách điểm danh theo lịch học và ngày */
   filter: async (
-    search?: string,
-    page?: number,
-    size?: number,
-    sortBy?: string,
-    sortDir?: "asc" | "desc",
-
-    sessionDate?: string | Date,
-    attendanceStatuses?: AttendanceStatus[],
-    evaluationStatuses?: EvaluationStatus[],
-    belts?: Belt[],
-    branchIds?: number[],
-    scheduleLevels?: ScheduleLevel[],
-    scheduleIds?: string[],
+    params: AttendanceFilterParams = {},
   ): Promise<AttendanceListResponse> => {
     const response = await javaApi.get("/student-attendances", {
-      params: {
-        search,
-        sessionDate,
-        attendanceStatuses: attendanceStatuses,
-        evaluationStatuses: evaluationStatuses,
-        belts: belts,
-        branchIds: branchIds,
-        scheduleLevels: scheduleLevels,
-        scheduleIds: scheduleIds,
-        page,
-        size,
-        sortBy,
-        sortDir,
-      },
+      // Axios tự động bỏ qua các trường undefined trong params
+      params: params,
     });
 
     return ensureAttendanceListResponse(

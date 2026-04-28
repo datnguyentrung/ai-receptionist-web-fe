@@ -55,7 +55,10 @@ export function AttendanceReports() {
   >({});
 
   const { mutateAsync: updateAttendanceBatch, isPending: isSaving } =
-    useGenericMutation<StudentAttendanceResponse[], StudentAttendanceSimpleResponse[]>(
+    useGenericMutation<
+      StudentAttendanceResponse[],
+      StudentAttendanceSimpleResponse[]
+    >(
       (data) => studentAttendanceAPI.updateAttendance(data),
       [["student-attendance"]],
     );
@@ -76,23 +79,46 @@ export function AttendanceReports() {
   };
 
   const { data } = useGetQuery(
-    ["student-attendance", { search, dateFilter, attendanceStatuses, evaluationStatuses, belts, branches, scheduleLevels, scheduleIds, page: currentPage - 1, size: PAGE_SIZE }],
-    () => studentAttendanceAPI.filter(
-      search,
-      currentPage - 1,
-      PAGE_SIZE,
-      undefined,
-      undefined,
-      dateFilter ?? undefined,
-      attendanceStatuses,
-      evaluationStatuses,
-      belts,
-      branches,
-      scheduleLevels,
-      scheduleIds,
-    ),
+    [
+      "student-attendance",
+      {
+        search,
+        dateFilter,
+        attendanceStatuses,
+        evaluationStatuses,
+        belts,
+        branches,
+        scheduleLevels,
+        scheduleIds,
+        page: currentPage - 1,
+        size: PAGE_SIZE,
+      },
+    ],
+    () =>
+      studentAttendanceAPI.filter(
+        search,
+        currentPage - 1,
+        PAGE_SIZE,
+        undefined,
+        undefined,
+        dateFilter ?? undefined,
+        attendanceStatuses,
+        evaluationStatuses,
+        belts,
+        branches,
+        scheduleLevels,
+        scheduleIds,
+      ),
     {
-      enabled: !!search || !!dateFilter || !!attendanceStatuses || !!evaluationStatuses || !!belts || !!branches || !!scheduleLevels || !!scheduleIds,
+      enabled:
+        !!search ||
+        !!dateFilter ||
+        !!attendanceStatuses ||
+        !!evaluationStatuses ||
+        !!belts ||
+        !!branches ||
+        !!scheduleLevels ||
+        !!scheduleIds,
       staleTime: 5 * 60 * 1000,
     },
   );

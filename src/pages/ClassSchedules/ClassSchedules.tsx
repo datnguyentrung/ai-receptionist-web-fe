@@ -9,8 +9,8 @@ import {
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
-import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import styles from "./ClassSchedules.module.scss";
 
 export function ClassSchedules() {
@@ -30,15 +30,18 @@ export function ClassSchedules() {
   const {
     mutateAsync: changeClassScheduleStatus,
     isPending: isChangingStatus,
-  } = usePlainMutation<
-    void,
-    { id: string; newStatus: ScheduleStatus }
-  >(({ id, newStatus }) => classScheduleAPI.changeClassScheduleStatus(id, newStatus), {
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["class-schedules"] });
-      queryClient.invalidateQueries({ queryKey: ["class-schedules", variables.id] });
+  } = usePlainMutation<void, { id: string; newStatus: ScheduleStatus }>(
+    ({ id, newStatus }) =>
+      classScheduleAPI.changeClassScheduleStatus(id, newStatus),
+    {
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: ["class-schedules"] });
+        queryClient.invalidateQueries({
+          queryKey: ["class-schedules", variables.id],
+        });
+      },
     },
-  });
+  );
 
   const openChangeStatusModal = useCallback(
     (scheduleId: string, currentStatus: ScheduleStatus) => {
@@ -114,6 +117,9 @@ export function ClassSchedules() {
             activeClasses={
               classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE")
                 .length || 0
+            }
+            classSchedules={
+              classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE") || []
             }
             view={view}
             onViewChange={setView}
