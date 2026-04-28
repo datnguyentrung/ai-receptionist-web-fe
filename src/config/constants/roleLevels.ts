@@ -5,6 +5,7 @@ export const ROLE_LEVELS = {
   COACH: 3,
   MANAGER_SENIOR: 4,
   HEAD_COACH: 5,
+  DEVELOPER: 99, // Special level for developers with all permissions
 } as const;
 
 export type RoleLevel = (typeof ROLE_LEVELS)[keyof typeof ROLE_LEVELS];

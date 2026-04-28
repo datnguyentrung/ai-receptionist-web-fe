@@ -5,7 +5,8 @@ export function showComingSoonActionToast(
   itemLabel?: string,
 ) {
   const suffix = itemLabel ? ` (${itemLabel})` : "";
-  toast.warning("Chức năng đang được phát triển", {
-    description: `Bạn đã chọn ${actionLabel}${suffix} nhưng chức năng này đang được phát triển. Vui lòng chờ trong giây lát!`,
+  toast.info("Chức năng đang được phát triển", {
+    description: `Bạn đã chọn ${actionLabel}${suffix}. Tính năng này sẽ sớm được ra mắt trong thời gian tới!`,
+    duration: 3000, // Tự động tắt sau 3 giây (3000ms)
   });
 }

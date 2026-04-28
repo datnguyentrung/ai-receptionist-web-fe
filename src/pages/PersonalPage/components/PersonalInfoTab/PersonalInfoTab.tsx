@@ -14,6 +14,11 @@ import {
   Users,
 } from "lucide-react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import {
+  COACH_ROLE_CODE_LABELS,
+  CoachStatusLabel,
+  type CoachRoleCode,
+} from "../../../../config/constants";
 import type { OutletContextType } from "../TabViews/TabViews";
 import S from "./PersonalInfoTab.module.scss";
 
@@ -40,7 +45,9 @@ export default function PersonalInfoTab() {
           </div>
           <div>
             <p className={S.statLabel}>Chức vụ</p>
-            <p className={S.statValue}>{user.role}</p>
+            <p className={S.statValue}>
+              {COACH_ROLE_CODE_LABELS[user.role as CoachRoleCode] || user.role}
+            </p>
           </div>
         </div>
 
@@ -151,8 +158,8 @@ export default function PersonalInfoTab() {
                   <Building2 size={20} />
                 </div>
                 <div className={S.infoContent}>
-                  <p className={S.infoLabel}>Cơ sở</p>
-                  <p className={S.infoValue}>{user.branchName}</p>
+                  <p className={S.infoLabel}>{user.branchName}</p>
+                  <p className={S.infoValue}>{user.branchAddress}</p>
                 </div>
               </div>
 
@@ -227,7 +234,9 @@ export default function PersonalInfoTab() {
                 </div>
                 <div className={S.infoContent}>
                   <p className={S.infoLabel}>Trạng thái huấn luyện viên</p>
-                  <p className={S.infoValue}>{user.coachStatus}</p>
+                  <p className={S.infoValue}>
+                    {CoachStatusLabel[user.coachStatus] || user.coachStatus}
+                  </p>
                 </div>
               </div>
 

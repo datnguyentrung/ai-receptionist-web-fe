@@ -1,18 +1,22 @@
 import { useUserLevel } from "@/utils/roleUtils";
 import { NAV_ITEMS } from "../config/constants/path";
 import { ROLE_LEVELS } from "../config/constants/roleLevels";
+import { useAuthStore } from '../store/authStore';
 
 export const useNavItems = () => {
   const { level, isAuthenticated } = useUserLevel();
 
-  // Nếu chưa đăng nhập, trả về mảng rỗng (hoặc tuỳ logic của bạn)
-  // Xác định level thực tế sẽ dùng để tính toán
+  // Lấy userCode từ profile đang active
+  const activeProfile = useAuthStore((s) => s.activeProfile);
+  const studentCode = activeProfile?.userInfo?.userCode;
+
   const currentLevel = isAuthenticated ? level : ROLE_LEVELS.GUEST;
 
-  // Lọc menu: Chỉ giữ lại các menu mà Cấp độ của User >= Cấp độ yêu cầu của Menu
-  return NAV_ITEMS.filter((item) => {
-    if (!item.minLevel) return true; // Nếu menu không yêu cầu quyền thì luôn hiện
+  // Gọi hàm NAV_ITEMS và truyền studentCode vào (nếu có)
+  const items = NAV_ITEMS({ studentCode });
 
+  return items.filter((item) => {
+    if (!item.minLevel) return true;
     return currentLevel >= item.minLevel;
   });
 };

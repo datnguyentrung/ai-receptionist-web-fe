@@ -12,6 +12,7 @@ import {
   User,
 } from "lucide-react";
 import { BeltBadge } from "../../../../components/BeltBadge";
+import { showComingSoonActionToast } from "../../../../components/ui/mini-action-popover.toast";
 import S from "./ProfileHeader.module.scss";
 
 interface ProfileHeaderProps {
@@ -51,13 +52,19 @@ export default function ProfileHeader({
 
           {/* Action Buttons */}
           <div className={S.actions}>
-            <button className={S.btnChangePassword}>
+            <button
+              className={S.btnChangePassword}
+              onClick={() => showComingSoonActionToast("Đổi mật khẩu")}
+            >
               <KeyRound size={16} />
-              <span>Change Password</span>
+              <span>Đổi mật khẩu</span>
             </button>
-            <button className={S.btnEditProfile}>
+            <button
+              className={S.btnEditProfile}
+              onClick={() => showComingSoonActionToast("Chỉnh sửa hồ sơ")}
+            >
               <Edit3 size={16} />
-              <span>Edit Profile</span>
+              <span>Chỉnh sửa hồ sơ</span>
             </button>
           </div>
         </div>

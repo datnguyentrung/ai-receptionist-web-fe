@@ -14,7 +14,29 @@ import {
   Users,
 } from "lucide-react";
 
-export const NAV_ITEMS = [
+export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
+  // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
+  {
+    path: `/${studentCode}/tuition`,
+    label: "Học phí",
+    icon: CreditCard,
+  },
+  {
+    path: `/${studentCode}/progress`,
+    label: "Tiến trình",
+    icon: Activity,
+  },
+  {
+    path: `/${studentCode}/classes`,
+    label: "Lớp học",
+    icon: BookOpen,
+  },
+  {
+    path: studentCode ? `/${studentCode}` : "/welcome",
+    label: "Trang cá nhân",
+    icon: UserRoundCheck, // Thay icon tùy ý bạn
+    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+  },
   {
     path: "/",
     label: "Tổng quan",
@@ -49,22 +71,19 @@ export const NAV_ITEMS = [
     path: "/ai/check-in",
     label: "Trợ lý AI Check-in",
     icon: ScanFace,
-    minLevel: ROLE_LEVELS.COACH,
+    minLevel: ROLE_LEVELS.DEVELOPER,
   },
   {
     path: "/public/exam",
     label: "Quản lý Khảo thí",
     icon: ClipboardCheck,
+    minLevel: ROLE_LEVELS.DEVELOPER,
   },
   {
     path: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,
-  },
-  {
-    path: "/:userCode",
-    label: "Trang cá nhân",
-    icon: UserRoundCheck,
+    minLevel: ROLE_LEVELS.DEVELOPER,
   },
 ];
 

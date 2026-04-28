@@ -41,11 +41,18 @@ export const BeltLabel: Record<Belt, string> = {
   D8: "Đen 8 đẳng",
   D9: "Đen 9 đẳng",
   D10: "Đen 10 đẳng",
-}
+};
 
 export type BranchStatus = "OPERATING" | "CLOSED" | "MAINTENANCE";
 
 export type CoachStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "RETIRED";
+
+export const CoachStatusLabel: Record<CoachStatus, string> = {
+  ACTIVE: "Đang hoạt động",
+  INACTIVE: "Không hoạt động",
+  SUSPENDED: "Bị đình chỉ",
+  RETIRED: "Đã nghỉ hưu",
+};
 
 // ---------------------------------------------------------------------------
 // ScheduleLevel

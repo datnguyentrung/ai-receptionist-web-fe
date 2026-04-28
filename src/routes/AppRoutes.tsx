@@ -10,6 +10,7 @@ import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
+import TimesheetTab from '../pages/PersonalPage/components/TimesheetTab';
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -154,7 +155,7 @@ export default function AppRoutes() {
               <Route path="tuition" element={<TuitionTab />} />
 
               {/* Các tab con cả COACH */}
-              {/* <Route path="timesheet" element={<CoachTimeSheet />} /> */}
+              <Route path="timesheet" element={<TimesheetTab />} />
             </Route>
 
             <Route path="rankings" element={<Rankings />} />

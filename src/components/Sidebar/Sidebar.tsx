@@ -10,8 +10,8 @@ import Avatar from "../Avatar";
 import ConfirmModal from "../ConfirmModal";
 import { MiniActionPopover } from "../ui/mini-action-popover";
 import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
-import SidebarSettings from "./SidebarSettings";
 import styles from "./Sidebar.module.scss";
+import SidebarSettings from "./SidebarSettings";
 
 export default function Sidebar({
   sidebarOpen,
@@ -28,6 +28,7 @@ export default function Sidebar({
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutPending, setIsLogoutPending] = useState(false);
   const queryClient = useQueryClient();
+  const studentCode = activeProfile?.userInfo?.userCode;
 
   const handleSidebarToggle = useCallback(() => {
     // Nếu màn hình lớn, thao tác là thu hẹp/mở rộng
@@ -132,7 +133,9 @@ export default function Sidebar({
             <NavLink
               key={path}
               to={path}
-              end={path === "/"}
+              end={
+                path === "/" || (!!studentCode && path === `/${studentCode}`)
+              }
               onClick={() => {
                 if (window.innerWidth < 768) setSidebarOpen(false);
               }}
