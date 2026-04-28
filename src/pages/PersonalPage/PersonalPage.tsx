@@ -51,7 +51,7 @@ import { TabViews } from "./components/TabViews";
 import S from "./PersonalPage.module.scss";
 
 export default function PersonalPage() {
-  const { canViewCoach } = useRoleStudent();
+  const { canViewCoach, canViewManagerSenior } = useRoleStudent();
   const { userCode = "" } = useParams();
 
   const isCoach = userCode.startsWith("VQT");
@@ -106,7 +106,7 @@ export default function PersonalPage() {
     return <div>Không tìm thấy dữ liệu.</div>;
   }
 
-  // console.log("Fetched User Info:", userInfo); // Debug: Kiểm tra dữ liệu nhận được từ API
+  console.log("Fetched User Info:", userInfo); // Debug: Kiểm tra dữ liệu nhận được từ API
 
   return (
     <div className={S.page}>
@@ -117,9 +117,19 @@ export default function PersonalPage() {
         {/* Tab Navigation */}
         {/* Render TabViews rẽ nhánh để thỏa mãn TypeScript Discriminated Union */}
         {isCoach ? (
-          <TabViews userType="coach" userInfo={userInfo as CoachDetail} />
+          <TabViews
+            userType="coach"
+            userInfo={userInfo as CoachDetail}
+            canViewCoach={canViewCoach}
+            canViewManagerSenior={canViewManagerSenior}
+          />
         ) : (
-          <TabViews userType="student" userInfo={userInfo as StudentDetail} />
+          <TabViews
+            userType="student"
+            userInfo={userInfo as StudentDetail}
+            canViewCoach={canViewCoach}
+            canViewManagerSenior={canViewManagerSenior}
+          />
         )}
       </div>
     </div>

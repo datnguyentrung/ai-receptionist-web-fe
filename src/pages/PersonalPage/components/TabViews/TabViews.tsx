@@ -9,7 +9,18 @@ type TabViewsProps =
   | { userType: "student"; userInfo: StudentDetail }
   | { userType: "coach"; userInfo: CoachDetail };
 
-export function TabViews({ userInfo, userType }: TabViewsProps) {
+export type OutletContextType = {
+  user: StudentDetail | CoachDetail;
+  canViewCoach: boolean;
+  canViewManagerSenior: boolean;
+};
+
+export function TabViews({
+  userInfo,
+  userType,
+  canViewCoach,
+  canViewManagerSenior,
+}: TabViewsProps & { canViewCoach: boolean; canViewManagerSenior: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
   const tabs =
@@ -56,7 +67,13 @@ export function TabViews({ userInfo, userType }: TabViewsProps) {
         Giữ nguyên className "views__tab-content" để ăn CSS cũ.
       */}
       <TabsContent value={activeTabId} className="views__tab-content">
-        <Outlet context={{ user: userInfo }} />
+        <Outlet
+          context={{
+            user: userInfo,
+            canViewCoach: canViewCoach,
+            canViewManagerSenior: canViewManagerSenior,
+          }}
+        />
       </TabsContent>
     </Tabs>
   );

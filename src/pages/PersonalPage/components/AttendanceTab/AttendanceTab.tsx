@@ -3,14 +3,10 @@ import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAt
 import { useGetQuery } from "@/hooks/useCrud";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import type { CoachDetail, StudentDetail } from "../../../../types";
 import { AttendanceTable } from "../../../AttendanceReports/components/AttendanceTable";
+import type { OutletContextType } from "../TabViews/TabViews";
 import "./AttendanceTab.scss";
 const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;
-
-type OutletContextType = {
-  user?: StudentDetail | CoachDetail;
-};
 
 export default function AttendanceTab() {
   const context = useOutletContext<OutletContextType>();

@@ -28,10 +28,7 @@ import {
 } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import "./ScheduleAssignments.scss";
-
-type OutletContextType = {
-  user?: StudentDetail | CoachDetail;
-};
+import type { OutletContextType } from "../TabViews/TabViews";
 
 type TimelineRecord =
   | StudentEnrollmentSimpleResponse
@@ -215,7 +212,7 @@ export default function ScheduleAssignments() {
                   <div className="schedule-assignments__item-head">
                     <div className="schedule-assignments__item-heading">
                       <h4 className="schedule-assignments__item-title">
-                        {getRecordTitle(record)}
+                        Mã lớp học: {getRecordTitle(record)}
                       </h4>
                       <p className="schedule-assignments__item-subtitle">
                         {party.fullName} · {getIdentifier(record)}
@@ -274,7 +271,7 @@ export default function ScheduleAssignments() {
 
                   <div className="schedule-assignments__footer-note">
                     <p className="schedule-assignments__footer-label">
-                      Thông tin đối tượng
+                      Thông tin học viên
                     </p>
                     <p className="schedule-assignments__footer-value">
                       {party.fullName} · {getIdentifier(record)}

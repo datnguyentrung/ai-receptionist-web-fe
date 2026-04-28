@@ -1,4 +1,3 @@
-import type { CoachDetail, StudentDetail } from "@/types";
 import { formatDateDMY } from "@/utils/format";
 import {
   Activity,
@@ -14,14 +13,21 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import type { OutletContextType } from "../TabViews/TabViews";
 import S from "./PersonalInfoTab.module.scss";
 
 export default function PersonalInfoTab() {
-  const context = useOutletContext<{ user: StudentDetail | CoachDetail }>();
+  const navigate = useNavigate();
+  const context = useOutletContext<OutletContextType>();
   const user = context?.user;
+  const canViewManagerSenior = context?.canViewManagerSenior;
 
   if (!user) return null;
+
+  const handleNavigateToEnrollments = () => {
+    navigate("classes"); // React Router tự động hiểu là nối thêm "classes" vào "/:userCode" hiện tại
+  };
 
   return (
     <div className={S.wrapper}>
@@ -33,7 +39,7 @@ export default function PersonalInfoTab() {
             <User size={24} strokeWidth={2} />
           </div>
           <div>
-            <p className={S.statLabel}>Role Profile</p>
+            <p className={S.statLabel}>Chức vụ</p>
             <p className={S.statValue}>{user.role}</p>
           </div>
         </div>
@@ -45,7 +51,7 @@ export default function PersonalInfoTab() {
             <div className={S.statusDot}></div>
           </div>
           <div>
-            <p className={S.statLabel}>Current Status</p>
+            <p className={S.statLabel}>Trạng thái hiện tại</p>
             <div className={S.statusRow}>
               <span></span>
               <p className={S.statValue}>{user.status}</p>
@@ -73,7 +79,7 @@ export default function PersonalInfoTab() {
             <Clock size={24} strokeWidth={2} />
           </div>
           <div>
-            <p className={S.statLabel}>Last Login</p>
+            <p className={S.statLabel}>Lần đăng nhập cuối</p>
             <p className={S.statValue}>{formatDateDMY(user.lastLoginAt)}</p>
           </div>
         </div>
@@ -83,25 +89,31 @@ export default function PersonalInfoTab() {
       <div className={S.contentGrid}>
         {/* Left Column: General Info */}
         <div className={S.infoCard}>
-          <h2 className={S.cardTitle}>General Information</h2>
+          <h2 className={S.cardTitle}>Thông tin chung</h2>
           <div className={S.infoList}>
-            <div className={S.infoRow}>
-              <div className={`${S.infoIcon} ${S.slate}`}>
-                <IdCard size={20} />
+            {canViewManagerSenior && (
+              <div className={S.infoRow}>
+                <div className={`${S.infoIcon} ${S.slate}`}>
+                  <IdCard size={20} />
+                </div>
+                <div className={S.infoContent}>
+                  <p className={S.infoLabel}>System User ID</p>
+                  <p className={`${S.infoValue} ${S.infoMono}`}>
+                    {user.userId}
+                  </p>
+                </div>
               </div>
-              <div className={S.infoContent}>
-                <p className={S.infoLabel}>System User ID</p>
-                <p className={`${S.infoValue} ${S.infoMono}`}>{user.userId}</p>
-              </div>
-            </div>
+            )}
 
             <div className={S.infoRow}>
               <div className={`${S.infoIcon} ${S.pink}`}>
                 <User size={20} />
               </div>
               <div className={S.infoContent}>
-                <p className={S.infoLabel}>Gender</p>
-                <p className={S.infoValue}>{user.gender === true ? "Nam" : "Nữ"}</p>
+                <p className={S.infoLabel}>Giới tính</p>
+                <p className={S.infoValue}>
+                  {user.gender === true ? "Nam" : "Nữ"}
+                </p>
               </div>
             </div>
 
@@ -110,7 +122,7 @@ export default function PersonalInfoTab() {
                 <CalendarDays size={20} />
               </div>
               <div className={S.infoContent}>
-                <p className={S.infoLabel}>Date of Birth</p>
+                <p className={S.infoLabel}>Ngày sinh</p>
                 <p className={S.infoValue}>{formatDateDMY(user.birthDate)}</p>
               </div>
             </div>
@@ -120,7 +132,7 @@ export default function PersonalInfoTab() {
                 <Flag size={20} />
               </div>
               <div className={`${S.infoContent} ${S.last}`}>
-                <p className={S.infoLabel}>Join Date</p>
+                <p className={S.infoLabel}>Ngày tham gia</p>
                 <p className={S.infoValue}>{formatDateDMY(user.createdAt)}</p>
               </div>
             </div>
@@ -132,14 +144,14 @@ export default function PersonalInfoTab() {
         {"studentCode" in user ? (
           /* TRƯỜNG HỢP 1: NẾU LÀ HỌC VIÊN */
           <div className={S.infoCard}>
-            <h2 className={S.cardTitle}>Taekwondo Registration</h2>
+            <h2 className={S.cardTitle}>Thông tin học viên</h2>
             <div className={S.infoList}>
               <div className={S.infoRow}>
                 <div className={`${S.infoIcon} ${S.red}`}>
                   <Building2 size={20} />
                 </div>
                 <div className={S.infoContent}>
-                  <p className={S.infoLabel}>Branch Name</p>
+                  <p className={S.infoLabel}>Cơ sở</p>
                   <p className={S.infoValue}>{user.branchName}</p>
                 </div>
               </div>
@@ -149,37 +161,44 @@ export default function PersonalInfoTab() {
                   <GraduationCap size={20} />
                 </div>
                 <div className={S.infoContent}>
-                  <p className={S.infoLabel}>Student Code</p>
+                  <p className={S.infoLabel}>Mã học viên</p>
                   <p className={`${S.infoValue} ${S.infoMono}`}>
                     {user.studentCode}
                   </p>
                 </div>
               </div>
 
-              <div className={S.infoRow}>
-                <div className={`${S.infoIcon} ${S.cyan}`}>
-                  <IdCard size={20} />
+              {canViewManagerSenior && (
+                <div className={S.infoRow}>
+                  <div className={`${S.infoIcon} ${S.cyan}`}>
+                    <IdCard size={20} />
+                  </div>
+                  <div className={S.infoContent}>
+                    <p className={S.infoLabel}>Mã hội viên</p>
+                    <p className={`${S.infoValue} ${S.infoMono}`}>
+                      {user.nationalCode || "N/A"}
+                    </p>
+                  </div>
                 </div>
-                <div className={S.infoContent}>
-                  <p className={S.infoLabel}>National Code</p>
-                  <p className={`${S.infoValue} ${S.infoMono}`}>
-                    {user.nationalCode || "N/A"}
-                  </p>
-                </div>
-              </div>
+              )}
 
               <div className={S.infoRow}>
                 <div className={`${S.infoIcon} ${S.redLight}`}>
                   <BookOpen size={20} />
                 </div>
                 <div className={`${S.infoContent} ${S.last}`}>
-                  <p className={S.infoLabel}>Enrolled Classes</p>
+                  <p className={S.infoLabel}>Lớp học đã đăng ký</p>
                   <div className={S.enrolledRow}>
                     <p className={S.infoValue}>
                       {/* Lấy độ dài mảng enrollments làm số lượng lớp */}
-                      {user.enrollments?.length || 0} Active Classes
+                      {user.enrollments?.length || 0} Lớp
                     </p>
-                    <span className={S.viewingBadge}>Viewing</span>
+                    <button
+                      onClick={handleNavigateToEnrollments}
+                      className={S.viewingBadge}
+                    >
+                      Xem
+                    </button>
                   </div>
                 </div>
               </div>
@@ -188,14 +207,14 @@ export default function PersonalInfoTab() {
         ) : (
           /* TRƯỜNG HỢP 2: NẾU LÀ HUẤN LUYỆN VIÊN (COACH) */
           <div className={S.infoCard}>
-            <h2 className={S.cardTitle}>Employment Details</h2>
+            <h2 className={S.cardTitle}>Thông tin nhân viên</h2>
             <div className={S.infoList}>
               <div className={S.infoRow}>
                 <div className={`${S.infoIcon} ${S.violet}`}>
                   <Briefcase size={20} />
                 </div>
                 <div className={S.infoContent}>
-                  <p className={S.infoLabel}>Staff Code</p>
+                  <p className={S.infoLabel}>Mã nhân viên</p>
                   <p className={`${S.infoValue} ${S.infoMono}`}>
                     {user.staffCode}
                   </p>
@@ -207,7 +226,7 @@ export default function PersonalInfoTab() {
                   <Activity size={20} />
                 </div>
                 <div className={S.infoContent}>
-                  <p className={S.infoLabel}>Coach Status</p>
+                  <p className={S.infoLabel}>Trạng thái huấn luyện viên</p>
                   <p className={S.infoValue}>{user.coachStatus}</p>
                 </div>
               </div>
@@ -217,12 +236,17 @@ export default function PersonalInfoTab() {
                   <Users size={20} />
                 </div>
                 <div className={`${S.infoContent} ${S.last}`}>
-                  <p className={S.infoLabel}>Current Assignments</p>
+                  <p className={S.infoLabel}>Phân công hiện tại</p>
                   <div className={S.enrolledRow}>
                     <p className={S.infoValue}>
-                      {user.currentAssignments?.length || 0} Assigned Classes
+                      {user.currentAssignments?.length || 0} Lớp
                     </p>
-                    <span className={S.viewingBadge}>Viewing</span>
+                    <button
+                      onClick={handleNavigateToEnrollments}
+                      className={S.viewingBadge}
+                    >
+                      Xem
+                    </button>
                   </div>
                 </div>
               </div>
