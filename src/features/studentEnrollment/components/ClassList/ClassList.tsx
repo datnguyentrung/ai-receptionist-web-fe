@@ -1,12 +1,9 @@
 import { cn } from "@/components/ui/utils";
+import { ScheduleLevelLabel, ScheduleLocationLabel } from "@/config/constants";
 import type { ClassScheduleSummary } from "@/types";
+import { formatTimeStringHM } from "@/utils/format";
+import { getLabelClassScheduleNoBranch } from "@/utils/getInitials";
 import { Calendar, Check, Loader2, MapPin } from "lucide-react";
-import {
-  ScheduleLevelLabel,
-  ScheduleLocationLabel,
-} from "../../../../config/constants";
-import { formatTimeStringHM } from "../../../../utils/format";
-import { getLabelClassSchedule } from "../../../../utils/getInitials";
 import styles from "./ClassList.module.scss";
 
 interface ClassListProps {
@@ -120,7 +117,7 @@ export default function ClassList({
                         isCompact && styles.titleCompact,
                       )}
                     >
-                      {getLabelClassSchedule(cls.scheduleId)}
+                      {getLabelClassScheduleNoBranch(cls.scheduleId)}
                     </div>
                     {cls.branchName && (
                       <div className={styles.meta}>

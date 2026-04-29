@@ -25,6 +25,11 @@ export const COACH_ROLE_CODE_LABELS: Record<CoachRoleCode, string> = {
   HEAD_COACH: "Huấn luyện viên Trưởng",
 };
 
+export const ROLE_CODE_LABELS: Record<string, string> = {
+  ...COACH_ROLE_CODE_LABELS,
+  DEVELOPER: "Nhà phát triển",
+};
+
 /**
  * Thứ tự hiển thị của các roleCode
  */

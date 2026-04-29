@@ -1,7 +1,7 @@
 import { useUserLevel } from "@/utils/roleUtils";
 import { NAV_ITEMS } from "../config/constants/path";
 import { ROLE_LEVELS } from "../config/constants/roleLevels";
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from "../store/authStore";
 
 export const useNavItems = () => {
   const { level, isAuthenticated } = useUserLevel();
@@ -17,6 +17,7 @@ export const useNavItems = () => {
 
   return items.filter((item) => {
     if (!item.minLevel) return true;
-    return currentLevel >= item.minLevel;
+    if (!item.maxLevel) return currentLevel >= item.minLevel;
+    return currentLevel >= item.minLevel && currentLevel <= item.maxLevel;
   });
 };

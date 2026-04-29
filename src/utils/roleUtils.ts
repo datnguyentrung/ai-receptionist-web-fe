@@ -10,7 +10,7 @@ const checkContains = (role: string | undefined, keyword: string) => {
 };
 
 export const isHeadCoach = (role?: string) => {
-  return role === "HEAD_COACH" || role === "ADMIN";
+  return role === "HEAD_COACH" || role === "DEVELOPER";
 };
 
 export const isManagerSenior = (role?: string) => {

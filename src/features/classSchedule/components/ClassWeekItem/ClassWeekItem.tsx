@@ -1,7 +1,7 @@
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { ScheduleStatus } from "@/config/constants";
-import { ScheduleLocationLabel } from "@/config/constants";
+import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
@@ -47,7 +47,7 @@ function ClassWeekItemInner({
       <div className={styles.weekClassInfo}>
         <div className={styles.weekClassTitleRow}>
           <p style={{ fontSize: "13px", fontWeight: 700, color: "#111827" }}>
-            {cls.branchName}
+            {cls.branchName} - {ScheduleShiftLabel[cls.scheduleShift]}
           </p>
           <LevelBadge level={cls.scheduleLevel} />
         </div>

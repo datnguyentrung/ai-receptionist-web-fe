@@ -41,7 +41,6 @@ export function AttendanceCheckin() {
   >({});
   const [evalTarget, setEvalTarget] =
     useState<StudentAttendanceResponse | null>(null);
-  const [submitted, setSubmitted] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedTime, setSubmittedTime] = useState("");
   const [filter, setFilter] = useState<"all" | AttendanceStatus>("all");
@@ -303,14 +302,7 @@ export function AttendanceCheckin() {
   const handleSubmit = useCallback(() => {
     setSubmittedTime(nowTime());
     setShowSuccess(true);
-    setSubmitted(true);
   }, []);
-
-  const openSubmitModal = useCallback(() => {
-    if (!submitted) {
-      setIsSubmitModalOpen(true);
-    }
-  }, [submitted]);
 
   const cancelSubmit = useCallback(() => {
     if (submitTimeoutRef.current !== null) {
@@ -462,10 +454,6 @@ export function AttendanceCheckin() {
           <RenderProfiler id="AttendanceCheckin:BottomBar" thresholdMs={4}>
             <BottomBar
               unmarkedCount={unmarkedCount}
-              markedCount={markedCount}
-              totalCount={totalCount}
-              submitted={submitted}
-              onSubmit={openSubmitModal}
               evalCount={presentCount + absentCount + makeupCount}
             />
           </RenderProfiler>

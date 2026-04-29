@@ -17,19 +17,25 @@ import {
 export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
   // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
   {
-    path: `/${studentCode}/tuition`,
-    label: "Học phí",
-    icon: CreditCard,
+    path: `/${studentCode}/classes`,
+    label: "Lớp học",
+    icon: BookOpen,
+    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+    maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
   },
   {
     path: `/${studentCode}/progress`,
     label: "Tiến trình",
     icon: Activity,
+    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+    maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
   },
   {
-    path: `/${studentCode}/classes`,
-    label: "Lớp học",
-    icon: BookOpen,
+    path: `/${studentCode}/tuition`,
+    label: "Học phí",
+    icon: CreditCard,
+    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+    maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
   },
   {
     path: studentCode ? `/${studentCode}` : "/welcome",

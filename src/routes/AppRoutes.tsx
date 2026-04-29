@@ -158,6 +158,7 @@ export default function AppRoutes() {
               <Route path="timesheet" element={<TimesheetTab />} />
             </Route>
 
+            <Route path="settings" element={<Rankings />} />
             <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>

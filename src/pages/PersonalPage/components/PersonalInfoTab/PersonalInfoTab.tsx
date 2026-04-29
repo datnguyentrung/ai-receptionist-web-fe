@@ -28,6 +28,8 @@ export default function PersonalInfoTab() {
   const user = context?.user;
   const canViewManagerSenior = context?.canViewManagerSenior;
 
+  console.log("PersonalInfoTab Context:", context); // Debug: Kiểm tra dữ liệu context nhận được
+
   if (!user) return null;
 
   const handleNavigateToEnrollments = () => {

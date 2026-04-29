@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { memo } from "react";
-import { useRoleStudent } from "../../../../utils/roleUtils";
+import { useRoleStudent } from "@/utils/roleUtils";
 import styles from "./AttendanceHeader.module.scss";
 
 interface AttendanceHeaderProps {
@@ -42,7 +42,6 @@ interface AttendanceHeaderProps {
 
 function AttendanceHeaderInner({
   session,
-  markedCount,
   totalCount,
   progress,
   presentCount,
@@ -115,7 +114,7 @@ function AttendanceHeaderInner({
         <div className={styles.progressHeader}>
           <p className={styles.progressLabel}>Tiến độ điểm danh</p>
           <p className={styles.progressCount}>
-            {markedCount}/{totalCount}
+            {presentCount + absentCount + excusedCount}/{totalCount}
           </p>
         </div>
         <div className={styles.progressTrack}>

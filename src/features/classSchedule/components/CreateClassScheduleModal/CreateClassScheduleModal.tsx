@@ -54,11 +54,11 @@ const INITIAL_FORM: CreateScheduleForm = {
   shift: "CA_1",
   location: "INDOOR",
   scheduleStatus: "ACTIVE",
-  startTime: "08:00",
-  endTime: "09:00",
+  startTime: "19:30",
+  endTime: "21:00",
   sessionType: "MORNING",
-  monthlyFee: 0,
-  quarterlyFee: 0,
+  monthlyFee: 1100000,
+  quarterlyFee: 3000000,
 };
 
 export function CreateClassScheduleModal({
@@ -204,9 +204,11 @@ export function CreateClassScheduleModal({
               <p>Lựa chọn buổi sáng hay chiều, mã lớp sẽ được tạo tự động.</p>
             </div>
 
-            <div className={styles.createClassModal__grid}>
+            <div
+              className={`${styles.createClassModal__grid} ${styles["createClassModal__grid--compact"]}`}
+            >
               <label className={styles.createClassModal__field}>
-                <span>Buổi học *</span>
+                <span>Buổi học</span>
                 <select
                   value={form.sessionType}
                   onChange={(ev) =>
@@ -219,40 +221,6 @@ export function CreateClassScheduleModal({
                     </option>
                   ))}
                 </select>
-              </label>
-
-              {hasEnoughDataForScheduleId && (
-                <div className={styles.createClassModal__field}>
-                  <span>Mã lớp (Tự động)</span>
-                  <input type="text" value={generatedScheduleId} readOnly />
-                  {isDuplicate && (
-                    <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>
-                      Mã lớp này đã tồn tại!
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section className={styles.createClassModal__section}>
-            <div className={styles.createClassModal__sectionHeader}>
-              <h3>Thông tin lớp học</h3>
-              <p>Điền thông tin cơ bản để tạo lịch học mới.</p>
-            </div>
-
-            <div className={styles.createClassModal__grid}>
-              <label className={styles.createClassModal__field}>
-                <span>Chi nhánh (branchId) *</span>
-                <input
-                  type="number"
-                  value={String(form.branchId)}
-                  onChange={(ev) =>
-                    setField("branchId", Number(ev.target.value))
-                  }
-                  min={1}
-                  placeholder="1"
-                />
               </label>
 
               <label className={styles.createClassModal__field}>
@@ -269,6 +237,62 @@ export function CreateClassScheduleModal({
                     </option>
                   ))}
                 </select>
+              </label>
+
+              <div className={styles.createClassModal__field}>
+                <span>Mã lớp (Tự động)</span>
+                <input
+                  type="text"
+                  value={generatedScheduleId || "Chọn đủ dữ liệu để tạo mã"}
+                  placeholder="Tự động"
+                  readOnly
+                />
+                {isDuplicate && (
+                  <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>
+                    Mã lớp này đã tồn tại!
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.createClassModal__section}>
+            <div className={styles.createClassModal__sectionHeader}>
+              <h3>Thông tin lớp học</h3>
+              <p>Điền thông tin cơ bản để tạo lịch học mới.</p>
+            </div>
+
+            <div
+              className={`${styles.createClassModal__grid} ${styles["createClassModal__grid--compact"]}`}
+            >
+              <label className={styles.createClassModal__field}>
+                <span>Thứ trong tuần</span>
+                <select
+                  value={form.weekday}
+                  onChange={(ev) =>
+                    setField("weekday", ev.target.value as Weekday)
+                  }
+                >
+                  {weekdayOptions.map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className={styles.createClassModal__field}>
+                <span>Chi nhánh</span>
+                <input
+                  type="number"
+                  value={String(form.branchId)}
+                  onChange={(ev) =>
+                    setField("branchId", Number(ev.target.value))
+                  }
+                  min={1}
+                  placeholder="1"
+                  required
+                />
               </label>
 
               <label className={styles.createClassModal__field}>
@@ -304,6 +328,26 @@ export function CreateClassScheduleModal({
               </label>
 
               <label className={styles.createClassModal__field}>
+                <span>Giờ bắt đầu</span>
+                <input
+                  type="time"
+                  value={form.startTime}
+                  onChange={(ev) => setField("startTime", ev.target.value)}
+                  required
+                />
+              </label>
+
+              <label className={styles.createClassModal__field}>
+                <span>Giờ kết thúc</span>
+                <input
+                  type="time"
+                  value={form.endTime}
+                  onChange={(ev) => setField("endTime", ev.target.value)}
+                  required
+                />
+              </label>
+
+              <label className={styles.createClassModal__field}>
                 <span>Trạng thái</span>
                 <select
                   value={form.scheduleStatus}
@@ -327,14 +371,15 @@ export function CreateClassScheduleModal({
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input
                     type="number"
-                    min={0}
+                    min={1}
                     value={String(Math.floor((form.monthlyFee ?? 0) / 1000))}
                     onChange={(ev) =>
                       setField("monthlyFee", Number(ev.target.value) * 1000)
                     }
                     placeholder="Nhập số cơ bản"
+                    style={{ textAlign: "right" }}
                   />
-                  <span style={{ color: "#6b7280" }}>,000</span>
+                  <span style={{ color: "#6b7280" }}>,000đ</span>
                 </div>
               </label>
 
@@ -343,49 +388,16 @@ export function CreateClassScheduleModal({
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input
                     type="number"
-                    min={0}
+                    min={1}
                     value={String(Math.floor((form.quarterlyFee ?? 0) / 1000))}
                     onChange={(ev) =>
                       setField("quarterlyFee", Number(ev.target.value) * 1000)
                     }
                     placeholder="Nhập số cơ bản"
+                    style={{ textAlign: "right" }}
                   />
-                  <span style={{ color: "#6b7280" }}>,000</span>
+                  <span style={{ color: "#6b7280" }}>,000đ</span>
                 </div>
-              </label>
-
-              <label className={styles.createClassModal__field}>
-                <span>Thứ trong tuần</span>
-                <select
-                  value={form.weekday}
-                  onChange={(ev) =>
-                    setField("weekday", ev.target.value as Weekday)
-                  }
-                >
-                  {weekdayOptions.map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className={styles.createClassModal__field}>
-                <span>Giờ bắt đầu *</span>
-                <input
-                  type="time"
-                  value={form.startTime}
-                  onChange={(ev) => setField("startTime", ev.target.value)}
-                />
-              </label>
-
-              <label className={styles.createClassModal__field}>
-                <span>Giờ kết thúc *</span>
-                <input
-                  type="time"
-                  value={form.endTime}
-                  onChange={(ev) => setField("endTime", ev.target.value)}
-                />
               </label>
             </div>
           </section>

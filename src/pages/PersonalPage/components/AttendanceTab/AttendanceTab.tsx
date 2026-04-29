@@ -20,7 +20,12 @@ export default function AttendanceTab() {
       studentCode,
       { page: currentPage - 1, size: PAGE_SIZE },
     ],
-    () => studentAttendanceAPI.filter(studentCode, currentPage - 1, PAGE_SIZE),
+    () =>
+      studentAttendanceAPI.filter({
+        search: studentCode,
+        page: currentPage - 1,
+        size: PAGE_SIZE,
+      }),
     { enabled: !!studentCode, staleTime: 5 * 60 * 1000 },
   );
 

@@ -118,18 +118,18 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
   const [joinDate, setJoinDate] = useState(() => formatToday());
   const today = useMemo(() => formatToday(), []);
 
-  const cachedSchedules = useMemo<ClassScheduleDetail[]>(
+  // Thay thế useMemo bằng useState để chứa danh sách lớp, khởi tạo lập tức bằng dữ liệu lấy từ Cache
+  const [classSchedules, setClassSchedules] = useState<ClassScheduleDetail[]>(
     () => readCachedSchedules(),
-    [],
   );
 
-  const shouldFetchSchedules = cachedSchedules.length === 0;
+  const shouldFetchSchedules = classSchedules.length === 0;
   const studentCode = initialStudent?.studentCode ?? "";
 
+  // Luôn luôn gọi API (Bỏ enabled: shouldFetchSchedules)
   const { data: fetchedSchedules } = useGetQuery(
     ["class-schedules", { scheduleStatus: "ACTIVE" }],
     () => classScheduleAPI.getAllClassSchedules({ scheduleStatus: "ACTIVE" }),
-    { enabled: shouldFetchSchedules },
   );
 
   const { data: detailedEnrollments, isLoading: isStudentEnrollmentsLoading } =
@@ -154,15 +154,25 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
     [["student-enrollments"]],
   );
 
+  // Lắng nghe dữ liệu mới từ API và so sánh với cache
   useEffect(() => {
-    if (!fetchedSchedules?.length || typeof window === "undefined") {
+    if (!fetchedSchedules || typeof window === "undefined") {
       return;
     }
 
-    window.sessionStorage.setItem(
+    const newSchedulesString = JSON.stringify(fetchedSchedules);
+    const cachedSchedulesString = window.sessionStorage.getItem(
       CLASS_SCHEDULE_CACHE_KEY,
-      JSON.stringify(fetchedSchedules),
     );
+
+    // Nếu có sự khác biệt giữa data mới và data cache -> Cập nhật lại state và lưu đè lên cache
+    if (newSchedulesString !== cachedSchedulesString) {
+      window.sessionStorage.setItem(
+        CLASS_SCHEDULE_CACHE_KEY,
+        newSchedulesString,
+      );
+      setClassSchedules(fetchedSchedules);
+    }
   }, [fetchedSchedules]);
 
   useEffect(() => {
@@ -174,12 +184,6 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
     setRemovalQueue(new Set());
     setSelectedBranchId("");
   }, [studentCode]);
-
-  const classSchedules = useMemo(
-    () =>
-      cachedSchedules.length > 0 ? cachedSchedules : (fetchedSchedules ?? []),
-    [cachedSchedules, fetchedSchedules],
-  );
 
   const activeEnrollments = useMemo<StudentEnrollmentResponse[]>(
     () =>

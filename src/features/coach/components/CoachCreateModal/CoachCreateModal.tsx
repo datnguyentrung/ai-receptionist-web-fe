@@ -1,18 +1,22 @@
 import { ModalLayout } from "@/components/ui/modal-layout";
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import {
-  COACH_ROLE_CODE_LABELS,
   COACH_ROLE_CODE_ORDER,
+  ROLE_CODE_LABELS,
   type Belt,
   type CoachRoleCode,
   type CoachStatus,
 } from "@/config/constants";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal";
-import type { CoachAssignmentCreateRequest, CoachCreateRequest, CoachDetail } from "@/types";
+import type {
+  CoachAssignmentCreateRequest,
+  CoachCreateRequest,
+  CoachDetail,
+} from "@/types";
 import { useState } from "react";
 
-import { coachAPI } from "../../api/coachAPI";
 import { useGenericMutation } from "@/hooks/useCrud";
+import { coachAPI } from "../../api/coachAPI";
 import "./CoachCreateModal.scss";
 
 type CoachCreateModalProps = {
@@ -127,10 +131,10 @@ function isFutureDate(value: string) {
 }
 
 export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
-  const { mutateAsync: createCoach, isPending } = useGenericMutation<CoachDetail, CoachCreateRequest>(
-    (data) => coachAPI.createCoach(data),
-    [["coaches"]],
-  );
+  const { mutateAsync: createCoach, isPending } = useGenericMutation<
+    CoachDetail,
+    CoachCreateRequest
+  >((data) => coachAPI.createCoach(data), [["coaches"]]);
   const [form, setForm] = useState<CoachCreateRequest>(INITIAL_FORM);
 
   const setField = <K extends keyof CoachCreateRequest>(
@@ -322,9 +326,9 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
                   setField("roleCode", event.target.value as CoachRoleCode)
                 }
               >
-                {COACH_ROLE_CODE_ORDER.map((roleCode) => (
+                {[...COACH_ROLE_CODE_ORDER, "DEVELOPER"].map((roleCode) => (
                   <option key={roleCode} value={roleCode}>
-                    {COACH_ROLE_CODE_LABELS[roleCode]}
+                    {ROLE_CODE_LABELS[roleCode]}
                   </option>
                 ))}
               </select>

@@ -1,6 +1,6 @@
+import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { useGetQuery } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
-import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { CalendarDays, Loader2 } from "lucide-react";
 
 /**
@@ -15,21 +15,7 @@ export default function StudentDashboard() {
   // ── queryKey contains profileId → auto refetch when switchProfile() changes it ──
   const { data, isLoading, isError } = useGetQuery(
     ["attendance", profileId],
-    () =>
-      studentAttendanceAPI.filter(
-        undefined, // search
-        undefined, // page
-        undefined, // size
-        undefined, // sortBy
-        undefined, // sortDir
-        undefined, // sessionDate
-        undefined, // attendanceStatuses
-        undefined, // evaluationStatuses
-        undefined, // belts
-        undefined, // branchIds
-        undefined, // scheduleLevels
-        undefined, // scheduleIds
-      ),
+    () => studentAttendanceAPI.filter({}),
     { enabled: !!profileId },
   );
 
@@ -75,7 +61,14 @@ export default function StudentDashboard() {
       )}
 
       {data && (
-        <div style={{ background: "#fff", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 12,
+            padding: 16,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+          }}
+        >
           <h3 style={{ marginBottom: 12 }}>Lịch điểm danh</h3>
           {data.attendances.content.length === 0 ? (
             <p style={{ color: "#888" }}>Chưa có dữ liệu điểm danh.</p>

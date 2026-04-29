@@ -28,12 +28,17 @@ export function AttendanceTableModal({ student }: Props) {
   );
 
   const { data } = useGetQuery(
-    ["student-attendance", student.studentCode, { page: currentPage - 1, size: PAGE_SIZE }],
-    () => studentAttendanceAPI.filter(
+    [
+      "student-attendance",
       student.studentCode,
-      currentPage - 1,
-      PAGE_SIZE,
-    ),
+      { page: currentPage - 1, size: PAGE_SIZE },
+    ],
+    () =>
+      studentAttendanceAPI.filter({
+        search: student.studentCode,
+        page: currentPage - 1,
+        size: PAGE_SIZE,
+      }),
     { enabled: !!student.studentCode, staleTime: 5 * 60 * 1000 },
   );
 

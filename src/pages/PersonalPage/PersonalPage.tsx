@@ -39,6 +39,7 @@
 //   );
 // }
 
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Navigate, useParams } from "react-router-dom";
 import { coachAPI } from "../../features/coach";
 import { studentAPI } from "../../features/student";
@@ -83,6 +84,15 @@ export default function PersonalPage() {
     },
   );
 
+  // Lấy data tương ứng để truyền xuống component con
+  const userInfo = isCoach ? coachData : studentData;
+
+  console.log("Fetched User Info:", userInfo); // Debug: Kiểm tra dữ liệu nhận được từ API
+
+  useDocumentTitle(
+    userInfo?.fullName ? `${userInfo.fullName}` : "Đang tải...",
+  );
+
   // ---------------------------------------------------------------------------
   // 2. XỬ LÝ ĐIỀU KIỆN RẼ NHÁNH (Early Returns) SAU KHI ĐÃ GỌI XONG HOOKS
   // ---------------------------------------------------------------------------
@@ -99,14 +109,9 @@ export default function PersonalPage() {
     return <div>Đang tải thông tin...</div>;
   }
 
-  // Lấy data tương ứng để truyền xuống component con
-  const userInfo = isCoach ? coachData : studentData;
-
   if (!userInfo) {
     return <div>Không tìm thấy dữ liệu.</div>;
   }
-
-  console.log("Fetched User Info:", userInfo); // Debug: Kiểm tra dữ liệu nhận được từ API
 
   return (
     <div className={S.page}>
