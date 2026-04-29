@@ -11,6 +11,7 @@ interface Props {
   classSchedules: ClassScheduleDetail[];
   view: "grid" | "week";
   onViewChange: (view: "grid" | "week") => void;
+  onOpenSessionsModal?: () => void;
 }
 
 export function ClassHeader({
@@ -19,6 +20,7 @@ export function ClassHeader({
   classSchedules,
   view,
   onViewChange,
+  onOpenSessionsModal,
 }: Props) {
   const { canViewManagerSenior } = useRoleStudent();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +30,14 @@ export function ClassHeader({
       <div className={styles.pageHead}>
         <div>
           <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
-            Lịch Học
+            Lịch Học{" "}
+            <span
+              onClick={onOpenSessionsModal}
+              style={{ cursor: "pointer", color: "#e02020" }}
+              title="Xem các buổi học sắp diễn ra"
+            >
+              Sắp diễn ra
+            </span>
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
             {totalClasses} lớp · {activeClasses} đang hoạt động

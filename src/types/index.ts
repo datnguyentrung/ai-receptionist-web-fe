@@ -4,6 +4,7 @@ export * from "./Core/CoachTypes";
 export * from "./Core/StudentTypes";
 
 // Operation
+export * from "./Operation/ClassSessionTypes";
 export * from "./Operation/CoachAssignmentTypes";
 export * from "./Operation/StudentAttendanceTypes";
 export * from "./Operation/StudentEnrollmentTypes";
@@ -13,5 +14,5 @@ export * from "./Operation/TuitionPaymentTypes";
 // Security
 export * from "./Security/authTypes";
 
-export * from "./pagination";
 export * from "./ApiType";
+export * from "./pagination";

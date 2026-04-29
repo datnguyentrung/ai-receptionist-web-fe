@@ -7,15 +7,20 @@ import {
   ClassWeekView,
 } from "@/features/classSchedule";
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
+import { classSessionAPI } from "@/features/classSession/api/classSessionAPI";
+import { UpcomingSessionsModal } from "@/features/classSession/components/UpcomingSessionsModal";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import styles from "./ClassSchedules.module.scss";
 
 export function ClassSchedules() {
   const [view, setView] = useState<"grid" | "week">("week");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
+  const [classSessionModalOpen, setClassSessionModalOpen] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
     scheduleId: string;
     currentStatus: ScheduleStatus;
@@ -87,12 +92,40 @@ export function ClassSchedules() {
     { enabled: !!user },
   );
 
+  const {
+    data: upcomingSessions,
+    isLoading: isLoadingSessions,
+    error: sessionsError,
+  } = useGetQuery(
+    [
+      "class-sessions",
+      {
+        scheduleIds,
+        // isAttendanceClosed: false,
+        page: currentPage - 1,
+        size: 10,
+      },
+    ],
+    () =>
+      classSessionAPI.getSessionsByFilter({
+        scheduleIds,
+        // isAttendanceClosed: false,
+        page: currentPage - 1,
+        size: 10,
+      }),
+    { enabled: !!user },
+  );
+
   if (isLoading) {
     return <div>Loading class schedules...</div>;
   }
 
   if (error) {
     return <div>Error loading class schedules: {error.message}</div>;
+  }
+
+  if (sessionsError) {
+    toast.error("Lỗi khi tải các buổi học sắp diễn ra");
   }
 
   const isCurrentStatusActive = pendingStatusChange?.currentStatus === "ACTIVE";
@@ -123,6 +156,7 @@ export function ClassSchedules() {
             }
             view={view}
             onViewChange={setView}
+            onOpenSessionsModal={() => setClassSessionModalOpen(true)}
           />
         </RenderProfiler>
         <RenderProfiler id="ClassSchedules:Content" thresholdMs={8}>
@@ -152,6 +186,15 @@ export function ClassSchedules() {
         onConfirm={confirmStatusChange}
         successToastMessage="Cập nhật trạng thái lớp học thành công"
         errorToastMessage="Không thể cập nhật trạng thái lớp học"
+      />
+
+      <UpcomingSessionsModal
+        open={classSessionModalOpen}
+        onClose={() => setClassSessionModalOpen(false)}
+        sessions={upcomingSessions}
+        isLoading={isLoadingSessions}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
       />
     </>
   );

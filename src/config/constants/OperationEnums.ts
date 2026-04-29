@@ -85,3 +85,11 @@ export type StudentEnrollmentStatus =
   | "RESERVED" // Bảo lưu
   | "TRANSFERRED" // Chuyển lớp
   | "DROPPED"; // Nghỉ học
+
+export type SessionStatus =
+  | "ACTIVE" // Đang diễn ra
+  | "CANCELLED" // Đã hủy
+  | "COMPLETED" // Đã hoàn thành
+  | "SCHEDULED" // Đã lên lịch
+  | "POSTPONED" // Đã hoãn
+  | "TERMINATED"; // Đã chấm dứt / Hủy bỏ

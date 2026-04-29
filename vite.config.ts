@@ -76,4 +76,12 @@ export default defineConfig({
       "@types": path.resolve(__dirname, "./src/types"),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Tự động inject biến vào tất cả các file SCSS
+        additionalData: `@use "@/styles/_variables.scss" as *;`,
+      },
+    },
+  },
 });
