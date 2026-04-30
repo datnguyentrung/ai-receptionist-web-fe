@@ -6,6 +6,38 @@
   gap: 12px;
 }
 
+.headerUpcoming {
+  cursor: pointer;
+  color: $brand-red;
+  text-decoration: underline;
+  text-underline-offset: 4px; // Giúp đường gạch chân nhìn thoáng hơn
+  text-decoration-thickness: 1px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition:
+    color 0.15s,
+    background-color 0.15s,
+    box-shadow 0.15s;
+
+  &:hover {
+    background-color: rgba($brand-red, 0.08);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($brand-red, 0.25);
+  }
+}
+
+.headerUpcomingDisabled {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.6;
+  text-decoration: none;
+  box-shadow: none;
+}
+
 .headerActions {
   display: flex;
   align-items: center;

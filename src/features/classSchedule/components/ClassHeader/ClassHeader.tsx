@@ -24,6 +24,7 @@ export function ClassHeader({
 }: Props) {
   const { canViewManagerSenior } = useRoleStudent();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isUpcomingClickable = typeof onOpenSessionsModal === "function";
 
   return (
     <>
@@ -33,10 +34,24 @@ export function ClassHeader({
             Lịch Học{" "}
             <span
               onClick={onOpenSessionsModal}
-              style={{ cursor: "pointer", color: "#e02020" }}
+              role={isUpcomingClickable ? "button" : undefined}
+              tabIndex={isUpcomingClickable ? 0 : undefined}
+              onKeyDown={
+                isUpcomingClickable
+                  ? (event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onOpenSessionsModal();
+                      }
+                    }
+                  : undefined
+              }
+              className={`${styles.headerUpcoming} ${
+                isUpcomingClickable ? "" : styles.headerUpcomingDisabled
+              }`}
               title="Xem các buổi học sắp diễn ra"
             >
-              Sắp diễn ra
+              sắp diễn ra
             </span>
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>

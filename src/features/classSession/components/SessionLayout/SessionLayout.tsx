@@ -253,7 +253,8 @@ export function SessionLayout({
                 )}
               </div>
               <div className={styles.statusBadge}>
-                {session.isAttendanceClosed ? (
+                {session.isAttendanceClosed ||
+                session.status === "COMPLETED" ? (
                   <span className={styles.closed}>Đã kết thúc</span>
                 ) : (
                   <span className={styles.active}>
@@ -261,6 +262,7 @@ export function SessionLayout({
                     <CountdownBadge
                       sessionDate={session.sessionDate}
                       startTime={session.startTime}
+                      endTime={session.endTime}
                     />
                   </span>
                 )}

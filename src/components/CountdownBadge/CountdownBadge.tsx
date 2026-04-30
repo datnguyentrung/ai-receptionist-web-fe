@@ -1,72 +1,90 @@
-// Thêm component này bên ngoài/bên trên SessionLayout
 import { useEffect, useState } from "react";
 
 export function CountdownBadge({
   sessionDate,
   startTime,
+  endTime,
 }: {
   sessionDate?: string | Date;
   startTime?: string;
+  endTime?: string;
 }) {
-  const [timeLeft, setTimeLeft] = useState("");
+  const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
     if (!sessionDate || !startTime) return;
 
-    // Bước 1: Gộp sessionDate và startTime thành 1 object Date hoàn chỉnh
-    const targetDate = new Date(sessionDate);
-    // Giả sử startTime có format là "HH:mm" hoặc "HH:mm:ss"
-    const [hours, minutes, seconds] = startTime.split(":");
-    targetDate.setHours(
-      Number(hours || 0),
-      Number(minutes || 0),
-      Number(seconds || 0),
-      0,
-    );
-    const targetTimeMs = targetDate.getTime();
+    // Tạo một baseDate gốc để tái sử dụng
+    const baseDate = new Date(sessionDate);
 
-    // Bước 2: Hàm tính toán và cập nhật thời gian
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const distance = targetTimeMs - now;
+    // Hàm phụ trợ: Chuyển đổi chuỗi giờ (VD: "14:30") thành timestamp (milliseconds)
+    const parseTimeToMs = (timeStr: string) => {
+      const d = new Date(baseDate.getTime()); // Clone ra để không mutate baseDate
+      const [hours, minutes, seconds] = timeStr.split(":");
+      d.setHours(
+        Number(hours || 0),
+        Number(minutes || 0),
+        Number(seconds || 0),
+        0,
+      );
+      return d.getTime();
+    };
 
-      // Nếu đã qua giờ bắt đầu
-      if (distance < 0) {
-        setTimeLeft("Đang diễn ra");
-        return;
-      }
+    const startMs = parseTimeToMs(startTime);
+    const endMs = endTime ? parseTimeToMs(endTime) : 0;
 
-      // Tính toán giờ, phút, giây còn lại
-      // Dùng tổng số giờ (Math.floor(distance / ...)) để lỡ còn > 24 tiếng thì nó hiển thị dạng 48:00:00 thay vì bị reset về 0
+    // Hàm phụ trợ: Format mili-giây sang định dạng HH:mm:ss
+    const formatTime = (distance: number) => {
       const totalHours = Math.floor(distance / (1000 * 60 * 60));
       const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const s = Math.floor((distance % (1000 * 60)) / 1000);
 
-      // Format thêm số 0 đằng trước nếu nhỏ hơn 10 (vd: 05 thay vì 5)
-      const formattedTime = [
+      return [
         totalHours.toString().padStart(2, "0"),
         m.toString().padStart(2, "0"),
         s.toString().padStart(2, "0"),
       ].join(":");
-
-      setTimeLeft(formattedTime);
     };
 
-    updateTimer(); // Gọi lần đầu ngay lập tức để không bị delay 1 giây
+    // Hàm chính tính toán và cập nhật thời gian
+    const updateTimer = () => {
+      const now = new Date().getTime();
 
-    // Bước 3: Set interval đếm ngược mỗi giây
+      // 1. Chưa đến giờ bắt đầu
+      if (now < startMs) {
+        setDisplayText(`⏳ Diễn ra sau ${formatTime(startMs - now)}`);
+        return;
+      }
+
+      // 2. Đã bắt đầu nhưng API/Data không trả về endTime
+      if (!endTime) {
+        setDisplayText("Đang diễn ra");
+        return;
+      }
+
+      // 3. Đang trong thời gian diễn ra (giữa startMs và endMs)
+      if (now >= startMs && now < endMs) {
+        setDisplayText(`⏳ Kết thúc sau ${formatTime(endMs - now)}`);
+        return;
+      }
+
+      // 4. Đã qua giờ kết thúc
+      if (now >= endMs) {
+        setDisplayText("Đã kết thúc");
+      }
+    };
+
+    updateTimer(); // Gọi lần đầu ngay lập tức
+
+    // Set interval đếm ngược mỗi giây
     const intervalId = setInterval(updateTimer, 1000);
 
     // Dọn dẹp khi component unmount
     return () => clearInterval(intervalId);
-  }, [sessionDate, startTime]);
+  }, [sessionDate, startTime, endTime]);
 
-  // Nếu không có dữ liệu thời gian, fallback về chữ mặc định
-  if (!timeLeft) return <span>Sắp diễn ra</span>;
+  // Render HTML rất đơn giản vì chuỗi đã được xử lý xong ở trên
+  if (!displayText) return <span>Sắp diễn ra</span>;
 
-  // Nếu đã tới giờ
-  if (timeLeft === "Đang diễn ra") return <span>{timeLeft}</span>;
-
-  // Hiển thị đồng hồ đếm ngược
-  return <span>⏳ {timeLeft}</span>;
+  return <span>{displayText}</span>;
 }
