@@ -1,6 +1,6 @@
+import { ModalLayout } from "@/components/ui/modal-layout";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
-import { ModalLayout } from "@/components/ui/modal-layout";
 import styles from "./BaseModalLayout.module.scss";
 
 interface BaseModalLayoutProps {
@@ -62,9 +62,7 @@ export function BaseModalLayout({
           ) : (
             <div className={styles.title}>{title}</div>
           )}
-          {subtitle && (
-            <p className={styles.subtitle}>{subtitle}</p>
-          )}
+          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
         {showCloseButton && (
           <button
@@ -79,15 +77,9 @@ export function BaseModalLayout({
         )}
       </div>
 
-      <div className={styles.content}>
-        {children}
-      </div>
+      <div className={styles.content}>{children}</div>
 
-      {footer && (
-        <div className={styles.footer}>
-          {footer}
-        </div>
-      )}
+      {footer && <div className={styles.footer}>{footer}</div>}
     </ModalLayout>
   );
 }

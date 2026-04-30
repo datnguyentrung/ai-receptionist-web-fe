@@ -11,6 +11,8 @@ export function useClassSchedulesLogic() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [classSessionModalOpen, setClassSessionModalOpen] = useState(false);
+  const [createSessionPrefillScheduleId, setCreateSessionPrefillScheduleId] =
+    useState<string | null>(null);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
     scheduleId: string;
     currentStatus: ScheduleStatus;
@@ -137,6 +139,7 @@ export function useClassSchedulesLogic() {
     setCurrentPage,
     isChangeStatusModalOpen,
     classSessionModalOpen,
+    createSessionPrefillScheduleId,
     pendingStatusChange,
 
     // Data
@@ -157,8 +160,14 @@ export function useClassSchedulesLogic() {
     closeChangeStatusModal,
     confirmStatusChange,
     isChangingStatus,
-    openSessionsModal: () => setClassSessionModalOpen(true),
-    closeSessionsModal: () => setClassSessionModalOpen(false),
+    openSessionsModal: (scheduleId?: string) => {
+      setCreateSessionPrefillScheduleId(scheduleId?.trim() || null);
+      setClassSessionModalOpen(true);
+    },
+    closeSessionsModal: () => {
+      setClassSessionModalOpen(false);
+      setCreateSessionPrefillScheduleId(null);
+    },
     handleSessionUpdated,
   };
 }

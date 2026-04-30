@@ -8,18 +8,9 @@ import {
 import { useNavigateBack } from "@/hooks/useNavigation";
 import type { ClassScheduleSummary } from "@/types";
 import { formatDateDMY } from "@/utils/format";
-import {
-  Calendar,
-  CheckCircle2,
-  ChevronLeft,
-  Clock,
-  MapPin,
-  RotateCcw,
-  Star,
-} from "lucide-react";
+import { Calendar, ChevronLeft, Clock, MapPin, Star } from "lucide-react";
 import { motion } from "motion/react";
 import { memo } from "react";
-import { useRoleStudent } from "@/utils/roleUtils";
 import styles from "./AttendanceHeader.module.scss";
 
 interface AttendanceHeaderProps {
@@ -34,8 +25,6 @@ interface AttendanceHeaderProps {
   evalCount: number;
   filter: "all" | AttendanceStatus;
   onFilterChange: (f: "all" | AttendanceStatus) => void;
-  onMarkAll: (status: NonNullable<AttendanceStatus>) => void;
-  onReset: () => void;
 }
 
 // Link: /schedules/[:scheduleId]
@@ -51,11 +40,8 @@ function AttendanceHeaderInner({
   evalCount,
   filter,
   onFilterChange,
-  onMarkAll,
-  onReset,
 }: AttendanceHeaderProps) {
   const onBack = useNavigateBack();
-  const { canViewManagerSenior } = useRoleStudent();
   const scheduleLevelLabel =
     ScheduleLevelLabel[session.scheduleLevel] ?? "Lớp không xác định";
   const scheduleShiftLabel =
@@ -149,7 +135,7 @@ function AttendanceHeaderInner({
 
       {/* Quick actions + filter */}
       <div className={styles.quickActions}>
-        <div className={styles.actionBtns}>
+        {/* <div className={styles.actionBtns}>
           {canViewManagerSenior && (
             <button
               onClick={() => onMarkAll("PRESENT")}
@@ -161,7 +147,7 @@ function AttendanceHeaderInner({
           <button onClick={onReset} className={styles.btnReset}>
             <RotateCcw size={11} /> Reset
           </button>
-        </div>
+        </div> */}
         <div className={styles.divider} />
         <div className={styles.filterTabs}>
           {(

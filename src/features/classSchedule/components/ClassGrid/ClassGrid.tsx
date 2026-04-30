@@ -11,6 +11,7 @@ interface Props {
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onOpenSessionsModal: (scheduleId?: string) => void;
 }
 
 interface ClassGroup {
@@ -19,7 +20,11 @@ interface ClassGroup {
   classes: ClassScheduleDetail[];
 }
 
-function ClassGridInner({ classes, onRequestStatusChange }: Props) {
+function ClassGridInner({
+  classes,
+  onRequestStatusChange,
+  onOpenSessionsModal,
+}: Props) {
   const classGroups = useMemo<ClassGroup[]>(() => {
     const grouped = new Map<number, ClassGroup>();
 
@@ -73,6 +78,7 @@ function ClassGridInner({ classes, onRequestStatusChange }: Props) {
                 key={cls.scheduleId}
                 cls={cls}
                 onRequestStatusChange={onRequestStatusChange}
+                onOpenSessionsModal={onOpenSessionsModal}
               />
             ))}
           </div>

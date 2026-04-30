@@ -1,0 +1,146 @@
+.panel {
+  width: 100%;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// Thêm vào file CreateSessionModal.module.scss của bạn
+.dateInputBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white; // Hoặc màu nền input dự án đang dùng
+  border: 1px solid #d1d5db; // Màu viền input
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: #9ca3af;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $brand-red; // Hoặc màu primary của dự án
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f9fafb;
+  }
+
+  svg {
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+}
+
+.textMuted {
+  color: #9ca3af;
+}
+
+// Bỏ padding thừa của Popover shadcn mặc định (nếu cần)
+.calendarPopover {
+  width: auto;
+  padding: 0;
+}
+
+.todayBtn {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+
+  &:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  input,
+  select {
+    width: 100%;
+    height: 34px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    padding: 0 12px;
+    font-size: 12px;
+    color: #111827;
+    background: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    &:disabled {
+      background: #f9fafb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  letter-spacing: 0.02em;
+}
+
+.saveBtn {
+  min-width: 120px;
+  height: 36px;
+  border-radius: 9px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e02020, #7b0000);
+  color: #fff;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}

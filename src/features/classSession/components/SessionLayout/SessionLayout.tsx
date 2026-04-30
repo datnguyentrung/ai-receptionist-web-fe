@@ -8,11 +8,18 @@ import {
 } from "@/config/constants/OperationEnums";
 import type { PageResponse, SessionResponse } from "@/types";
 import { formatTimeStringHM } from "@/utils/format";
-import { getLabelClassScheduleNoBranch } from "@/utils/getInitials";
+import { getLabelClassSchedule } from "@/utils/getInitials";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { CheckCircle2, Clock, MapPin, Pause, XCircle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import {
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Pause,
+  Trash2,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { classSessionAPI } from "../../api/classSessionAPI";
 import styles from "./SessionLayout.module.scss";
 
@@ -40,7 +47,7 @@ const STATUS_TRANSITIONS: Record<
     { status: "POSTPONED", label: "Hoãn buổi học", icon: Pause },
   ],
   COMPLETED: [{ status: "SCHEDULED", label: "Lên lịch lại", icon: Clock }],
-  CANCELLED: [],
+  CANCELLED: [{ status: "SCHEDULED", label: "Lên lịch lại", icon: Clock }],
   POSTPONED: [
     { status: "SCHEDULED", label: "Lên lịch lại", icon: Clock },
     {
@@ -50,7 +57,7 @@ const STATUS_TRANSITIONS: Record<
       isDanger: true,
     },
   ],
-  TERMINATED: [],
+  TERMINATED: [{ status: "SCHEDULED", label: "Lên lịch lại", icon: Clock }],
 };
 
 interface SessionLayoutProps {
@@ -59,6 +66,8 @@ interface SessionLayoutProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   onSessionUpdated?: () => void;
+  highlightSessionId?: string | null;
+  onHighlightHandled?: () => void;
 }
 
 export function SessionLayout({
@@ -67,6 +76,8 @@ export function SessionLayout({
   currentPage = 1,
   onPageChange,
   onSessionUpdated,
+  highlightSessionId,
+  onHighlightHandled,
 }: SessionLayoutProps) {
   const [pendingUpdate, setPendingUpdate] = useState<{
     sessionId: string;
@@ -83,9 +94,54 @@ export function SessionLayout({
   const [inlineNoteValue, setInlineNoteValue] = useState("");
   const [isSavingInline, setIsSavingInline] = useState(false);
 
+  const [pendingDelete, setPendingDelete] = useState<SessionResponse | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [flashSessionId, setFlashSessionId] = useState<string | null>(null);
+
+  const registerItemRef = useCallback(
+    (sessionId: string) => (element: HTMLDivElement | null) => {
+      itemRefs.current[sessionId] = element;
+    },
+    [],
+  );
+
+  const visibleSessionIds = useMemo(
+    () => new Set(localSessions.map((s) => s.sessionId)),
+    [localSessions],
+  );
+
   useEffect(() => {
     setLocalSessions(sessions?.content ?? []);
   }, [sessions]);
+
+  useEffect(() => {
+    if (!highlightSessionId) return;
+
+    if (!visibleSessionIds.has(highlightSessionId)) {
+      return;
+    }
+
+    const element = itemRefs.current[highlightSessionId];
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    setFlashSessionId(highlightSessionId);
+    onHighlightHandled?.();
+
+    const timeoutId = window.setTimeout(() => {
+      setFlashSessionId((prev) => (prev === highlightSessionId ? null : prev));
+    }, 1600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [highlightSessionId, onHighlightHandled, visibleSessionIds]);
 
   const isNoteRequired =
     pendingUpdate?.newStatus === "CANCELLED" ||
@@ -153,6 +209,27 @@ export function SessionLayout({
       setIsUpdating(false);
     }
   }, [pendingUpdate, updateNote, isNoteRequired, closeModal, onSessionUpdated]);
+
+  const closeDeleteModal = useCallback(() => {
+    if (isDeleting) return;
+    setPendingDelete(null);
+  }, [isDeleting]);
+
+  const confirmDelete = useCallback(async () => {
+    if (!pendingDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await classSessionAPI.deleteSession(pendingDelete.sessionId);
+      setLocalSessions((prev) =>
+        prev.filter((s) => s.sessionId !== pendingDelete.sessionId),
+      );
+      setPendingDelete(null);
+      onSessionUpdated?.();
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [onSessionUpdated, pendingDelete]);
 
   // 1. Mở ô input khi click đúp
   const handleDoubleClickNote = useCallback((session: SessionResponse) => {
@@ -233,7 +310,11 @@ export function SessionLayout({
     <div className={styles.container}>
       <div className={styles.sessionList}>
         {localSessions.map((session) => (
-          <div key={session.sessionId} className={styles.sessionItem}>
+          <div
+            key={session.sessionId}
+            ref={registerItemRef(session.sessionId)}
+            className={`${styles.sessionItem} ${flashSessionId === session.sessionId ? styles.sessionItemHighlighted : ""}`}
+          >
             <div className={styles.sessionHeader}>
               <div className={styles.dateTimeInfo}>
                 <div className={styles.date}>
@@ -252,20 +333,30 @@ export function SessionLayout({
                   </div>
                 )}
               </div>
-              <div className={styles.statusBadge}>
-                {session.isAttendanceClosed ||
-                session.status === "COMPLETED" ? (
-                  <span className={styles.closed}>Đã kết thúc</span>
-                ) : (
-                  <span className={styles.active}>
-                    {/* Gọi Component đếm ngược vào đây, truyền vào ngày và giờ của buổi học */}
-                    <CountdownBadge
-                      sessionDate={session.sessionDate}
-                      startTime={session.startTime}
-                      endTime={session.endTime}
-                    />
-                  </span>
-                )}
+
+              <div className={styles.headerActions}>
+                <div className={styles.statusBadge}>
+                  {session.isAttendanceClosed ||
+                  session.status === "COMPLETED" ? null : (
+                    <span className={styles.active}>
+                      <CountdownBadge
+                        sessionDate={session.sessionDate}
+                        startTime={session.startTime}
+                        endTime={session.endTime}
+                      />
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.deleteBtn}
+                  onClick={() => setPendingDelete(session)}
+                  aria-label="Xóa buổi học"
+                  title="Xóa buổi học"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
 
@@ -275,15 +366,21 @@ export function SessionLayout({
                   <MapPin size={14} />
                   <div>
                     <div className={styles.className}>
-                      {getLabelClassScheduleNoBranch(
-                        session.classSchedule?.scheduleId,
-                      ) || "N/A"}
+                      {session.classSchedule?.scheduleId || "N/A"}
                     </div>
-                    {session.classSchedule?.branchName && (
-                      <div className={styles.instructorName}>
-                        Chi nhánh: {session.classSchedule.branchName}
-                      </div>
-                    )}
+                    {(() => {
+                      const scheduleId = session.classSchedule?.scheduleId;
+                      if (!scheduleId) return null;
+                      const derivedLabel =
+                        getLabelClassSchedule(scheduleId);
+                      if (!derivedLabel || derivedLabel === scheduleId) {
+                        return null;
+                      }
+                      return (
+                        <div className={styles.classMeta}>{derivedLabel}</div>
+                      );
+                    })()}
+
                   </div>
                 </div>
                 <MiniActionPopover
@@ -423,6 +520,20 @@ export function SessionLayout({
           )}
         </div>
       </ConfirmModal>
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Xác nhận xóa buổi học"
+        description={`Bạn có chắc muốn xóa buổi học ${pendingDelete?.classSchedule?.scheduleId ?? ""}?`}
+        cancelText="Hủy"
+        confirmText="Xóa"
+        loadingText="Đang xóa..."
+        isLoading={isDeleting}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDelete}
+        successToastMessage="Xóa buổi học thành công"
+        errorToastMessage="Không thể xóa buổi học"
+      />
 
       {/* TODO: Thêm input Note vào nữa */}
     </div>

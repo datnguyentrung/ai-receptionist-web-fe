@@ -14,12 +14,14 @@ import styles from "./ClassWeekItem.module.scss";
 function ClassWeekItemInner({
   cls,
   onRequestStatusChange,
+  onOpenSessionsModal,
 }: {
   cls: ClassScheduleDetail;
   onRequestStatusChange: (
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onOpenSessionsModal: (scheduleId?: string) => void;
 }) {
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
@@ -80,6 +82,7 @@ function ClassWeekItemInner({
                     : []),
                 { id: "__separator__" as const },
                 { id: "assign-coach", label: "Phân công HLV" },
+                { id: "session", label: "Thêm buổi học" },
               ]
             : []),
         ]}
@@ -97,6 +100,11 @@ function ClassWeekItemInner({
             case "assign-coach":
               if (canViewManagerSenior) {
                 showComingSoonActionToast("Phân công HLV", cls.scheduleId);
+              }
+              break;
+            case "session":
+              if (canViewManagerSenior) {
+                onOpenSessionsModal(cls.scheduleId);
               }
               break;
             default:

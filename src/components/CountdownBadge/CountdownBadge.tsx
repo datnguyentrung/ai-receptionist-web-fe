@@ -70,7 +70,8 @@ export function CountdownBadge({
 
       // 4. Đã qua giờ kết thúc
       if (now >= endMs) {
-        setDisplayText("Đã kết thúc");
+        // setDisplayText("Đã kết thúc");
+        return null;
       }
     };
 

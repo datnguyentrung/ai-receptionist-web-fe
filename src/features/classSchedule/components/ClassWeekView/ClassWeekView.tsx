@@ -14,9 +14,14 @@ interface Props {
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onOpenSessionsModal: (scheduleId?: string) => void;
 }
 
-function ClassWeekViewInner({ classes, onRequestStatusChange }: Props) {
+function ClassWeekViewInner({
+  classes,
+  onRequestStatusChange,
+  onOpenSessionsModal,
+}: Props) {
   const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
 
   const counts = useMemo(
@@ -67,6 +72,7 @@ function ClassWeekViewInner({ classes, onRequestStatusChange }: Props) {
               key={cls.scheduleId}
               cls={cls}
               onRequestStatusChange={onRequestStatusChange}
+              onOpenSessionsModal={onOpenSessionsModal}
             />
           ))
         )}

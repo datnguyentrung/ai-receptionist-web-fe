@@ -1,0 +1,25 @@
+.splitWrapper {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.leftPanel {
+  flex: 1 1 640px;
+  min-width: 0;
+}
+
+.rightPanel {
+  flex: 0 0 480px;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .splitWrapper {
+    flex-direction: column;
+  }
+
+  .rightPanel {
+    flex: 1 1 auto;
+  }
+}

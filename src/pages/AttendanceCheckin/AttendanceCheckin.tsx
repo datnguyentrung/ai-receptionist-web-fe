@@ -195,7 +195,10 @@ export function AttendanceCheckin() {
       evalCount: evaluated,
       lateCount: late,
       makeupCount: makeup,
-      progress: total > 0 ? Math.round((marked / total) * 100) : 0,
+      progress:
+        total > 0
+          ? Math.round(((present + absent + excused) / total) * 100)
+          : 0,
       filtered:
         filter === "all"
           ? students
@@ -283,22 +286,6 @@ export function AttendanceCheckin() {
     [updateEvaluation],
   );
 
-  const markAll = useCallback(
-    (status: AttendanceStatus | null) => {
-      const time = status === "PRESENT" ? nowTime() : null;
-      setMutations(
-        baseMerged.reduce(
-          (acc, s) => ({
-            ...acc,
-            [s.studentId]: { attendanceStatus: status, checkInTime: time },
-          }),
-          {} as Record<string, Partial<StudentAttendanceResponse>>,
-        ),
-      );
-    },
-    [baseMerged],
-  );
-
   const handleSubmit = useCallback(() => {
     setSubmittedTime(nowTime());
     setShowSuccess(true);
@@ -328,8 +315,6 @@ export function AttendanceCheckin() {
       submitTimeoutRef.current = null;
     }, 900);
   }, [handleSubmit, isSubmitPending]);
-
-  const handleReset = useCallback(() => markAll(null), [markAll]);
 
   if (!hasScheduleAccess) {
     return (
@@ -414,8 +399,6 @@ export function AttendanceCheckin() {
               evalCount={evalCount}
               filter={filter}
               onFilterChange={setFilter}
-              onMarkAll={markAll}
-              onReset={handleReset}
             />
           </aside>
         </RenderProfiler>

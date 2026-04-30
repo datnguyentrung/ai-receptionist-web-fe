@@ -11,7 +11,7 @@ interface Props {
   classSchedules: ClassScheduleDetail[];
   view: "grid" | "week";
   onViewChange: (view: "grid" | "week") => void;
-  onOpenSessionsModal?: () => void;
+  onOpenSessionsModal?: (scheduleId?: string) => void;
 }
 
 export function ClassHeader({
@@ -33,7 +33,9 @@ export function ClassHeader({
           <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
             Lịch Học{" "}
             <span
-              onClick={onOpenSessionsModal}
+              onClick={
+                isUpcomingClickable ? () => onOpenSessionsModal?.() : undefined
+              }
               role={isUpcomingClickable ? "button" : undefined}
               tabIndex={isUpcomingClickable ? 0 : undefined}
               onKeyDown={
@@ -41,7 +43,7 @@ export function ClassHeader({
                   ? (event) => {
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
-                        onOpenSessionsModal();
+                        onOpenSessionsModal?.();
                       }
                     }
                   : undefined

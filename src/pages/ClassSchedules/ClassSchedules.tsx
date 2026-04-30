@@ -33,6 +33,8 @@ export function ClassSchedules() {
   const activeClassSchedules =
     logic.classSchedules?.filter((c) => c.scheduleStatus === "ACTIVE") || [];
 
+  console.log("Logic: ", logic);
+
   return (
     <>
       <div className={styles.page}>
@@ -51,11 +53,13 @@ export function ClassSchedules() {
             <ClassGrid
               classes={logic.classSchedules || []}
               onRequestStatusChange={logic.openChangeStatusModal}
+              onOpenSessionsModal={logic.openSessionsModal}
             />
           ) : (
             <ClassWeekView
               classes={logic.classSchedules || []}
               onRequestStatusChange={logic.openChangeStatusModal}
+              onOpenSessionsModal={logic.openSessionsModal}
             />
           )}
         </RenderProfiler>
@@ -79,6 +83,8 @@ export function ClassSchedules() {
         open={logic.classSessionModalOpen}
         onClose={logic.closeSessionsModal}
         sessions={logic.upcomingSessions}
+        classSchedules={logic.classSchedules || []}
+        prefillScheduleId={logic.createSessionPrefillScheduleId || undefined}
         isLoading={logic.isLoadingSessions}
         currentPage={logic.currentPage}
         onPageChange={logic.setCurrentPage}
