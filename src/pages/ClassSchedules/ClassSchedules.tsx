@@ -12,7 +12,7 @@ import { UpcomingSessionsModal } from "@/features/classSession/components/Upcomi
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import styles from "./ClassSchedules.module.scss";
 
@@ -96,6 +96,7 @@ export function ClassSchedules() {
     data: upcomingSessions,
     isLoading: isLoadingSessions,
     error: sessionsError,
+    refetch: refetchSessions,
   } = useGetQuery(
     [
       "class-sessions",
@@ -115,6 +116,49 @@ export function ClassSchedules() {
       }),
     { enabled: !!user },
   );
+
+  const handleSessionUpdated = useCallback(() => {
+    refetchSessions();
+  }, [refetchSessions]);
+
+  // =============== CHỈ CẦN THÊM ĐÚNG ĐOẠN NÀY VÀO COMPONENT CHA ===============
+  useEffect(() => {
+    // Nên dùng process.env cho URL thực tế
+    const wsUrl = "ws://localhost:8080/ws/class-sessions";
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log("🔥 [ClassSchedules] Có thay đổi từ BE:", message.type);
+
+        const targetEvents = [
+          "SESSIONS_ACTIVATED",
+          "SESSION_COMPLETED",
+          "SESSION_CREATED",
+          "SESSION_UPDATED",
+          "SESSION_DELETED",
+          "SESSIONS_GENERATED",
+        ];
+
+        if (targetEvents.includes(message.type)) {
+          // Delay 300ms để BE chắc chắn commit xong DB
+          setTimeout(() => {
+            // TUYỆT CHIÊU: Bắt React Query tự động gọi lại MỌI API liên quan!
+            // Cập nhật cả danh sách Modal lẫn danh sách ngoài Grid/Week View
+            queryClient.invalidateQueries({ queryKey: ["class-sessions"] });
+            queryClient.invalidateQueries({ queryKey: ["class-schedules"] });
+          }, 300);
+        }
+      } catch (error) {
+        console.error("Lỗi parse WS:", error);
+      }
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) ws.close();
+    };
+  }, [queryClient]);
 
   if (isLoading) {
     return <div>Loading class schedules...</div>;
@@ -195,6 +239,7 @@ export function ClassSchedules() {
         isLoading={isLoadingSessions}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
+        onSessionUpdated={handleSessionUpdated}
       />
     </>
   );

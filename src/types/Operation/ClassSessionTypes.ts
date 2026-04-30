@@ -14,7 +14,6 @@ export interface SessionCreateRequest {
 }
 
 export interface SessionUpdateRequest {
-  sessionId: string;
   sessionDate?: string | Date;
 
   status?: SessionStatus;

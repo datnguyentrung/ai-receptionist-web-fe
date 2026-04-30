@@ -38,12 +38,12 @@ export const classSessionAPI = {
 
   /** PUT /{sessionId} — Cập nhật thông tin buổi học */
   updateSession: async (
+    sessionId: string,
     data: SessionUpdateRequest,
   ): Promise<SessionResponse> => {
-    const response = await javaApi.put(
-      `/class-sessions/${data.sessionId}`,
-      data,
-    );
+    console.log("Updating session", sessionId, data); // Debug log
+
+    const response = await javaApi.put(`/class-sessions/${sessionId}`, data);
     return response.data as SessionResponse;
   },
 

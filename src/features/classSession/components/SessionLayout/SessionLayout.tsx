@@ -1,17 +1,64 @@
+import ConfirmModal from "@/components/ConfirmModal";
+import { CountdownBadge } from "@/components/CountdownBadge/CountdownBadge";
+import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  SessionStatusLabel,
+  type SessionStatus,
+} from "@/config/constants/OperationEnums";
 import type { PageResponse, SessionResponse } from "@/types";
+import { formatTimeStringHM } from "@/utils/format";
+import { getLabelClassScheduleNoBranch } from "@/utils/getInitials";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { Clock, MapPin } from "lucide-react";
-import { formatTimeStringHM } from "../../../../utils/format";
-import { getLabelClassScheduleNoBranch } from "../../../../utils/getInitials";
+import { CheckCircle2, Clock, MapPin, Pause, XCircle } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { classSessionAPI } from "../../api/classSessionAPI";
 import styles from "./SessionLayout.module.scss";
+
+const STATUS_TRANSITIONS: Record<
+  SessionStatus,
+  Array<{
+    status: SessionStatus;
+    label: string;
+    icon: React.ElementType;
+    isDanger?: boolean;
+  }>
+> = {
+  SCHEDULED: [
+    { status: "ACTIVE", label: "Bắt đầu buổi học", icon: Clock },
+    {
+      status: "CANCELLED",
+      label: "Hủy buổi học",
+      icon: XCircle,
+      isDanger: true,
+    },
+    { status: "POSTPONED", label: "Hoãn buổi học", icon: Pause },
+  ],
+  ACTIVE: [
+    { status: "COMPLETED", label: "Hoàn thành buổi học", icon: CheckCircle2 },
+    { status: "POSTPONED", label: "Hoãn buổi học", icon: Pause },
+  ],
+  COMPLETED: [{ status: "SCHEDULED", label: "Lên lịch lại", icon: Clock }],
+  CANCELLED: [],
+  POSTPONED: [
+    { status: "SCHEDULED", label: "Lên lịch lại", icon: Clock },
+    {
+      status: "CANCELLED",
+      label: "Hủy buổi học",
+      icon: XCircle,
+      isDanger: true,
+    },
+  ],
+  TERMINATED: [],
+};
 
 interface SessionLayoutProps {
   sessions?: PageResponse<SessionResponse>;
   isLoading?: boolean;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  onSessionUpdated?: () => void;
 }
 
 export function SessionLayout({
@@ -19,7 +66,142 @@ export function SessionLayout({
   isLoading = false,
   currentPage = 1,
   onPageChange,
+  onSessionUpdated,
 }: SessionLayoutProps) {
+  const [pendingUpdate, setPendingUpdate] = useState<{
+    sessionId: string;
+    newStatus: SessionStatus;
+    label: string;
+    isDanger?: boolean;
+  } | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateNote, setUpdateNote] = useState("");
+  const [localSessions, setLocalSessions] = useState<SessionResponse[]>([]);
+
+  // Thêm 3 state mới này:
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [inlineNoteValue, setInlineNoteValue] = useState("");
+  const [isSavingInline, setIsSavingInline] = useState(false);
+
+  useEffect(() => {
+    setLocalSessions(sessions?.content ?? []);
+  }, [sessions]);
+
+  const isNoteRequired =
+    pendingUpdate?.newStatus === "CANCELLED" ||
+    pendingUpdate?.newStatus === "POSTPONED";
+
+  const closeModal = useCallback(() => {
+    setPendingUpdate(null);
+    setUpdateNote("");
+  }, []);
+
+  const getPopoverActions = useCallback((session: SessionResponse) => {
+    const transitions =
+      STATUS_TRANSITIONS[session.status as SessionStatus] || [];
+    return transitions.map((t) => ({
+      id: t.status,
+      label: t.label,
+      icon: t.icon,
+      isDanger: t.isDanger,
+    }));
+  }, []);
+
+  const handleActionSelect = useCallback(
+    (session: SessionResponse, actionId: string) => {
+      const transition = STATUS_TRANSITIONS[
+        session.status as SessionStatus
+      ]?.find((t) => t.status === actionId);
+      if (!transition) return;
+
+      // Điền sẵn note cũ vào ô input để tránh bị mất data
+      setUpdateNote(session.note || "");
+
+      setPendingUpdate({
+        sessionId: session.sessionId,
+        newStatus: actionId as SessionStatus,
+        label: transition.label,
+        isDanger: transition.isDanger,
+      });
+    },
+    [],
+  );
+
+  const confirmStatusChange = useCallback(async () => {
+    if (!pendingUpdate) return;
+    if (isNoteRequired && !updateNote.trim()) return;
+    setIsUpdating(true);
+    try {
+      await classSessionAPI.updateSession(pendingUpdate.sessionId, {
+        status: pendingUpdate.newStatus,
+        note: updateNote.trim(),
+      });
+      setLocalSessions((prev) =>
+        prev.map((s) =>
+          s.sessionId === pendingUpdate.sessionId
+            ? {
+                ...s,
+                status: pendingUpdate.newStatus,
+                note: updateNote.trim(),
+              }
+            : s,
+        ),
+      );
+      closeModal();
+      onSessionUpdated?.();
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [pendingUpdate, updateNote, isNoteRequired, closeModal, onSessionUpdated]);
+
+  // 1. Mở ô input khi click đúp
+  const handleDoubleClickNote = useCallback((session: SessionResponse) => {
+    setEditingNoteId(session.sessionId);
+    setInlineNoteValue(session.note || ""); // Điền sẵn note hiện tại vào input
+  }, []);
+
+  // 2. Hủy chỉnh sửa (nhấn nút Esc)
+  const handleCancelInlineEdit = useCallback(() => {
+    setEditingNoteId(null);
+    setInlineNoteValue("");
+  }, []);
+
+  // 3. Gọi API lưu Note mới (khi nhấn Enter hoặc click ra ngoài ô input)
+  const handleSaveInlineNote = useCallback(
+    async (session: SessionResponse) => {
+      const newNote = inlineNoteValue.trim();
+
+      // Nếu nội dung không thay đổi thì đóng input lại, không gọi API cho đỡ tốn tài nguyên
+      if (newNote === (session.note || "").trim()) {
+        handleCancelInlineEdit();
+        return;
+      }
+
+      setIsSavingInline(true);
+      try {
+        await classSessionAPI.updateSession(session.sessionId, {
+          status: session.status as SessionStatus, // Giữ nguyên trạng thái cũ
+          note: newNote,
+        });
+
+        // Cập nhật lại UI ngay lập tức
+        setLocalSessions((prev) =>
+          prev.map((s) =>
+            s.sessionId === session.sessionId ? { ...s, note: newNote } : s,
+          ),
+        );
+        handleCancelInlineEdit();
+        onSessionUpdated?.();
+      } catch (error) {
+        console.error("Lỗi khi cập nhật note trực tiếp:", error);
+        // Tùy chọn: Thêm thông báo lỗi (Toast) ở đây nếu cần
+      } finally {
+        setIsSavingInline(false);
+      }
+    },
+    [inlineNoteValue, handleCancelInlineEdit, onSessionUpdated],
+  );
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -50,7 +232,7 @@ export function SessionLayout({
   return (
     <div className={styles.container}>
       <div className={styles.sessionList}>
-        {sessions.content.map((session) => (
+        {localSessions.map((session) => (
           <div key={session.sessionId} className={styles.sessionItem}>
             <div className={styles.sessionHeader}>
               <div className={styles.dateTimeInfo}>
@@ -74,33 +256,106 @@ export function SessionLayout({
                 {session.isAttendanceClosed ? (
                   <span className={styles.closed}>Đã kết thúc</span>
                 ) : (
-                  <span className={styles.active}>Sắp diễn ra</span>
+                  <span className={styles.active}>
+                    {/* Gọi Component đếm ngược vào đây, truyền vào ngày và giờ của buổi học */}
+                    <CountdownBadge
+                      sessionDate={session.sessionDate}
+                      startTime={session.startTime}
+                    />
+                  </span>
                 )}
               </div>
             </div>
 
             <div className={styles.sessionBody}>
-              <div className={styles.classInfo}>
-                <MapPin size={14} />
-                <div>
-                  <div className={styles.className}>
-                    {getLabelClassScheduleNoBranch(
-                      session.classSchedule?.scheduleId,
-                    ) || "N/A"}
-                  </div>
-                  {session.classSchedule?.branchName && (
-                    <div className={styles.instructorName}>
-                      Chi nhánh: {session.classSchedule.branchName}
+              <div className={styles.classInfoContainer}>
+                <div className={styles.classInfo}>
+                  <MapPin size={14} />
+                  <div>
+                    <div className={styles.className}>
+                      {getLabelClassScheduleNoBranch(
+                        session.classSchedule?.scheduleId,
+                      ) || "N/A"}
                     </div>
-                  )}
+                    {session.classSchedule?.branchName && (
+                      <div className={styles.instructorName}>
+                        Chi nhánh: {session.classSchedule.branchName}
+                      </div>
+                    )}
+                  </div>
                 </div>
+                <MiniActionPopover
+                  actions={getPopoverActions(session)}
+                  itemLabel={session.classSchedule?.scheduleId}
+                  onActionSelect={(actionId) =>
+                    handleActionSelect(session, actionId)
+                  }
+                >
+                  <span
+                    className={`${styles.sessionStatusBadge} ${session.status ? styles[session.status] : ""}`}
+                  >
+                    {session.status
+                      ? SessionStatusLabel[session.status]
+                      : "N/A"}
+                  </span>
+                </MiniActionPopover>
               </div>
 
-              {session.note && (
-                <div className={styles.note}>
-                  <strong>Ghi chú:</strong> {session.note}
-                </div>
-              )}
+              <div
+                className={styles.note}
+                onDoubleClick={() => handleDoubleClickNote(session)}
+                title="Click đúp để chỉnh sửa ghi chú"
+                style={{
+                  cursor: "text",
+                  display: "flex", // Chuyển sang flex để căn chỉnh
+                  gap: "8px", // Tạo khoảng cách giữa chữ "Ghi chú:" và nội dung
+                  alignItems: "flex-start", // Giữ chữ "Ghi chú:" luôn ở trên cùng kể cả khi nội dung dài ra nhiều dòng
+                }}
+              >
+                <strong style={{ whiteSpace: "nowrap" }}>Ghi chú:</strong>
+
+                {editingNoteId === session.sessionId ? (
+                  <textarea // Đổi từ input sang textarea để hỗ trợ xuống dòng
+                    autoFocus
+                    disabled={isSavingInline}
+                    value={inlineNoteValue}
+                    onChange={(e) => setInlineNoteValue(e.target.value)}
+                    onBlur={() => handleSaveInlineNote(session)}
+                    onKeyDown={(e) => {
+                      // Nhấn Enter thông thường sẽ LƯU
+                      // Nhấn Shift + Enter để XUỐNG DÒNG
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault(); // Ngăn textarea tự động nhảy xuống dòng
+                        handleSaveInlineNote(session);
+                      }
+                      if (e.key === "Escape") handleCancelInlineEdit();
+                    }}
+                    style={{
+                      flex: 1, // Tương đương 1fr, chiếm toàn bộ không gian còn lại bên phải
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                      minHeight: "60px", // Cho textarea một chiều cao tối thiểu nhìn cho dễ
+                      resize: "vertical", // Chỉ cho phép người dùng kéo giãn chiều dọc
+                      fontFamily: "inherit", // Giữ font chữ đồng bộ với giao diện
+                    }}
+                  />
+                ) : (
+                  <span
+                    style={{
+                      flex: 1, // Để span cũng chiếm hết chỗ trống
+                      whiteSpace: "pre-wrap", // CỰC KỲ QUAN TRỌNG: Giúp hiển thị đúng các dấu xuống dòng (Enter) khi render text
+                      wordBreak: "break-word", // Tránh bị tràn chữ dài
+                    }}
+                  >
+                    {session.note || (
+                      <span style={{ color: "#999", fontStyle: "italic" }}>
+                        Chưa có ghi chú
+                      </span>
+                    )}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -131,6 +386,43 @@ export function SessionLayout({
           </button>
         </div>
       )}
+      <ConfirmModal
+        open={pendingUpdate !== null}
+        title={
+          pendingUpdate?.isDanger
+            ? "Xác nhận hủy buổi học"
+            : "Xác nhận thay đổi trạng thái"
+        }
+        description={`Bạn có chắc muốn "${pendingUpdate?.label}" cho buổi học này?`}
+        cancelText="Hủy"
+        confirmText="Xác nhận"
+        loadingText="Đang cập nhật..."
+        isLoading={isUpdating}
+        onCancel={closeModal}
+        onConfirm={confirmStatusChange}
+        successToastMessage="Cập nhật trạng thái buổi học thành công"
+        errorToastMessage="Không thể cập nhật trạng thái buổi học"
+      >
+        <div className={styles.noteField}>
+          <label className={styles.noteLabel}>
+            Lý do / Ghi chú
+            {isNoteRequired && <span className={styles.required}> *</span>}
+          </label>
+          <textarea
+            className={styles.noteInput}
+            placeholder="Nhập lý do thay đổi trạng thái..."
+            value={updateNote}
+            onChange={(e) => setUpdateNote(e.target.value)}
+            rows={3}
+            disabled={isUpdating}
+          />
+          {isNoteRequired && !updateNote.trim() && (
+            <span className={styles.noteError}>Vui lòng nhập lý do</span>
+          )}
+        </div>
+      </ConfirmModal>
+
+      {/* TODO: Thêm input Note vào nữa */}
     </div>
   );
 }

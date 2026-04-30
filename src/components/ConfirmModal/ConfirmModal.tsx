@@ -78,6 +78,7 @@ export default function ConfirmModal({
   onConfirm,
 }: ConfirmModalProps) {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const handleConfirm = useCallback(async () => {
@@ -111,7 +112,23 @@ export default function ConfirmModal({
       return;
     }
 
-    cancelButtonRef.current?.focus();
+    const contentElement = contentRef.current;
+    const activeElement = document.activeElement as HTMLElement | null;
+
+    if (
+      !contentElement ||
+      !activeElement ||
+      !contentElement.contains(activeElement)
+    ) {
+      const preferredFocusTarget =
+        contentElement?.querySelector<HTMLElement>(
+          "[data-confirm-modal-autofocus]",
+        ) ??
+        contentElement?.querySelector<HTMLElement>("textarea, input, select") ??
+        null;
+
+      (preferredFocusTarget ?? cancelButtonRef.current)?.focus();
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && !isLoading) {
@@ -129,7 +146,7 @@ export default function ConfirmModal({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleConfirm, isLoading, onCancel, open]);
+  }, [handleConfirm, isLoading, open]);
 
   if (!open) {
     return null;
@@ -149,7 +166,7 @@ export default function ConfirmModal({
         aria-labelledby="confirm-modal-title"
         aria-describedby="confirm-modal-description"
       >
-        <div className={styles.content}>
+        <div ref={contentRef} className={styles.content}>
           <h2 id="confirm-modal-title" className={styles.title}>
             {title}
           </h2>

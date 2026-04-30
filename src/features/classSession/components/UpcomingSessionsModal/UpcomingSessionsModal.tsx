@@ -9,6 +9,7 @@ interface UpcomingSessionsModalProps {
   isLoading?: boolean;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  onSessionUpdated?: () => void;
 }
 
 export function UpcomingSessionsModal({
@@ -18,6 +19,7 @@ export function UpcomingSessionsModal({
   isLoading = false,
   currentPage = 1,
   onPageChange,
+  onSessionUpdated,
 }: UpcomingSessionsModalProps) {
   return (
     <BaseModalLayout
@@ -36,6 +38,7 @@ export function UpcomingSessionsModal({
         isLoading={isLoading}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        onSessionUpdated={onSessionUpdated}
       />
     </BaseModalLayout>
   );
