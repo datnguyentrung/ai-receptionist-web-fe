@@ -80,4 +80,10 @@ export const studentAttendanceAPI = {
       "studentAttendanceAPI.filter",
     );
   },
+
+  deleteAttendance: async (attendanceIds: string[]): Promise<void> => {
+    await javaApi.delete("/student-attendances", {
+      data: attendanceIds, // Truyền thẳng mảng xuống
+    });
+  },
 };

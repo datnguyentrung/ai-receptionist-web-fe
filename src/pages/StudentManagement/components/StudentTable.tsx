@@ -62,7 +62,11 @@ export function StudentTable({
                 "Trạng thái",
                 "",
               ].map((h) => (
-                <th key={h} className={styles.th}>
+                <th
+                  key={h}
+                  className={styles.th}
+                  style={{ textAlign: "center" }}
+                >
                   {h}
                 </th>
               ))}
@@ -103,7 +107,7 @@ export function StudentTable({
                     />
                   </td>
                   <td className={styles.td}>
-                    <div className={styles.avatarCell}>
+                    <div className={styles.avatarCell} >
                       <Avatar
                         fullName={student.fullName}
                         fontSize="10px"
@@ -129,67 +133,72 @@ export function StudentTable({
                     </div>
                   </td>
                   <td className={styles.td}>
-                    <p style={{ fontSize: "12px", color: "#374151" }}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#374151",
+                        textAlign: "center",
+                      }}
+                    >
                       {student.phoneNumber}
                     </p>
-                    <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                    {/* <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
                       {student.branchName}
-                    </p>
+                    </p> */}
                   </td>
-                  <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        maxWidth: "160px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {student.classSchedules
-                        .map((c) => c.scheduleId)
-                        .join(", ") || "-"}
-                    </p>
+                  <td
+                    className={styles.td}
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      color: "#374151",
+                      whiteSpace: "nowrap",
+                      maxWidth: "160px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      textAlign: "center",
+                    }}
+                  >
+                    {student.classSchedules
+                      .map((c) => c.scheduleId)
+                      .join(", ") || "-"}
                   </td>
-                  <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {formatDateDMY(student.birthDate)}
-                    </p>
+                  <td
+                    className={styles.td}
+                    style={{
+                      fontSize: "12px",
+                      color: "#374151",
+                      whiteSpace: "nowrap",
+                      textAlign: "center",
+                    }}
+                  >
+                    {formatDateDMY(student.birthDate)}
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ textAlign: "center" }}>
                     <span
                       className={styles.beltBadge}
                       style={{
                         background: BELT_COLORS[student.belt]?.bg ?? "#F3F4F6",
                         color: BELT_COLORS[student.belt]?.color ?? "#374151",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
                       }}
                     >
                       {student.belt}
                     </span>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ textAlign: "center" }}>
                     <p
                       style={{
                         fontSize: "12px",
                         color: "#374151",
                         whiteSpace: "nowrap",
+                        margin: 0,
+                        textAlign: "center",
                       }}
                     >
                       {student.roleName}
                     </p>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ textAlign: "center" }}>
                     <StatusBadge status={student.studentStatus} />
                   </td>
                   <td className={styles.td}>

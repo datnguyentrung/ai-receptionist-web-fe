@@ -1,6 +1,7 @@
 import Avatar from "@/components/Avatar";
 import { Pagination } from "@/components/Pagination";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
+import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
 import {
   AttendanceStatusLabel,
@@ -12,6 +13,7 @@ import type {
   StudentAttendanceSimpleResponse,
 } from "@/types";
 import { formatDateDMY } from "@/utils/format";
+import { Info, StickyNote, Trash2 } from "lucide-react";
 import { useState } from "react";
 import styles from "./AttendanceTable.module.scss";
 
@@ -43,6 +45,9 @@ interface Props {
   currentPage: number;
   pageSize: number;
   setCurrentPage: (page: number) => void;
+  selectedAttendanceIds?: string[];
+  onToggleSelect?: (attendanceId: string) => void;
+  onSelectAll?: (checked: boolean) => void;
   editedRows?: Record<string, StudentAttendanceSimpleResponse>;
   onAttendanceChange?: (
     row: AttendanceListResponse["attendances"]["content"][number],
@@ -57,6 +62,7 @@ interface Props {
     note: string | null,
   ) => void;
   onUndoRow?: (attendanceId: string) => void;
+  onDeleteRow?: (attendanceId: string) => void;
 }
 
 export function AttendanceTable({
@@ -64,11 +70,15 @@ export function AttendanceTable({
   currentPage,
   pageSize,
   setCurrentPage,
+  selectedAttendanceIds = [],
+  onToggleSelect,
+  onSelectAll,
   editedRows = {},
   onAttendanceChange,
   onEvaluationChange,
   onNoteChange,
   onUndoRow,
+  onDeleteRow,
 }: Props) {
   const rows = data?.attendances.content ?? [];
   const totalPages = data?.attendances.totalPages ?? 1;
@@ -76,6 +86,15 @@ export function AttendanceTable({
     string | null
   >(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const selectedAttendanceIdSet = new Set(selectedAttendanceIds);
+  const selectableAttendanceIds = rows
+    .map((row) => row.attendanceId)
+    .filter((attendanceId): attendanceId is string => Boolean(attendanceId));
+  const isAllSelected =
+    selectableAttendanceIds.length > 0 &&
+    selectableAttendanceIds.every((attendanceId) =>
+      selectedAttendanceIdSet.has(attendanceId),
+    );
 
   const ATTENDANCE_OPTIONS: AttendanceStatus[] = [
     "PRESENT",
@@ -136,6 +155,15 @@ export function AttendanceTable({
                 borderBottom: "1px solid #F3F4F6",
               }}
             >
+              <th className={styles.th} style={{ width: "32px" }}>
+                <input
+                  type="checkbox"
+                  className="rounded"
+                  onChange={(event) => onSelectAll?.(event.target.checked)}
+                  checked={isAllSelected}
+                  disabled={selectableAttendanceIds.length === 0}
+                />
+              </th>
               {TABLE_HEADERS.map((h) => (
                 <th
                   key={h}
@@ -172,6 +200,23 @@ export function AttendanceTable({
                   key={a.attendanceId ?? `${a.enrollmentId}-${a.studentId}`}
                   className={`${styles.tr} ${isChanged ? styles.changedRow : ""}`}
                 >
+                  <td className={styles.td}>
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      checked={
+                        a.attendanceId
+                          ? selectedAttendanceIdSet.has(a.attendanceId)
+                          : false
+                      }
+                      disabled={!a.attendanceId}
+                      onChange={() => {
+                        if (a.attendanceId) {
+                          onToggleSelect?.(a.attendanceId);
+                        }
+                      }}
+                    />
+                  </td>
                   {/* STT */}
                   <td className={styles.td}>
                     <p
@@ -397,9 +442,33 @@ export function AttendanceTable({
                       <MiniActionPopover
                         itemLabel={a.studentName}
                         actions={[
-                          { id: "info", label: "Thông tin" },
-                          { id: "note", label: "Ghi chú" },
+                          { id: "info", label: "Thông tin", icon: Info },
+                          { id: "note", label: "Ghi chú", icon: StickyNote }, // Sử dụng StickyNote ở đây
+                          {
+                            id: "delete",
+                            label: "Xóa điểm danh",
+                            icon: Trash2, // (Tùy chọn) Thêm icon thùng rác cho đẹp
+                            isDanger: true,
+                          },
                         ]}
+                        onActionSelect={(actionId) => {
+                          if (actionId === "info") {
+                            showComingSoonActionToast(
+                              "Thông tin",
+                              a.studentName,
+                            );
+                            return;
+                          }
+
+                          if (actionId === "note") {
+                            beginNoteEdit(a, noteValue);
+                            return;
+                          }
+
+                          if (actionId === "delete" && a.attendanceId) {
+                            onDeleteRow?.(a.attendanceId);
+                          }
+                        }}
                       />
                     </div>
                   </td>

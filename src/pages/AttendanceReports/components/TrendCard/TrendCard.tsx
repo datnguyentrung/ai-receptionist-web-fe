@@ -49,6 +49,8 @@ export function TrendCard({
     },
   ];
 
+  console.log("TrendCard render with stats:", stats);
+
   return (
     <div className={styles.trendCard}>
       <div className={styles.trendIconWrap} style={{ background: "#FEF2F2" }}>
@@ -75,6 +77,8 @@ export function TrendCard({
                   ? (segment.count / evaluationBaseTotal) * 100
                   : 0;
               if (widthPercent <= 0) return null;
+
+              console.log(`Segment ${segment.label}: count=${segment.count}, widthPercent=${widthPercent.toFixed(2)}%`);
 
               const evaluationStatus = segment.key as EvaluationStatus;
               const isActive =

@@ -1,4 +1,8 @@
 ﻿import ConfirmModal from "@/components/ConfirmModal";
+import {
+  AttendanceStatusLabel,
+  EvaluationStatusLabel,
+} from "@/config/constants";
 import type { Belt, ScheduleLevel } from "@/config/constants/CoreEnums";
 import type {
   AttendanceStatus,
@@ -17,6 +21,8 @@ import type {
   StudentAttendanceResponse,
   StudentAttendanceSimpleResponse,
 } from "@/types";
+import { formatDateDMY } from "@/utils/format";
+import { Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import styles from "./AttendanceReports.module.scss";
 
@@ -53,6 +59,11 @@ export function AttendanceReports() {
   const [editedRows, setEditedRows] = useState<
     Record<string, StudentAttendanceSimpleResponse>
   >({});
+  const [selectedAttendanceIds, setSelectedAttendanceIds] = useState<string[]>(
+    [],
+  );
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [deleteTargetIds, setDeleteTargetIds] = useState<string[]>([]);
 
   const { mutateAsync: updateAttendanceBatch, isPending: isSaving } =
     useGenericMutation<
@@ -60,6 +71,11 @@ export function AttendanceReports() {
       StudentAttendanceSimpleResponse[]
     >(
       (data) => studentAttendanceAPI.updateAttendance(data),
+      [["student-attendance"]],
+    );
+  const { mutateAsync: deleteAttendanceBatch, isPending: isDeleting } =
+    useGenericMutation<void, string[]>(
+      (attendanceIds) => studentAttendanceAPI.deleteAttendance(attendanceIds),
       [["student-attendance"]],
     );
   const user = useAuthStore((state) => state.activeProfile);
@@ -221,6 +237,54 @@ export function AttendanceReports() {
   };
 
   const changedRows = useMemo(() => Object.values(editedRows), [editedRows]);
+  const currentPageAttendanceIds = useMemo(
+    () =>
+      (data?.attendances.content ?? [])
+        .map((row) => row.attendanceId)
+        .filter((attendanceId): attendanceId is string =>
+          Boolean(attendanceId),
+        ),
+    [data?.attendances.content],
+  );
+  const selectedAttendanceIdsOnPage = useMemo(() => {
+    const currentPageAttendanceIdSet = new Set(currentPageAttendanceIds);
+
+    return selectedAttendanceIds.filter((attendanceId) =>
+      currentPageAttendanceIdSet.has(attendanceId),
+    );
+  }, [currentPageAttendanceIds, selectedAttendanceIds]);
+
+  const deletePreviewItems = useMemo(() => {
+    const attendanceById = new Map(
+      (data?.attendances.content ?? [])
+        .filter(
+          (row): row is StudentAttendanceResponse & { attendanceId: string } =>
+            Boolean(row.attendanceId),
+        )
+        .map((row) => [row.attendanceId, row]),
+    );
+
+    return deleteTargetIds.map((attendanceId) => {
+      const base = attendanceById.get(attendanceId);
+      const edited = editedRows[attendanceId];
+
+      const attendanceStatus =
+        edited?.attendanceStatus ?? base?.attendanceStatus ?? "ABSENT";
+      const evaluationStatus =
+        edited?.evaluationStatus ?? base?.evaluationStatus ?? null;
+      const note = edited?.note ?? base?.note ?? null;
+
+      return {
+        attendanceId,
+        studentName: base?.studentName ?? "Học viên không xác định",
+        sessionDate: base?.sessionDate ?? null,
+        classScheduleId: base?.classScheduleId ?? "—",
+        attendanceStatus,
+        evaluationStatus,
+        note,
+      };
+    });
+  }, [data?.attendances.content, deleteTargetIds, editedRows]);
 
   const saveSummary = useMemo(() => {
     const attendanceSummary: Record<AttendanceStatus, number> = {
@@ -295,6 +359,57 @@ export function AttendanceReports() {
     });
   };
 
+  const handleToggleSelectRow = (attendanceId: string) => {
+    setSelectedAttendanceIds((prev) =>
+      prev.includes(attendanceId)
+        ? prev.filter((id) => id !== attendanceId)
+        : [...prev, attendanceId],
+    );
+  };
+
+  const handleSelectAllRows = (checked: boolean) => {
+    setSelectedAttendanceIds(checked ? currentPageAttendanceIds : []);
+  };
+
+  const openDeleteConfirmForMany = () => {
+    if (selectedAttendanceIdsOnPage.length === 0) {
+      return;
+    }
+
+    setDeleteTargetIds(selectedAttendanceIdsOnPage);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const openDeleteConfirmForSingle = (attendanceId: string) => {
+    setDeleteTargetIds([attendanceId]);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteAttendance = async () => {
+    if (deleteTargetIds.length === 0) {
+      setIsDeleteConfirmOpen(false);
+      return;
+    }
+
+    await deleteAttendanceBatch(deleteTargetIds);
+
+    const deleteTargetIdSet = new Set(deleteTargetIds);
+    setEditedRows((prev) => {
+      const nextEditedRows = { ...prev };
+
+      deleteTargetIds.forEach((attendanceId) => {
+        delete nextEditedRows[attendanceId];
+      });
+
+      return nextEditedRows;
+    });
+    setSelectedAttendanceIds((prev) =>
+      prev.filter((attendanceId) => !deleteTargetIdSet.has(attendanceId)),
+    );
+    setDeleteTargetIds([]);
+    setIsDeleteConfirmOpen(false);
+  };
+
   return (
     <div className={styles.page}>
       <AttendancePageHeader
@@ -307,59 +422,101 @@ export function AttendanceReports() {
         onAttendanceFilterChange={setAttendanceDrillDown}
         onEvaluationFilterChange={setEvaluationDrillDown}
       />
-      <AttendanceFilters
-        search={search}
-        onSearchChange={(v) => {
-          setSearch(v);
-          setCurrentPage(1);
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "12px",
         }}
-        dateFilter={dateFilter}
-        onDateChange={(v) => {
-          setDateFilter(v);
-          setCurrentPage(1);
-        }}
-        attendanceStatuses={attendanceStatuses}
-        onAttendanceStatusesChange={(v) => {
-          setAttendanceStatuses(v);
-          setCurrentPage(1);
-        }}
-        evaluationStatuses={evaluationStatuses}
-        onEvaluationStatusesChange={(v) => {
-          setEvaluationStatuses(v);
-          setCurrentPage(1);
-        }}
-        belts={belts}
-        onBeltsChange={(v) => {
-          setBelts(v);
-          setCurrentPage(1);
-        }}
-        branches={branches}
-        onBranchesChange={(v) => {
-          setBranches(v);
-          setCurrentPage(1);
-        }}
-        scheduleLevels={scheduleLevels}
-        onScheduleLevelsChange={(v) => {
-          setScheduleLevels(v);
-          setCurrentPage(1);
-        }}
-        resultCount={data?.attendances.totalElements || 0}
-        onClearAll={handleClearAll}
-        showSaveButton={changedRows.length > 0}
-        saveButtonLabel={`Lưu (${changedRows.length})`}
-        isSaving={isSaving}
-        onSaveClick={() => setIsConfirmOpen(true)}
-      />
+      >
+        <AttendanceFilters
+          search={search}
+          onSearchChange={(v) => {
+            setSearch(v);
+            setCurrentPage(1);
+          }}
+          dateFilter={dateFilter}
+          onDateChange={(v) => {
+            setDateFilter(v);
+            setCurrentPage(1);
+          }}
+          attendanceStatuses={attendanceStatuses}
+          onAttendanceStatusesChange={(v) => {
+            setAttendanceStatuses(v);
+            setCurrentPage(1);
+          }}
+          evaluationStatuses={evaluationStatuses}
+          onEvaluationStatusesChange={(v) => {
+            setEvaluationStatuses(v);
+            setCurrentPage(1);
+          }}
+          belts={belts}
+          onBeltsChange={(v) => {
+            setBelts(v);
+            setCurrentPage(1);
+          }}
+          branches={branches}
+          onBranchesChange={(v) => {
+            setBranches(v);
+            setCurrentPage(1);
+          }}
+          scheduleLevels={scheduleLevels}
+          onScheduleLevelsChange={(v) => {
+            setScheduleLevels(v);
+            setCurrentPage(1);
+          }}
+          resultCount={data?.attendances.totalElements || 0}
+          onClearAll={handleClearAll}
+          showSaveButton={changedRows.length > 0}
+          saveButtonLabel={`Lưu (${changedRows.length})`}
+          isSaving={isSaving}
+          onSaveClick={() => setIsConfirmOpen(true)}
+        />
+        <button
+          type="button"
+          onClick={openDeleteConfirmForMany}
+          disabled={selectedAttendanceIdsOnPage.length === 0 || isDeleting}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            height: "36px",
+            padding: "0 12px",
+            borderRadius: "8px",
+            border: "1px solid #FCA5A5",
+            background: "#FEF2F2",
+            color: "#B91C1C",
+            cursor:
+              selectedAttendanceIdsOnPage.length === 0 || isDeleting
+                ? "not-allowed"
+                : "pointer",
+            opacity:
+              selectedAttendanceIdsOnPage.length === 0 || isDeleting ? 0.6 : 1,
+          }}
+          title="Xóa các bản ghi đã chọn"
+        >
+          <Trash2 size={15} />
+          <span style={{ fontSize: "12px", fontWeight: 600 }}>
+            Xóa ({selectedAttendanceIdsOnPage.length})
+          </span>
+        </button>
+      </div>
       <AttendanceTable
         data={data}
         currentPage={currentPage}
         pageSize={data?.attendances.size || PAGE_SIZE}
         setCurrentPage={setCurrentPage}
+        selectedAttendanceIds={selectedAttendanceIdsOnPage}
+        onToggleSelect={handleToggleSelectRow}
+        onSelectAll={handleSelectAllRows}
         editedRows={editedRows}
         onAttendanceChange={handleAttendanceChange}
         onEvaluationChange={handleEvaluationChange}
         onNoteChange={handleNoteChange}
         onUndoRow={handleUndoRow}
+        onDeleteRow={openDeleteConfirmForSingle}
       />
 
       <ConfirmModal
@@ -379,6 +536,84 @@ export function AttendanceReports() {
           attendanceSummary={saveSummary.attendanceSummary}
           evaluationSummary={saveSummary.evaluationSummary}
         />
+      </ConfirmModal>
+
+      <ConfirmModal
+        open={isDeleteConfirmOpen}
+        title={
+          deleteTargetIds.length > 1 ? "Xóa điểm danh đã chọn" : "Xóa điểm danh"
+        }
+        description={
+          deleteTargetIds.length > 1
+            ? `Bạn sắp xóa ${deleteTargetIds.length} bản ghi điểm danh. Thao tác này không thể hoàn tác.`
+            : "Bạn sắp xóa bản ghi điểm danh này. Thao tác này không thể hoàn tác."
+        }
+        confirmText="Xóa"
+        loadingText="Đang xóa..."
+        isLoading={isDeleting}
+        successToastMessage="Xóa điểm danh thành công"
+        errorToastMessage="Xóa điểm danh thất bại"
+        onCancel={() => {
+          if (isDeleting) {
+            return;
+          }
+          setIsDeleteConfirmOpen(false);
+          setDeleteTargetIds([]);
+        }}
+        onConfirm={handleDeleteAttendance}
+      >
+        <div className={styles.deletePreviewWrap}>
+          <p className={styles.deletePreviewTitle}>
+            Danh sách lịch sử điểm danh sắp bị xóa
+          </p>
+
+          {deletePreviewItems.length === 0 ? (
+            <p className={styles.deletePreviewEmpty}>
+              Không có dữ liệu để hiển thị.
+            </p>
+          ) : (
+            <ul className={styles.deletePreviewList}>
+              {deletePreviewItems.map((item) => (
+                <li
+                  key={item.attendanceId}
+                  className={styles.deletePreviewItem}
+                >
+                  <div className={styles.deletePreviewHeader}>
+                    <p className={styles.deletePreviewStudentName}>
+                      {item.studentName}
+                    </p>
+                    <span className={styles.deletePreviewSchedule}>
+                      {item.classScheduleId}
+                    </span>
+                  </div>
+
+                  <div className={styles.deletePreviewMeta}>
+                    <span>
+                      Ngày học:{" "}
+                      {item.sessionDate ? formatDateDMY(item.sessionDate) : "-"}
+                    </span>
+                  </div>
+
+                  <div className={styles.deletePreviewMeta}>
+                    <span>
+                      Điểm danh: {AttendanceStatusLabel[item.attendanceStatus]}
+                    </span>
+                    <span>
+                      Đánh giá:{" "}
+                      {item.evaluationStatus
+                        ? EvaluationStatusLabel[item.evaluationStatus]
+                        : "-"}
+                    </span>
+                  </div>
+
+                  <p className={styles.deletePreviewNote}>
+                    Ghi chú: {item.note?.trim() ? item.note : "-"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </ConfirmModal>
     </div>
   );
