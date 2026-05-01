@@ -102,3 +102,28 @@ export const SessionStatusLabel: Record<SessionStatus, string> = {
   POSTPONED: "Đã hoãn",
   TERMINATED: "Đã chấm dứt",
 };
+
+export const ATTENDANCE_POINTS: Record<AttendanceStatus, number> = {
+  PRESENT: 5, // Điểm gốc nếu không vi phạm
+  MAKEUP: 0.5, // Tập bù
+  LATE: -0.5, // Đi học muộn (M)
+  EXCUSED: -0.5, // Nghỉ có phép (P)
+  ABSENT: -1, // Nghỉ không phép (V)
+} as const;
+
+export const PERFORMANCE_POINTS: Record<EvaluationStatus, number> = {
+  GOOD: 5, // Tốt (T)
+  AVERAGE: 3, // Trung bình (TB)
+  WEAK: 0, // Yếu (Y)
+  PENDING: 0, // Chờ đánh giá (P) - không tính điểm chuyên môn cho đến khi có đánh giá
+};
+
+export type ExamEligibility = "NOT_ELIGIBLE" | "ELIGIBLE" | "EXEMPT" | "NONE" | "PENDING";
+
+export const ExamEligibilityLabel: Record<ExamEligibility, string> = {
+  NOT_ELIGIBLE: "Không đủ điều kiện thi thử",
+  ELIGIBLE: "Đủ điều kiện thi thử",
+  EXEMPT: "⭐ Miễn thi thử",
+  NONE: "Không có thông tin",
+  PENDING: "Chưa đạt (đang tích lũy)",
+};

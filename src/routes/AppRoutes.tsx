@@ -11,6 +11,7 @@ import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
 import TimesheetTab from '../pages/PersonalPage/components/TimesheetTab';
+import ScoreTab from '../pages/PersonalPage/components/ScoreTab/ScoreTab';
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -153,6 +154,7 @@ export default function AppRoutes() {
               <Route path="classes" element={<ScheduleAssignments />} />
               <Route path="progress" element={<AttendanceTab />} />
               <Route path="tuition" element={<TuitionTab />} />
+              <Route path="score" element={<ScoreTab />} />
 
               {/* Các tab con cả COACH */}
               <Route path="timesheet" element={<TimesheetTab />} />

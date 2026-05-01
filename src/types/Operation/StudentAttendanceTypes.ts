@@ -116,4 +116,6 @@ export interface AttendanceFilterParams {
   branchIds?: number[];
   scheduleLevels?: ScheduleLevel[];
   scheduleIds?: string[];
+  startDate?: string | Date;
+  endDate?: string | Date;
 }

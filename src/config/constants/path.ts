@@ -119,6 +119,12 @@ export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [
     icon: CreditCard,
     linkTo: `/${studentCode}/tuition`,
   },
+  {
+    id: "score",
+    label: "Điểm rèn luyện",
+    icon: Trophy,
+    linkTo: `/${studentCode}/score`,
+  },
 ];
 
 export const COACH_TABS = ({ coachCode }: { coachCode: string }) => [

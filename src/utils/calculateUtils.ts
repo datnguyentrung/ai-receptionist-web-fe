@@ -1,3 +1,77 @@
+// import type { AttendanceStats } from "@/types/Operation/StudentAttendanceTypes";
+
+// const getAttendanceScore = (stats: AttendanceStats): number => {
+//   // 1. Kiểm tra xem có vi phạm nào không (để được 5 điểm tuyệt đối)
+//   const hasViolations =
+//     stats.absentCount > 0 ||
+//     stats.lateCount > 0 ||
+//     stats.excusedCount > 0 ||
+//     stats.makeupCount > 0; // Đi tập bù cũng đồng nghĩa với việc trước đó có nghỉ, nên mất 5đ tuyệt đối
+
+//   // Nếu đi đủ 100%, không muộn, không nghỉ
+//   if (!hasViolations) {
+//     return 5;
+//   }
+
+//   // 2. Nếu có vi phạm, điểm gốc bắt đầu từ 4
+//   let score = 4;
+
+//   // 3. Cộng trừ theo quy tắc
+//   score -= stats.absentCount * 1; // Nghỉ không phép (V): -1 điểm
+//   score -= stats.excusedCount * 0.5; // Nghỉ có phép (P): -0.5 điểm
+//   score -= stats.lateCount * 0.5; // Đi học muộn (M): -0.5 điểm
+//   score += stats.makeupCount * 0.5; // Tập bù: +0.5 điểm
+
+//   return score;
+// };
+
+// export const calculateQuarterScore = (attendanceStats: AttendanceStats) => {
+//   if (!attendanceStats) return null;
+//   const attendanceScore = getAttendanceScore(attendanceStats);
+//   const performanceScore =
+//     attendanceStats.evalGoodCount * 5 +
+//     attendanceStats.evalAverageCount * 3 +
+//     attendanceStats.evalWeakCount * 0;
+//   const bonusScore = 0;
+//   // attendanceStats.bonusDetails?.reduce((sum, item) => sum + item.points, 0) || 0;
+
+//   const totalScore = attendanceScore + performanceScore + bonusScore;
+
+//   const isFailed =
+//     attendanceStats.absentCount > 2 ||
+//     attendanceScore < 0 ||
+//     attendanceStats.evalWeakCount > 3 ||
+//     attendanceStats.evalGoodCount < 8;
+//   // Condition for exempt: total sessions >= 16, max attendance, and max performance (no matter the bonus points).
+//   const isExempt =
+//     attendanceStats.presentCount +
+//       attendanceStats.makeupCount +
+//       attendanceStats.lateCount >=
+//       16 &&
+//     attendanceScore === 5 &&
+//     performanceScore >= 85;
+
+//   let statusText = "Đủ điều kiện thi thử";
+//   let statusColor = "text-blue-700 bg-blue-50 border-blue-200";
+
+//   if (isExempt) {
+//     statusText = "⭐ MIỄN THI THỬ";
+//     statusColor = "text-amber-700 bg-amber-50 border-amber-200";
+//   } else if (isFailed) {
+//     statusText = "🔴 KHÔNG đủ ĐK thi thử";
+//     statusColor = "text-red-700 bg-red-50 border-red-200";
+//   }
+
+//   return {
+//     attendanceScore,
+//     performanceScore,
+//     bonusScore,
+//     totalScore,
+//     statusText,
+//     statusColor,
+//   };
+// };
+
 export type CalculatedEntranceExamResult = {
   date: string;
   studentId: string;

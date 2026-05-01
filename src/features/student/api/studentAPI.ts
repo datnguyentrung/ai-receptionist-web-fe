@@ -8,6 +8,7 @@ import type {
   StudentListResponse,
   StudentUpdateRequest,
 } from "@/types";
+import type { YearlySummaryResponse } from "@/types/Report/YearlySummaryTypes";
 
 export const studentAPI = {
   getStudents: async ({
@@ -68,5 +69,15 @@ export const studentAPI = {
 
   deleteStudent: async (id: number): Promise<void> => {
     await javaApi.delete(`/students/${id}`);
+  },
+
+  getYearlySummary: async (
+    studentCode: string,
+    year: number,
+  ): Promise<YearlySummaryResponse> => {
+    const response = await javaApi.get(
+      `/students/${studentCode}/yearly-summary?year=${year}`,
+    );
+    return response.data;
   },
 };
