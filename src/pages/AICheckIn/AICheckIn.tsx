@@ -1,4 +1,4 @@
-import type { AttendanceRecord } from "@/types";
+import type { CheckInResponse } from "@/types";
 import { FaceScanner } from "@components/FaceScanner";
 import { ShieldAlert } from "lucide-react";
 import { motion } from "motion/react";
@@ -9,24 +9,18 @@ import { IdlePromoCard } from "./components/IdlePromoCard";
 import { VoiceWave } from "./components/VoiceWave";
 
 export default function AICheckIn() {
-  const [checkInResult, setCheckInResult] = useState<AttendanceRecord | null>(
-    null,
-  );
-  const [isAudioFinished, setIsAudioFinished] = useState(false);
-
-  const audioBase64 = checkInResult?.audio_base64;
-
-  // Tạo URL định dạng Data URI để thẻ audio có thể đọc được chuỗi Base64
-  const audioUrl = audioBase64 ? `data:audio/mpeg;base64,${audioBase64}` : null;
-  const startAutoDismiss = !audioUrl || isAudioFinished;
-
-  const handleCheckInResult = (result: AttendanceRecord | null) => {
-    setIsAudioFinished(false);
-    setCheckInResult(result);
-  };
+  const [checkInResult, setCheckInResult] = useState<CheckInResponse | null>(null);
 
   const handleCloseCard = () => {
-    setIsAudioFinished(false);
+    // 1. Dừng ngay lập tức giọng đọc AI (Text-to-Speech)
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    // Nếu bạn có dùng Audio object cho playSound("success"/"error") và muốn dừng cả nó,
+    // bạn sẽ cần expose hàm stopSound() từ utils của bạn ở đây.
+
+    // 2. Đóng Modal
     setCheckInResult(null);
   };
 
@@ -54,7 +48,7 @@ export default function AICheckIn() {
           <div className={styles.cameraWrapper}>
             <FaceScanner
               checkInResult={checkInResult}
-              onCheckInResult={handleCheckInResult}
+              onCheckInResult={setCheckInResult}
             />
           </div>
         </motion.div>
@@ -79,21 +73,8 @@ export default function AICheckIn() {
       {checkInResult && (
         <CheckInCard
           user={checkInResult}
-          startAutoDismiss={startAutoDismiss}
+          // Truyền true (hoặc một state boolean) để bắt đầu đếm ngược đóng Modal
           onClose={handleCloseCard}
-        />
-      )}
-
-      {/* TRÌNH PHÁT AUDIO TỰ ĐỘNG BẰNG BASE64 */}
-      {audioUrl && (
-        <audio
-          autoPlay
-          src={audioUrl}
-          onEnded={() => setIsAudioFinished(true)}
-          onError={(e) => {
-            console.error("Lỗi phát giọng nói:", e);
-            setIsAudioFinished(true);
-          }}
         />
       )}
     </>

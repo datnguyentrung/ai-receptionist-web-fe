@@ -1,30 +1,31 @@
 import logo from "@/assets/taekwondo.jpg";
+import type { CheckInResponse } from "@/types";
 import { CheckCircle, Clock, MapPin, UserCircle, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import type { UserResponse } from "../../../types";
 import styles from "./CheckInCard.module.scss";
 
-const AUTO_DISMISS_SECONDS = 3;
+const AUTO_DISMISS_SECONDS = 5;
 
 type CheckInCardProps = {
-  user: UserResponse;
-  startAutoDismiss: boolean;
+  user: (CheckInResponse & { isAudioFinished?: boolean }) | null;
   onClose: () => void;
 };
 
-export function CheckInCard({
-  user,
-  startAutoDismiss,
-  onClose,
-}: CheckInCardProps) {
+export function CheckInCard({ user, onClose }: CheckInCardProps) {
+  // Luôn khởi tạo là 5s khi component này được mount
   const [countdown, setCountdown] = useState(AUTO_DISMISS_SECONDS);
 
+  const isAudioFinished = !!user?.isAudioFinished;
+
   useEffect(() => {
-    if (!startAutoDismiss) {
+    // Nếu AI CHƯA đọc xong thì KHÔNG LÀM GÌ CẢ (không đếm ngược, cũng không cần setState)
+    // Vì mặc định countdown đang là 5 rồi.
+    if (!isAudioFinished) {
       return;
     }
 
+    // Khi đã đọc xong (isAudioFinished === true), BẮT ĐẦU đếm ngược
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -37,14 +38,16 @@ export function CheckInCard({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startAutoDismiss, onClose]);
+  }, [isAudioFinished, onClose]); // Dependencies giữ nguyên
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
   });
-  const progress = startAutoDismiss
+
+  // Tính toán % để thanh progress chạy mượt
+  const progress = isAudioFinished
     ? ((AUTO_DISMISS_SECONDS - countdown) / AUTO_DISMISS_SECONDS) * 100
     : 0;
 
@@ -78,10 +81,8 @@ export function CheckInCard({
             />
           </div>
 
-          {/* Decorative top strip */}
           <div className={styles.topStrip} />
 
-          {/* Close button */}
           <button
             className={styles.closeBtn}
             onClick={onClose}
@@ -91,51 +92,48 @@ export function CheckInCard({
           </button>
 
           <div className={styles.body}>
-            {/* Success Header */}
-            <div className={styles.header}>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.25, type: "spring", stiffness: 200 }}
-                className={styles.iconCircle}
+            <div className={styles.aiMessageWrapper}>
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className={styles.aiMessage}
               >
-                <CheckCircle size={40} strokeWidth={2.5} />
-              </motion.div>
-              <div>
-                <h1 className={styles.successTitle}>Check-in Successful</h1>
-                <p className={styles.successSubtitle}>Attendance Recorded</p>
-              </div>
+                {user?.message || ""}
+              </motion.h1>
             </div>
 
-            {/* Profile Details */}
-            <div className={styles.profile}>
-              <div className={styles.avatarWrapper}>
-                <motion.img
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.35 }}
-                  src={logo}
-                  alt="Student"
-                  className={styles.avatar}
-                />
-                <div className={styles.verifiedBadge}>
-                  <CheckCircle size={12} strokeWidth={3} />
+            {user?.user && (
+              <div className={styles.profile}>
+                <div className={styles.avatarWrapper}>
+                  <motion.img
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.35 }}
+                    src={logo}
+                    alt="Student"
+                    className={styles.avatar}
+                  />
+                  <div className={styles.verifiedBadge}>
+                    <CheckCircle size={12} strokeWidth={3} />
+                  </div>
+                </div>
+                <div>
+                  <h2 className={styles.studentName}>
+                    {user.user?.userProfile?.name}
+                  </h2>
+                  <div className={styles.beltBadge}>
+                    <span className={styles.beltDot} />
+                    {user.user?.userProfile?.belt || "No Belt"}
+                  </div>
+                  <p className={styles.memberId}>
+                    <UserCircle size={16} />
+                    Member #{user.user?.userProfile?.phone}
+                  </p>
                 </div>
               </div>
-              <div>
-                <h2 className={styles.studentName}>{user.userProfile.name}</h2>
-                <div className={styles.beltBadge}>
-                  <span className={styles.beltDot} />
-                  {user.userProfile.belt || "No Belt"}
-                </div>
-                <p className={styles.memberId}>
-                  <UserCircle size={16} />
-                  Member #{user.userProfile.phone}
-                </p>
-              </div>
-            </div>
+            )}
 
-            {/* Schedule Info */}
             <div className={styles.scheduleGrid}>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -167,14 +165,13 @@ export function CheckInCard({
             </div>
           </div>
 
-          {/* Auto-dismiss hint */}
+          {/* Cập nhật UI chỗ text hướng dẫn */}
           <div className={styles.dismissHint}>
-            {startAutoDismiss
+            {isAudioFinished
               ? `Tự động đóng sau ${countdown}s \u00A0\u00B7\u00A0 Nhấn bên ngoài để đóng`
-              : "Dang phat audio huong dan..."}
+              : "Đang phát âm thanh hướng dẫn..."}
           </div>
 
-          {/* Decorative dots / texture */}
           <div className={styles.decorDots}>
             <svg width="100" height="100" viewBox="0 0 100 100">
               <pattern

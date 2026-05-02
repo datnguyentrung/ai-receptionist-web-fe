@@ -9,8 +9,12 @@ const checkContains = (role: string | undefined, keyword: string) => {
   return !!role && role.includes(keyword);
 };
 
+export const isDeveloper = (role?: string) => {
+  return role === "DEVELOPER";
+};
+
 export const isHeadCoach = (role?: string) => {
-  return role === "HEAD_COACH" || role === "DEVELOPER";
+  return role === "HEAD_COACH" || isDeveloper(role);
 };
 
 export const isManagerSenior = (role?: string) => {
@@ -86,9 +90,12 @@ export const useUserLevel = () => {
     })),
   );
 
-  let level: RoleLevel = ROLE_LEVELS.GUEST; // Mặc định ai đăng nhập cũng ít nhất là Student
+  let level: RoleLevel = ROLE_LEVELS.GUEST;
 
-  if (isHeadCoach(idRole)) {
+  // PHẢI KIỂM TRA DEVELOPER ĐẦU TIÊN (Mức cao nhất)
+  if (isDeveloper(idRole)) {
+    level = ROLE_LEVELS.DEVELOPER; // Gán đúng số 99
+  } else if (isHeadCoach(idRole)) {
     level = ROLE_LEVELS.HEAD_COACH;
   } else if (isManagerSenior(idRole)) {
     level = ROLE_LEVELS.MANAGER_SENIOR;

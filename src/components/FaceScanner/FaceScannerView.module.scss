@@ -1,5 +1,5 @@
 @use "sass:color";
-// ─── WRAPPER ──────────────────────────────────────────────────
+
 .wrapper {
   position: relative;
   z-index: 1;
@@ -10,7 +10,6 @@
   width: 100%;
 }
 
-// ─── VIDEO CONTAINER ──────────────────────────────────────────
 .videoContainer {
   position: relative;
   width: 100%;
@@ -50,7 +49,6 @@
   background: #0d0d1a;
 }
 
-// ─── OVERLAY (vignette + tint) ────────────────────────────────
 .overlay {
   position: absolute;
   inset: 0;
@@ -64,7 +62,6 @@
   border-radius: 22px;
 }
 
-// ─── CORNER BRACKETS ──────────────────────────────────────────
 .cornerBracket {
   position: absolute;
   width: 38px;
@@ -106,7 +103,6 @@
   border-bottom-right-radius: 7px;
 }
 
-// ─── SCAN LINE ────────────────────────────────────────────────
 .scanLine {
   position: absolute;
   left: 22px;
@@ -145,7 +141,6 @@
   }
 }
 
-// ─── STATUS BADGE ────────────────────────────────────────────
 .statusBadge {
   position: absolute;
   bottom: 18px;
@@ -194,12 +189,10 @@
   text-transform: uppercase;
 }
 
-// ─── HIDDEN CANVAS ────────────────────────────────────────────
 .hidden {
   display: none;
 }
 
-// ─── START BUTTON ─────────────────────────────────────────────
 .startButton {
   margin-top: 22px;
   padding: 11px 32px;
@@ -231,10 +224,10 @@
 .stopButton {
   margin-top: 12px;
   padding: 8px 24px;
-  background: $info-800; // Dùng màu xanh đen từ token của bạn
-  color: $text-on-dark; // Dùng text token cho chuẩn bài
+  background: $info-800;
+  color: $text-on-dark;
   border: none;
-  border-radius: $radius-full; // Dùng token radius
+  border-radius: $radius-full;
   font-family: $font-sans;
   font-weight: $font-semibold;
   font-size: 13px;
@@ -246,7 +239,6 @@
   box-shadow: 0 3px 12px rgba($info-800, 0.38);
 
   &:hover {
-    // Làm sáng lên một chút khi hover vì màu gốc đã rất tối
     background: color.adjust($info-800, $lightness: 10%);
     transform: translateY(-1px);
     box-shadow: 0 6px 24px rgba($info-800, 0.42);
@@ -258,7 +250,6 @@
   }
 }
 
-// ─── LOADING TEXT ─────────────────────────────────────────────
 .loadingText {
   margin-top: 12px;
   color: rgba(255, 255, 255, 0.45);

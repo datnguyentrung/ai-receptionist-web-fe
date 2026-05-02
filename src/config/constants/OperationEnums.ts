@@ -127,3 +127,16 @@ export const ExamEligibilityLabel: Record<ExamEligibility, string> = {
   NONE: "Không có thông tin",
   PENDING: "Chưa đạt (đang tích lũy)",
 };
+
+export type AudioSignal =
+  | "CHECKIN_SUCCESS"
+  | "ALREADY_CHECKED_IN"
+  | "NO_VALID_SESSION"
+  | "FACE_NOT_RECOGNIZED";
+
+export const AudioSignalLabel: Record<AudioSignal, string> = {
+  CHECKIN_SUCCESS: "Điểm danh thành công",
+  ALREADY_CHECKED_IN: "Đã điểm danh",
+  NO_VALID_SESSION: "Không có buổi học phù hợp",
+  FACE_NOT_RECOGNIZED: "Khuôn mặt không nhận diện được",
+};

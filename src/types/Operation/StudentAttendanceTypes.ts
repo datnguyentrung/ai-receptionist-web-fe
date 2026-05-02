@@ -1,13 +1,11 @@
 import type {
   AttendanceStatus,
+  AudioSignal,
   Belt,
   EvaluationStatus,
   ScheduleLevel,
 } from "../../config/constants";
 import type { PageResponse, UserResponse } from "../index";
-export interface AttendanceRecord extends UserResponse {
-  audio_base64?: string;
-}
 
 export interface AttendanceListResponse {
   stats: AttendanceStats;
@@ -118,4 +116,13 @@ export interface AttendanceFilterParams {
   scheduleIds?: string[];
   startDate?: string | Date;
   endDate?: string | Date;
+}
+
+export interface CheckInResponse {
+  audio_signal: AudioSignal;
+  status: boolean;
+  user: UserResponse | null;
+  attendance_record: StudentAttendanceResponse | null;
+  message?: string;
+  isAudioFinished?: boolean; // Cờ báo hiệu đã đọc xong, dùng để trigger đếm ngược đóng Modal
 }
