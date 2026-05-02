@@ -6,12 +6,12 @@ import { AccessDeniedView } from "../components/AccessDeniedView";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
 import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
 import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
+import ScoreTab from "../pages/PersonalPage/components/ScoreTab/ScoreTab";
+import TimesheetTab from "../pages/PersonalPage/components/TimesheetTab";
 import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
-import TimesheetTab from '../pages/PersonalPage/components/TimesheetTab';
-import ScoreTab from '../pages/PersonalPage/components/ScoreTab/ScoreTab';
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -160,7 +160,6 @@ export default function AppRoutes() {
               <Route path="timesheet" element={<TimesheetTab />} />
             </Route>
 
-            <Route path="settings" element={<Rankings />} />
             <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>

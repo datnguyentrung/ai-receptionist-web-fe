@@ -17,11 +17,19 @@ import {
 export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
   // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
   {
+    path: studentCode ? `/${studentCode}` : "/welcome",
+    label: "Trang cá nhân",
+    icon: UserRoundCheck, // Thay icon tùy ý bạn
+    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
+    display: true, // true: luôn hiển thị nếu studentCode có, false: ẩn nếu studentCode không có
+  },
+  {
     path: `/${studentCode}/classes`,
     label: "Lớp học",
     icon: BookOpen,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
     maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
+    display: false,
   },
   {
     path: `/${studentCode}/progress`,
@@ -29,6 +37,7 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     icon: Activity,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
     maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
+    display: false,
   },
   {
     path: `/${studentCode}/tuition`,
@@ -36,14 +45,9 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     icon: CreditCard,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
     maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
+    display: false,
   },
-  {
-    path: studentCode ? `/${studentCode}` : "/welcome",
-    label: "Trang cá nhân",
-    icon: UserRoundCheck, // Thay icon tùy ý bạn
-    minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
-    display: false, // Ẩn khỏi menu chính, chỉ dùng để điều hướng khi cần thiết
-  },
+
   {
     path: "/",
     label: "Tổng quan",
@@ -90,7 +94,7 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     path: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,
-    minLevel: ROLE_LEVELS.DEVELOPER,
+    // minLevel: ROLE_LEVELS.DEVELOPER,
   },
 ];
 
@@ -114,16 +118,16 @@ export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [
     linkTo: `/${studentCode}/progress`,
   },
   {
-    id: "tuition",
-    label: "Học phí",
-    icon: CreditCard,
-    linkTo: `/${studentCode}/tuition`,
-  },
-  {
     id: "score",
     label: "Điểm rèn luyện",
     icon: Trophy,
     linkTo: `/${studentCode}/score`,
+  },
+  {
+    id: "tuition",
+    label: "Học phí",
+    icon: CreditCard,
+    linkTo: `/${studentCode}/tuition`,
   },
 ];
 

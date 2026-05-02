@@ -137,7 +137,8 @@ export default function Sidebar({
                 key={path}
                 to={path}
                 end={
-                  path === "/" || (!!studentCode && path === `/${studentCode}`)
+                  path === "/" ||
+                  (!!studentCode && path === `/${studentCode}/*`)
                 }
                 onClick={() => {
                   if (window.innerWidth < 768) setSidebarOpen(false);

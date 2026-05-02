@@ -14,6 +14,10 @@ export interface QuarterSummary {
   eligibility: ExamEligibility
 }
 
+export interface QuarterSummaryWithName extends QuarterSummary {
+  fullName: string; // Tên hiển thị của quý (Ví dụ: "Quý 1", "Quý 2", ...)
+}
+
 export interface YearlySummaryResponse {
   year: number;
   quarters: QuarterSummary[];

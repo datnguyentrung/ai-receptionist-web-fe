@@ -1,0 +1,374 @@
+// ---------------------------------------------------------------------------
+// Color tokens (matched from ScoreTab + Dashboard)
+// ---------------------------------------------------------------------------
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$red-50: #fef2f2;
+$red-100: #fee2e2;
+$red-200: #fecaca;
+$red-500: #ef4444;
+$red-800: #991b1b;
+
+$amber-50: #fffbeb;
+$amber-200: #fde68a;
+$amber-500: #f59e0b;
+$amber-600: #d97706;
+$amber-800: #92400e;
+
+$blue-500: #3b82f6;
+$blue-600: #2563eb;
+
+$purple-500: #a855f7;
+$purple-600: #9333ea;
+
+$indigo-50: #eef2ff;
+$indigo-200: #c7d2fe;
+$indigo-600: #4f46e5;
+$indigo-800: #3730a3;
+
+$green-50: #f0fdf4;
+$green-200: #bbf7d0;
+$green-800: #166534;
+
+$emerald-500: #10b981;
+
+// ---------------------------------------------------------------------------
+// Animation
+// ---------------------------------------------------------------------------
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Block: .ql
+// ---------------------------------------------------------------------------
+.ql {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 300ms ease both;
+}
+
+// ---------------------------------------------------------------------------
+// Content container
+// ---------------------------------------------------------------------------
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ---------------------------------------------------------------------------
+// Podium — 3 cards
+// ---------------------------------------------------------------------------
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  &__card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid $gray-200;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    &--gold {
+      border-color: $amber-200;
+      background: linear-gradient(180deg, #fffdf5 0%, white 60%);
+      box-shadow: 0 2px 8px rgba($amber-500, 0.12);
+
+      &:hover {
+        box-shadow: 0 4px 16px rgba($amber-500, 0.2);
+      }
+    }
+  }
+
+  &__rankWrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__rankIcon {
+    color: $gray-400;
+  }
+
+  &__rankNum {
+    font-size: 13px;
+    font-weight: 800;
+    color: $gray-400;
+
+    &--gold {
+      color: $amber-600;
+    }
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $gray-100, $gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: $gray-600;
+    border: 2px solid $gray-200;
+    margin-top: 4px;
+  }
+
+  &__card--gold &__avatar {
+    border-color: $amber-200;
+    background: linear-gradient(135deg, $amber-50, white);
+    color: $amber-800;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: $gray-900;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  &__code {
+    margin: 0;
+    font-size: 11px;
+    color: $gray-400;
+  }
+
+  &__belt {
+    min-height: 22px;
+  }
+
+  &__score {
+    margin-top: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  &__scoreValue {
+    font-size: 24px;
+    font-weight: 900;
+    color: $gray-800;
+    line-height: 1;
+  }
+
+  &__card--gold &__scoreValue {
+    color: $amber-600;
+  }
+
+  &__scoreLabel {
+    font-size: 11px;
+    color: $gray-400;
+    font-weight: 500;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Table card (NOT USED - RankingRow is commented out)
+// ---------------------------------------------------------------------------
+// .tableCard { ... } - REMOVED
+
+// ---------------------------------------------------------------------------
+// Table row (NOT USED - RankingRow is commented out)
+// ---------------------------------------------------------------------------
+// .row { ... } - REMOVED
+// .rank { ... } - REMOVED
+// .student { ... } - REMOVED
+// .score { ... } - REMOVED
+
+.chevron {
+  color: $gray-400;
+  transition: transform 0.2s ease;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Expanded row (NOT USED - RankingRow is commented out)
+// ---------------------------------------------------------------------------
+// .expandedRow { ... } - REMOVED
+
+.expandedContent {
+  padding: 16px 20px 20px;
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton
+// ---------------------------------------------------------------------------
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  &__podiumCard {
+    background: white;
+    border: 1px solid $gray-200;
+    border-radius: 16px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__table {
+    background: white;
+    border: 1px solid $gray-200;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Empty / Error
+// ---------------------------------------------------------------------------
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  border: 1px dashed $gray-300;
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: $gray-100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $gray-400;
+    margin-bottom: 12px;
+
+    &--error {
+      background: $red-50;
+      color: $red-500;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 14px;
+    color: $gray-900;
+  }
+
+  &__desc {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: $gray-500;
+    max-width: 280px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+@media (max-width: 640px) {
+  .podium {
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    &__card {
+      flex-direction: row;
+      text-align: left;
+      padding: 12px 16px;
+      gap: 12px;
+
+      &--gold {
+        grid-column: span 1;
+      }
+    }
+
+    &__rankWrap {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    &__avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 14px;
+      margin-top: 0;
+    }
+
+    &__name,
+    &__code {
+      text-align: left;
+    }
+
+    &__score {
+      margin-top: 0;
+      margin-left: auto;
+    }
+  }
+
+  .detail__columns {
+    grid-template-columns: 1fr !important;
+
+    > * + * {
+      border-top: 1px solid $gray-100 !important;
+      border-left: 0 !important;
+    }
+  }
+
+  .skeleton__podium {
+    grid-template-columns: 1fr;
+  }
+}

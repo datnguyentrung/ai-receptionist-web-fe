@@ -1,78 +1,112 @@
-import "./Rankings.scss";
-
-import { ChevronDown, Trophy } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useLeaderboardActionDropDownItems } from "@/config/constants/ListActionDropDown";
+import { Trophy } from "lucide-react";
 import { useState } from "react";
 import {
-  CategoryTabs,
-  ParticipantList,
-  PodiumSection,
-  SideSwitcher,
-} from "./Components";
-import { CATEGORIES, RANKING_PARTICIPANTS } from "./mockData";
-import type { RankingCategory, RankingSide } from "./types";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import { CategoryTabs } from "./Components/CategoryTabs/CategoryTabs";
+import QuarterLeaderboard from "./Components/QuarterLeaderboard/QuarterLeaderboard";
+import styles from "./Rankings.module.scss";
+
+function getCurrentQuarter(): number {
+  return Math.floor(new Date().getMonth() / 3) + 1;
+}
+
+const QUARTERS = [1, 2, 3, 4] as const;
+const YEARS = Array.from({ length: 1 }, (_, i) => new Date().getFullYear() - i);
 
 export default function Rankings() {
-  const [selectedCat, setSelectedCat] = useState(CATEGORIES[0].id);
-  const [selectedSide, setSelectedSide] = useState<RankingSide>("left");
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [quarter, setQuarter] = useState(getCurrentQuarter);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    useLeaderboardActionDropDownItems[0].id,
+  );
 
-  const activeCategory =
-    CATEGORIES.find((category) => category.id === selectedCat) ?? CATEGORIES[0];
-
-  const currentDataKey = activeCategory.hasSides
-    ? `${selectedCat}-${selectedSide}`
-    : selectedCat;
-
-  const participants = RANKING_PARTICIPANTS[currentDataKey] ?? [];
-  const top3 = participants.slice(0, 3);
-  const others = participants.slice(3);
-
-  const handleSelectCategory = (category: RankingCategory) => {
-    setSelectedCat(category.id);
-
-    if (category.hasSides) {
-      setSelectedSide("left");
-    }
+  const handleSelectCategory = (
+    category: (typeof useLeaderboardActionDropDownItems)[number],
+  ) => {
+    setSelectedCategoryId(category.id);
   };
 
   return (
-    <div className="rankings-page">
-      <div className="rankings-layout">
-        <header className="rankings-header">
-          <div>
-            <p className="rankings-header__eyebrow">
-              <Trophy size={14} />
-              Ket qua thi dua
-            </p>
-            <h1 className="rankings-header__title">BANG XEP HANG</h1>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.iconWrap}>
+            <Trophy size={20} />
           </div>
+          <div>
+            <h1 className={styles.title}>Bảng xếp hạng</h1>
+            <p className={styles.subtitle}>Kết quả thi đua học viên theo quý</p>
+          </div>
+        </div>
 
-          <button className="rankings-header__period-btn" type="button">
-            <span className="rankings-header__period-label">Ky danh gia:</span>
-            QUY 2 / 2024
-            <ChevronDown size={16} />
-          </button>
-        </header>
+        <div className={styles.filters}>
+          <div className={styles.filters__group}>
+            <Select
+              value={String(year)}
+              onValueChange={(v) => setYear(Number(v))}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {YEARS.map((y) => (
+                  <SelectItem key={y} value={String(y)}>
+                    Năm {y}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-        <section className="rankings-nav" aria-label="Ranking controls">
-          <CategoryTabs
-            categories={CATEGORIES}
-            selectedCategoryId={selectedCat}
-            onSelectCategory={handleSelectCategory}
-          />
-
-          {activeCategory.hasSides && (
-            <SideSwitcher
-              selectedSide={selectedSide}
-              onChange={setSelectedSide}
-            />
-          )}
-        </section>
-
-        <div className="rankings-content">
-          <PodiumSection participants={top3} metric="luot" />
-          <ParticipantList participants={others} />
+            <Select
+              value={String(quarter)}
+              onValueChange={(v) => setQuarter(Number(v))}
+            >
+              <SelectTrigger size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {QUARTERS.map((q) => (
+                  <SelectItem key={q} value={String(q)}>
+                    Quý {q}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
+
+      <Tabs defaultValue="quarter">
+        {/* <TabsList className={styles.tabsList}>
+          {LEADERBOARD_TABS.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList> */}
+        <CategoryTabs
+          categories={useLeaderboardActionDropDownItems}
+          selectedCategoryId={selectedCategoryId}
+          onSelectCategory={handleSelectCategory}
+        />
+
+        <TabsContent value="quarter">
+          <QuarterLeaderboard year={year} quarter={quarter} />
+        </TabsContent>
+
+        {/* Future:
+        <TabsContent value="yearly">
+          <YearlyLeaderboard />
+        </TabsContent>
+        */}
+      </Tabs>
     </div>
   );
 }

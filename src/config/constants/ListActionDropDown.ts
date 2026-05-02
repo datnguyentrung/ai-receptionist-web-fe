@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 export interface ListActionDropDownItem {
-  lucideIcon: React.ElementType;
+  lucideIcon?: React.ElementType;
   label: string;
   id: string;
   navigateTo?: string;
@@ -55,3 +55,10 @@ export const useSettingsMenu = (): ListActionDropDownItem[] => {
     },
   ];
 };
+
+export const useLeaderboardActionDropDownItems: ListActionDropDownItem[] = [
+  {
+    id: "quarterly-score",
+    label: "Điểm thi đua quý",
+  },
+];
