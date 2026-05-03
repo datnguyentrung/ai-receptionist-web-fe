@@ -1,8 +1,10 @@
+import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { Trophy } from "lucide-react";
 import type { FC } from "react";
-import type { RankItem } from "@/types/Report/LeaderboardTypes";
+import { useNavigate } from "react-router-dom";
+import Avatar from "../../../../components/Avatar";
+import { useRoleStudent } from "../../../../utils/roleUtils";
 import "./PodiumStep.scss";
-import Avatar from '../../../../components/Avatar';
 
 interface PodiumStepProps {
   item: RankItem;
@@ -25,14 +27,19 @@ const PODIUM_STYLE_MAP = {
   },
 } as const;
 
-export const PodiumStep: FC<PodiumStepProps> = ({
-  item,
-  rank,
-  metric,
-}) => {
+export const PodiumStep: FC<PodiumStepProps> = ({ item, rank, metric }) => {
+  const navigate = useNavigate();
   const style = PODIUM_STYLE_MAP[rank as keyof typeof PODIUM_STYLE_MAP] ?? {
     rootClassName: "",
     iconClassName: "",
+  };
+
+  const { canViewCoach } = useRoleStudent();
+
+  const handleNameClick = (studentCode: string) => {
+    if (!canViewCoach) return;
+
+    navigate(`/${studentCode}`);
   };
 
   return (
@@ -58,7 +65,13 @@ export const PodiumStep: FC<PodiumStepProps> = ({
       </div>
 
       <div className="podium-step__content">
-        <h4 className="podium-step__name">{item.fullName}</h4>
+        <h4
+          className="podium-step__name"
+          style={{ cursor: "pointer" }}
+          onClick={() => handleNameClick(item.studentCode)}
+        >
+          {item.fullName}
+        </h4>
         <p className="podium-step__score">
           {item.quarterSummary.totalQuarterScore}
         </p>
