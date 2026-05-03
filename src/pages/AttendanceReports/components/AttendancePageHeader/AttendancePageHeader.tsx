@@ -7,7 +7,7 @@ interface Props {
   onExport?: () => void;
 }
 
-export function AttendancePageHeader({ totalRecords, onExport }: Props) {
+export function AttendancePageHeader({ totalRecords }: Props) {
   return (
     <div className={styles.pageHead}>
       <div>
