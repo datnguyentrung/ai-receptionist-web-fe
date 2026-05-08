@@ -1,17 +1,19 @@
-import type { FC } from "react";
 import type { RankItem } from "@/types/Report/LeaderboardTypes";
+import type { ReactNode } from "react";
 import { PodiumStep } from "../PodiumStep/PodiumStep";
 import "./PodiumSection.scss";
 
-interface PodiumSectionProps {
-  items: RankItem[];
+interface PodiumSectionProps<T> {
+  items: RankItem<T>[];
   metric: string;
+  getScore: (data: T) => ReactNode;
 }
 
-export const PodiumSection: FC<PodiumSectionProps> = ({
+export function PodiumSection<T>({
   items,
   metric,
-}) => {
+  getScore,
+}: PodiumSectionProps<T>) {
   if (items.length < 3) {
     return (
       <section
@@ -26,9 +28,24 @@ export const PodiumSection: FC<PodiumSectionProps> = ({
   return (
     <section className="rankings-podium" aria-label="Top 3 participants">
       <div className="rankings-podium__glow" />
-      <PodiumStep item={items[1]} rank={2} metric={metric} />
-      <PodiumStep item={items[0]} rank={1} metric={metric} />
-      <PodiumStep item={items[2]} rank={3} metric={metric} />
+      <PodiumStep
+        item={items[1]}
+        rank={2}
+        metric={metric}
+        getScore={getScore}
+      />
+      <PodiumStep
+        item={items[0]}
+        rank={1}
+        metric={metric}
+        getScore={getScore}
+      />
+      <PodiumStep
+        item={items[2]}
+        rank={3}
+        metric={metric}
+        getScore={getScore}
+      />
     </section>
   );
-};
+}

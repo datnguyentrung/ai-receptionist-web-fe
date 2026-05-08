@@ -1,15 +1,16 @@
 import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { Trophy } from "lucide-react";
-import type { FC } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "../../../../components/Avatar";
 import { useRoleStudent } from "../../../../utils/roleUtils";
 import "./PodiumStep.scss";
 
-interface PodiumStepProps {
-  item: RankItem;
+interface PodiumStepProps<T> {
+  item: RankItem<T>;
   rank: number;
   metric: string;
+  getScore: (data: T) => ReactNode;
 }
 
 const PODIUM_STYLE_MAP = {
@@ -27,7 +28,12 @@ const PODIUM_STYLE_MAP = {
   },
 } as const;
 
-export const PodiumStep: FC<PodiumStepProps> = ({ item, rank, metric }) => {
+export function PodiumStep<T>({
+  item,
+  rank,
+  metric,
+  getScore,
+}: PodiumStepProps<T>) {
   const navigate = useNavigate();
   const style = PODIUM_STYLE_MAP[rank as keyof typeof PODIUM_STYLE_MAP] ?? {
     rootClassName: "",
@@ -72,11 +78,9 @@ export const PodiumStep: FC<PodiumStepProps> = ({ item, rank, metric }) => {
         >
           {item.fullName}
         </h4>
-        <p className="podium-step__score">
-          {item.quarterSummary.totalQuarterScore}
-        </p>
+        <p className="podium-step__score">{getScore(item.data)}</p>
         <p className="podium-step__metric">{metric}</p>
       </div>
     </article>
   );
-};
+}

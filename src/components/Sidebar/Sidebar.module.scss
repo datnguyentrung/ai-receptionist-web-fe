@@ -107,7 +107,26 @@
 .logoGroup {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition:
+    transform 120ms ease,
+    background 120ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.02);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(224, 32, 32, 0.9);
+    outline-offset: 2px;
+  }
 }
 
 .logoIconWrapper {
@@ -125,10 +144,14 @@
 .logoImg {
   width: 36px;
   height: 36px;
-  object-fit: contain;
+  object-fit: cover;
+  display: block;
 }
 
 .brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 

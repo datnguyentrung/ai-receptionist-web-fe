@@ -1,17 +1,18 @@
-import type { Belt } from '../../config/constants';
-import type { QuarterSummary } from './YearlySummaryTypes';
+import type { Belt } from "@/config/constants";
+import type { QuarterSummary } from "@/types/Report/YearlySummaryTypes";
 
-export interface LeaderboardResponse {
+export interface LeaderboardResponse<T> {
   year: number;
   quarter: number;
   totalStudents: number;
-  rankings: RankItem[];
+  rankings: RankItem<T>[];
 }
 
-export interface RankItem {
+export interface RankItem<T> {
   rank: number;
   studentCode: string;
   fullName: string;
   belt: Belt;
-  quarterSummary: QuarterSummary;
+  data: T;
+  quarterSummary?: QuarterSummary;
 }

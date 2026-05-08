@@ -1,10 +1,10 @@
 import { useAuthStore } from "@/store/authStore";
 import {
-  UserRound,
-  Settings,
-  KeyRound,
   CircleHelp,
+  KeyRound,
   LogOut,
+  Settings,
+  UserRound,
 } from "lucide-react";
 
 export interface ListActionDropDownItem {
@@ -13,6 +13,7 @@ export interface ListActionDropDownItem {
   id: string;
   navigateTo?: string;
   isDanger?: boolean; // Thêm cờ này để bôi đỏ nút Đăng xuất nếu cần
+  display?: boolean; // undefined/true = show, false = hide
 }
 
 // Chuyển thành Custom Hook để có thể gọi useAuthStore
@@ -60,5 +61,10 @@ export const useLeaderboardActionDropDownItems: ListActionDropDownItem[] = [
   {
     id: "quarterly-score",
     label: "Điểm thi đua quý",
+    display: false, // tạm ẩn vì backend chưa xong
+  },
+  {
+    id: "quarterly-fitness",
+    label: "Kỹ năng: Thể lực & Tốc độ",
   },
 ];

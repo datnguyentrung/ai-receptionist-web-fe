@@ -1,25 +1,28 @@
 import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { clsx } from "clsx";
 import { ChevronDown } from "lucide-react";
-import type { FC } from "react";
+import type { ReactNode } from "react";
 import Avatar from "../../../../components/Avatar";
 import { BeltLabel } from "../../../../config/constants";
-import QuarterSummaryDetail from "../../../PersonalPage/components/ScoreTab/QuarterSummaryDetail/QuarterSummaryDetail";
 import styles from "./ParticipantList.module.scss";
 
-interface ParticipantListProps {
-  items: RankItem[];
+interface ParticipantListProps<T> {
+  items: RankItem<T>[];
   expandedRank: number | null;
   onToggle: (rank: number) => void;
   metric: string;
+  getScore: (data: T) => ReactNode;
+  renderExpanded?: (item: RankItem<T>) => ReactNode;
 }
 
-export const ParticipantList: FC<ParticipantListProps> = ({
+export function ParticipantList<T>({
   items,
   expandedRank,
   onToggle,
   metric,
-}) => {
+  getScore,
+  renderExpanded,
+}: ParticipantListProps<T>) {
   return (
     <section className="rankings-list" aria-label="Participant list">
       <h3 className="rankings-list__heading">
@@ -69,7 +72,7 @@ export const ParticipantList: FC<ParticipantListProps> = ({
 
                 <div className="rankings-list-card__score-wrap">
                   <p className="rankings-list-card__score">
-                    {item.quarterSummary.totalQuarterScore}
+                    {getScore(item.data)}
                   </p>
                   <p className="rankings-list-card__metric">{metric}</p>
                 </div>
@@ -85,7 +88,7 @@ export const ParticipantList: FC<ParticipantListProps> = ({
 
               {isItemExpanded && (
                 <div className={styles.expandedContent}>
-                  <QuarterSummaryDetail summary={item.quarterSummary} />
+                  {renderExpanded?.(item)}
                 </div>
               )}
             </div>
@@ -94,4 +97,4 @@ export const ParticipantList: FC<ParticipantListProps> = ({
       </div>
     </section>
   );
-};
+}

@@ -85,15 +85,15 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     minLevel: ROLE_LEVELS.DEVELOPER,
   },
   {
-    path: "/public/exam",
-    label: "Quản lý Khảo thí",
-    icon: ClipboardCheck,
-    minLevel: ROLE_LEVELS.DEVELOPER,
-  },
-  {
     path: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,
+    // minLevel: ROLE_LEVELS.DEVELOPER,
+  },
+  {
+    path: "/public/exam",
+    label: "Quản lý Khảo thí",
+    icon: ClipboardCheck,
     // minLevel: ROLE_LEVELS.DEVELOPER,
   },
 ];

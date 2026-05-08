@@ -99,6 +99,15 @@ export default function AppRoutes() {
           <Route path="exam" element={<ExaminationManagement />} />
         </Route>
 
+        <Route path="/rankings" element={<MainLayout />}>
+          {/* Thay đổi element của index thành Navigate để tự động chuyển hướng */}
+          <Route index element={<Navigate to="fitness" replace />} />
+
+          {/* Bỏ dấu / ở trước path con */}
+          <Route path="score" element={<Rankings />} />
+          <Route path="fitness" element={<Rankings />} />
+        </Route>
+
         {/* --- PROTECTED ROUTES --- */}
         <Route
           path="/"
@@ -159,8 +168,6 @@ export default function AppRoutes() {
               {/* Các tab con cả COACH */}
               <Route path="timesheet" element={<TimesheetTab />} />
             </Route>
-
-            <Route path="rankings" element={<Rankings />} />
           </Route>
         </Route>
 

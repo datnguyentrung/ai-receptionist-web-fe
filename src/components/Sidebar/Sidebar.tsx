@@ -89,7 +89,12 @@ export default function Sidebar({
       >
         {/* Logo */}
         <div className={styles.sidebarLogo}>
-          <div className={styles.logoGroup}>
+          <div className={styles.logoGroup} onClick={() => navigate("/")} role="button" tabIndex={0} onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate("/");
+            }
+          }}>
             <div className={styles.logoIconWrapper}>
               <img src={logoImage} alt="Logo" className={styles.logoImg} />
             </div>

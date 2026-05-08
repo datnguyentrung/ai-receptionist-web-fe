@@ -1,0 +1,74 @@
+.container {
+  padding: 16px;
+}
+
+.subtitle {
+  margin-bottom: 12px;
+  color: rgba(17, 24, 39, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error {
+  color: #b00020;
+  font-size: 13px;
+}
+
+.empty {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(31, 41, 55, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.06);
+}
+
+.table thead th {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+}
+
+.table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.table tbody tr:hover {
+  background: #eef2ff;
+}
+
+.indexCol {
+  color: rgba(15, 23, 42, 0.7);
+  font-weight: 600;
+  width: 56px;
+}
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e3a8a;
+  background: #dbeafe;
+}

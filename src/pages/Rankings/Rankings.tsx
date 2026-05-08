@@ -1,7 +1,7 @@
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useLeaderboardActionDropDownItems } from "@/config/constants/ListActionDropDown";
 import { Trophy } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -13,6 +13,13 @@ import { CategoryTabs } from "./Components/CategoryTabs/CategoryTabs";
 import QuarterLeaderboard from "./Components/QuarterLeaderboard/QuarterLeaderboard";
 import styles from "./Rankings.module.scss";
 
+const RANKINGS_ROUTE_MAP = {
+  "quarterly-score": "/rankings/score",
+  "quarterly-fitness": "/rankings/fitness",
+} as const;
+
+const DEFAULT_RANKINGS_CATEGORY_ID = "quarterly-score";
+
 function getCurrentQuarter(): number {
   return Math.floor(new Date().getMonth() / 3) + 1;
 }
@@ -23,14 +30,27 @@ const YEARS = Array.from({ length: 1 }, (_, i) => new Date().getFullYear() - i);
 export default function Rankings() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [quarter, setQuarter] = useState(getCurrentQuarter);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    useLeaderboardActionDropDownItems[0].id,
-  );
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const selectedCategoryId = useMemo(() => {
+    if (location.pathname.endsWith("/fitness")) {
+      return "quarterly-fitness";
+    }
+
+    if (location.pathname.endsWith("/score")) {
+      return "quarterly-score";
+    }
+
+    return DEFAULT_RANKINGS_CATEGORY_ID;
+  }, [location.pathname]);
 
   const handleSelectCategory = (
     category: (typeof useLeaderboardActionDropDownItems)[number],
   ) => {
-    setSelectedCategoryId(category.id);
+    navigate(
+      RANKINGS_ROUTE_MAP[category.id as keyof typeof RANKINGS_ROUTE_MAP],
+    );
   };
 
   return (
@@ -83,30 +103,19 @@ export default function Rankings() {
         </div>
       </div>
 
-      <Tabs defaultValue="quarter">
-        {/* <TabsList className={styles.tabsList}>
-          {LEADERBOARD_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList> */}
-        <CategoryTabs
-          categories={useLeaderboardActionDropDownItems}
-          selectedCategoryId={selectedCategoryId}
-          onSelectCategory={handleSelectCategory}
-        />
+      <CategoryTabs
+        categories={useLeaderboardActionDropDownItems.filter(
+          (c) => c.display !== false,
+        )}
+        selectedCategoryId={selectedCategoryId}
+        onSelectCategory={handleSelectCategory}
+      />
 
-        <TabsContent value="quarter">
-          <QuarterLeaderboard year={year} quarter={quarter} />
-        </TabsContent>
-
-        {/* Future:
-        <TabsContent value="yearly">
-          <YearlyLeaderboard />
-        </TabsContent>
-        */}
-      </Tabs>
+      <QuarterLeaderboard
+        year={year}
+        quarter={quarter}
+        categoryId={selectedCategoryId}
+      />
     </div>
   );
 }
