@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   SKILL_LEVEL_LABELS,
   type SkillLevel,
@@ -6,6 +5,7 @@ import {
 import { fitnessAPI } from "@/features/fitness/apis/FitnessAPI";
 import { useGetQuery } from "@/hooks/useCrud";
 import type { Fitness } from "@/types/Core/FitnessTypes";
+import { Skeleton } from "boneyard-js/react";
 import styles from "./FitnessStandards.module.scss";
 
 function getSpeed(amount: number, duration: number) {
@@ -30,11 +30,17 @@ export default function FitnessStandards({
         <div className={styles.subtitle}>
           Mức: {SKILL_LEVEL_LABELS[skillLevel]}
         </div>
-        <div className={styles.loading}>
-          <Skeleton className="h-6 w-full mb-2" />
-          <Skeleton className="h-6 w-full mb-2" />
-          <Skeleton className="h-6 w-full mb-2" />
+        <div className={styles.loadingBar} aria-hidden="true">
+          <span className={styles.loadingBar__track} />
         </div>
+
+        <Skeleton
+          loading
+          name="fitness-standards"
+          fallback={<StandardsTableSkeleton />}
+        >
+          <StandardsTable items={[]} />
+        </Skeleton>
       </div>
     );
   }
@@ -52,42 +58,73 @@ export default function FitnessStandards({
 
   const items = query.data ?? [];
 
+  const isRefreshing = query.isFetching;
+
   return (
     <div className={styles.container}>
       <div className={styles.subtitle}>
         Mức: {SKILL_LEVEL_LABELS[skillLevel]}
       </div>
 
+      {isRefreshing ? (
+        <div className={styles.loadingBar} aria-hidden="true">
+          <span className={styles.loadingBar__track} />
+        </div>
+      ) : null}
+
       {items.length === 0 ? (
         <div className={styles.empty}>Chưa có dữ liệu</div>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Cấp độ</th>
-              <th>Mức kỹ năng</th>
-              <th>Thời lượng (giây)</th>
-              <th>Số lượng</th>
-              <th>Tốc độ (đòn/10 giây)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((it, idx) => (
-              <tr key={idx}>
-                <td>
-                  <span className={styles.levelBadge}>
-                    Lv.{it.fitnessLevel}
-                  </span>
-                </td>
-                <td>{SKILL_LEVEL_LABELS[it.skillLevel] ?? it.skillLevel}</td>
-                <td>{it.duration}</td>
-                <td>{it.amount}</td>
-                <td>{getSpeed(it.amount, it.duration / 10).toFixed(1)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <StandardsTable items={items} />
       )}
+    </div>
+  );
+}
+
+function StandardsTable({ items }: { items: Fitness[] }) {
+  return (
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Cấp độ</th>
+          <th>Mức kỹ năng</th>
+          <th>Thời lượng (giây)</th>
+          <th>Số lượng</th>
+          <th>Tốc độ (đòn/10 giây)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((it, idx) => (
+          <tr key={idx}>
+            <td className={styles.indexCol}>{idx + 1}</td>
+            <td>
+              <span className={styles.levelBadge}>Lv.{it.fitnessLevel}</span>
+            </td>
+            <td>{SKILL_LEVEL_LABELS[it.skillLevel] ?? it.skillLevel}</td>
+            <td>{it.duration}</td>
+            <td>{it.amount}</td>
+            <td>{getSpeed(it.amount, it.duration / 10).toFixed(1)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function StandardsTableSkeleton() {
+  return (
+    <div className={styles.loadingTable}>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className={styles.loadingRow}>
+          <span className={styles.loadingCellSm} />
+          <span className={styles.loadingCellMd} />
+          <span className={styles.loadingCellMd} />
+          <span className={styles.loadingCellLg} />
+          <span className={styles.loadingCellMd} />
+          <span className={styles.loadingCellSm} />
+        </div>
+      ))}
     </div>
   );
 }

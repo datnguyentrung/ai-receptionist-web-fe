@@ -42,6 +42,7 @@
     "@yudiel/react-qr-scanner": "^2.5.1",
     "axios": "^1.13.5",
     "axios-retry": "^4.5.0",
+    "boneyard-js": "^1.8.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
