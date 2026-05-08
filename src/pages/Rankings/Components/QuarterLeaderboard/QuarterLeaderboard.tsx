@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { ModalLayout } from "@/components/ui/modal-layout";
 import {
   Select,
   SelectContent,
@@ -12,16 +13,14 @@ import {
   SKILL_LEVEL_OPTIONS,
   type SkillLevel,
 } from "@/config/constants/SkillEnums";
+import FitnessStandards from "@/features/fitness/components/FitnessStandards";
 import { leaderboardAPI } from "@/features/report/apis/LeaderboardAPI";
 import { useGetQuery } from "@/hooks/useCrud";
 import type { LeaderboardResponse } from "@/types/Report/LeaderboardTypes";
 import type { FitnessMetrics } from "@/types/Skill/FitnessRecordTypes";
 import { clsx } from "clsx";
-import { Award, FileX, Gauge, Timer } from "lucide-react";
-import { Info } from "lucide-react";
+import { Award, FileX, Gauge, Info, Timer } from "lucide-react";
 import { useState } from "react";
-import { ModalLayout } from "@/components/ui/modal-layout";
-import FitnessStandards from "@/features/fitness/components/FitnessStandards";
 import type { QuarterSummary } from "../../../../types/Report/YearlySummaryTypes";
 import QuarterSummaryDetail from "../../../PersonalPage/components/ScoreTab/QuarterSummaryDetail/QuarterSummaryDetail";
 import { ParticipantList } from "../ParticipantList/ParticipantList";
@@ -207,8 +206,6 @@ export default function QuarterLeaderboard({
       ),
     { enabled: mode === "fitness" },
   );
-
-  
 
   const activeQuery = mode === "fitness" ? fitnessRecordQuery : scoreQuery;
   const scoreRankings = scoreQuery.data?.rankings ?? [];
