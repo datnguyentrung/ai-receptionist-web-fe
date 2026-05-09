@@ -139,6 +139,322 @@
   }
 }
 
+/* ------------------------------------------------------------------ */
+/*  Rank up badge (celebration)                                       */
+/* ------------------------------------------------------------------ */
+
+// .rankWrap {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 0.28rem;
+//   line-height: 1;
+// }
+
+// .rankNumber {
+//   line-height: 1;
+// }
+
+// .rankWrap--up {
+//   .rankNumber {
+//     background-image: linear-gradient(115deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+//     -webkit-background-clip: text;
+//     background-clip: text;
+//     color: transparent;
+//     filter: drop-shadow(0 6px 10px rgba(245, 158, 11, 0.16)) drop-shadow(0 10px 18px rgba(217, 119, 6, 0.18));
+//   }
+// }
+
+// .rankUpBadge {
+//   --badge-text: linear-gradient(115deg, #fde68a 0%, #fbbf24 46%, #f59e0b 100%);
+//   --badge-glow: radial-gradient(120% 160% at 30% 40%, rgba(251, 191, 36, 0.42) 0%, rgba(245, 158, 11, 0.26) 42%, rgba(217, 119, 6, 0.14) 68%, rgba(0, 0, 0, 0) 76%);
+//   --badge-border: rgba(245, 158, 11, 0.34);
+//   --badge-shadow: rgba(245, 158, 11, 0.18);
+
+//   position: relative;
+//   isolation: isolate;
+//   display: inline-flex;
+//   align-items: center;
+//   gap: 0.22rem;
+//   padding: 0.14rem 0.36rem;
+//   border-radius: 999px;
+//   border: 1px solid var(--badge-border);
+//   background: rgba(2, 6, 23, 0.03);
+//   font-weight: 900;
+//   font-size: 0.6rem;
+//   letter-spacing: 0.04em;
+//   line-height: 1;
+//   white-space: nowrap;
+//   user-select: none;
+
+//   filter: drop-shadow(0 10px 18px var(--badge-shadow));
+//   animation: rankUpPulse 1.25s ease-in-out infinite;
+
+//   &::before {
+//     content: "";
+//     position: absolute;
+//     inset: -6px;
+//     border-radius: inherit;
+//     background: var(--badge-glow);
+//     filter: blur(10px);
+//     opacity: 0.85;
+//     z-index: -1;
+//   }
+// }
+
+// .rankUpIcon {
+//   color: rgba(245, 158, 11, 0.95);
+//   filter: drop-shadow(0 6px 12px rgba(245, 158, 11, 0.22));
+// }
+
+// .rankUpValue {
+//   background-image: var(--badge-text);
+//   -webkit-background-clip: text;
+//   background-clip: text;
+//   color: transparent;
+// }
+
+// /* Tiering: delta càng lớn, hiệu ứng càng "lửa" */
+// .rankUpBadge--glow {
+//   --badge-border: rgba(245, 158, 11, 0.26);
+//   --badge-shadow: rgba(245, 158, 11, 0.14);
+// }
+
+// .rankUpBadge--spark {
+//   --badge-border: rgba(245, 158, 11, 0.36);
+//   --badge-shadow: rgba(245, 158, 11, 0.22);
+//   --badge-glow: radial-gradient(120% 160% at 30% 40%, rgba(251, 191, 36, 0.48) 0%, rgba(245, 158, 11, 0.3) 40%, rgba(217, 119, 6, 0.16) 64%, rgba(0, 0, 0, 0) 76%);
+// }
+
+// .rankUpBadge--flare {
+//   --badge-text: linear-gradient(115deg, #fde68a 0%, #fbbf24 42%, #f59e0b 100%);
+//   --badge-border: rgba(245, 158, 11, 0.42);
+//   --badge-shadow: rgba(245, 158, 11, 0.28);
+//   --badge-glow: radial-gradient(120% 160% at 30% 40%, rgba(251, 191, 36, 0.54) 0%, rgba(245, 158, 11, 0.34) 34%, rgba(217, 119, 6, 0.2) 60%, rgba(0, 0, 0, 0) 76%);
+// }
+
+// .rankUpBadge--blaze {
+//   --badge-text: linear-gradient(120deg, #fde68a 0%, #fbbf24 34%, #f59e0b 72%, #d97706 100%);
+//   --badge-border: rgba(245, 158, 11, 0.48);
+//   --badge-shadow: rgba(245, 158, 11, 0.34);
+//   --badge-glow: radial-gradient(120% 160% at 30% 40%, rgba(251, 191, 36, 0.58) 0%, rgba(245, 158, 11, 0.4) 28%, rgba(217, 119, 6, 0.24) 52%, rgba(180, 83, 9, 0.14) 68%, rgba(0, 0, 0, 0) 80%);
+//   animation: rankUpBounce 1.05s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+// }
+
+// @keyframes rankUpPulse {
+//   0%,
+//   100% {
+//     transform: translateY(0) scale(1);
+//   }
+//   50% {
+//     transform: translateY(-1px) scale(1.06);
+//   }
+// }
+
+// @keyframes rankUpBounce {
+//   0%,
+//   100% {
+//     transform: translateY(0) scale(1);
+//   }
+//   35% {
+//     transform: translateY(-2px) scale(1.08);
+//   }
+//   70% {
+//     transform: translateY(0) scale(1.02);
+//   }
+// }
+
+// @media (prefers-reduced-motion: reduce) {
+//   .rankUpBadge {
+//     animation: none;
+//   }
+
+//   .rankUpBadge--blaze {
+//     animation: none;
+//   }
+// }
+
+/* ------------------------------------------------------------------ */
+/*  Rank up badge (celebration) - SCSS Optimized                      */
+/* ------------------------------------------------------------------ */
+
+// 1. Tạo Mixin cho hiệu ứng chữ Gradient để tái sử dụng
+@mixin text-gradient($gradient) {
+  background-image: $gradient;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+// 2. Gom nhóm các class liên quan đến Wrap
+.rankWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  line-height: 1;
+
+  .rankNumber {
+    line-height: 1;
+  }
+
+  // Tương đương với .rankWrap--up
+  &--up {
+    .rankNumber {
+      @include text-gradient(
+        linear-gradient(115deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%)
+      );
+      filter: drop-shadow(0 4px 6px rgba(245, 158, 11, 0.12))
+        drop-shadow(0 6px 12px rgba(217, 119, 6, 0.1));
+    }
+  }
+}
+
+// 3. Gom nhóm toàn bộ UI của Badge
+.rankUpBadge {
+  // Giữ nguyên CSS Variables (rất tốt để ghi đè ở các tier bên dưới)
+  --badge-text: linear-gradient(115deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
+  --badge-glow: radial-gradient(
+    120% 160% at 30% 40%,
+    rgba(251, 191, 36, 0.25) 0%,
+    rgba(245, 158, 11, 0.15) 45%,
+    rgba(217, 119, 6, 0.05) 70%,
+    transparent 80%
+  );
+  --badge-border: rgba(245, 158, 11, 0.25);
+  --badge-shadow: rgba(245, 158, 11, 0.1);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  padding: 0.14rem 0.36rem;
+  border-radius: 999px;
+  border: 1px solid var(--badge-border);
+  background: rgba(2, 6, 23, 0.05);
+  font-weight: 900;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  filter: drop-shadow(0 4px 10px var(--badge-shadow));
+
+  will-change: transform;
+  animation: rankUpPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: var(--badge-glow);
+    filter: blur(8px);
+    opacity: 0.7;
+    z-index: -1;
+  }
+
+  // --- Các Element con lồng vào trong (Nesting) ---
+
+  /* Nếu trong file jsx đổi tên từ .rankUpIcon thành styles.rankUpBadge_icon thì
+     trong này đổi thành &_icon nhé. Mình vẫn giữ nguyên class độc lập theo file cũ của bạn */
+  .rankUpIcon {
+    color: rgba(245, 158, 11, 0.9);
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.15));
+  }
+
+  .rankUpValue {
+    // Dùng lại mixin ở trên
+    @include text-gradient(var(--badge-text));
+  }
+
+  // --- Các Modifier (Tiering) dùng &-- ---
+
+  &--glow {
+    --badge-border: rgba(245, 158, 11, 0.2);
+    --badge-shadow: rgba(245, 158, 11, 0.1);
+  }
+
+  &--spark {
+    --badge-border: rgba(245, 158, 11, 0.3);
+    --badge-shadow: rgba(245, 158, 11, 0.15);
+    --badge-glow: radial-gradient(
+      120% 160% at 30% 40%,
+      rgba(251, 191, 36, 0.3) 0%,
+      rgba(245, 158, 11, 0.2) 40%,
+      transparent 75%
+    );
+  }
+
+  &--flare {
+    --badge-text: linear-gradient(
+      115deg,
+      #fef08a 0%,
+      #f59e0b 50%,
+      #d97706 100%
+    );
+    --badge-border: rgba(245, 158, 11, 0.4);
+    --badge-shadow: rgba(245, 158, 11, 0.2);
+    --badge-glow: radial-gradient(
+      120% 160% at 30% 40%,
+      rgba(251, 191, 36, 0.4) 0%,
+      rgba(245, 158, 11, 0.25) 40%,
+      transparent 75%
+    );
+  }
+
+  &--blaze {
+    --badge-text: linear-gradient(
+      120deg,
+      #fef08a 0%,
+      #f59e0b 40%,
+      #ea580c 80%,
+      #c2410c 100%
+    );
+    --badge-border: rgba(245, 158, 11, 0.5);
+    --badge-shadow: rgba(245, 158, 11, 0.25);
+    --badge-glow: radial-gradient(
+      120% 160% at 30% 40%,
+      rgba(251, 191, 36, 0.45) 0%,
+      rgba(245, 158, 11, 0.3) 30%,
+      rgba(234, 88, 12, 0.15) 60%,
+      transparent 80%
+    );
+    animation: rankUpBounce 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  }
+}
+
+// 4. Định nghĩa Keyframes & Media Queries ở root level
+@keyframes rankUpPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes rankUpBounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rankUpBadge {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 .chevron {
   color: #cbd5e1;
   transition: transform 0.2s ease;
@@ -205,5 +521,10 @@
 
   .expandedContent {
     padding: 0.8rem 0.8rem 0;
+  }
+
+  .rankUpBadge {
+    font-size: 0.56rem;
+    padding: 0.12rem 0.32rem;
   }
 }

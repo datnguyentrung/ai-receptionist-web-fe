@@ -70,7 +70,7 @@ function FitnessMetricsDetail({ summary }: { summary: FitnessMetrics }) {
               <span>Thời lượng</span>
             </div>
             <strong>{summary.duration}</strong>
-            <span>phút</span>
+            <span>giây</span>
           </div>
 
           <div className={styles.fitnessDetail__metric}>
@@ -219,15 +219,15 @@ export default function QuarterLeaderboard({
       {!activeQuery.isLoading &&
         !activeQuery.isError &&
         (mode === "fitness"
-          ? fitnessRankings.length === 0
-          : scoreRankings.length === 0) && <EmptyState />}
+          ? fitnessRankings === undefined
+          : scoreRankings === undefined) && <EmptyState />}
 
       {/* Content */}
       {!activeQuery.isLoading &&
         !activeQuery.isError &&
         (mode === "fitness"
-          ? fitnessRankings.length > 0
-          : scoreRankings.length > 0) && (
+          ? fitnessRankings !== undefined
+          : scoreRankings !== undefined) && (
           <div className={styles.content}>
             {mode === "fitness" ? (
               <>
@@ -279,41 +279,57 @@ export default function QuarterLeaderboard({
                   <FitnessStandards skillLevel={fitnessSkillLevel} />
                 </ModalLayout>
 
-                <PodiumSection
-                  items={fitnessRankings.slice(0, 3)}
-                  metric="Cấp độ"
-                  getScore={(data) => data.fitnessLevel}
-                />
-                <ParticipantList
-                  items={fitnessRankings}
-                  expandedRank={expandedRank}
-                  onToggle={(r) => setExpandedRank((p) => (p === r ? null : r))}
-                  metric="Cấp độ"
-                  getScore={(data) => data.fitnessLevel}
-                  renderExpanded={(item) => (
-                    <FitnessMetricsDetail summary={item.data} />
-                  )}
-                />
+                {fitnessRankings.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <>
+                    <PodiumSection
+                      items={fitnessRankings.slice(0, 3)}
+                      metric="Cấp độ"
+                      getScore={(data) => data.fitnessLevel}
+                    />
+                    <ParticipantList
+                      items={fitnessRankings}
+                      expandedRank={expandedRank}
+                      onToggle={(r) =>
+                        setExpandedRank((p) => (p === r ? null : r))
+                      }
+                      metric="Cấp độ"
+                      getScore={(data) => data.fitnessLevel}
+                      renderExpanded={(item) => (
+                        <FitnessMetricsDetail summary={item.data} />
+                      )}
+                    />
+                  </>
+                )}
               </>
             ) : (
               <>
-                <PodiumSection
-                  items={scoreRankings.slice(0, 3)}
-                  metric="điểm"
-                  getScore={(data) => data.totalQuarterScore}
-                />
-                <ParticipantList
-                  items={scoreRankings}
-                  expandedRank={expandedRank}
-                  onToggle={(r) => setExpandedRank((p) => (p === r ? null : r))}
-                  metric="điểm"
-                  getScore={(data) => data.totalQuarterScore}
-                  renderExpanded={(item) =>
-                    item.quarterSummary ? (
-                      <QuarterSummaryDetail summary={item.quarterSummary} />
-                    ) : null
-                  }
-                />
+                {scoreRankings.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <>
+                    <PodiumSection
+                      items={scoreRankings.slice(0, 3)}
+                      metric="điểm"
+                      getScore={(data) => data.totalQuarterScore}
+                    />
+                    <ParticipantList
+                      items={scoreRankings}
+                      expandedRank={expandedRank}
+                      onToggle={(r) =>
+                        setExpandedRank((p) => (p === r ? null : r))
+                      }
+                      metric="điểm"
+                      getScore={(data) => data.totalQuarterScore}
+                      renderExpanded={(item) =>
+                        item.quarterSummary ? (
+                          <QuarterSummaryDetail summary={item.quarterSummary} />
+                        ) : null
+                      }
+                    />
+                  </>
+                )}
               </>
             )}
           </div>

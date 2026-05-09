@@ -10,6 +10,7 @@ export interface LeaderboardResponse<T> {
 
 export interface RankItem<T> {
   rank: number;
+  rankBefore: number | null;
   studentCode: string;
   fullName: string;
   belt: Belt;

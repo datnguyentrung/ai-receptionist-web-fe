@@ -56,11 +56,11 @@ export default function Rankings() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <div className={styles.headerLeft}>
+        <div className={styles.headerMain}>
           <div className={styles.iconWrap}>
             <Trophy size={20} />
           </div>
-          <div>
+          <div className={styles.headerText}>
             <h1 className={styles.title}>Bảng xếp hạng</h1>
             <p className={styles.subtitle}>Kết quả thi đua học viên theo quý</p>
           </div>
@@ -72,7 +72,7 @@ export default function Rankings() {
               value={String(year)}
               onValueChange={(v) => setYear(Number(v))}
             >
-              <SelectTrigger>
+              <SelectTrigger className={styles.filterTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -88,7 +88,7 @@ export default function Rankings() {
               value={String(quarter)}
               onValueChange={(v) => setQuarter(Number(v))}
             >
-              <SelectTrigger size="sm">
+              <SelectTrigger size="sm" className={styles.filterTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

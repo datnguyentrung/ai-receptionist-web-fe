@@ -1,6 +1,6 @@
 import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { clsx } from "clsx";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, TrendingUp } from "lucide-react";
 import type { ReactNode } from "react";
 import Avatar from "../../../../components/Avatar";
 import { BeltLabel } from "../../../../config/constants";
@@ -35,6 +35,18 @@ export function ParticipantList<T>({
       <div className="rankings-list__items">
         {items.map((item) => {
           const isItemExpanded = expandedRank === item.rank;
+          const rankDelta =
+            item.rankBefore != null ? item.rankBefore - item.rank : null;
+          const isRankUp = rankDelta != null && rankDelta > 0;
+          const rankUpTier = !isRankUp
+            ? null
+            : rankDelta >= 10
+              ? "blaze"
+              : rankDelta >= 5
+                ? "flare"
+                : rankDelta >= 2
+                  ? "spark"
+                  : "glow";
           return (
             <div key={item.studentCode}>
               <article
@@ -52,7 +64,34 @@ export function ParticipantList<T>({
                   }
                 }}
               >
-                <div className="rankings-list-card__rank">{item.rank}</div>
+                <div
+                  className={clsx(
+                    "rankings-list-card__rank",
+                    styles.rankWrap,
+                    isRankUp && styles["rankWrap--up"],
+                  )}
+                >
+                  <span className={styles.rankNumber}>{item.rank}</span>
+
+                  {isRankUp && rankUpTier && (
+                    <span
+                      className={clsx(
+                        styles.rankUpBadge,
+                        styles[`rankUpBadge--${rankUpTier}`],
+                      )}
+                      title={`Tăng ${rankDelta} bậc`}
+                      aria-label={`Tăng ${rankDelta} bậc`}
+                    >
+                      <TrendingUp
+                        size={12}
+                        strokeWidth={2.25}
+                        className={styles.rankUpIcon}
+                        aria-hidden="true"
+                      />
+                      <span className={styles.rankUpValue}>+{rankDelta}</span>
+                    </span>
+                  )}
+                </div>
 
                 <Avatar
                   fullName={item.fullName}

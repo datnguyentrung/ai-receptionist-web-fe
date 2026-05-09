@@ -4,12 +4,12 @@ import type { StudentSummary } from "../Core/StudentTypes";
 
 export interface FitnessRecordResponse {
   id: number;
-  assessmentDate: string | Date;
   studentSummary: StudentSummary;
   recordedByCoach: CoachSummary;
 }
 
 export interface FitnessMetrics {
+  assessmentDate: string | Date;
   duration: number; // Duration in minutes
   amount: number; // Amount of the activity (e.g., distance in kilometers, weight lifted in kilograms)
   skillLevel: SkillLevel; // Skill level of the activity
