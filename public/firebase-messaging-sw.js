@@ -1,28 +1,43 @@
-importScripts("/fcm-config.js");
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js",
-);
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js",
-);
+const urlParams = new URLSearchParams(location.search);
+const projectId = urlParams.get("projectId");
 
-firebase.initializeApp(self.__FCM_CONFIG__);
+if (projectId) {
+  const firebaseConfig = {
+    apiKey: urlParams.get("apiKey"),
+    authDomain: urlParams.get("authDomain"),
+    projectId: projectId,
+    storageBucket: urlParams.get("storageBucket"),
+    messagingSenderId: urlParams.get("messagingSenderId"),
+    appId: urlParams.get("appId"),
+  };
 
-const messaging = firebase.messaging();
+  importScripts(
+    "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js",
+  );
+  importScripts(
+    "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js",
+  );
 
-messaging.onBackgroundMessage((payload) => {
-  const { title, body, icon } = payload.notification || {};
-  if (!title) return;
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
 
-  const clickUrl = payload.data?.clickUrl || payload.data?.url || "/";
+  messaging.onBackgroundMessage((payload) => {
+    const { title, body, icon } = payload.notification || {};
+    if (!title) return;
+    const clickUrl = payload.data?.clickUrl || payload.data?.url || "/";
 
-  self.registration.showNotification(title, {
-    body: body || "",
-    icon: icon || "/assets/taekwondo.jpg",
-    data: { clickUrl, ...payload.data },
-    badge: "/assets/taekwondo.jpg",
+    self.registration.showNotification(title, {
+      body: body || "",
+      icon: icon || "/assets/taekwondo.jpg",
+      data: { clickUrl, ...payload.data },
+      badge: "/assets/taekwondo.jpg",
+    });
   });
-});
+} else {
+  console.warn(
+    "[SW] Firebase configuration parameters missing. Waiting for dynamic activation.",
+  );
+}
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
@@ -30,15 +45,17 @@ self.addEventListener("notificationclick", (event) => {
   const clickUrl = event.notification.data?.clickUrl || "/";
 
   event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && "focus" in client) {
-          client.navigate(clickUrl);
-          return client.focus();
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && "focus" in client) {
+            client.navigate(clickUrl);
+            return client.focus();
+          }
         }
-      }
 
-      return self.clients.openWindow(clickUrl);
-    }),
+        return self.clients.openWindow(clickUrl);
+      }),
   );
 });

@@ -16,6 +16,25 @@ const saveTokenLocal = (token: string) => {
   }
 };
 
+const getSWRegistration = async () => {
+  if (!("serviceWorker" in navigator)) return null;
+
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  };
+
+  const swParams = new URLSearchParams(firebaseConfig).toString();
+  // Đăng ký đích danh kèm query string
+  return navigator.serviceWorker.register(
+    `/firebase-messaging-sw.js?${swParams}`,
+  );
+};
+
 const getTokenLocal = (): string | null => {
   try {
     return localStorage.getItem(FCM_TOKEN_KEY);
@@ -77,7 +96,15 @@ export const requestNotificationPermission = async (): Promise<
   }
 
   try {
-    const token = await getToken(messaging, { vapidKey });
+    // SỬA TẠI ĐÂY: Lấy instance đăng ký SW truyền vào getToken
+    const registration = await getSWRegistration();
+    if (!registration) return null;
+
+    const token = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: registration,
+    });
+
     await sendTokenToServer(token);
     saveTokenLocal(token);
     return token;
@@ -124,7 +151,13 @@ export const syncFcmToken = async () => {
   if (!messaging || !vapidKey) return;
 
   try {
-    const currentToken = await getToken(messaging, { vapidKey });
+    const registration = await getSWRegistration();
+    if (!registration) return;
+
+    const currentToken = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: registration,
+    });
     const savedToken = getTokenLocal();
 
     if (!savedToken || savedToken !== currentToken) {

@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // ============================================================
 // RESPONSIVE MIXINS — AI Receptionist FE
 // Mobile-first approach: base styles = mobile, @include for larger screens
@@ -17,8 +19,8 @@
     "xxl": 1536px,
   );
 
-  @if map-has-key($bp, $breakpoint) {
-    @media (min-width: map-get($bp, $breakpoint)) {
+  @if map.has-key($bp, $breakpoint) {
+    @media (min-width: map.get($bp, $breakpoint)) {
       @content;
     }
   } @else {
@@ -40,8 +42,8 @@
     "xxl": 1535px,
   );
 
-  @if map-has-key($bp, $breakpoint) {
-    @media (max-width: map-get($bp, $breakpoint)) {
+  @if map.has-key($bp, $breakpoint) {
+    @media (max-width: map.get($bp, $breakpoint)) {
       @content;
     }
   } @else {
