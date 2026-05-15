@@ -1,19 +1,12 @@
+// ─────────────────────────────────────────────────────────────
+// PERSONAL PAGE — Main container (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .page {
   min-height: 100vh;
-  background-color: #f4f6fa;
-  // padding: 2rem 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-
-  // @media (min-width: 640px) {
-  //   padding: 2rem 1.5rem;
-  // }
-
-  // @media (min-width: 1024px) {
-  //   padding: 2rem 2rem;
-  // }
+  background: $bg-base;
+  @include safe-top($space-1);
+  @include safe-bottom($space-6);
 }
 
 .container {
@@ -21,33 +14,44 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: $space-5;
+  padding: $space-4;
+
+  @include respond-to(sm) {
+    padding: $space-5;
+  }
+
+  @include respond-to(lg) {
+    padding: $space-6;
+  }
 }
 
 .tabContent {
-  padding-top: 0.5rem;
-  padding-bottom: 3rem;
+  padding-top: $space-2;
+  padding-bottom: $space-6;
 }
 
+// ── Placeholder States ────────────────────────────────────
+
 .placeholderCard {
-  background-color: #fff;
-  border-radius: 1.5rem;
-  padding: 3rem;
+  background: $bg-white;
+  border-radius: $radius-xl;
+  padding: $space-10;
   text-align: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: $shadow-xs;
   animation: fadeSlideIn 0.3s ease-out;
 }
 
 .placeholderIcon {
   width: 4rem;
   height: 4rem;
-  background-color: #f9fafb;
-  color: #9ca3af;
-  border-radius: 9999px;
+  background: $gray-50;
+  color: $text-subtle;
+  border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
+  margin: 0 auto $space-4;
 
   svg {
     width: 2rem;
@@ -56,14 +60,14 @@
 }
 
 .placeholderTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.5rem;
+  font-size: $text-lg;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin-bottom: $space-2;
 }
 
 .placeholderDesc {
-  color: #6b7280;
+  color: $text-muted;
 }
 
 @keyframes fadeSlideIn {
@@ -71,7 +75,6 @@
     opacity: 0;
     transform: translateY(0.5rem);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);

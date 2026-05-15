@@ -1,127 +1,138 @@
-// HomePage.module.scss
+// ── Welcome Page ────────────────────────────────────────────
+// Mobile-first: single column, fluid cards
 .homeContainer {
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #f9fafb, #f3f4f6);
+  min-height: 100dvh;
+  background: linear-gradient(to bottom right, $gray-50, $gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: $space-3;
+  @include safe-bottom($space-3);
 }
 
 .card {
   max-width: 50rem;
   width: 100%;
   background-color: white;
-  border-radius: 0.875rem;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  padding: 2.25rem;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+  padding: $space-6 $space-4;
   text-align: center;
+
+  @include respond-to("sm") {
+    padding: $space-8 $space-6;
+  }
 }
 
 .iconWrapper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 4.25rem;
-  height: 4.25rem;
-  border-radius: 9999px;
-  background: linear-gradient(to bottom right, #dc2626, #991b1b);
-  margin-bottom: 0.75rem;
+  width: 68px;
+  height: 68px;
+  border-radius: $radius-full;
+  background: linear-gradient(to bottom right, $brand-red, $brand-red-dark);
+  margin-bottom: $space-4;
 
   svg {
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 36px;
+    height: 36px;
     color: white;
   }
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 0.35rem;
+  font-size: $text-3xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+  margin-bottom: $space-1;
+  line-height: $leading-tight;
 }
 
 .subtitle {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #dc2626;
-  margin-bottom: 0.8rem;
+  font-size: $text-xl;
+  font-weight: $font-semibold;
+  color: $brand-red;
+  margin-bottom: $space-4;
 }
 
 .description {
-  color: #4b5563;
-  font-size: 1rem;
+  color: $text-secondary;
+  font-size: $text-base;
   max-width: 38rem;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto $space-6;
+  line-height: $leading-relaxed;
 }
 
+// ── Feature grid — mobile-first ────────────────────────────
 .features {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: $space-3;
+  margin-bottom: $space-6;
 
-  @media (min-width: 768px) {
+  @include respond-to("sm") {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .featureCard {
-  padding: 1.15rem;
-  border-radius: 0.65rem;
+  padding: $space-5;
+  border-radius: $radius-md;
   border: 1px solid;
   cursor: pointer;
   transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    border-color 0.22s ease;
+    transform $transition-slow,
+    box-shadow $transition-slow,
+    border-color $transition-slow;
+  @include touch-target(48px);
 
-  &:hover {
+  @include press-effect(0.97);
+
+  @include hover-only {
     transform: translateY(-4px) scale(1.01);
     box-shadow: 0 14px 22px -14px rgba(17, 24, 39, 0.45);
   }
 
   &:focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 2px solid $info;
     outline-offset: 2px;
   }
 
   &.red {
-    background: linear-gradient(to bottom right, #fef2f2, white);
-    border-color: #fecaca;
+    background: linear-gradient(to bottom right, $error-light, white);
+    border-color: $error-200;
 
-    &:hover {
-      border-color: #fca5a5;
+    @include hover-only {
+      border-color: $error-300;
     }
   }
 
   &.blue {
-    background: linear-gradient(to bottom right, #eff6ff, white);
-    border-color: #bfdbfe;
+    background: linear-gradient(to bottom right, $info-light, white);
+    border-color: $info-200;
 
-    &:hover {
-      border-color: #93c5fd;
+    @include hover-only {
+      border-color: $info-300;
     }
   }
 
   &.yellow {
-    background: linear-gradient(to bottom right, #fefce8, white);
-    border-color: #fef08a;
+    background: linear-gradient(to bottom right, $warning-light, white);
+    border-color: $warning-200;
 
-    &:hover {
-      border-color: #fde047;
+    @include hover-only {
+      border-color: $warning-300;
     }
   }
 
   &.green {
-    background: linear-gradient(to bottom right, #ecfdf3, white);
-    border-color: #86efac;
+    background: linear-gradient(to bottom right, $success-light, white);
+    border-color: $success-200;
 
-    &:hover {
-      border-color: #4ade80;
+    @include hover-only {
+      border-color: $success-300;
     }
   }
 }
@@ -143,76 +154,77 @@
   }
 
   .featureTitle {
-    color: #166534;
+    color: darken(#166534, 5%);
   }
 }
 
 .featureIcon {
-  font-size: 1.6rem;
-  margin-bottom: 0.4rem;
+  font-size: $text-2xl;
+  margin-bottom: $space-2;
 }
 
 .featureTitle {
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.2rem;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin-bottom: $space-1;
+  font-size: $text-base;
 }
 
 .featureDescription {
-  font-size: 0.825rem;
-  color: #4b5563;
+  font-size: $text-sm;
+  color: $text-secondary;
+  line-height: $leading-normal;
 }
 
+// ── Action buttons — 48px touch target ─────────────────────
 .actions {
   display: flex;
-  gap: 1rem;
+  gap: $space-3;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .buttonPrimary {
-  padding: 0.68rem 1.8rem;
+  padding: $space-3 $space-7;
   background: linear-gradient(to right, #dc2626, #b91c1c);
   color: white;
-  border-radius: 0.65rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: $radius-md;
+  font-weight: $font-semibold;
+  font-size: $text-base;
+  transition: all $transition-slow;
+  box-shadow: $shadow-md;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include touch-target(48px);
 
-  &:hover {
+  @include hover-only {
     background: linear-gradient(to right, #b91c1c, #991b1b);
-    box-shadow:
-      0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: $shadow-lg;
   }
 
-  &:active {
-    transform: scale(0.95);
-  }
+  @include press-effect(0.96);
 }
 
 .buttonSecondary {
-  padding: 0.68rem 1.8rem;
+  padding: $space-3 $space-7;
   background-color: white;
-  color: #374151;
-  border-radius: 0.65rem;
-  font-weight: 600;
-  border: 2px solid #e5e7eb;
-  transition: all 0.3s ease;
+  color: $text-secondary;
+  border-radius: $radius-md;
+  font-weight: $font-semibold;
+  font-size: $text-base;
+  border: 2px solid $border-default;
+  transition: all $transition-slow;
   cursor: pointer;
+  @include touch-target(48px);
 
-  &:hover {
-    border-color: #d1d5db;
-    background-color: #f9fafb;
+  @include hover-only {
+    border-color: $border-strong;
+    background-color: $gray-50;
   }
 
-  &:active {
-    transform: scale(0.95);
-  }
+  @include press-effect(0.96);
 }

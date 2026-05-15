@@ -1,22 +1,30 @@
+// ---------------------------------------------------------------------------
+// Student Search — Mobile-first refactored
+// ---------------------------------------------------------------------------
+$accent: $brand-red;
+$accent-dark: $brand-red-dark;
+$accent-light: $brand-red-400;
+$gold: $warning-600;
+
 .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: $space-2;
 }
 
 .fieldLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--tkd-muted, #8a92a6);
-  letter-spacing: 0.6px;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $surface-subtle;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .redText {
-  color: var(--tkd-red-lt, #e74c3c);
+  color: $accent-light;
 }
 
 .searchWrap {
@@ -24,141 +32,135 @@
 }
 
 .clearBtn {
+  @include touch-target(44px);
+  @include press-effect;
+
   position: absolute;
-  right: 12px;
+  right: $space-3;
   top: 50%;
   transform: translateY(-50%);
-  border-radius: 6px;
+  border-radius: $radius-sm;
   border: 1px solid transparent;
-  padding: 4px;
-  color: #8a92a6;
+  padding: $space-1;
+  color: $surface-subtle;
   background: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
-  &:hover {
-    color: #1a1d23;
+  @include hover-only {
+    color: $text-primary;
   }
 }
 
 .searchIcon {
   position: absolute;
-  left: 14px;
+  left: $space-4;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--tkd-muted, #8a92a6);
+  color: $surface-subtle;
   pointer-events: none;
 }
 
 .inputWithSearch {
   width: 100%;
-  background: var(--tkd-bg3, #f7f8fa);
-  border: 1.5px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
-  border-radius: var(--tkd-radius, 12px);
-  padding: 12px 14px 12px 40px;
-  color: var(--tkd-text, #1a1d23);
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 14px;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  background: $surface-50;
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4 $space-3 40px;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $text-base; // iOS anti-zoom
+  transition: $transition-colors;
   outline: none;
 
   &:focus {
-    border-color: var(--tkd-red-lt, #e74c3c);
-    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+    border-color: $accent-light;
+    box-shadow: 0 0 0 3px rgba($brand-red, 0.1);
   }
 
   &::placeholder {
-    color: var(--tkd-muted, #8a92a6);
+    color: $surface-subtle;
   }
 }
 
 .autocomplete {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + $space-2);
   left: 0;
   right: 0;
-  background: #fff;
-  border: 1.5px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
-  border-radius: var(--tkd-radius, 12px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  z-index: 100;
+  background: $bg-surface;
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  z-index: $z-dropdown;
   animation: dropDown 0.18s ease both;
   max-height: 260px;
   overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--tkd-border, rgba(0, 0, 0, 0.09));
-    border-radius: 10px;
-  }
+  -webkit-overflow-scrolling: touch;
+  @include hide-scrollbar;
 }
 
 .emptyState {
-  padding: 14px;
-  font-size: 12.5px;
-  color: var(--tkd-muted, #8a92a6);
+  padding: $space-4;
+  font-size: $text-sm;
+  color: $surface-subtle;
   text-align: center;
 }
 
 .acItem {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
+  gap: $space-3;
+  padding: $space-3 $space-4;
   cursor: pointer;
-  transition: background 0.15s;
-  border-bottom: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  transition: $transition-fast;
+  border-bottom: 1px solid $border-default;
 
   &:last-child {
     border-bottom: none;
   }
 
-  &:hover,
+  @include hover-only {
+    background: rgba($brand-red, 0.08);
+  }
+
   &.acItemHighlighted {
-    background: rgba(192, 57, 43, 0.08);
+    background: rgba($brand-red, 0.08);
   }
 }
 
 .acBadge,
 .scBadge {
   margin-left: auto;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(212, 160, 23, 0.15);
-  color: var(--tkd-gold, #d4a017);
-  border: 1px solid rgba(212, 160, 23, 0.3);
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  padding: $space-1 $space-3;
+  border-radius: $radius-lg;
+  background: rgba($warning-600, 0.15);
+  color: $gold;
+  border: 1px solid rgba($warning-600, 0.3);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .statusActive {
-  background: rgba(46, 213, 115, 0.15) !important;
-  color: #2ecc71 !important;
-  border-color: rgba(46, 213, 115, 0.3) !important;
-  margin-right: 8px;
+  background: rgba($success, 0.15) !important;
+  color: $success !important;
+  border-color: rgba($success, 0.3) !important;
+  margin-right: $space-2;
 }
 
 .studentCard {
-  background: linear-gradient(
-    135deg,
-    rgba(192, 57, 43, 0.1),
-    rgba(192, 57, 43, 0.05)
-  );
-  border: 1.5px solid rgba(192, 57, 43, 0.3);
-  border-radius: var(--tkd-radius, 12px);
-  padding: 14px 45px 14px 16px;
+  background: linear-gradient(135deg, rgba($brand-red, 0.1), rgba($brand-red, 0.05));
+  border: 1.5px solid rgba($brand-red, 0.3);
+  border-radius: $radius-md;
+  padding: $space-4 $space-12 $space-4 $space-4;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
   animation: fadeIn 0.25s ease both;
   position: relative;
 }
@@ -166,46 +168,49 @@
 .selectedList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
+  gap: $space-3;
+  margin-top: $space-3;
 }
 
 .removeBtn {
+  @include touch-target(44px);
+  @include press-effect;
+
   position: absolute;
-  right: 10px;
+  right: $space-3;
   top: 50%;
   transform: translateY(-50%);
-  border-radius: 6px;
+  border-radius: $radius-sm;
   border: 1px solid transparent;
-  padding: 4px;
-  color: var(--tkd-red-lt, #e74c3c);
-  background: rgba(192, 57, 43, 0.08);
+  padding: $space-1;
+  color: $accent-light;
+  background: rgba($brand-red, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: $transition-fast;
   flex-shrink: 0;
 
-  &:hover {
-    background: rgba(192, 57, 43, 0.15);
-    color: #c0392b;
+  @include hover-only {
+    background: rgba($brand-red, 0.15);
+    color: $brand-red-dark;
   }
 }
 
 .studentAvatar {
   width: 42px;
   height: 42px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #96281b, #e74c3c);
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, $brand-red-dark, $accent-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $white;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: $shadow-xs;
 }
 
 .studentInfo {
@@ -213,15 +218,15 @@
 }
 
 .studentName {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a1d23;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-primary;
 }
 
 .scMeta {
-  font-size: 12px;
-  color: var(--tkd-muted, #8a92a6);
-  margin-top: 3px;
+  font-size: $text-sm;
+  color: $surface-subtle;
+  margin-top: $space-1;
 }
 
 @keyframes dropDown {
@@ -229,7 +234,6 @@
     opacity: 0;
     transform: translateY(-8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -240,7 +244,6 @@
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }

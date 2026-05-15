@@ -1,42 +1,17 @@
-// ---------------------------------------------------------------------------
-// Color tokens (mapped 1:1 from Tailwind palette)
-// ---------------------------------------------------------------------------
-$gray-50: #f9fafb;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-400: #9ca3af;
-$gray-500: #6b7280;
-$gray-600: #4b5563;
-$gray-800: #1f2937;
-$gray-900: #111827;
+// ------------------------------------------------------------
+// Local tint tokens (no global equivalent)
+// ------------------------------------------------------------
+$tint-green-50: #f0fdf4;
+$tint-green-200: #bbf7d0;
+$tint-green-800: #166534;
 
-$red-500: #ef4444;
-$red-800: #991b1b;
-$red-50: #fef2f2;
-$red-200: #fecaca;
+$tint-purple-500: #a855f7;
+$tint-purple-600: #9333ea;
 
-$green-800: #166534;
-$green-50: #f0fdf4;
-$green-200: #bbf7d0;
-
-$amber-500: #f59e0b;
-$amber-600: #d97706;
-$amber-800: #92400e;
-$amber-50: #fffbeb;
-$amber-200: #fde68a;
-
-$blue-500: #3b82f6;
-$blue-600: #2563eb;
-
-$purple-500: #a855f7;
-$purple-600: #9333ea;
-
-$indigo-600: #4f46e5;
-$indigo-800: #3730a3;
-$indigo-50: #eef2ff;
-$indigo-200: #c7d2fe;
-
-$emerald-500: #10b981;
+$tint-indigo-50: #eef2ff;
+$tint-indigo-200: #c7d2fe;
+$tint-indigo-600: #4f46e5;
+$tint-indigo-800: #3730a3;
 
 // ---------------------------------------------------------------------------
 // Animation
@@ -44,7 +19,7 @@ $emerald-500: #10b981;
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY($space-1);
   }
   to {
     opacity: 1;
@@ -53,23 +28,18 @@ $emerald-500: #10b981;
 }
 
 // ---------------------------------------------------------------------------
-// .score-tab  (BEM block)
+// .score-tab  (BEM block — CSS Module, so classes are scoped here)
 // ---------------------------------------------------------------------------
 .score-tab {
   display: block;
   animation: fadeIn 300ms ease both;
 
-  // space-y-6 — gap between header & list
-  > * + * {
-    margin-top: 1.5rem;
-  }
-
   // -----------------------------------------------------------------------
-  // Card list (space-y-6)
+  // Card list
   // -----------------------------------------------------------------------
   &__list {
     > * + * {
-      margin-top: 1.5rem;
+      margin-top: $space-6;
     }
   }
 
@@ -79,60 +49,60 @@ $emerald-500: #10b981;
   &__card {
     overflow: hidden;
     border: 1px solid $gray-200;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    box-shadow: $shadow-xs;
     gap: 0;
   }
 
   &__card-header {
     background-color: $gray-50;
-    padding: 0.75rem 1.25rem;
+    padding: $space-3 $space-5;
     border-bottom: 1px solid $gray-200;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: $space-3;
 
-    @media (min-width: 640px) {
+    @include respond-to(sm) {
       flex-direction: row;
       align-items: center;
     }
   }
 
   &__card-title {
-    font-weight: 700;
-    font-size: 1.125rem;
-    color: $gray-900;
+    font-weight: $font-bold;
+    font-size: $text-lg;
+    color: $text-primary;
   }
 
   // -----------------------------------------------------------------------
-  // Status badge + BEM modifiers (replaces eligibilityStatusClass object)
+  // Status badge + BEM modifiers
   // -----------------------------------------------------------------------
   &__status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: $space-1 $space-3;
+    border-radius: $radius-sm;
+    font-size: $text-xs;
+    font-weight: $font-bold;
     text-transform: uppercase;
     border: 1px solid transparent;
     white-space: nowrap;
 
     &--not-eligible {
-      color: $red-800;
-      background-color: $red-50;
-      border-color: $red-200;
+      color: $error-800;
+      background-color: $error-50;
+      border-color: $error-200;
     }
 
     &--eligible {
-      color: $green-800;
-      background-color: $green-50;
-      border-color: $green-200;
+      color: $tint-green-800;
+      background-color: $tint-green-50;
+      border-color: $tint-green-200;
     }
 
     &--exempt {
-      color: $amber-800;
-      background-color: $amber-50;
-      border-color: $amber-200;
+      color: $warning-800;
+      background-color: $warning-50;
+      border-color: $warning-200;
     }
 
     &--none {
@@ -142,9 +112,9 @@ $emerald-500: #10b981;
     }
 
     &--pending {
-      color: $indigo-800;
-      background-color: $indigo-50;
-      border-color: $indigo-200;
+      color: $tint-indigo-800;
+      background-color: $tint-indigo-50;
+      border-color: $tint-indigo-200;
     }
   }
 
@@ -156,7 +126,7 @@ $emerald-500: #10b981;
   }
 
   // -----------------------------------------------------------------------
-  // 3-column grid with responsive dividers
+  // 3-column grid (stacks on mobile, 3-col on md+)
   // -----------------------------------------------------------------------
   &__columns {
     display: grid;
@@ -166,7 +136,7 @@ $emerald-500: #10b981;
       border-top: 1px solid $gray-100;
     }
 
-    @media (min-width: 768px) {
+    @include respond-to(md) {
       grid-template-columns: repeat(3, 1fr);
 
       > * + * {
@@ -177,13 +147,13 @@ $emerald-500: #10b981;
   }
 
   // -----------------------------------------------------------------------
-  // Column (space-y-4)
+  // Column
   // -----------------------------------------------------------------------
   &__col {
-    padding: 1.25rem;
+    padding: $space-5;
 
     > * + * {
-      margin-top: 1rem;
+      margin-top: $space-4;
     }
   }
 
@@ -191,57 +161,57 @@ $emerald-500: #10b981;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 0.5rem;
+    padding-bottom: $space-2;
     border-bottom: 1px solid $gray-100;
   }
 
   &__col-title {
-    font-weight: 600;
+    font-weight: $font-semibold;
     color: $gray-800;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: $space-2;
   }
 
   &__icon {
     &--blue {
-      color: $blue-500;
+      color: $info;
     }
 
     &--amber {
-      color: $amber-500;
+      color: $warning;
     }
 
     &--purple {
-      color: $purple-500;
+      color: $tint-purple-500;
     }
   }
 
   &__col-value {
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: $text-lg;
+    font-weight: $font-bold;
 
     &--blue {
-      color: $blue-600;
+      color: $info-600;
     }
 
     &--amber {
-      color: $amber-600;
+      color: $warning-600;
     }
 
     &--purple {
-      color: $purple-600;
+      color: $tint-purple-600;
     }
   }
 
   // -----------------------------------------------------------------------
-  // Detail list (space-y-2 text-sm text-gray-600)
+  // Detail list
   // -----------------------------------------------------------------------
   &__details {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.875rem;
+    gap: $space-2;
+    font-size: $text-sm;
     color: $gray-600;
   }
 
@@ -250,23 +220,29 @@ $emerald-500: #10b981;
     justify-content: space-between;
   }
 
+  &__detail-note {
+    color: $gray-400;
+    margin-left: $space-1;
+    font-size: 0.85em;
+  }
+
   &__detail-value {
     &--muted {
-      color: $gray-900;
-      font-weight: 500;
+      color: $text-primary;
+      font-weight: $font-medium;
     }
 
     &--negative {
-      color: $red-500;
+      color: $error;
     }
 
     &--negative-bold {
-      color: $red-500;
-      font-weight: 700;
+      color: $error;
+      font-weight: $font-bold;
     }
 
     &--positive {
-      color: $emerald-500;
+      color: $success;
     }
   }
 
@@ -274,7 +250,7 @@ $emerald-500: #10b981;
     color: $gray-400;
     font-style: italic;
     text-align: center;
-    padding: 0.5rem 0;
+    padding: $space-2 0;
   }
 
   // -----------------------------------------------------------------------
@@ -283,7 +259,7 @@ $emerald-500: #10b981;
   &__footer {
     border-top: 1px solid $gray-200;
     background: rgba($gray-50, 0.5);
-    padding: 0.25rem 1.25rem;
+    padding: $space-1 $space-5;
   }
 
   &__footer-inner {
@@ -295,8 +271,8 @@ $emerald-500: #10b981;
   }
 
   &__footer-title {
-    font-weight: 700;
-    color: $gray-900;
+    font-weight: $font-bold;
+    color: $text-primary;
     text-transform: uppercase;
     letter-spacing: 0.025em;
   }
@@ -304,17 +280,17 @@ $emerald-500: #10b981;
   &__footer-score {
     display: flex;
     align-items: baseline;
-    gap: 0.25rem;
+    gap: $space-1;
   }
 
   &__total {
-    font-size: 1.875rem;
+    font-size: $text-3xl;
     font-weight: 900;
-    color: $indigo-600;
+    color: $tint-indigo-600;
   }
 
   &__unit {
-    color: rgba($indigo-600, 0.6);
-    font-weight: 500;
+    color: rgba($tint-indigo-600, 0.6);
+    font-weight: $font-medium;
   }
 }

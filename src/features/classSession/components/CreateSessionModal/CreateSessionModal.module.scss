@@ -5,139 +5,158 @@
 .createForm {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .timeRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .dateRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  input {
-    flex: 1;
-    min-width: 0;
-  }
+  gap: $space-3;
 }
 
-// Thêm vào file CreateSessionModal.module.scss của bạn
+// ── Date picker trigger button ─────────────────────────────────
 .dateInputBtn {
+  @include touch-target(44px);
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: white; // Hoặc màu nền input dự án đang dùng
-  border: 1px solid #d1d5db; // Màu viền input
-  border-radius: 6px;
-  font-size: 14px;
-  color: #111827;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: $bg-white;
+  border: 1px solid $border-strong;
+  border-radius: $radius-sm;
+  font-size: $text-base; // iOS Safari anti-zoom
+  color: $text-heading;
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease;
+  transition: border-color $transition-fast;
 
-  &:hover:not(:disabled) {
-    border-color: #9ca3af;
+  @include hover-only {
+    border-color: $gray-400;
   }
 
   &:focus {
     outline: none;
-    border-color: $brand-red; // Hoặc màu primary của dự án
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    border-color: $brand-red;
+    box-shadow: 0 0 0 2px rgba($error, 0.2);
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background: #f9fafb;
+    background: $gray-50;
   }
 
   svg {
-    color: #6b7280;
+    color: $text-muted;
     flex-shrink: 0;
   }
 }
 
 .textMuted {
-  color: #9ca3af;
+  color: $text-subtle;
 }
 
-// Bỏ padding thừa của Popover shadcn mặc định (nếu cần)
 .calendarPopover {
   width: auto;
   padding: 0;
 }
 
 .todayBtn {
-  height: 34px;
-  padding: 0 10px;
-  border-radius: 9px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  color: #374151;
+  @include touch-target(44px);
+  @include press-effect;
+  padding: 0 $space-3;
+  border-radius: $radius-sm;
+  border: 1px solid $border-strong;
+  background: $bg-white;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $gray-700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include hover-only {
+    background: $gray-50;
+  }
 
   &:disabled {
-    background: #f9fafb;
-    color: #9ca3af;
+    background: $gray-50;
+    color: $text-subtle;
     cursor: not-allowed;
   }
 }
 
+// ── Form field ─────────────────────────────────────────────────
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $space-1;
 
+  // iOS Safari anti-zoom: font-size ≥ 16px prevents auto-zoom on focus
   input,
   select {
     width: 100%;
-    height: 34px;
-    border: 1px solid #d1d5db;
-    border-radius: 9px;
-    padding: 0 12px;
-    font-size: 12px;
-    color: #111827;
-    background: #fff;
+    height: 40px;
+    border: 1px solid $border-strong;
+    border-radius: $radius-sm;
+    padding: 0 $space-3;
+    font-size: $text-base;
+    color: $text-heading;
+    background: $bg-white;
 
     &:focus {
       outline: none;
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+      border-color: $border-error;
+      box-shadow: 0 0 0 3px rgba($error, 0.12);
     }
 
     &:disabled {
-      background: #f9fafb;
-      color: #9ca3af;
+      background: $gray-50;
+      color: $text-subtle;
       cursor: not-allowed;
     }
   }
 }
 
 .label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #4b5563;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  color: $gray-600;
   letter-spacing: 0.02em;
 }
 
+// ── Save button ────────────────────────────────────────────────
 .saveBtn {
+  @include touch-target(48px);
+  @include press-effect;
   min-width: 120px;
-  height: 36px;
-  border-radius: 9px;
+  border-radius: $radius-sm;
   border: none;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   cursor: pointer;
-  background: linear-gradient(135deg, #e02020, #7b0000);
-  color: #fff;
+  background: $gradient-brand;
+  color: $text-on-brand;
+  box-shadow: $shadow-brand;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include hover-only {
+    opacity: 0.9;
+  }
 
   &:disabled {
     opacity: 0.7;

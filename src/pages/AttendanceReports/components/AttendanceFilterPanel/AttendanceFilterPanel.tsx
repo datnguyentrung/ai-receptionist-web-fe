@@ -10,6 +10,7 @@ import {
   EvaluationStatusLabel,
 } from "@/config/constants/OperationEnums";
 import { Calendar, Search, X } from "lucide-react";
+import { useEffect } from "react";
 import styles from "./AttendanceFilterPanel.module.scss";
 
 const ATTENDANCE_STATUS_OPTIONS: AttendanceStatus[] = [
@@ -97,6 +98,15 @@ export function AttendanceFilterPanel({
   resultCount,
   onClose,
 }: Props) {
+  // Lock body scroll while panel is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   return (
     <div
       className={styles.overlay}
@@ -105,14 +115,15 @@ export function AttendanceFilterPanel({
       }}
     >
       <div className={styles.panel}>
-        {/* Header */}
+        {/* Header with drag handle (mobile) + close button (desktop) */}
         <div className={styles.header}>
+          <div className={styles.handleBar} aria-hidden="true" />
           <button
             className={styles.closeBtn}
             onClick={onClose}
             aria-label="Đóng"
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 

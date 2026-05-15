@@ -404,51 +404,28 @@ export function SessionLayout({
                 className={styles.note}
                 onDoubleClick={() => handleDoubleClickNote(session)}
                 title="Click đúp để chỉnh sửa ghi chú"
-                style={{
-                  cursor: "text",
-                  display: "flex", // Chuyển sang flex để căn chỉnh
-                  gap: "8px", // Tạo khoảng cách giữa chữ "Ghi chú:" và nội dung
-                  alignItems: "flex-start", // Giữ chữ "Ghi chú:" luôn ở trên cùng kể cả khi nội dung dài ra nhiều dòng
-                }}
               >
-                <strong style={{ whiteSpace: "nowrap" }}>Ghi chú:</strong>
+                <strong>Ghi chú:</strong>
 
                 {editingNoteId === session.sessionId ? (
-                  <textarea // Đổi từ input sang textarea để hỗ trợ xuống dòng
+                  <textarea
                     autoFocus
                     disabled={isSavingInline}
                     value={inlineNoteValue}
                     onChange={(e) => setInlineNoteValue(e.target.value)}
                     onBlur={() => handleSaveInlineNote(session)}
                     onKeyDown={(e) => {
-                      // Nhấn Enter thông thường sẽ LƯU
-                      // Nhấn Shift + Enter để XUỐNG DÒNG
                       if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault(); // Ngăn textarea tự động nhảy xuống dòng
+                        e.preventDefault();
                         handleSaveInlineNote(session);
                       }
                       if (e.key === "Escape") handleCancelInlineEdit();
                     }}
-                    style={{
-                      flex: 1, // Tương đương 1fr, chiếm toàn bộ không gian còn lại bên phải
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      minHeight: "60px", // Cho textarea một chiều cao tối thiểu nhìn cho dễ
-                      resize: "vertical", // Chỉ cho phép người dùng kéo giãn chiều dọc
-                      fontFamily: "inherit", // Giữ font chữ đồng bộ với giao diện
-                    }}
                   />
                 ) : (
-                  <span
-                    style={{
-                      flex: 1, // Để span cũng chiếm hết chỗ trống
-                      whiteSpace: "pre-wrap", // CỰC KỲ QUAN TRỌNG: Giúp hiển thị đúng các dấu xuống dòng (Enter) khi render text
-                      wordBreak: "break-word", // Tránh bị tràn chữ dài
-                    }}
-                  >
+                  <span>
                     {session.note || (
-                      <span style={{ color: "#999", fontStyle: "italic" }}>
+                      <span className={styles.noteEmpty}>
                         Chưa có ghi chú
                       </span>
                     )}

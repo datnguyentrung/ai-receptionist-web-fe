@@ -1,26 +1,45 @@
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE PAGE HEADER — Title + action (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .pageHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+}
+
+.pageSubtitle {
+  margin: $space-1 0 0;
+  font-size: $text-sm;
+  color: $text-subtle;
 }
 
 .exportBtn {
+  @include touch-target(48px);
+  @include press-effect;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid #e02020;
-  background: #fff;
-  color: #e02020;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $brand-red;
+  background: $bg-white;
+  color: $brand-red;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: opacity 0.15s;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  transition: $transition-fast;
 
-  &:hover {
+  @include hover-only {
     opacity: 0.85;
   }
 }

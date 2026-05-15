@@ -1,9 +1,19 @@
-@use "../../../../styles/variables" as v;
+// ------------------------------------------------------------
+// Local warm tint tokens (brand-red-tinted whites for cards)
+// ------------------------------------------------------------
+$tint-warm-50: #fffdfd;
+$tint-warm-100: #fff6f6;
+$tint-warm-200: #fff7f7;
+$tint-border-warm: #f1e4e4;
+$tint-border-warm-light: #f4e9e9;
 
+// ---------------------------------------------------------------------------
+// .schedule-assignments  (Global BEM)
+// ---------------------------------------------------------------------------
 .schedule-assignments {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $space-4;
   min-width: 0;
   animation: fade-in 0.25s ease;
 }
@@ -12,22 +22,22 @@
 .schedule-assignments__item-card,
 .schedule-assignments__empty-card,
 .schedule-assignments__empty-state-card {
-  border: 1px solid #f1e4e4;
-  box-shadow: 0 8px 24px rgba(26, 26, 46, 0.05);
+  border: 1px solid $tint-border-warm;
+  box-shadow: 0 8px 24px rgba($brand-dark, 0.05);
 }
 
 .schedule-assignments__hero-card {
-  background: linear-gradient(135deg, #fffdfd 0%, #fff6f6 52%, #fefefe 100%);
+  background: linear-gradient(135deg, $tint-warm-50 0%, $tint-warm-100 52%, $white 100%);
 }
 
 .schedule-assignments__hero-content {
-  padding: 1.25rem;
+  padding: $space-5;
 }
 
 .schedule-assignments__hero-top {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $space-4;
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -35,108 +45,108 @@
 .schedule-assignments__hero-copy {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: $space-1;
 }
 
 .schedule-assignments__eyebrow,
 .schedule-assignments__footer-label,
 .schedule-assignments__meta-label {
   margin: 0;
-  color: v.$text-muted;
-  font-size: 0.75rem;
+  color: $text-muted;
+  font-size: $text-xs;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-weight: 700;
+  font-weight: $font-bold;
 }
 
 .schedule-assignments__title {
   margin: 0;
-  font-family: "Poppins", v.$font-sans;
+  font-family: "Poppins", $font-sans;
   font-size: clamp(1.2rem, 2vw, 1.6rem);
-  font-weight: 700;
-  color: v.$text-heading;
-  line-height: 1.2;
+  font-weight: $font-bold;
+  color: $text-heading;
+  line-height: $leading-tight;
 }
 
 .schedule-assignments__subtitle {
   margin: 0;
-  color: v.$text-secondary;
-  font-size: 0.92rem;
-  line-height: 1.55;
+  color: $text-secondary;
+  font-size: $text-sm;
+  line-height: $leading-relaxed;
 }
 
 .schedule-assignments__count-badge,
 .schedule-assignments__status-badge {
   border: 0;
-  font-weight: 700;
+  font-weight: $font-bold;
 }
 
 .schedule-assignments__summary-grid,
 .schedule-assignments__meta-grid {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: 1fr;
+  gap: $space-3;
 }
 
 .schedule-assignments__summary-grid {
-  margin-top: 1rem;
+  margin-top: $space-4;
 }
 
 .schedule-assignments__meta-grid {
-  margin-top: 1rem;
+  margin-top: $space-4;
 }
 
 .schedule-assignments__meta-item {
   display: flex;
-  gap: 0.8rem;
+  gap: $space-3;
   align-items: flex-start;
-  border: 1px solid #f4e9e9;
-  background: #fffdfd;
-  border-radius: 0.95rem;
-  padding: 0.9rem 0.95rem;
+  border: 1px solid $tint-border-warm-light;
+  background: $tint-warm-50;
+  border-radius: $radius-lg;
+  padding: $space-4;
 }
 
 .schedule-assignments__meta-icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.8rem;
+  width: $space-8;
+  height: $space-8;
+  border-radius: $radius-md;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #fef2f2;
-  color: v.$brand-red-700;
+  background: $error-50;
+  color: $brand-red-700;
   flex-shrink: 0;
 }
 
 .schedule-assignments__meta-copy {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: $space-1;
   min-width: 0;
 }
 
 .schedule-assignments__meta-value {
   margin: 0;
-  color: v.$text-primary;
-  font-size: 0.94rem;
-  font-weight: 600;
-  line-height: 1.45;
+  color: $text-primary;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-snug;
   word-break: break-word;
 }
 
 .schedule-assignments__list {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: $space-4;
 }
 
 .schedule-assignments__item-card {
   overflow: hidden;
-  border-left: 4px solid v.$brand-red;
+  border-left: 4px solid $brand-red;
 }
 
 .schedule-assignments__item-content {
-  padding: 1rem;
+  padding: $space-4;
 }
 
 .schedule-assignments__item-head {
@@ -144,67 +154,70 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.85rem;
+  gap: $space-4;
 }
 
 .schedule-assignments__item-heading {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: $space-1;
 }
 
 .schedule-assignments__item-title {
   margin: 0;
-  font-family: "Poppins", v.$font-sans;
-  color: v.$text-heading;
-  font-size: 1rem;
-  font-weight: 700;
+  font-family: "Poppins", $font-sans;
+  color: $text-heading;
+  font-size: $text-base;
+  font-weight: $font-bold;
 }
 
 .schedule-assignments__item-subtitle {
   margin: 0;
-  color: v.$text-secondary;
-  font-size: 0.88rem;
+  color: $text-secondary;
+  font-size: $text-sm;
 }
 
 .schedule-assignments__footer-note {
-  margin-top: 1rem;
-  border-top: 1px solid #f4e9e9;
-  padding-top: 0.9rem;
+  margin-top: $space-4;
+  border-top: 1px solid $tint-border-warm-light;
+  padding-top: $space-4;
 }
 
 .schedule-assignments__footer-value {
-  margin: 0.2rem 0 0;
-  color: v.$text-primary;
-  font-size: 0.92rem;
-  font-weight: 600;
+  margin: $space-1 0 0;
+  color: $text-primary;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
 }
 
 .schedule-assignments__empty-card,
 .schedule-assignments__empty-state-card {
-  background: linear-gradient(135deg, #fffdfd 0%, #fff7f7 100%);
+  background: linear-gradient(135deg, $tint-warm-50 0%, $tint-warm-200 100%);
 }
 
 .schedule-assignments__empty-content,
 .schedule-assignments__empty-state-content {
-  padding: 1.35rem;
+  padding: $space-5;
 }
 
 .schedule-assignments__empty-title {
   margin: 0;
-  font-family: "Poppins", v.$font-sans;
-  font-size: 1rem;
-  font-weight: 700;
-  color: v.$text-heading;
+  font-family: "Poppins", $font-sans;
+  font-size: $text-base;
+  font-weight: $font-bold;
+  color: $text-heading;
 }
 
 .schedule-assignments__empty-text {
-  margin: 0.35rem 0 0;
-  color: v.$text-secondary;
-  font-size: 0.92rem;
+  margin: $space-1 0 0;
+  color: $text-secondary;
+  font-size: $text-sm;
 }
 
-@media (min-width: 720px) {
+// ---------------------------------------------------------------------------
+// Responsive — column → row at md, 2-col at md, 4-col at lg
+// ---------------------------------------------------------------------------
+@include respond-to(md) {
   .schedule-assignments__hero-top,
   .schedule-assignments__item-head {
     flex-direction: row;
@@ -213,13 +226,13 @@
 
   .schedule-assignments__summary-grid,
   .schedule-assignments__meta-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 1080px) {
+@include respond-to(lg) {
   .schedule-assignments__summary-grid,
   .schedule-assignments__meta-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
 }

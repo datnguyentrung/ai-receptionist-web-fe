@@ -1,6 +1,10 @@
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE PIE CHART — Card container (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .pieCard {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid #f0f0f5;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  border: 1px solid $border-subtle;
 }

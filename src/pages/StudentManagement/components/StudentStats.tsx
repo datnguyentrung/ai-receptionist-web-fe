@@ -24,10 +24,15 @@ export function StudentStats({
     <div className={styles.summaryGrid}>
       {cards.map((c) => (
         <div key={c.label} className={styles.summaryCard}>
-          <p style={{ fontSize: "22px", fontWeight: 800, color: c.color }}>
+          <p
+            className={styles.statValue}
+            style={
+              { "--stat-color": c.color } as React.CSSProperties
+            }
+          >
             {c.value}
           </p>
-          <p style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: 500 }}>
+          <p className={styles.statLabel}>
             {c.label}
           </p>
         </div>

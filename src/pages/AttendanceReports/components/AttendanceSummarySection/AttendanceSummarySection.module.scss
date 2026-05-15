@@ -1,11 +1,13 @@
-@use "@/styles/variables" as *;
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE SUMMARY SECTION — Grid layout (Mobile-first)
+// ─────────────────────────────────────────────────────────────
 
 .summaryOuter {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: $space-4;
 
-  @media (min-width: $lg) {
+  @include respond-to(lg) {
     grid-template-columns: 2fr 1fr;
   }
 }
@@ -13,9 +15,9 @@
 .summaryLeft {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: $space-3;
 
-  @media (min-width: $sm) {
+  @include respond-to(sm) {
     grid-template-columns: repeat(4, 1fr);
   }
 }

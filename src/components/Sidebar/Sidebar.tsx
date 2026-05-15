@@ -1,4 +1,4 @@
-import logoImage from "@/assets/taekwondo.jpg";
+import logoImage from "/taekwondo.jpg";
 import { useSettingsMenu } from "@/config/constants/ListActionDropDown";
 import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";

@@ -1,16 +1,17 @@
-// LoginForm.module.scss
+// ── Login Form ──────────────────────────────────────────────
 .formGroup {
-  margin-bottom: 1.5rem;
+  margin-bottom: $space-5;
 }
 
 .formLabel {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #3d3d5c;
-  margin-bottom: 0.5rem;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $brand-dark;
+  margin-bottom: $space-2;
 }
 
+// ── Input wrapper with icon ────────────────────────────────
 .inputWrapper {
   position: relative;
   display: flex;
@@ -19,126 +20,138 @@
 
 .inputIcon {
   position: absolute;
-  left: 1rem;
+  left: $space-4;
   top: 50%;
   transform: translateY(-50%);
-  color: #c0392b;
-  width: 1.125rem;
-  height: 1.125rem;
+  color: $brand-red;
+  width: $space-5;
+  height: $space-5;
   pointer-events: none;
 }
 
+// ── Input fields — 16px min font-size to prevent iOS zoom ──
 .formInput {
   width: 100%;
-  padding: 0.875rem 1rem 0.875rem 2.75rem;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e8f0;
+  padding: $space-4 $space-4 $space-4 $space-11;
+  border-radius: $radius-md;
+  border: 1px solid $border-default;
   background-color: #f8f9fc;
-  color: #1a1a2e;
-  font-size: 0.875rem;
+  color: $brand-dark;
+  // iOS Safari auto-zooms on inputs < 16px — keep this at 16px
+  font-size: 16px;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all $transition-fast;
+  @include touch-target(52px);
+  min-width: 0;
 
   &::placeholder {
-    color: #b0b5c8;
+    color: $text-subtle;
   }
 
   &:focus {
-    border-color: #c0392b;
+    border-color: $brand-red;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
   }
 }
 
 .inputError {
-  border-color: #dc2626;
-  background-color: #fff7f7;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: $error;
+  background-color: $error-light;
+  box-shadow: 0 0 0 3px rgba($error, 0.1);
 }
 
 .helpText {
-  margin-top: 0.4rem;
-  font-size: 0.75rem;
-  color: #8b93a8;
+  margin-top: $space-2;
+  font-size: $text-xs;
+  color: $text-muted;
 }
 
 .errorText {
-  margin-top: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #b91c1c;
+  margin-top: $space-1;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  color: $error-dark;
 }
 
 .passwordInput {
-  padding-right: 3rem;
+  padding-right: $space-12;
 }
 
+// ── Toggle password visibility — 48px touch target ─────────
 .togglePassword {
   position: absolute;
-  right: 1rem;
+  right: $space-3;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #b0b5c8;
+  color: $text-subtle;
   cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease;
+  @include touch-target(44px);
+  transition: color $transition-fast;
 
-  &:hover {
-    color: #c0392b;
+  @include hover-only {
+    color: $brand-red;
   }
+
+  @include press-effect(0.9);
 
   &:focus-visible {
     outline: 2px solid rgba(192, 57, 43, 0.4);
     outline-offset: 2px;
-    border-radius: 8px;
+    border-radius: $radius-sm;
   }
 
   svg {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: $space-5;
+    height: $space-5;
   }
 }
 
+// ── Forgot password link ───────────────────────────────────
 .forgotPassword {
   display: flex;
   justify-content: flex-end;
-  margin-top: 0.5rem;
+  margin-top: $space-2;
 }
 
 .forgotLink {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #c0392b;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $brand-red;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color $transition-fast;
+  @include touch-target(44px);
+  display: inline-flex;
+  align-items: center;
 
-  &:hover {
-    color: #96281b;
+  @include hover-only {
+    color: darken($brand-red, 15%);
   }
 }
 
+// ── Submit button — 52px touch target ─────────────────────
 .loginButton {
   width: 100%;
-  padding: 0.875rem;
-  border-radius: 0.75rem;
+  padding: $space-4;
+  border-radius: $radius-md;
   color: white;
-  transition: all 0.3s ease;
+  transition: all $transition-slow;
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #96281b 100%);
-  box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
-  font-size: 0.875rem;
-  font-weight: 700;
+  box-shadow: $shadow-brand;
+  font-size: $text-base;
+  font-weight: $font-bold;
   letter-spacing: 2px;
   border: none;
   cursor: pointer;
   text-transform: uppercase;
+  @include touch-target(52px);
 
-  &:active {
-    transform: scale(0.98);
+  @include press-effect(0.97);
+
+  @include hover-only {
+    box-shadow: $shadow-brand-lg;
   }
 
   &:disabled {
@@ -146,17 +159,13 @@
     cursor: not-allowed;
     box-shadow: none;
   }
-
-  &:hover:not(:disabled) {
-    box-shadow: 0 8px 25px rgba(192, 57, 43, 0.5);
-  }
 }
 
 .loadingContent {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 
 .spinner {

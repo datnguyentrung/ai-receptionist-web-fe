@@ -1,4 +1,3 @@
-import img from "@/assets/taekwondo.jpg";
 import Avatar from "@/components/Avatar";
 import type { CoachDetail, StudentDetail, UserResponse } from "@/types";
 import { formatDateDMY } from "@/utils/format";
@@ -14,6 +13,7 @@ import {
 import { BeltBadge } from "../../../../components/BeltBadge";
 import { showComingSoonActionToast } from "../../../../components/ui/mini-action-popover.toast";
 import S from "./ProfileHeader.module.scss";
+import img from "/taekwondo.jpg";
 
 interface ProfileHeaderProps {
   user: StudentDetail | CoachDetail;

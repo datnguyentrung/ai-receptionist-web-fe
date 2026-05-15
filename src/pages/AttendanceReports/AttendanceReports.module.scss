@@ -1,26 +1,30 @@
-﻿// AttendanceReports.module.scss
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE REPORTS — Main Page Shell (Mobile-first)
+// ─────────────────────────────────────────────────────────────
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-5;
 }
 
+// ── Delete Preview ─────────────────────────────────────────
+
 .deletePreviewWrap {
-  margin-top: 8px;
+  margin-top: $space-2;
 }
 
 .deletePreviewTitle {
-  margin: 0 0 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
+  margin: 0 0 $space-3;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-primary;
 }
 
 .deletePreviewEmpty {
   margin: 0;
-  font-size: 12px;
-  color: #6b7280;
+  font-size: $text-xs;
+  color: $text-muted;
 }
 
 .deletePreviewList {
@@ -31,58 +35,57 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .deletePreviewItem {
-  border: 1px solid #f3f4f6;
-  border-radius: 10px;
-  padding: 10px;
-  background: #fafafa;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-sm + 2px;
+  padding: $space-3;
+  background: $bg-elevated;
 }
 
 .deletePreviewHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .deletePreviewStudentName {
   margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-primary;
 }
 
 .deletePreviewSchedule {
-  font-size: 11px;
-  color: #374151;
-  background: #e5e7eb;
-  border-radius: 999px;
-  padding: 2px 8px;
+  font-size: $text-xs;
+  color: $text-secondary;
+  background: $gray-200;
+  border-radius: $radius-full;
+  padding: $space-1 $space-2;
 }
 
 .deletePreviewMeta {
-  margin-top: 6px;
+  margin-top: $space-2;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: 1fr;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  gap: $space-2;
 }
 
 .deletePreviewMeta span {
-  font-size: 12px;
-  color: #4b5563;
+  font-size: $text-sm;
+  color: $text-secondary;
 }
 
 .deletePreviewNote {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-@media (max-width: 768px) {
-  .deletePreviewMeta {
-    grid-template-columns: 1fr;
-  }
+  margin: $space-2 0 0;
+  font-size: $text-sm;
+  color: $text-muted;
 }

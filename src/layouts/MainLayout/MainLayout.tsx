@@ -1,11 +1,21 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import Header from "../../components/Header/Header";
 import styles from "./MainLayout.module.scss";
 
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.classList.add("overlay-open");
+    } else {
+      document.body.classList.remove("overlay-open");
+    }
+    return () => document.body.classList.remove("overlay-open");
+  }, [sidebarOpen]);
 
   return (
     <div className={styles.layout}>

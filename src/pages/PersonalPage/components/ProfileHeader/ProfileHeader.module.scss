@@ -1,14 +1,22 @@
+// ─────────────────────────────────────────────────────────────
+// PROFILE HEADER — Cover + Avatar + Identity (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
+// ── Card Container ─────────────────────────────────────────
+
 .card {
-  background-color: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  background: $bg-white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
   overflow: hidden;
   width: 100%;
   position: relative;
 }
 
+// ── Cover Photo ───────────────────────────────────────────
+
 .coverPhoto {
-  height: 20rem;
+  height: clamp(10rem, 30vw, 20rem);
   width: 100%;
   position: relative;
 
@@ -25,32 +33,38 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
 }
 
+// ── Main Content ─────────────────────────────────────────
+
 .mainContent {
-  padding: 0 2rem 2rem;
-  position: relative;
+  padding: 0 $space-6 $space-6;
+
+  @include respond-to(sm) {
+    padding: 0 $space-8 $space-8;
+  }
 }
+
+// ── Top Row: Avatar + Actions ───────────────────────────────
 
 .topRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: $space-3;
 }
 
 .avatarWrapper {
-  margin-top: -4rem;
+  margin-top: clamp(-3rem, -8vw, -4rem);
   position: relative;
 }
 
 .avatar {
-  width: 8rem;
-  height: 8rem;
-  border-radius: 9999px;
-  border: 4px solid #fff;
+  width: clamp(5rem, 18vw, 8rem);
+  height: clamp(5rem, 18vw, 8rem);
+  border-radius: $radius-full;
+  border: 4px solid $white;
   overflow: hidden;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  box-shadow: $shadow-lg;
+  background: $bg-white;
   position: relative;
   z-index: 10;
 
@@ -62,157 +76,169 @@
 }
 
 .actions {
-  margin-top: 1.5rem;
+  margin-top: $space-6;
   display: flex;
-  gap: 0.75rem;
+  gap: $space-3;
   z-index: 10;
 }
 
+// ── Action Buttons ────────────────────────────────────────
+
 .btnChangePassword {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #fff;
-  color: #374151;
-  font-weight: 500;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  transition: background-color 0.2s;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  background: $bg-white;
+  color: $text-secondary;
+  font-weight: $font-medium;
+  border-radius: $radius-md;
+  border: 1px solid $border-default;
+  box-shadow: $shadow-xs;
+  cursor: pointer;
+  transition: $transition-fast;
+  @include press-effect;
 
-  &:hover {
-    background-color: #f9fafb;
+  @include hover-only {
+    background: $gray-50;
   }
 
   span {
-    font-size: 0.875rem;
+    font-size: $text-sm;
   }
 }
 
 .btnEditProfile {
+  @include touch-target(48px);
+  @include press-effect;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
-  background-color: #e02020;
-  color: #fff;
-  font-weight: 500;
-  border-radius: 0.75rem;
-  transition: background-color 0.2s;
-  box-shadow: 0 1px 2px 0 rgba(224, 32, 32, 0.2);
+  gap: $space-2;
+  padding: $space-2 $space-5;
+  background: $brand-red;
+  color: $white;
+  font-weight: $font-medium;
+  border-radius: $radius-md;
+  box-shadow: 0 1px 4px rgba($brand-red, 0.25);
   border: none;
   cursor: pointer;
+  transition: $transition-fast;
 
-  &:hover {
-    background-color: #c91d1d;
+  @include hover-only {
+    background: $brand-red-700;
   }
 
   span {
-    font-size: 0.875rem;
+    font-size: $text-sm;
   }
 }
 
+// ── Identity Section ─────────────────────────────────────
+
 .identitySection {
-  margin-top: 1rem;
+  margin-top: $space-4;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $space-3;
   flex-wrap: wrap;
 }
 
 .name {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: clamp(1.3rem, 4vw, 1.875rem);
+  font-weight: $font-bold;
+  color: $text-primary;
   letter-spacing: -0.025em;
 }
 
 .badges {
   display: flex;
-  gap: 0.5rem;
+  gap: $space-2;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .beltChip {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.75rem;
-  background-color: #111827;
-  color: #fff;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  background: $gray-900;
+  color: $white;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
   svg {
-    color: #facc15;
+    color: $warning-400;
   }
 }
 
 .roleBadge {
-  padding: 0.25rem 0.75rem;
-  background-color: #fef2f2;
-  color: #e02020;
-  border: 1px solid #fee2e2;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: $space-1 $space-3;
+  background: $error-50;
+  color: $brand-red;
+  border: 1px solid $error-200;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+// ── Details Grid ─────────────────────────────────────────
 
 .detailsGrid {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  gap: $space-6;
+  margin-top: $space-6;
 }
 
 .detailItem {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $space-3;
 }
 
 .detailIcon {
   width: 2rem;
   height: 2rem;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   &.blue {
-    background-color: #eff6ff;
-    color: #2563eb;
+    background: $info-50;
+    color: $info-600;
   }
 
   &.rose {
-    background-color: #fff1f2;
-    color: #e11d48;
+    background: $error-50;
+    color: $brand-dark-700;
   }
 
   &.emerald {
-    background-color: #ecfdf5;
-    color: #059669;
+    background: $success-50;
+    color: $success-700;
   }
 
   &.purple {
-    background-color: #faf5ff;
+    background: #faf5ff;
     color: #9333ea;
   }
 }
 
 .detailText {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $text-secondary;
 }

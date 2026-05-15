@@ -37,9 +37,15 @@ export default function StatusBadge({ status }: { status: StudentStatus }) {
   return (
     <span
       className={styles.statusBadge}
-      style={{ background: s.bg, color: s.color }}
+      style={
+        {
+          "--badge-bg": s.bg,
+          "--badge-color": s.color,
+          "--badge-dot": s.dot,
+        } as React.CSSProperties
+      }
     >
-      <span className={styles.statusDot} style={{ background: s.dot }} />
+      <span className={styles.statusDot} />
       {s.label}
     </span>
   );

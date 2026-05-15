@@ -53,11 +53,8 @@ function ClassWeekViewInner({
       <div className={styles.classList}>
         {filtered.length === 0 ? (
           <div className={styles.emptyState}>
-            <Calendar
-              size={40}
-              style={{ color: "#D1D5DB", margin: "0 auto 12px" }}
-            />
-            <p style={{ fontSize: "14px", color: "#9CA3AF" }}>
+            <Calendar size={40} />
+            <p>
               Không có lớp học vào{" "}
               {
                 WeekdayLabel[

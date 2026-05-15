@@ -57,10 +57,10 @@ export function TrendCard({
         <TrendingUp size={18} style={{ color: "#E02020" }} />
       </div>
       <div className={styles.trendContent}>
-        <p style={{ fontSize: "13px", fontWeight: 700, color: "#111827" }}>
+        <p className={styles.trendRate}>
           Tỷ lệ có mặt tuần này: {attendanceRate}%
         </p>
-        <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
+        <p className={styles.trendDetail}>
           {attendedCount}/{total} có mặt hoặc đi muộn ({attendedRate}%) · Trong
           đó có {presentWithMakeup}
           lượt có mặt (bao gồm học bù)

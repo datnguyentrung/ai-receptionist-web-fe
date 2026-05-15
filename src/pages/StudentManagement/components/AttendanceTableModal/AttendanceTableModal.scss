@@ -1,84 +1,101 @@
 .attendance-table-modal {
-  width: min(960px, 88vw);
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 28px 60px rgba(17, 24, 39, 0.2);
+  width: min(960px, 94vw);
+  background: $bg-surface;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  box-shadow: 0 28px 60px rgba($gray-900, 0.2);
   overflow: visible;
+
+  @include respond-to(sm) {
+    padding: $space-5;
+  }
 }
 
 .modal-header {
-  margin-bottom: 14px;
+  margin-bottom: $space-4;
 
   h2 {
     margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
+    font-size: $text-xl;
+    font-weight: $font-bold;
+    color: $text-primary;
   }
 
   p {
-    margin: 6px 0 0;
-    font-size: 13px;
-    color: #4b5563;
+    margin: $space-2 0 0;
+    font-size: 0.92rem;
+    color: $gray-600;
   }
 }
 
 .student-overview-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+  margin-bottom: $space-3;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .overview-item {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #f9fafb;
+  padding: $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $gray-50;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $space-1;
 }
 
 .overview-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  color: $text-muted;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .overview-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-primary;
 }
 
 .schedule-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: $space-2;
+  margin-bottom: $space-4;
 }
 
 .schedule-chip {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #fee2e2;
-  color: #b91c1c;
-  font-size: 12px;
-  font-weight: 600;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: $error-100;
+  color: $brand-red-700;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
 
   &.is-empty {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: $gray-100;
+    color: $text-muted;
   }
 }
 
 .modal-content {
-  max-height: 650px;
+  height: 400px;
   overflow: visible;
+
+  @include respond-to(sm) {
+    height: auto;
+    max-height: 650px;
+  }
 }
 
 .attendance-table-shell {
@@ -94,6 +111,7 @@
       max-height: 480px;
       overflow-y: auto;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     > :global(.emptyState) {
@@ -106,8 +124,8 @@
 
     > :last-child {
       flex-shrink: 0;
-      padding-top: 12px;
-      border-top: 1px solid #f3f4f6;
+      padding-top: $space-3;
+      border-top: 1px solid $gray-100;
     }
   }
 }
@@ -115,26 +133,4 @@
 // Ensure MiniActionPopover displays above the modal overlay
 :global([data-slot="popover-content"]) {
   z-index: 1300 !important;
-}
-
-@media (max-width: 1024px) {
-  .student-overview-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .attendance-table-modal {
-    width: 94vw;
-    padding: 14px;
-    border-radius: 14px;
-  }
-
-  .student-overview-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-content {
-    height: 400px;
-  }
 }

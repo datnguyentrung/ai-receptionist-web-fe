@@ -37,18 +37,18 @@ function ClassWeekItemInner({
       }
     >
       <div className={styles.timeBlock}>
-        <p style={{ fontSize: "12px", fontWeight: 700, color: "#E02020" }}>
+        <p className={styles.timeLabel}>
           {formatTimeStringHM(cls.startTime)} -{" "}
           {formatTimeStringHM(cls.endTime)}
         </p>
-        <p style={{ fontSize: "10px", color: "#9CA3AF" }}>
+        <p className={styles.timeDuration}>
           {getDurationInMinutes(cls.startTime, cls.endTime)} phút
         </p>
       </div>
 
       <div className={styles.weekClassInfo}>
         <div className={styles.weekClassTitleRow}>
-          <p style={{ fontSize: "13px", fontWeight: 700, color: "#111827" }}>
+          <p className={styles.weekClassTitle}>
             {cls.branchName} - {ScheduleShiftLabel[cls.scheduleShift]}
           </p>
           <LevelBadge level={cls.scheduleLevel} />

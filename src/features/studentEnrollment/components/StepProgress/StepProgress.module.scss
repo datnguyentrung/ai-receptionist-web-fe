@@ -1,73 +1,82 @@
+// ---------------------------------------------------------------------------
+// Step Progress — Mobile-first refactored
+// ---------------------------------------------------------------------------
+$accent: $brand-red;
+$accent-dark: $brand-red-dark;
+$accent-light: $brand-red-400;
+$gold: $warning-600;
+
 .stepsContainer {
   display: flex;
   align-items: center;
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  padding: $space-5 $space-8;
+  border-bottom: 1px solid $border-default;
+
+  @include below(sm) {
+    padding-left: $space-4;
+    padding-right: $space-4;
+  }
 }
 
 .stepItem {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 500;
-  font-size: 12.5px;
-  transition: color 0.2s;
+  gap: $space-3;
+  font-weight: $font-medium;
+  font-size: $text-sm;
+  transition: $transition-fast;
 }
 
 .stepMuted {
-  color: var(--tkd-muted, #8a92a6);
+  color: $surface-subtle;
 }
 
 .stepNum {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--tkd-bg3, #f7f8fa);
-  border: 1.5px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  background: $surface-50;
+  border: 1.5px solid $border-default;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  transition: all 0.3s;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  transition: $transition-base;
   flex-shrink: 0;
 }
 
 .stepActive {
   .stepNum {
-    background: linear-gradient(
-      135deg,
-      var(--tkd-red-dk, #96281b),
-      var(--tkd-red-lt, #e74c3c)
-    );
-    border-color: var(--tkd-red-lt, #e74c3c);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(192, 57, 43, 0.25);
+    background: linear-gradient(135deg, $accent-dark, $accent-light);
+    border-color: $accent-light;
+    color: $white;
+    box-shadow: 0 0 10px rgba($brand-red, 0.25);
   }
 
   span {
-    color: var(--tkd-text, #1a1d23);
+    color: $text-primary;
   }
 }
 
 .stepDone {
   .stepNum {
-    background: var(--tkd-gold, #d4a017);
-    border-color: var(--tkd-gold, #d4a017);
-    color: #000;
+    background: $gold;
+    border-color: $gold;
+    color: $black;
   }
 
   span {
-    color: var(--tkd-gold, #d4a017);
+    color: $gold;
   }
 }
 
 .stepLine {
   flex: 1;
   height: 1.5px;
-  background: var(--tkd-border, rgba(0, 0, 0, 0.09));
-  margin: 0 8px;
-  border-radius: 2px;
+  background: $border-default;
+  margin: 0 $space-2;
+  border-radius: $radius-xs;
   overflow: hidden;
   position: relative;
 }
@@ -75,7 +84,7 @@
 .stepLineInner {
   position: absolute;
   inset: 0;
-  transition: all 0.2s;
+  transition: $transition-base;
 }
 
 .stepLineFilled {
@@ -83,11 +92,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      90deg,
-      var(--tkd-gold, #d4a017),
-      var(--tkd-red-lt, #e74c3c)
-    );
+    background: linear-gradient(90deg, $gold, $accent-light);
     animation: fillLine 0.4s ease both;
   }
 }
@@ -96,15 +101,7 @@
   from {
     width: 0;
   }
-
   to {
     width: 100%;
-  }
-}
-
-@media (max-width: 900px) {
-  .stepsContainer {
-    padding-left: 16px;
-    padding-right: 16px;
   }
 }

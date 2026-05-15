@@ -1,16 +1,24 @@
-
 // ─── PAGE LAYOUT ──────────────────────────────────────────────
-// Bleed out of MainLayout's 24px padding to fill the full content area
+// Mobile: stacked — camera on top, promo below (full bleed)
+// Desktop: side-by-side — camera left, promo right
 .page {
   display: flex;
-  height: calc(100% + 48px);
-  width: calc(100% + 48px);
-  margin: -24px;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
   background-color: #f8f9fa;
   overflow: hidden;
-  font-family: "Inter", sans-serif;
-  color: #111827;
+  font-family: $font-sans;
+  color: $text-primary;
   position: relative;
+
+  @include respond-to("md") {
+    // Bleed out of MainLayout's desktop padding to fill the full content area
+    height: calc(100% + #{$space-6 * 2});
+    width: calc(100% + #{$space-6 * 2});
+    margin: -$space-6;
+    flex-direction: row;
+  }
 }
 
 // ─── TOP BAR DECORATION ───────────────────────────────────────
@@ -22,53 +30,66 @@
   height: 4px;
   background: linear-gradient(to right, transparent, $brand-red, transparent);
   opacity: 0.5;
-  z-index: 50;
+  z-index: $z-sticky;
 }
 
-// ─── LEFT PANEL ───────────────────────────────────────────────
+// ─── LEFT PANEL (Camera) ──────────────────────────────────────
 .leftPanel {
-  width: 45%;
-  height: 100%;
-  padding: 2rem;
+  width: 100%;
+  // Mobile: give camera enough space but not too much
+  min-height: 45dvh;
+  padding: $space-5;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: #09090b;
+
+  @include respond-to("md") {
+    width: 50%;
+    height: 100%;
+    min-height: auto;
+    padding: $space-8;
+  }
 }
 
 .brandLogo {
   border-radius: 50%;
   position: absolute;
-  top: 2rem;
-  left: 2rem;
+  top: $space-5;
+  left: $space-5;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  z-index: 50;
+  gap: $space-3;
+  z-index: $z-sticky;
   mix-blend-mode: difference;
+
+  @include respond-to("md") {
+    top: $space-8;
+    left: $space-8;
+  }
 }
 
 .brandIcon {
   color: $brand-red;
-  width: 2rem;
-  height: 2rem;
+  width: $space-8;
+  height: $space-8;
   filter: drop-shadow(0 0 10px rgba($brand-red, 0.8));
 }
 
 .brandTitle {
   color: white;
-  font-weight: 700;
+  font-weight: $font-bold;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-size: 0.875rem;
+  font-size: $text-sm;
   opacity: 0.9;
   margin: 0;
 }
 
 .brandSubtitle {
-  color: #9ca3af;
-  font-size: 0.75rem;
+  color: $text-subtle;
+  font-size: $text-xs;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   margin: 0;
@@ -84,35 +105,51 @@
   justify-content: center;
 }
 
-// ─── RIGHT PANEL ──────────────────────────────────────────────
+// ─── RIGHT PANEL (Promo) ──────────────────────────────────────
 .rightPanel {
-  width: 55%;
-  height: 100%;
+  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
+  padding: $space-5;
   position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  @include safe-bottom($space-5);
   background: radial-gradient(
     ellipse at top right,
     #ffffff 0%,
     #ffffff 60%,
     #f9fafb 100%
   );
-  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.05);
+
+  @include respond-to("md") {
+    width: 50%;
+    flex: none;
+    height: 100%;
+    padding: $space-12;
+    overflow-y: hidden;
+    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.05);
+  }
 }
 
 .watermark {
   position: absolute;
-  bottom: 3rem;
-  right: 3rem;
+  bottom: $space-12;
+  right: $space-12;
   opacity: 0.05;
   pointer-events: none;
   transform: rotate(-12deg);
   user-select: none;
   z-index: 0;
-  color: #111827;
+  color: $text-primary;
+
+  // Hide watermark on mobile to save space
+  @include below("md") {
+    display: none;
+  }
 
   svg {
     width: 24rem;
@@ -124,6 +161,7 @@
   position: relative;
   z-index: 10;
   width: 100%;
+  max-width: 30rem;
   display: flex;
   justify-content: center;
 }

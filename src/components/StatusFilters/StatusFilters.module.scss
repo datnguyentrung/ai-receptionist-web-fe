@@ -1,18 +1,29 @@
+// ─────────────────────────────────────────────────────────────
+// STATUS FILTERS — Search + filter buttons (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .filters {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: $space-3;
+
+  @include respond-to(sm) {
+    flex-wrap: nowrap;
+  }
 }
 
+// ── Search Box ─────────────────────────────────────────────
+
 .searchBox {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid #e8ebf0;
-  background: white;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $gray-200;
+  background: $bg-white;
 }
 
 .searchInput {
@@ -20,27 +31,36 @@
   outline: none;
   border: none;
   background: transparent;
-  font-size: 13px;
-  color: #374151;
+  font-size: $text-sm;
+  color: $text-secondary;
   min-width: 0;
 }
 
+// ── Filter Buttons ─────────────────────────────────────────
+
 .filterBtn {
-  padding: 8px 12px;
-  border-radius: 12px;
+  @include touch-target(48px);
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
   border: 1px solid;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  transition: $transition-fast;
+  @include press-effect;
+  white-space: nowrap;
 
-.filterBtn:disabled {
-  cursor: not-allowed;
-  opacity: 1;
+  @include hover-only {
+    &:not(:disabled) {
+      filter: brightness(0.95);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .filterHoverWrap {
@@ -50,12 +70,12 @@
 
 .filterHoverCard {
   width: 260px;
-  padding: 12px 14px;
+  padding: $space-3 $space-4;
 }
 
 .filterHoverText {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #374151;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+  color: $text-secondary;
 }

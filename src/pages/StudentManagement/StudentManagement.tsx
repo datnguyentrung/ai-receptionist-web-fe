@@ -139,14 +139,7 @@ export function StudentManagement() {
       />
 
       {/* 3. Bộ lọc */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          gap: "12px",
-        }}
-      >
+      <div className={styles.filters}>
         <StatusFilters
           search={search}
           setSearch={(val) => {

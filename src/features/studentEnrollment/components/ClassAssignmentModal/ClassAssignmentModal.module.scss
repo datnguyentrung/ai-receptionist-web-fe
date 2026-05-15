@@ -1,27 +1,17 @@
-:global(:root) {
-  --tkd-red: #c0392b;
-  --tkd-red-dk: #96281b;
-  --tkd-red-lt: #e74c3c;
-  --tkd-gold: #d4a017;
-  --tkd-bg2: #ffffff;
-  --tkd-bg3: #f7f8fa;
-  --tkd-border: rgba(0, 0, 0, 0.09);
-  --tkd-text: #1a1d23;
-  --tkd-muted: #8a92a6;
-  --tkd-radius: 12px;
-  --tkd-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
+// ---------------------------------------------------------------------------
+// Class Assignment Modal — Mobile-first refactored
+// ---------------------------------------------------------------------------
+
+// ── Modal Shell ──────────────────────────────────────────────
 
 .modal {
-  background: var(--tkd-bg2);
-  border: 1px solid var(--tkd-border);
-  border-radius: 20px;
+  background: $bg-surface;
+  border: 1px solid $border-default;
+  border-radius: $radius-xl;
   width: 100%;
   max-width: 1000px;
   max-height: min(90vh, 840px);
-  box-shadow:
-    var(--tkd-shadow),
-    0 0 0 1px rgba(192, 57, 43, 0.08);
+  box-shadow: $shadow-xl, 0 0 0 1px rgba($brand-red, 0.08);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -34,23 +24,18 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(
-      90deg,
-      var(--tkd-red-dk),
-      var(--tkd-red-lt),
-      var(--tkd-gold)
-    );
-    z-index: 10;
+    background: linear-gradient(90deg, $brand-red-dark, $brand-red-400, $warning-600);
+    z-index: $z-raised;
   }
 }
 
 .studentModalShell {
   width: 100%;
   max-height: calc(100vh - 48px);
-  border: 1px solid var(--tkd-border);
-  border-radius: 18px;
-  background: var(--tkd-bg2);
-  box-shadow: 0 20px 44px rgba(17, 24, 39, 0.18);
+  border: 1px solid $border-default;
+  border-radius: $radius-xl;
+  background: $bg-surface;
+  box-shadow: $shadow-xl;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -60,196 +45,231 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 18px;
+  padding: $space-5;
+  @include safe-bottom($space-2);
+  -webkit-overflow-scrolling: touch;
 }
+
+// ── Header ──────────────────────────────────────────────────
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 32px 20px;
-  border-bottom: 1px solid var(--tkd-border);
+  padding: $space-7 $space-8 $space-5;
+  border-bottom: 1px solid $border-default;
+
+  @include below(sm) {
+    padding: $space-6;
+  }
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: $space-4;
 }
 
 .iconBadge {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--tkd-red-dk), var(--tkd-red-lt));
-  border-radius: 12px;
+  background: linear-gradient(135deg, $brand-red-dark, $brand-red-400);
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
+  font-size: $text-xl;
+  box-shadow: $shadow-brand;
   flex-shrink: 0;
 }
 
 .title {
   font-family: "Playfair Display", serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--tkd-text);
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+
+  @include below(sm) {
+    font-size: $text-lg;
+  }
 }
 
 .subtitle {
-  font-size: 12px;
-  color: var(--tkd-muted);
+  font-size: $text-sm;
+  color: $surface-subtle;
   margin-top: 2px;
 }
+
+// ── Modal Body ──────────────────────────────────────────────
 
 .modalBody {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 32px 32px;
+  padding: $space-6 $space-8 $space-8;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $space-6;
+  @include hide-scrollbar;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-  }
-
-  &:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.1);
+  @include below(sm) {
+    padding: $space-5;
   }
 }
 
 .studentHero {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $space-3;
 }
 
 .fieldLabelRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
+
+  @include below(sm) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .helperPill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(192, 57, 43, 0.08);
-  color: var(--tkd-red-dk);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($brand-red, 0.08);
+  color: $brand-red-dark;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
+// ── Filter Row ──────────────────────────────────────────────
+
 .filterRow {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 16px;
-  background: var(--tkd-bg3);
-  padding: 24px;
-  border-radius: var(--tkd-radius);
-  border: 1px solid var(--tkd-border);
-  margin-bottom: 8px;
+  grid-template-columns: 1fr;
+  gap: $space-4;
+  background: $surface-50;
+  padding: $space-6;
+  border-radius: $radius-md;
+  border: 1px solid $border-default;
+  margin-bottom: $space-2;
+
+  @include respond-to(md) {
+    grid-template-columns: 1fr 1fr auto;
+  }
 }
 
 .assignmentPanel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-4;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: $space-2;
+}
+
+.fieldTransition {
+  transition: $transition-base;
+}
+
+.fieldDisabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .fieldLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--tkd-muted);
-  letter-spacing: 0.6px;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $surface-subtle;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .inlineTextButton {
+  @include press-effect;
+
   border: none;
   background: transparent;
-  color: var(--tkd-red-dk);
-  font-size: 12px;
-  font-weight: 700;
+  color: $brand-red-dark;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: $space-1;
   cursor: pointer;
   padding: 0;
 
-  &:hover {
-    color: var(--tkd-red-lt);
+  @include hover-only {
+    color: $brand-red-400;
   }
 }
 
 .fieldHint {
-  font-size: 11.5px;
-  color: var(--tkd-muted);
-  line-height: 1.5;
+  font-size: $text-xs;
+  color: $surface-subtle;
+  line-height: $leading-relaxed;
 }
+
+// ── Coach Inline ─────────────────────────────────────────────
 
 .coachInlineSection {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border: 1px solid var(--tkd-border);
-  border-radius: var(--tkd-radius);
-  background: var(--tkd-bg3);
-  padding: 14px;
+  gap: $space-4;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $surface-50;
+  padding: $space-4;
 }
 
 .coachInlineGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
+// ── iOS Anti-Zoom: all inputs at 16px minimum ───────────────
 
 .textAreaField {
   width: 100%;
-  border: 1px solid var(--tkd-border);
-  border-radius: 10px;
-  background: #fff;
-  color: var(--tkd-text);
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 9px 10px;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-surface;
+  color: $text-primary;
+  font-size: $text-base;
+  line-height: $leading-relaxed;
+  padding: $space-2 $space-3;
   resize: vertical;
   min-height: 74px;
+  transition: $transition-colors;
 
   &:focus {
     outline: none;
-    border-color: rgba(192, 57, 43, 0.4);
-    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.08);
+    border-color: $brand-red;
+    box-shadow: 0 0 0 3px rgba($brand-red, 0.08);
   }
 
   &:disabled {
-    background: #f3f4f6;
-    color: #9ca3af;
+    background: $gray-100;
+    color: $text-subtle;
     cursor: not-allowed;
   }
 }
+
+// ── Student Info Box ─────────────────────────────────────────
 
 .studentInfoText {
   min-width: 0;
@@ -258,162 +278,173 @@
 .studentInfoBox {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--tkd-bg3);
-  border: 1.5px solid var(--tkd-border);
-  border-radius: var(--tkd-radius);
-  padding: 12px 14px;
+  gap: $space-3;
+  background: $surface-50;
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
 }
 
 .studentInitial {
   width: 40px;
   height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #96281b, #e74c3c);
+  border-radius: $radius-sm;
+  background: linear-gradient(135deg, $brand-red-dark, $brand-red-400);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $white;
   flex-shrink: 0;
 }
 
 .studentNameText {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--tkd-text);
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-primary;
 }
 
 .studentMetaText {
-  font-size: 12px;
-  color: var(--tkd-muted);
+  font-size: $text-sm;
+  color: $surface-subtle;
   margin-top: 2px;
 }
 
 .redText {
-  color: var(--tkd-red-lt, #e74c3c);
+  color: $brand-red-400;
 }
 
 .inputField {
   width: 100%;
-  background: var(--tkd-bg3);
-  border: 1.5px solid var(--tkd-border);
-  border-radius: var(--tkd-radius);
-  padding: 12px 14px;
-  color: var(--tkd-text);
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 14px;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  background: $surface-50;
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $text-base;
+  transition: $transition-colors;
   outline: none;
 
   &:focus {
-    border-color: var(--tkd-red-lt);
-    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+    border-color: $brand-red-400;
+    box-shadow: 0 0 0 3px rgba($brand-red, 0.1);
   }
 }
 
+// ── Class Selection ─────────────────────────────────────────
+
 .classSelectionArea {
   grid-column: 1 / -1;
-  margin-top: 4px;
-  padding-top: 16px;
-  border-top: 1px solid var(--tkd-border);
+  margin-top: $space-1;
+  padding-top: $space-4;
+  border-top: 1px solid $border-default;
 }
 
 .classSelectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
+
+  @include below(sm) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .selectionMeta {
-  font-size: 11.5px;
-  color: var(--tkd-muted);
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid var(--tkd-border);
-  border-radius: 999px;
-  padding: 4px 10px;
+  font-size: $text-xs;
+  color: $surface-subtle;
+  background: rgba($black, 0.03);
+  border: 1px solid $border-default;
+  border-radius: $radius-full;
+  padding: $space-1 $space-3;
 }
 
 .branchScheduleBox {
   max-height: 360px;
   overflow-y: auto;
-  border: 1.5px solid var(--tkd-border);
-  border-radius: var(--tkd-radius);
-  padding: 12px;
-  background: #fff;
-  margin-top: 8px;
-
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--tkd-border);
-    border-radius: 10px;
-  }
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  padding: $space-3;
+  background: $bg-surface;
+  margin-top: $space-2;
+  @include hide-scrollbar;
 }
 
 .selectionSummaryBar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--tkd-border);
-  border-radius: var(--tkd-radius);
-  background: linear-gradient(180deg, rgba(247, 248, 250, 0.92), #fff);
-  font-size: 12.5px;
-  color: var(--tkd-muted);
+  gap: $space-3;
+  padding: $space-4;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: linear-gradient(180deg, rgba($surface-50, 0.92), $bg-surface);
+  font-size: $text-sm;
+  color: $surface-subtle;
 
   strong {
-    color: var(--tkd-text);
+    color: $text-primary;
+  }
+
+  @include below(sm) {
+    flex-direction: column;
+    gap: $space-2;
   }
 }
 
+// ── Buttons ─────────────────────────────────────────────────
+
 .btnAdd {
-  height: 46px;
+  @include touch-target(48px);
+  @include press-effect;
+
+  height: 48px;
   align-self: end;
-  padding: 0 24px;
-  border-radius: var(--tkd-radius);
-  font-size: 14px;
+  padding: 0 $space-6;
+  border-radius: $radius-md;
+  font-size: $text-sm;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: $space-2;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--tkd-red-dk), var(--tkd-red-lt));
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3);
-  transition: all 0.2s;
+  background: linear-gradient(135deg, $brand-red-dark, $brand-red-400);
+  color: $white;
+  box-shadow: $shadow-brand;
+  transition: $transition-fast;
 
-  &:hover {
-    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
+  @include hover-only {
+    box-shadow: 0 6px 20px rgba($brand-red, 0.4);
     transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
-    transform: none;
+    transform: none !important;
     box-shadow: none;
+  }
+
+  @include below(sm) {
+    width: 100%;
   }
 }
 
 .manageSection {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-5;
 }
 
 .contentStack {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $space-6;
 }
 
 .branchScheduleDisabled {
@@ -426,166 +457,158 @@
   pointer-events: none;
 }
 
+// ── Footer ────────────────────────────────────────────────────
+
 .footerCaption {
-  font-size: 12.5px;
-  color: #8a92a6;
+  font-size: $text-sm;
+  color: $surface-subtle;
 }
 
 .footerStrong {
-  color: #1a1d23;
+  color: $text-primary;
 }
 
 .footerActions {
   display: flex;
-  gap: 10px;
+  gap: $space-3;
+
+  @include below(sm) {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 
 .footer {
-  padding: 20px 32px 28px;
+  padding: $space-5 $space-8 $space-7;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid var(--tkd-border);
-  background: var(--tkd-bg2);
+  gap: $space-3;
+  border-top: 1px solid $border-default;
+  background: $bg-surface;
   position: relative;
+
+  @include below(sm) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: $space-4;
+  }
 }
 
 .btn {
-  padding: 10px 22px;
-  border-radius: 10px;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
+  @include touch-target(48px);
+  @include press-effect;
+
+  padding: $space-3 $space-6;
+  border-radius: $radius-md;
+  font-family: $font-sans;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
   cursor: pointer;
   border: none;
-  transition: all 0.2s;
+  transition: $transition-fast;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: $space-2;
 }
 
 .btnGhost {
-  background: #fff;
-  color: var(--tkd-muted);
-  border: 1.5px solid var(--tkd-border);
+  background: $bg-surface;
+  color: $surface-subtle;
+  border: 1.5px solid $border-default;
 
-  &:hover {
-    color: var(--tkd-text);
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-}
-
-@media (max-width: 900px) {
-  .header,
-  .modalBody,
-  .footer {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .filterRow {
-    grid-template-columns: 1fr;
-  }
-
-  .btnAdd {
-    width: 100%;
-  }
-
-  .classSelectionHeader,
-  .fieldLabelRow,
-  .footer {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .footerActions {
-    justify-content: stretch;
-  }
-
-  .footerActions .btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 560px) {
-  .modal {
-    border-radius: 16px;
-    max-height: 94vh;
-  }
-
-  .studentModalShell {
-    max-height: calc(100vh - 24px);
-    border-radius: 14px;
-  }
-
-  .studentModalBody {
-    padding: 12px;
-  }
-
-  .header {
-    padding-top: 22px;
-    padding-bottom: 16px;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  .branchScheduleBox {
-    max-height: 44vh;
-  }
-
-  .selectionSummaryBar {
-    flex-direction: column;
-    gap: 6px;
+  @include hover-only {
+    color: $text-primary;
+    border-color: $gray-300;
   }
 }
 
 .iconBtn {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--tkd-border);
-  border-radius: 10px;
-  color: var(--tkd-muted);
-  background: #fff;
+  @include touch-target(44px);
+  @include press-effect;
+
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  color: $surface-subtle;
+  background: $bg-surface;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
-  &:hover {
-    color: var(--tkd-text);
-    border-color: rgba(0, 0, 0, 0.18);
+  @include hover-only {
+    color: $text-primary;
+    border-color: $gray-300;
   }
 }
+
+// ── State / List Utilities ───────────────────────────────────
+
+.stateBox {
+  text-align: center;
+  padding: $space-7 0;
+  color: $surface-subtle;
+  font-size: $text-sm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+}
+
+.stateEmoji {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.stateLoader {
+  width: 24px;
+  height: 24px;
+  color: $brand-red;
+}
+
+.listRoot {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin-top: $space-1;
+}
+
+.listRootGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
+}
+
+.listRootGridTwo {
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.listRootGridThree {
+  @include respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ── Animation ───────────────────────────────────────────────
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(28px) scale(0.97);
+    transform: translateY($space-7) scale(0.97);
   }
 
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@media (max-width: 900px) {
-  .header,
-  .modalBody,
-  .footer {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .filterRow {
-    grid-template-columns: 1fr;
-  }
-
-  .btnAdd {
-    width: 100%;
   }
 }

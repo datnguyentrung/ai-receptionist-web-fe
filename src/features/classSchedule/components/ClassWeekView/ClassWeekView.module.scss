@@ -1,19 +1,29 @@
 .weekView {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-4;
 }
 
 .classList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .emptyState {
   text-align: center;
-  padding: 64px 16px;
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #f0f0f5;
+  padding: $space-16 $space-4;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  border: 1px solid $border-subtle;
+
+  svg {
+    color: $text-disabled;
+    margin: 0 auto $space-3;
+  }
+
+  p {
+    font-size: $text-sm;
+    color: $text-subtle;
+  }
 }

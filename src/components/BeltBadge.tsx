@@ -1,4 +1,5 @@
 import { type Belt, BeltLabel } from "../config/constants";
+import S from "./BeltBadge.module.scss";
 
 const BELT_MAP: Record<
   Belt,
@@ -140,33 +141,20 @@ export function BeltBadge({
     dot: "#9CA3AF",
   };
 
-  const sizeStyles = {
-    xs: { padding: "2px 8px", fontSize: "10px", dotSize: "6px" },
-    sm: { padding: "3px 10px", fontSize: "11px", dotSize: "7px" },
-    md: { padding: "5px 12px", fontSize: "12px", dotSize: "8px" },
-  }[size];
-
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border font-semibold"
-      style={{
-        background: style.bg,
-        color: style.color,
-        borderColor: style.border,
-        padding: sizeStyles.padding,
-        fontSize: sizeStyles.fontSize,
-        fontWeight: 600,
-        whiteSpace: "nowrap",
-      }}
+      className={S.badge}
+      data-size={size}
+      style={
+        {
+          "--belt-bg": style.bg,
+          "--belt-color": style.color,
+          "--belt-border": style.border,
+          "--belt-dot": style.dot,
+        } as React.CSSProperties
+      }
     >
-      <span
-        className="rounded-full shrink-0"
-        style={{
-          width: sizeStyles.dotSize,
-          height: sizeStyles.dotSize,
-          background: style.dot,
-        }}
-      />
+      <span className={S.dot} />
       {BeltLabel[belt]}
     </span>
   );

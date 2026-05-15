@@ -1,103 +1,128 @@
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE FILTERS — Filter bar with tags (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .bar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $space-3;
 }
 
 .barTopRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
+  flex-wrap: wrap;
 }
 
 .barLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $space-3;
 }
 
+// ── Filter Toggle Button ───────────────────────────────────
+
 .filterToggleBtn {
+  @include touch-target(48px);
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 16px;
-  border-radius: 12px;
-  border: 1.5px solid #e8ebf0;
-  background: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  border: 1.5px solid $gray-200;
+  background: $bg-white;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-secondary;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: $transition-fast;
+  @include press-effect;
 
-  &:hover {
-    border-color: #9ca3af;
+  @include hover-only {
+    border-color: $gray-400;
   }
 }
 
+// ── Clear All ──────────────────────────────────────────────
+
 .clearAllBtn {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2563eb;
+  @include touch-target(48px);
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $info-600;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 $space-2;
+  transition: $transition-fast;
 
-  &:hover {
+  @include hover-only {
     text-decoration: underline;
   }
 }
 
+// ── Save Button ───────────────────────────────────────────
+
 .saveButton {
+  @include touch-target(48px);
+  @include press-effect;
   border: 0;
-  border-radius: 12px;
-  background: #111827;
-  color: #fff;
-  padding: 9px 14px;
-  font-size: 13px;
-  font-weight: 700;
+  border-radius: $radius-md;
+  background: $gray-900;
+  color: $white;
+  padding: $space-2 $space-3;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.15s;
+  transition: $transition-fast;
 
   &:disabled {
     cursor: default;
     opacity: 0.7;
+    transform: none;
   }
 }
+
+// ── Active Filter Tags ─────────────────────────────────────
 
 .tagList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: $space-2;
+  overflow: hidden;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 9999px;
-  background: #111827;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
+  gap: $space-2;
+  padding: $space-2 $space-1 $space-2 $space-3;
+  border-radius: $radius-full;
+  background: $gray-900;
+  color: $white;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
 }
 
 .tagRemove {
+  @include touch-target(28px);
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: none;
   border: none;
-  color: #fff;
+  color: $white;
   cursor: pointer;
   padding: 0;
   opacity: 0.7;
+  transition: $transition-fast;
 
-  &:hover {
+  @include hover-only {
     opacity: 1;
   }
 }

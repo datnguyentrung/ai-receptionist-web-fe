@@ -1,13 +1,15 @@
 .classCard {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #f0f0f5;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  border: 1px solid $border-subtle;
   overflow: hidden;
   cursor: pointer;
-  transition: box-shadow 0.2s;
+  transition: $transition-base;
 
-  &:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  @include press-effect(0.98);
+
+  @include hover-only {
+    box-shadow: $shadow-md;
   }
 }
 
@@ -16,38 +18,51 @@
 }
 
 .cardBody {
-  padding: 20px;
+  padding: $space-5;
 }
 
 .cardTop {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.weekdayLabel {
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-heading;
+}
+
+.coachHint {
+  @include truncate;
+  font-size: $text-xs;
+  color: $text-subtle;
+  margin-top: 2px;
 }
 
 .menuBtn {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #f9fafb;
+  @include touch-target(44px);
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  background: $gray-50;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: $text-muted;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: $transition-fast;
+  flex-shrink: 0;
 
-  &:hover {
-    border-color: #d1d5db;
-    background: #f3f4f6;
-    color: #374151;
+  @include hover-only {
+    border-color: $border-strong;
+    background: $gray-100;
+    color: $text-secondary;
   }
 
   &:active {
-    background: #e5e7eb;
+    background: $gray-200;
   }
 }
 
@@ -55,13 +70,13 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .cardBadges {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $space-1;
   align-items: flex-end;
   flex-shrink: 0;
 }
@@ -69,14 +84,21 @@
 .coachRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: $space-2;
+  margin-bottom: $space-4;
+
+  span {
+    @include truncate;
+    font-size: $text-xs;
+    color: $text-secondary;
+    font-weight: $font-medium;
+  }
 }
 
 .infoRows {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $space-2;
   flex: 1;
   min-width: 0;
 }
@@ -84,47 +106,56 @@
 .infoRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #6b7280;
+  gap: $space-2;
+  color: $text-muted;
+  font-size: $text-xs;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  span {
+    @include truncate;
+  }
 }
 
 .classMenuContent {
   min-width: 200px;
-  padding: 6px 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border: 1px solid #dadce0;
+  padding: $space-2 0;
+  background: $bg-white;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-md;
+  border: 1px solid $gray-250;
 }
 
 .menuItemWithIcon {
   display: flex;
   align-items: center;
-  gap: 12px !important;
-  padding: 8px 12px !important;
-  font-size: 13px !important;
-  height: 32px;
+  gap: $space-3 !important;
+  padding: $space-2 $space-3 !important;
+  font-size: $text-sm !important;
+  height: $space-8;
   cursor: pointer;
   user-select: none;
-  color: #202124 !important;
+  color: $gray-800 !important;
   transition: background 0.12s ease !important;
 
   svg {
     flex-shrink: 0;
-    color: #5f6368;
+    color: $gray-500;
   }
 
-  &:hover {
-    background: #f8f9fa !important;
-    color: #202124 !important;
+  @include hover-only {
+    background: $gray-50 !important;
+    color: $gray-800 !important;
 
     svg {
-      color: #202124;
+      color: $gray-800;
     }
   }
 
   &:focus {
-    background: #f8f9fa !important;
+    background: $gray-50 !important;
     outline: none;
   }
 
@@ -135,7 +166,7 @@
 }
 
 .capacitySection {
-  margin-top: 16px;
+  margin-top: $space-4;
 }
 
 .capacityHeader {
@@ -148,26 +179,37 @@
 .capacityUsers {
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: #6b7280;
+  gap: $space-1;
+  color: $text-muted;
+  font-size: $text-xs;
+}
+
+.capacityValue {
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  color: $text-heading;
+}
+
+.capacityValueHigh {
+  color: $brand-red;
 }
 
 .capacityBar {
   height: 6px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   overflow: hidden;
-  background: #f3f4f6;
+  background: $gray-100;
 }
 
 .capacityFill {
   height: 100%;
-  border-radius: 9999px;
-  transition: width 0.3s;
+  border-radius: $radius-full;
+  transition: width 0.3s ease;
 }
 
 // Dropdown menu separator (Google Sheet style)
 :global([data-slot="dropdown-menu-separator"]) {
-  margin: 4px 0 !important;
+  margin: $space-1 0 !important;
   height: 1px !important;
-  background: #e8eaed !important;
+  background: $gray-200 !important;
 }

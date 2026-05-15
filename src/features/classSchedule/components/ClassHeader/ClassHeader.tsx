@@ -30,7 +30,7 @@ export function ClassHeader({
     <>
       <div className={styles.pageHead}>
         <div>
-          <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
+          <h2 className={styles.heading}>
             Lịch Học{" "}
             <span
               onClick={
@@ -56,7 +56,7 @@ export function ClassHeader({
               sắp diễn ra
             </span>
           </h2>
-          <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+          <p className={styles.headingSubtitle}>
             {totalClasses} lớp · {activeClasses} đang hoạt động
           </p>
         </div>
@@ -66,13 +66,7 @@ export function ClassHeader({
               <button
                 key={v}
                 onClick={() => onViewChange(v)}
-                className={styles.viewToggleBtn}
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  background: view === v ? "#E02020" : "transparent",
-                  color: view === v ? "white" : "#6B7280",
-                }}
+                className={`${styles.viewToggleBtn} ${view === v ? styles.viewToggleBtnActive : ""}`}
               >
                 {v === "grid" ? "Thẻ lớp" : "Theo ngày"}
               </button>

@@ -1,109 +1,107 @@
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE TABLE — Data table with horizontal scroll
+// ─────────────────────────────────────────────────────────────
+
+// ── Card Container ──────────────────────────────────────────
+
 .tableCard {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid #f0f0f5;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  border: 1px solid $border-subtle;
   overflow: hidden;
 }
+
+// ── Scrollable Wrapper ─────────────────────────────────────
+// Critical: overflow-x only here. Parent page must NOT clip.
 
 .tableWrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: $gray-300 transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-300;
+    border-radius: 3px;
+
+    @include hover-only {
+      background: $gray-400;
+    }
+  }
 }
+
+// ── Table ──────────────────────────────────────────────────
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 820px;
 }
 
 .th {
   text-align: center;
-  padding: 12px 16px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #9ca3af;
+  padding: $space-3 $space-4;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  color: $text-subtle;
   white-space: nowrap;
   letter-spacing: 0.5px;
+  background: $bg-elevated;
+  border-bottom: 1px solid $border-subtle;
 }
 
 .tr {
-  border-top: 1px solid #f3f4f6;
-  transition: background 0.12s;
+  border-top: 1px solid $border-subtle;
+  transition: background $transition-fast;
 
-  &:hover {
+  @include hover-only {
     background: rgba(249, 250, 251, 0.6);
   }
 }
 
 .changedRow {
-  background: #fff7e6;
+  background: $warning-50;
 
-  &:hover {
-    background: #ffefc7;
+  @include hover-only {
+    background: $warning-100;
   }
 }
 
 .td {
-  padding: 12px 16px;
+  padding: $space-3 $space-4;
   vertical-align: middle;
 }
+
+// ── Student Column (wider, anchor for horizontal scroll) ───
 
 .studentCol {
   width: 210px;
   max-width: 210px;
+  min-width: 160px;
 }
 
 .avatarCell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
   min-width: 0;
 }
 
 .studentName {
-  font-size: 12px;
-  font-weight: 600;
-  color: #111827;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-@media (max-width: 640px) {
-  .td,
-  .th {
-    padding: 10px 12px;
-  }
-
-  .studentCol {
-    width: 160px;
-    max-width: 160px;
-  }
-
-  .avatarCell {
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .studentName {
-    max-width: 100%;
-    font-size: 11px;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-@media (max-width: 390px) {
-  .studentCol {
-    width: 140px;
-    max-width: 140px;
-  }
-
-  .studentName {
-    font-size: 10px;
-  }
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .avatar {
@@ -113,24 +111,79 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: $white;
   flex-shrink: 0;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: $font-extrabold;
 }
+
+// ── Cell Text Utility ──────────────────────────────────────
+
+.cellText {
+  font-size: $text-sm;
+  color: $text-secondary;
+  white-space: nowrap;
+  text-align: center;
+  margin: 0;
+}
+
+.cellMuted {
+  font-size: $text-sm;
+  color: $text-subtle;
+  text-align: center;
+  margin: 0;
+}
+
+.cellIndex {
+  font-size: $text-xs;
+  color: $text-muted;
+  text-align: center;
+  margin: 0;
+}
+
+// ── Inline Note Editor ─────────────────────────────────────
+
+.noteInput {
+  width: 100%;
+  min-width: 120px;
+  font-size: $text-sm;
+  color: $text-secondary;
+  border: 1px solid $border-default;
+  border-radius: $radius-xs + 2px;
+  padding: $space-1 $space-2;
+  outline: none;
+  background: $bg-white;
+
+  &:focus {
+    border-color: $border-focus;
+    box-shadow: 0 0 0 2px rgba($brand-red, 0.1);
+  }
+}
+
+// ── Empty State ────────────────────────────────────────────
 
 .emptyState {
   text-align: center;
-  padding: 48px 0;
+  padding: $space-10 0;
 }
+
+.emptyText {
+  font-size: $text-sm;
+  color: $text-subtle;
+  margin: 0;
+}
+
+// ── Table Footer (delegates to Pagination component) ───────
 
 .tableFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-top: 1px solid #f3f4f6;
+  padding: $space-3 $space-5;
+  border-top: 1px solid $border-subtle;
 }
+
+// ── Dropdown Trigger (invisible, delegates to MiniActionPopover)
 
 .dropdownTrigger {
   border: 0;
@@ -143,52 +196,63 @@
   }
 }
 
+// ── Row Actions ────────────────────────────────────────────
+
 .rowActions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .undoButton {
-  border: 1px solid #f59e0b;
-  background: #fffbeb;
-  color: #b45309;
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 700;
+  @include touch-target(36px);
+  border: 1px solid $warning-300;
+  background: $warning-50;
+  color: $warning-800;
+  border-radius: $radius-sm;
+  padding: $space-1 $space-2;
+  font-size: $text-xs;
+  font-weight: $font-bold;
   cursor: pointer;
+  transition: $transition-fast;
+  @include press-effect(0.97);
+
+  @include hover-only {
+    background: $warning-100;
+  }
 }
+
+// ── Dropdown Menu Content ──────────────────────────────────
 
 .attendanceMenuContent {
   min-width: 200px;
-  padding: 6px 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border: 1px solid #dadce0;
+  padding: $space-2 0;
+  background: $bg-white;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-lg;
+  border: 1px solid $border-default;
 }
 
 .menuItemWithIcon {
   display: flex;
   align-items: center;
-  gap: 12px !important;
-  padding: 8px 12px !important;
-  font-size: 13px !important;
-  height: 32px;
+  gap: $space-3 !important;
+  padding: $space-2 $space-3 !important;
+  font-size: $text-sm !important;
+  height: 44px;
   cursor: pointer;
   user-select: none;
-  color: #202124 !important;
+  color: $gray-900 !important;
   transition: background 0.12s ease !important;
 
-  &:hover {
-    background: #f8f9fa !important;
-    color: #202124 !important;
+  @include hover-only {
+    background: $gray-50 !important;
+    color: $gray-900 !important;
   }
 
   &:focus {
-    background: #f8f9fa !important;
+    background: $gray-50 !important;
     outline: none;
   }
 
@@ -199,7 +263,7 @@
 }
 
 :global([data-slot="dropdown-menu-separator"]) {
-  margin: 4px 0 !important;
+  margin: $space-1 0 !important;
   height: 1px !important;
-  background: #e8eaed !important;
+  background: $gray-200 !important;
 }

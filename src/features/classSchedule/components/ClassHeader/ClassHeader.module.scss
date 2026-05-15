@@ -3,24 +3,35 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
+}
+
+.heading {
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  color: $text-heading;
+}
+
+.headingSubtitle {
+  font-size: $text-sm;
+  color: $text-subtle;
 }
 
 .headerUpcoming {
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  color: $brand-red;
+  color: $text-link;
   text-decoration: underline;
-  text-underline-offset: 4px; // Giúp đường gạch chân nhìn thoáng hơn
+  text-underline-offset: 3px;
   text-decoration-thickness: 1px;
-  font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 6px;
-  transition:
-    color 0.15s,
-    background-color 0.15s,
-    box-shadow 0.15s;
+  font-weight: $font-semibold;
+  padding: $space-1 $space-2;
+  border-radius: $radius-xs;
+  min-height: 44px;
+  transition: $transition-colors;
 
-  &:hover {
+  @include hover-only {
     background-color: rgba($brand-red, 0.08);
   }
 
@@ -41,47 +52,59 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .viewToggle {
   display: flex;
   align-items: center;
-  border-radius: 12px;
-  border: 1px solid #e8ebf0;
-  background: white;
-  padding: 4px;
-  gap: 4px;
+  border-radius: $radius-md;
+  border: 1px solid $border-default;
+  background: $bg-white;
+  padding: $space-1;
+  gap: $space-1;
 }
 
 .viewToggleBtn {
-  padding: 6px 12px;
-  border-radius: 8px;
+  @include touch-target(44px);
+  padding: $space-2 $space-3;
+  border-radius: $radius-sm;
   border: none;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
   cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s;
+  transition: $transition-colors;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: $text-muted;
+}
+
+.viewToggleBtnActive {
+  background: $brand-red;
+  color: $text-on-brand;
 }
 
 .addBtn {
+  @include touch-target(48px);
+  @include press-effect;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  color: white;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  color: $text-on-brand;
   border: none;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #e02020, #7b0000);
-  box-shadow: 0 4px 12px rgba(224, 32, 32, 0.35);
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  background: $gradient-brand;
+  box-shadow: $shadow-brand;
   transition: opacity 0.2s;
 
-  &:hover {
+  @include hover-only {
     opacity: 0.9;
   }
 }

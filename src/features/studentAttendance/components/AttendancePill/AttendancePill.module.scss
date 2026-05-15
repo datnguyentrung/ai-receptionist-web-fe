@@ -1,40 +1,51 @@
-// ── Attendance Pill ────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE PILL — Coach action toggle (Mobile-first)
+// ─────────────────────────────────────────────────────────────
 
 .pillContainer {
   display: flex;
   align-items: center;
-  border-radius: 12px;
-  padding: 2px;
+  border-radius: $radius-md;
+  padding: $space-1;
   gap: 2px;
-  background: #f3f4f6;
+  background: $gray-100;
 }
 
 .pillBtn {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  border-radius: $radius-sm;
   border: none;
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: $text-xs;
+  font-weight: $font-medium;
   background: transparent;
-  color: #9ca3af;
-  transition:
-    background 0.2s,
-    color 0.2s;
+  color: $text-subtle;
+  transition: $transition-fast;
+  @include press-effect;
+
+  @include hover-only {
+    background: $gray-200;
+    color: $text-secondary;
+  }
 
   &.active {
-    font-weight: 700;
-    color: white;
+    font-weight: $font-bold;
+    color: $white;
+
+    @include hover-only {
+      background: inherit;
+    }
   }
 }
 
 .pillLabelFull {
   display: none;
 
-  @media (min-width: 640px) {
+  @include respond-to(sm) {
     display: inline;
   }
 }
@@ -42,7 +53,7 @@
 .pillLabelShort {
   display: inline;
 
-  @media (min-width: 640px) {
+  @include respond-to(sm) {
     display: none;
   }
 }

@@ -1,57 +1,56 @@
-
-
+// ── Login Page (rendered inside AuthLayout) ─────────────────
 .formHeader {
-  margin-bottom: 2rem;
+  margin-bottom: $space-8;
 }
 
 .formTitle {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-
-  @media (min-width: 768px) {
-    font-size: 2rem;
-  }
+  font-size: $text-3xl;
+  font-weight: $font-bold;
+  color: $brand-dark;
+  margin-bottom: $space-2;
+  line-height: $leading-tight;
 }
 
 .formSubtitle {
-  font-size: 0.875rem;
-  color: #8a8fa8;
-  margin-top: 0.25rem;
+  font-size: $text-sm;
+  color: $surface-subtle;
+  margin-top: $space-1;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  margin: 1.5rem 0;
-  gap: 0.75rem;
+  margin: $space-6 0;
+  gap: $space-3;
 }
 
 .dividerLine {
   flex: 1;
   height: 1px;
-  background-color: #e8eaf2;
+  background-color: $border-subtle;
 }
 
 .dividerText {
-  font-size: 0.75rem;
-  color: #c0c4d6;
+  font-size: $text-xs;
+  color: $surface-muted;
 }
 
 .registerSection {
   text-align: center;
-  font-size: 0.875rem;
-  color: #8a8fa8;
+  font-size: $text-sm;
+  color: $surface-subtle;
 }
 
 .registerLink {
-  font-weight: 600;
-  color: #c0392b;
+  font-weight: $font-semibold;
+  color: $brand-red;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color $transition-fast;
+  @include touch-target(44px);
+  display: inline-flex;
+  align-items: center;
 
-  &:hover {
-    color: #96281b;
+  @include hover-only {
+    color: darken($brand-red, 15%);
   }
 }

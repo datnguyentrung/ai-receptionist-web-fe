@@ -1,23 +1,34 @@
 // ── Sidebar ──────────────────────────────────────────────────
+// Mobile: fixed drawer sliding in from left
+// Desktop: static flex child, supports collapsed state
 .sidebar {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
-  z-index: 40;
+  z-index: $z-modal;
   display: flex;
   flex-direction: column;
-  width: 260px;
-  background: #1a1a2e;
+  width: 280px; // slightly wider on mobile for touch comfort
+  background: $brand-dark;
   flex-shrink: 0;
   transform: translateX(-100%);
-  transition:
-    transform 300ms,
-    width 250ms ease;
 
-  @media (min-width: 768px) {
+  // Smooth slide-in with spring-like easing
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+
+  // Safe areas for notched phones
+  @include safe-top;
+  @include safe-bottom;
+
+  // Enable momentum scrolling on nav area
+  -webkit-overflow-scrolling: touch;
+
+  @include respond-to("md") {
+    width: 260px;
     position: static;
     transform: translateX(0);
+    transition: width 0.25s ease;
   }
 }
 
@@ -25,9 +36,9 @@
   transform: translateX(0);
 }
 
-// ── Trạng thái Thu hẹp (Collapsed) cho Desktop ─────────────────
+// ── Collapsed state (desktop only) ──────────────────────────
 .collapsed {
-  @media (min-width: 768px) {
+  @include respond-to("md") {
     width: 80px;
 
     .brandText,
@@ -39,11 +50,10 @@
       display: none;
     }
 
-    // Xếp Logo và nút Toggle dọc nhau để không bị tràn 80px
     .sidebarLogo {
       flex-direction: column;
-      padding: 16px 0;
-      gap: 16px;
+      padding: $space-4 0;
+      gap: $space-4;
     }
 
     .logoGroup {
@@ -54,20 +64,19 @@
       margin-left: 0;
     }
 
-    // Căn giữa AI Badge
     .aiBadge {
       justify-content: center;
-      padding: 8px;
+      padding: $space-2;
     }
 
     .sidebarBottom {
-      padding-left: 12px;
-      padding-right: 12px;
+      padding-left: $space-3;
+      padding-right: $space-3;
     }
 
     .nav {
-      padding-left: 12px;
-      padding-right: 12px;
+      padding-left: $space-3;
+      padding-right: $space-3;
     }
 
     .navLink {
@@ -81,16 +90,9 @@
       display: none;
     }
 
-    // Xếp dọc Avatar và nút đăng xuất
-    // .userCard {
-    //   flex-direction: column;
-    //   justify-content: center;
-    //   gap: 12px;
-    //   padding: 12px 0;
-    // }
     .userCard {
       justify-content: center;
-      gap: 8px;
+      gap: $space-2;
     }
   }
 }
@@ -100,26 +102,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: $space-4 $space-5;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  @include respond-to("md") {
+    padding: $space-5;
+  }
 }
 
 .logoGroup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: $space-4;
   flex: 1;
   width: 100%;
   min-width: 0;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: $space-2 $space-3;
+  border-radius: $radius-sm;
   transition:
     transform 120ms ease,
     background 120ms ease;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.02);
+  @include press-effect(0.96);
+
+  @include hover-only {
+    background: rgba(255, 255, 255, 0.04);
     transform: translateY(-1px);
   }
 
@@ -132,7 +140,7 @@
 .logoIconWrapper {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: $radius-sm;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,70 +165,69 @@
 
 .brandName {
   color: white;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   line-height: 1.2;
   margin: 0;
 }
 
 .brandSub {
   font-size: 10px;
-  color: #e02020;
-  font-weight: 600;
+  color: $brand-red;
+  font-weight: $font-semibold;
   letter-spacing: 1px;
   margin: 0;
 }
 
-// ── Toggle / Close Buttons ──────────────────────────────────
+// ── Toggle / Close buttons ──────────────────────────────────
 .closeBtn {
   margin-left: auto;
   color: rgba(255, 255, 255, 0.4);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-  border-radius: 6px;
+  @include touch-target(36px);
+  border-radius: $radius-sm;
+  transition: color $transition-fast;
 
-  &:hover {
+  @include hover-only {
     color: white;
   }
 }
 
 .mobileCloseIcon {
   display: block;
-  @media (min-width: 768px) {
+
+  @include respond-to("md") {
     display: none;
   }
 }
 
 .desktopToggleIcon {
   display: none;
-  @media (min-width: 768px) {
+
+  @include respond-to("md") {
     display: block;
   }
 }
 
 // ── AI badge ─────────────────────────────────────────────────
 .aiBadge {
-  margin: 16px;
-  margin-bottom: 8px;
+  margin: $space-4;
+  margin-bottom: $space-2;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 12px;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
   background: rgba(224, 32, 32, 0.15);
   border: 1px solid rgba(224, 32, 32, 0.3);
 }
 
 .aiBadgeLabel {
   font-size: 11px;
-  font-weight: 600;
-  color: #e02020;
+  font-weight: $font-semibold;
+  color: $brand-red;
   letter-spacing: 0.5px;
 }
 
@@ -238,7 +245,7 @@
   margin-left: auto;
   width: 8px;
   height: 8px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   background: #22c55e;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -246,50 +253,55 @@
 // ── Navigation ───────────────────────────────────────────────
 .nav {
   flex: 1;
-  padding: 12px;
+  padding: $space-3;
   overflow-y: auto;
+  @include hide-scrollbar;
 }
 
 .navLabel {
-  padding: 0 12px;
-  margin-bottom: 8px;
+  padding: 0 $space-3;
+  margin-bottom: $space-2;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: $font-semibold;
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: 1.5px;
   display: block;
 }
 
+// 48px touch target for nav links
 .navLink {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  margin-bottom: 4px;
-  transition: all 0.2s;
+  gap: $space-3;
+  padding: $space-3 $space-3;
+  border-radius: $radius-md;
+  margin-bottom: $space-1;
+  transition: all $transition-fast;
   text-decoration: none;
   color: rgba(255, 255, 255, 0.5);
+  @include touch-target(48px);
 
-  &:hover {
+  @include hover-only {
     color: rgba(255, 255, 255, 0.8);
     background: rgba(255, 255, 255, 0.05);
   }
+
+  @include press-effect(0.96);
 }
 
 .navLinkText {
-  font-size: 13px;
+  font-size: $text-sm;
   white-space: nowrap;
 }
 
 .navLinkActive {
   color: white;
-  background: #e02020;
-  box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
+  background: $brand-red;
+  box-shadow: $shadow-brand;
 
-  &:hover {
+  @include hover-only {
     color: white;
-    background: #e02020;
+    background: $brand-red;
   }
 }
 
@@ -297,15 +309,20 @@
   margin-left: auto;
   width: 6px;
   height: 6px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   background: rgba(255, 255, 255, 0.8);
   flex-shrink: 0;
 }
 
 // ── Bottom user card ─────────────────────────────────────────
 .sidebarBottom {
-  padding: 16px;
+  padding: $space-4;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  // Extra bottom padding on mobile for safe area
+  @include below("md") {
+    @include safe-bottom($space-2);
+  }
 }
 
 .userCardTrigger {
@@ -319,31 +336,35 @@
   &:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.9);
     outline-offset: 2px;
-    border-radius: 12px;
+    border-radius: $radius-md;
   }
 }
 
 .userMenuContent {
   width: 220px;
-  padding: 8px;
-  border-radius: 12px;
-  border: 1px solid #dadce0;
+  padding: $space-2;
+  border-radius: $radius-md;
+  border: 1px solid $border-default;
   background: white;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: $shadow-xl;
 }
 
+// Touch-friendly user card
 .userCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px;
-  border-radius: 12px;
+  gap: $space-3;
+  padding: $space-2;
+  border-radius: $radius-md;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background $transition-fast;
+  @include touch-target(48px);
 
-  &:hover {
+  @include hover-only {
     background: rgba(255, 255, 255, 0.05);
   }
+
+  @include press-effect(0.96);
 }
 
 .userInfo {
@@ -353,8 +374,8 @@
 
 .userName {
   color: white;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

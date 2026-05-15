@@ -1,7 +1,8 @@
 .badge {
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 10px;
-  font-weight: 700;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-bold;
   white-space: nowrap;
+  line-height: $leading-normal;
 }

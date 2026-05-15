@@ -10,18 +10,30 @@
   width: 100%;
 }
 
+// ─── VIDEO CONTAINER ────────────────────────────────────────
+// Uses aspect-ratio for consistent sizing across all devices
 .videoContainer {
   position: relative;
   width: 100%;
-  max-width: 560px;
+  // Fill available width, with a sensible max on large screens
+  max-width: 480px;
   aspect-ratio: 4 / 3;
-  border-radius: 22px;
+  border-radius: $radius-xl;
   overflow: hidden;
   box-shadow:
     0 0 0 2px rgba($brand-red, 0.55),
     0 0 28px rgba($brand-red, 0.22),
     0 0 64px rgba($brand-red, 0.08);
   animation: containerGlow 3s ease-in-out infinite;
+
+  @include respond-to("sm") {
+    max-width: 520px;
+  }
+
+  @include respond-to("lg") {
+    max-width: 560px;
+    border-radius: 22px;
+  }
 }
 
 @keyframes containerGlow {
@@ -49,6 +61,7 @@
   background: #0d0d1a;
 }
 
+// ─── CORNER BRACKETS ─────────────────────────────────────────
 .overlay {
   position: absolute;
   inset: 0;
@@ -59,54 +72,64 @@
     transparent 55%,
     rgba(0, 0, 0, 0.3) 100%
   );
-  border-radius: 22px;
+  border-radius: $radius-xl;
+
+  @include respond-to("lg") {
+    border-radius: 22px;
+  }
 }
 
 .cornerBracket {
   position: absolute;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   z-index: 3;
   pointer-events: none;
   filter: drop-shadow(0 0 5px rgba($brand-red, 0.75));
+
+  @include respond-to("sm") {
+    width: 38px;
+    height: 38px;
+  }
 }
 
 .cornerTL {
-  top: 18px;
-  left: 18px;
+  top: $space-4;
+  left: $space-4;
   border-top: 3px solid $brand-red;
   border-left: 3px solid $brand-red;
   border-top-left-radius: 7px;
 }
 
 .cornerTR {
-  top: 18px;
-  right: 18px;
+  top: $space-4;
+  right: $space-4;
   border-top: 3px solid $brand-red;
   border-right: 3px solid $brand-red;
   border-top-right-radius: 7px;
 }
 
 .cornerBL {
-  bottom: 18px;
-  left: 18px;
+  bottom: $space-4;
+  left: $space-4;
   border-bottom: 3px solid $brand-red;
   border-left: 3px solid $brand-red;
   border-bottom-left-radius: 7px;
 }
 
 .cornerBR {
-  bottom: 18px;
-  right: 18px;
+  bottom: $space-4;
+  right: $space-4;
   border-bottom: 3px solid $brand-red;
   border-right: 3px solid $brand-red;
   border-bottom-right-radius: 7px;
 }
 
+// ─── SCAN LINE ──────────────────────────────────────────────
 .scanLine {
   position: absolute;
-  left: 22px;
-  right: 22px;
+  left: $space-6;
+  right: $space-6;
   height: 2px;
   z-index: 3;
   pointer-events: none;
@@ -141,19 +164,20 @@
   }
 }
 
+// ─── STATUS BADGE ───────────────────────────────────────────
 .statusBadge {
   position: absolute;
-  bottom: 18px;
+  bottom: $space-4;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
+  gap: $space-2;
+  padding: $space-2 $space-4;
   background: rgba(0, 0, 0, 0.62);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 999px;
+  border-radius: $radius-full;
   border: 1px solid rgba($brand-red, 0.42);
   white-space: nowrap;
   z-index: 4;
@@ -182,9 +206,9 @@
 }
 
 .statusText {
-  color: #ffffff;
+  color: $text-on-dark;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: $font-bold;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -193,71 +217,71 @@
   display: none;
 }
 
+// ─── START BUTTON — 48px touch target ────────────────────────
 .startButton {
-  margin-top: 22px;
-  padding: 11px 32px;
+  margin-top: $space-5;
+  padding: $space-3 $space-8;
   background: $brand-red;
-  color: #ffffff;
+  color: $text-on-dark;
   border: none;
-  border-radius: 999px;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
-  font-size: 14px;
+  border-radius: $radius-full;
+  font-family: $font-sans;
+  font-weight: $font-bold;
+  font-size: $text-sm;
   cursor: pointer;
   transition:
-    background 0.2s ease,
+    background $transition-fast,
     transform 0.15s ease,
-    box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba($brand-red, 0.42);
+    box-shadow $transition-fast;
+  box-shadow: $shadow-brand;
+  @include touch-target(48px);
 
-  &:hover {
+  @include press-effect(0.96);
+
+  @include hover-only {
     background: color.adjust($brand-red, $lightness: -8%);
     transform: translateY(-1px);
-    box-shadow: 0 8px 30px rgba($brand-red, 0.48);
-  }
-
-  &:active {
-    transform: translateY(0);
+    box-shadow: $shadow-brand-lg;
   }
 }
 
+// ─── STOP BUTTON — 48px touch target ────────────────────────
 .stopButton {
-  margin-top: 12px;
-  padding: 8px 24px;
+  margin-top: $space-3;
+  padding: $space-2 $space-6;
   background: $info-800;
   color: $text-on-dark;
   border: none;
   border-radius: $radius-full;
   font-family: $font-sans;
   font-weight: $font-semibold;
-  font-size: 13px;
+  font-size: $text-sm;
   cursor: pointer;
   transition:
-    background 0.2s ease,
+    background $transition-fast,
     transform 0.15s ease,
-    box-shadow 0.2s ease;
+    box-shadow $transition-fast;
   box-shadow: 0 3px 12px rgba($info-800, 0.38);
+  @include touch-target(48px);
 
-  &:hover {
+  @include press-effect(0.96);
+
+  @include hover-only {
     background: color.adjust($info-800, $lightness: 10%);
     transform: translateY(-1px);
     box-shadow: 0 6px 24px rgba($info-800, 0.42);
   }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 12px rgba($info-800, 0.38);
-  }
 }
 
 .loadingText {
-  margin-top: 12px;
+  margin-top: $space-3;
   color: rgba(255, 255, 255, 0.45);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: $text-xs;
+  font-weight: $font-medium;
   letter-spacing: 0.04em;
 }
 
+// ─── PENDING OVERLAY (submitting check-in) ───────────────────
 .pendingOverlay {
   position: fixed;
   inset: 0;
@@ -275,38 +299,36 @@
   position: relative;
   min-width: 280px;
   max-width: 92vw;
-  padding: 28px 24px 22px;
-  border-radius: 18px;
+  padding: $space-7 $space-6 $space-6;
+  border-radius: $radius-lg;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(18, 19, 26, 0.92);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  box-shadow: $shadow-2xl;
   text-align: center;
 }
 
+// ─── CANCEL BUTTON — 48px touch target ───────────────────────
 .cancelButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
+  top: $space-3;
+  right: $space-3;
   border: none;
-  border-radius: 999px;
+  border-radius: $radius-full;
   background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
+  color: $text-on-dark;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   cursor: pointer;
   transition:
-    background 0.2s ease,
+    background $transition-fast,
     transform 0.15s ease;
+  @include touch-target(44px);
 
-  &:hover {
+  @include press-effect(0.92);
+
+  @include hover-only {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
-  }
-
-  &:active {
-    transform: scale(0.98);
   }
 }
 
@@ -321,16 +343,16 @@
 }
 
 .pendingTitle {
-  margin: 14px 0 0;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 700;
+  margin: $space-4 0 0;
+  color: $text-on-dark;
+  font-size: $text-base;
+  font-weight: $font-bold;
 }
 
 .pendingSubtitle {
-  margin: 8px 0 0;
+  margin: $space-2 0 0;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
+  font-size: $text-sm;
 }
 
 @keyframes spin {

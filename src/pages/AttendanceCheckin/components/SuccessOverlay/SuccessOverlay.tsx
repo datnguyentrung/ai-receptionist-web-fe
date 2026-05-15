@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect } from "react";
 import styles from "./SuccessOverlay.module.scss";
 
 interface SuccessOverlayProps {
@@ -19,6 +20,15 @@ export function SuccessOverlay({
   className,
   submittedTime,
 }: SuccessOverlayProps) {
+  // Lock body scroll while overlay is visible
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}

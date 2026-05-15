@@ -1,19 +1,24 @@
+// ---------------------------------------------------------------------------
+// Student Schedule Section — Mobile-first refactored
+// ---------------------------------------------------------------------------
+$accent-light: $brand-red-400;
+
 .root {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .sectionTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--tkd-text, #1a1d23);
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-primary;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--tkd-red-lt, #e74c3c);
+  letter-spacing: 0.05em;
+  padding-bottom: $space-2;
+  border-bottom: 2px solid $accent-light;
   width: fit-content;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }

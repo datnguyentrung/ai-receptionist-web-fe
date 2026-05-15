@@ -1,32 +1,33 @@
 // ─────────────────────────────────────────────────────────────
-// BOTTOM BAR - Submit Component
+// BOTTOM BAR — Submit/Progress Bar (Mobile-first)
 // ─────────────────────────────────────────────────────────────
 
-// ── Color & Spacing Variables ────────────────────────────────
-$color-red-primary: #e02020;
-$color-red-dark: #b91c1c;
-$color-red-light: #fef2f2;
-$color-warning-bg: #fffbeb;
-$color-warning-border: #fde68a;
-$color-warning-text: #92400e;
-$color-text-gray: #9ca3af;
-$color-bg-page: #f4f6fa;
-$gap-base: 12px;
-
 // ── Bottom Submit Bar ──────────────────────────────────────
+// Mobile: fixed to viewport bottom with safe-area inset.
+// Desktop (md+): sticky at bottom of scroll container.
 
 .bottomBar {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  z-index: 20;
+  left: 0;
+  right: 0;
+  z-index: $z-sticky;
   width: 100%;
-  // padding: 16px 0 24px;
-  background: linear-gradient(to top, $color-bg-page 70%, transparent);
+  background: linear-gradient(to top, $bg-base 70%, transparent);
   display: flex;
   flex-direction: column;
-  gap: $gap-base;
+  gap: $space-3;
   box-sizing: border-box;
   flex-shrink: 0;
+  padding: 0 $space-3;
+  @include safe-bottom($space-3);
+
+  @include respond-to(md) {
+    position: sticky;
+    left: auto;
+    right: auto;
+    padding: 0;
+  }
 }
 
 // ── Warning Banner ────────────────────────────────────────
@@ -34,74 +35,63 @@ $gap-base: 12px;
 .warningBanner {
   display: flex;
   align-items: center;
-  gap: $gap-base;
+  gap: $space-3;
   margin: 0;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: $color-warning-bg;
-  border: 1px solid $color-warning-border;
+  padding: $space-3 $space-3;
+  border-radius: $radius-md;
+  background: $warning-50;
+  border: 1px solid $warning-200;
   box-sizing: border-box;
 }
 
 .warningText {
-  font-size: 13px;
-  color: $color-warning-text;
+  font-size: $text-sm;
+  color: $warning-800;
   margin: 0;
   flex: 1;
+  line-height: $leading-normal;
 }
 
 .warningCount {
-  font-weight: 700;
+  font-weight: $font-bold;
   color: inherit;
 }
 
-// ── Submit Button ─────────────────────────────────────────
+// ── Submit Button (Status Indicator) ─────────────────────
+// Note: renders as <div role="status"> in the TSX, not a <button>.
+// Styled to match the visual weight of a CTA for visual consistency.
 
 .btnSubmit {
+  @include touch-target(48px);
   width: 100%;
   max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: $gap-base;
-  padding: 16px;
-  border-radius: 14px;
-  color: white;
-  font-size: 15px;
-  font-weight: 800;
+  gap: $space-3;
+  padding: $space-4 $space-3;
+  border-radius: $radius-md + 2px;
+  color: $white;
+  font-size: $text-base;
+  font-weight: $font-extrabold;
   letter-spacing: 0.3px;
   border: none;
-  cursor: pointer;
-  background: linear-gradient(
-    135deg,
-    $color-red-primary 0%,
-    $color-red-dark 100%
-  );
-  box-shadow: 0 6px 20px rgba(224, 32, 32, 0.35);
+  background: $gradient-brand;
+  box-shadow: $shadow-brand;
   transition:
-    opacity 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+    opacity $transition-fast,
+    box-shadow $transition-fast;
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  &:hover:not(:disabled) {
+  @include hover-only {
     opacity: 0.92;
-    box-shadow: 0 8px 24px rgba(224, 32, 32, 0.45);
-    transform: translateY(-2px);
+    box-shadow: $shadow-brand-lg;
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(224, 32, 32, 0.3);
-  }
-
-  &:disabled {
-    background: $color-text-gray;
-    box-shadow: none;
-    opacity: 0.7;
-    cursor: not-allowed;
+  &:active {
+    @include press-effect;
   }
 }

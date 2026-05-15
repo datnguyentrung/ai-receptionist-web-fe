@@ -1,87 +1,102 @@
+// ─────────────────────────────────────────────────────────────
+// PAGINATION — Data table footer controls (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
+// ── Footer Container ───────────────────────────────────────
+
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-top: 1px solid #f3f4f6;
+  padding: $space-3 $space-4;
+  border-top: 1px solid $border-subtle;
+  gap: $space-3;
+  flex-wrap: wrap;
+
+  @include respond-to(sm) {
+    padding: $space-3 $space-5;
+    flex-wrap: nowrap;
+  }
 }
+
+.resultCount {
+  font-size: $text-xs;
+  color: $text-subtle;
+  margin: 0;
+  white-space: nowrap;
+}
+
+// ── Button Row ─────────────────────────────────────────────
 
 .btns {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: $space-1;
   flex-wrap: nowrap;
+
+  @include respond-to(sm) {
+    gap: $space-1;
+  }
 }
 
+// ── Page Number Buttons ────────────────────────────────────
+
 .btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  @include touch-target(48px);
+  border-radius: $radius-sm;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  transition:
-    background 0.12s,
-    color 0.12s;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-muted;
+  transition: $transition-fast;
+  @include press-effect;
+
+  @include hover-only {
+    background: $gray-100;
+    color: $text-primary;
+  }
 }
 
+// ── Arrow Buttons ──────────────────────────────────────────
+
 .arrowBtn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  @include touch-target(48px);
+  border-radius: $radius-sm;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #6b7280;
-  transition:
-    background 0.12s,
-    color 0.12s,
-    opacity 0.12s;
+  color: $text-muted;
+  transition: $transition-fast;
+  @include press-effect;
 
-  &:hover:not(:disabled) {
-    background: #f3f4f6;
-    color: #111827;
+  @include hover-only {
+    background: $gray-100;
+    color: $text-primary;
   }
 
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.45;
+    opacity: 0.4;
+    transform: none;
   }
 }
 
+// ── Ellipsis ───────────────────────────────────────────────
+
 .ellipsis {
-  width: 16px;
+  @include touch-target(48px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
-  font-size: 12px;
+  color: $text-subtle;
+  font-size: $text-sm;
   user-select: none;
-}
-
-@media (max-width: 640px) {
-  .footer {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-
-  .btns {
-    gap: 2px;
-  }
-
-  .btn,
-  .arrowBtn {
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
-  }
 }

@@ -58,10 +58,10 @@ function ClassCardInner({
       <div className={styles.cardBody}>
         <div className={styles.cardTop}>
           <div>
-            <p style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>
+            <p className={styles.weekdayLabel}>
               Thứ {cls.weekday}
             </p>
-            <p style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
+            <p className={styles.coachHint}>
               {cls.coaches.length > 0
                 ? `HLV: ${cls.coaches.map((coach) => coach.fullName).join(" & ")}`
                 : ""}
@@ -126,9 +126,7 @@ function ClassCardInner({
                 width="28px"
                 height="28px"
               />
-              <span
-                style={{ fontSize: "12px", color: "#374151", fontWeight: 500 }}
-              >
+              <span>
                 {c.fullName}
               </span>
             </div>
@@ -137,19 +135,19 @@ function ClassCardInner({
         <div className={styles.infoBadgeSection}>
           <div className={styles.infoRows}>
             <div className={styles.infoRow}>
-              <Clock size={13} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: "12px" }}>
+              <Clock size={13} />
+              <span>
                 {cls.startTime} - {cls.endTime} (
                 {getDurationInMinutes(cls.startTime, cls.endTime)} phút)
               </span>
             </div>
             <div className={styles.infoRow}>
-              <Calendar size={13} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: "12px" }}>{shiftLabel}</span>
+              <Calendar size={13} />
+              <span>{shiftLabel}</span>
             </div>
             <div className={styles.infoRow}>
-              <MapPin size={13} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: "12px" }}>{locationLabel}</span>
+              <MapPin size={13} />
+              <span>{locationLabel}</span>
             </div>
           </div>
           <div className={styles.cardBadges}>
@@ -162,14 +160,10 @@ function ClassCardInner({
           <div className={styles.capacityHeader}>
             <div className={styles.capacityUsers}>
               <Users size={12} />
-              <span style={{ fontSize: "11px" }}>Sĩ số</span>
+              <span>Sĩ số</span>
             </div>
             <span
-              style={{
-                fontSize: "12px",
-                fontWeight: 700,
-                color: occupancyRate > 0.8 ? "#E02020" : "#111827",
-              }}
+              className={`${styles.capacityValue} ${occupancyRate > 0.8 ? styles.capacityValueHigh : ""}`}
             >
               {totalStudents}/{capacity}
             </span>

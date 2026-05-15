@@ -1,68 +1,78 @@
+// ── Container ──────────────────────────────────────────────────
 .container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-4;
+
+  @include respond-to(md) {
+    gap: $space-5;
+  }
 }
 
 .sessionList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-3;
 }
 
+// ── Session item ──────────────────────────────────────────────
 .sessionItem {
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff;
-  transition: all 150ms ease;
+  padding: $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-white;
+  transition: $transition-fast;
 
-  &:hover {
-    border-color: #d1d5db;
-    background: #f9fafb;
-    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
+  @include hover-only {
+    border-color: $border-strong;
+    background: $gray-50;
+    box-shadow: $shadow-md;
+  }
+
+  @include respond-to(md) {
+    padding: $space-4;
   }
 }
 
 .sessionItemHighlighted {
   border-color: $brand-red;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+  box-shadow: 0 0 0 3px rgba($error, 0.14);
 }
 
+// ── Header ────────────────────────────────────────────────────
 .sessionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #d7d8da;
+  gap: $space-3;
+  margin-bottom: $space-3;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $gray-250;
 }
 
 .headerActions {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
   flex-shrink: 0;
 }
 
 .deleteBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #6b7280;
+  @include touch-target(44px);
+  border-radius: $radius-sm;
+  border: 1px solid $border-default;
+  background: $bg-white;
+  color: $text-muted;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: $transition-fast;
 
-  &:hover {
+  @include hover-only {
     border-color: $brand-red;
     color: $brand-red;
-    background: #fff5f5;
+    background: $error-50;
   }
 
   &:active {
@@ -70,119 +80,131 @@
   }
 }
 
+// ── Date / Time ───────────────────────────────────────────────
 .dateTimeInfo {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
+  gap: $space-3;
+  flex-wrap: wrap;
+
+  @include respond-to(sm) {
+    flex-wrap: nowrap;
+  }
 }
 
 .date {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-heading;
   white-space: nowrap;
-  line-height: 1; /* Thêm dòng này để loại bỏ khoảng trắng thừa trên/dưới chữ */
-  display: flex; /* Biến thành flex để dễ thẳng hàng với khối bên cạnh */
-  align-items: center; /* Căn giữa theo chiều dọc */
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .time {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #6b7280;
+  gap: $space-1;
+  font-size: $text-sm;
+  color: $text-muted;
   white-space: nowrap;
-  line-height: 1; /* Thêm dòng này */
+  line-height: 1;
 
   svg {
     flex-shrink: 0;
   }
 }
 
+// ── Status badges ─────────────────────────────────────────────
 .statusBadge {
   flex-shrink: 0;
 
   .active {
     display: inline-block;
-    padding: 4px 10px;
-    background: #dcfce7;
-    color: #166534;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: $space-1 $space-3;
+    background: $success-100;
+    color: $success-800;
+    border-radius: $radius-xs;
+    font-size: $text-xs;
+    font-weight: $font-semibold;
   }
 
   .closed {
     display: inline-block;
-    padding: 4px 10px;
-    background: #fee2e2;
-    color: #991b1b;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: $space-1 $space-3;
+    background: $error-100;
+    color: $error-800;
+    border-radius: $radius-xs;
+    font-size: $text-xs;
+    font-weight: $font-semibold;
   }
 }
 
+// ── Session status badge (clickable) ──────────────────────────
 .sessionStatusBadge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: $space-1 $space-3;
+  border-radius: $radius-xs;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
   cursor: pointer;
   white-space: nowrap;
   border: none;
   outline: none;
 
   &.ACTIVE {
-    background: #dcfce7;
-    color: #166534;
+    background: $success-100;
+    color: $success-800;
   }
 
   &.CANCELLED {
-    background: #fee2e2;
-    color: #991b1b;
+    background: $error-100;
+    color: $error-800;
   }
 
   &.COMPLETED {
-    background: #dbeafe;
-    color: #1e40af;
+    background: $info-100;
+    color: $info-800;
   }
 
   &.SCHEDULED {
-    background: #f3f4f6;
-    color: #374151;
+    background: $gray-100;
+    color: $gray-700;
   }
 
   &.POSTPONED {
-    background: #fef3c7;
-    color: #92400e;
+    background: $warning-100;
+    color: $warning-800;
   }
 
   &.TERMINATED {
-    background: #fee2e2;
-    color: #991b1b;
+    background: $error-100;
+    color: $error-800;
   }
 }
 
+// ── Session body ──────────────────────────────────────────────
 .sessionBody {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $space-3;
 }
 
 .classInfoContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: $space-2;
+  flex-wrap: wrap;
 }
 
 .classInfo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
+  min-width: 0;
 
   svg {
     flex-shrink: 0;
@@ -192,63 +214,109 @@
 }
 
 .className {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.4;
+  @include truncate;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-heading;
+  line-height: $leading-snug;
 }
 
 .classMeta {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: $text-xs;
+  color: $text-muted;
   margin-top: 2px;
   line-height: 1.35;
 }
 
 .instructorName {
-  font-size: 12px;
-  color: #6b7280;
-  margin-top: 4px;
+  font-size: $text-xs;
+  color: $text-muted;
+  margin-top: $space-1;
 }
 
+// ── Note section ──────────────────────────────────────────────
 .note {
-  font-size: 13px;
-  color: #6b7280;
-  background: #f9fafb;
-  padding: 10px 12px;
-  border-radius: 8px;
+  font-size: $text-sm;
+  color: $text-muted;
+  background: $gray-50;
+  padding: $space-3;
+  border-radius: $radius-sm;
   border-left: 3px solid $brand-red;
-  line-height: 1.4;
+  line-height: $leading-snug;
+  display: flex;
+  gap: $space-2;
+  align-items: flex-start;
+  cursor: text;
 
   strong {
-    color: #111827;
+    color: $text-heading;
+    white-space: nowrap;
+  }
+
+  // Inline editing textarea
+  textarea {
+    flex: 1;
+    border: 1px solid $border-strong;
+    border-radius: $radius-xs;
+    padding: $space-1 $space-2;
+    min-height: 60px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: $text-sm;
+    line-height: $leading-normal;
+    color: $text-heading;
+    background: $bg-white;
+  }
+
+  // Note content wrapper
+  > span {
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 
+.noteEmpty {
+  color: $text-subtle;
+  font-style: italic;
+}
+
+// ── Pagination ────────────────────────────────────────────────
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  gap: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid $gray-100;
+
+  @include respond-to(md) {
+    gap: $space-4;
+  }
 }
 
 .paginationBtn {
-  padding: 8px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 13px;
-  font-weight: 600;
+  @include touch-target(44px);
+  @include press-effect;
+  padding: $space-2 $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  background: $bg-white;
+  color: $text-heading;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: $transition-fast;
 
-  &:hover:not(:disabled) {
+  @include hover-only {
     border-color: $brand-red;
-    background: #fff5f5;
+    background: $error-50;
     color: $brand-red;
+  }
+
+  @include respond-to(md) {
+    padding: $space-2 $space-4;
+    font-size: $text-sm;
   }
 
   &:disabled {
@@ -258,106 +326,119 @@
 }
 
 .pageInfo {
-  font-size: 13px;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: $text-sm;
+  color: $text-muted;
+  font-weight: $font-medium;
 }
 
-// Skeleton loaders
+// ── Skeleton loaders ──────────────────────────────────────────
 .sessionItemSkeleton {
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff;
+  padding: $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-white;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .skeletonDate {
   height: 16px;
   width: 120px;
-  border-radius: 4px;
+  border-radius: $radius-xs;
 }
 
 .skeletonTime {
   height: 14px;
   width: 140px;
-  border-radius: 4px;
+  border-radius: $radius-xs;
 }
 
 .skeletonClass {
   height: 16px;
   width: 100%;
-  border-radius: 4px;
+  border-radius: $radius-xs;
 }
 
-// Empty state
+// ── Empty state ───────────────────────────────────────────────
 .emptyState {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: $space-10 $space-5;
   text-align: center;
-  background: #f9fafb;
-  border-radius: 10px;
-  border: 1px dashed #e5e7eb;
+  background: $gray-50;
+  border-radius: $radius-md;
+  border: 1px dashed $border-default;
+
+  @include respond-to(md) {
+    padding: $space-12 $space-6;
+  }
 }
 
 .emptyIcon {
-  font-size: 48px;
-  margin-bottom: 12px;
+  font-size: 40px;
+  margin-bottom: $space-3;
+
+  @include respond-to(md) {
+    font-size: 48px;
+  }
 }
 
 .emptyTitle {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+  margin: 0 0 $space-2;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-heading;
+
+  @include respond-to(md) {
+    font-size: $text-base;
+  }
 }
 
 .emptyDescription {
   margin: 0;
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 1.5;
+  font-size: $text-sm;
+  color: $text-muted;
+  line-height: $leading-normal;
 }
 
+// ── Note field (inside ConfirmModal) ───────────────────────────
 .noteField {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 12px;
+  gap: $space-2;
+  margin-top: $space-3;
 }
 
 .noteLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: rgba($white, 0.9);
 }
 
 .required {
-  color: #dc2626;
+  color: $error-600;
 }
 
 .noteInput {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.92);
-  caret-color: rgba(255, 255, 255, 0.92);
-  background: rgba(255, 255, 255, 0.08);
+  padding: $space-3;
+  border: 1px solid rgba($white, 0.18);
+  border-radius: $radius-sm;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+  color: rgba($white, 0.92);
+  caret-color: rgba($white, 0.92);
+  background: rgba($white, 0.08);
   resize: vertical;
   outline: none;
   font-family: inherit;
-  transition: border-color 150ms ease;
+  transition: border-color $transition-fast;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba($white, 0.55);
   }
 
   &:focus {
@@ -366,58 +447,12 @@
   }
 
   &:disabled {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba($white, 0.06);
     cursor: not-allowed;
   }
 }
 
 .noteError {
-  font-size: 12px;
-  color: #dc2626;
-}
-
-@media (max-width: $md) {
-  .container {
-    gap: 16px;
-  }
-
-  .sessionList {
-    gap: 10px;
-  }
-
-  .sessionItem {
-    padding: 12px;
-  }
-
-  .sessionHeader {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-  }
-
-  .pagination {
-    gap: 12px;
-    font-size: 12px;
-  }
-
-  .paginationBtn {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .emptyState {
-    padding: 40px 20px;
-  }
-
-  .emptyIcon {
-    font-size: 40px;
-    margin-bottom: 10px;
-  }
-
-  .emptyTitle {
-    font-size: 14px;
-  }
-
-  .emptyDescription {
-    font-size: 12px;
-  }
+  font-size: $text-xs;
+  color: $error-600;
 }

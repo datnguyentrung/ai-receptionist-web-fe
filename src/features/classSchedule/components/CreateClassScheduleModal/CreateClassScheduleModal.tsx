@@ -248,7 +248,7 @@ export function CreateClassScheduleModal({
                   readOnly
                 />
                 {isDuplicate && (
-                  <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>
+                  <p className={styles.duplicateError}>
                     Mã lớp này đã tồn tại!
                   </p>
                 )}
@@ -368,7 +368,7 @@ export function CreateClassScheduleModal({
 
               <label className={styles.createClassModal__field}>
                 <span>Phí hàng tháng</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div className={styles.feeRow}>
                   <input
                     type="number"
                     min={1}
@@ -377,15 +377,14 @@ export function CreateClassScheduleModal({
                       setField("monthlyFee", Number(ev.target.value) * 1000)
                     }
                     placeholder="Nhập số cơ bản"
-                    style={{ textAlign: "right" }}
                   />
-                  <span style={{ color: "#6b7280" }}>,000đ</span>
+                  <span className={styles.feeSuffix}>,000đ</span>
                 </div>
               </label>
 
               <label className={styles.createClassModal__field}>
                 <span>Phí quý</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div className={styles.feeRow}>
                   <input
                     type="number"
                     min={1}
@@ -394,9 +393,8 @@ export function CreateClassScheduleModal({
                       setField("quarterlyFee", Number(ev.target.value) * 1000)
                     }
                     placeholder="Nhập số cơ bản"
-                    style={{ textAlign: "right" }}
                   />
-                  <span style={{ color: "#6b7280" }}>,000đ</span>
+                  <span className={styles.feeSuffix}>,000đ</span>
                 </div>
               </label>
             </div>

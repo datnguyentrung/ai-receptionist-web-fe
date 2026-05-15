@@ -149,12 +149,7 @@ export function AttendanceTable({
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead>
-            <tr
-              style={{
-                background: "#FAFAFA",
-                borderBottom: "1px solid #F3F4F6",
-              }}
-            >
+            <tr>
               <th className={styles.th} style={{ width: "32px" }}>
                 <input
                   type="checkbox"
@@ -219,26 +214,13 @@ export function AttendanceTable({
                   </td>
                   {/* STT */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#6B7280",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellIndex}>
                       {(currentPage - 1) * pageSize + index + 1}
                     </p>
                   </td>
                   {/* Ngày học */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       {formatDateDMY(a.sessionDate)}
                     </p>
                   </td>
@@ -257,40 +239,19 @@ export function AttendanceTable({
                   </td>
                   {/* Cơ sở */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       Cơ sở {a.classScheduleId?.charAt(1) ?? "—"}
                     </p>
                   </td>
                   {/* Thứ */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       Thứ {a.classScheduleId?.charAt(2) ?? "—"}
                     </p>
                   </td>
                   {/* Ca học */}
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       Ca {a.classScheduleId?.charAt(4) ?? "—"}
                     </p>
                   </td>
@@ -336,15 +297,8 @@ export function AttendanceTable({
                           id: status,
                           label: EvaluationStatusLabel[status],
                         })),
-                        // { id: "__separator__", label: "---" },
-                        // { id: "__clear__", label: "Bỏ đánh giá" },
                       ]}
                       onActionSelect={(actionId) => {
-                        if (actionId === "__clear__") {
-                          onEvaluationChange?.(a, null);
-                          return;
-                        }
-
                         const nextStatus = EVALUATION_OPTIONS.find(
                           (status) => status === actionId,
                         );
@@ -370,9 +324,7 @@ export function AttendanceTable({
                           {EvaluationStatusLabel[evaluationStatus]}
                         </span>
                       ) : (
-                        <span style={{ fontSize: "12px", color: "#D1D5DB" }}>
-                          —
-                        </span>
+                        <span className={styles.cellMuted}>—</span>
                       )}
                     </MiniActionPopover>
                   </td>
@@ -395,24 +347,14 @@ export function AttendanceTable({
                             setEditingNoteAttendanceId(null);
                           }
                         }}
-                        style={{
-                          width: "100%",
-                          minWidth: "120px",
-                          fontSize: "12px",
-                          color: "#374151",
-                          border: "1px solid #E5E7EB",
-                          borderRadius: "6px",
-                          padding: "4px 6px",
-                          outline: "none",
-                        }}
+                        className={styles.noteInput}
                         placeholder="Nhập ghi chú"
                       />
                     ) : (
                       <p
+                        className={`${styles.cellText} ${noteValue ? "" : styles.cellMuted}`}
                         onDoubleClick={() => beginNoteEdit(a, noteValue)}
                         style={{
-                          fontSize: "12px",
-                          color: noteValue ? "#374151" : "#D1D5DB",
                           cursor:
                             onNoteChange && a.attendanceId ? "text" : "default",
                         }}
@@ -443,11 +385,11 @@ export function AttendanceTable({
                         itemLabel={a.studentName}
                         actions={[
                           { id: "info", label: "Thông tin", icon: Info },
-                          { id: "note", label: "Ghi chú", icon: StickyNote }, // Sử dụng StickyNote ở đây
+                          { id: "note", label: "Ghi chú", icon: StickyNote },
                           {
                             id: "delete",
                             label: "Xóa điểm danh",
-                            icon: Trash2, // (Tùy chọn) Thêm icon thùng rác cho đẹp
+                            icon: Trash2,
                             isDanger: true,
                           },
                         ]}
@@ -484,7 +426,7 @@ export function AttendanceTable({
             size={36}
             style={{ color: "#D1D5DB", margin: "0 auto 8px" }}
           />
-          <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+          <p className={styles.emptyText}>
             Không có dữ liệu điểm danh
           </p>
         </div>

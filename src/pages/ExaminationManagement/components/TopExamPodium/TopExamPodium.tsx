@@ -1,5 +1,5 @@
-import logoImage from "@/assets/taekwondo.jpg";
 import "./TopExamPodium.scss";
+import logoImage from "/taekwondo.jpg";
 
 export type TopExamStudent = {
   studentId: string;

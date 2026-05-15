@@ -1,6 +1,12 @@
+// ─────────────────────────────────────────────────────────────
+// TAB VIEWS — Shared tab layout, cards, tables, badges (Mobile-first)
+// BEM naming: .views__* — consumed across all PersonalPage tabs
+// ─────────────────────────────────────────────────────────────
+
 @use "../../../../styles/variables" as v;
 
-// Optional: Mixin nhỏ giúp gom nhanh flex
+// ── Local mixin ─────────────────────────────────────────────
+
 @mixin flex-center($justify: flex-start, $gap: 0) {
   display: flex;
   align-items: center;
@@ -9,11 +15,11 @@
 }
 
 .views {
-  $root: &; // Lưu lại base class ".views" để dùng ở các nested scope
+  $root: &;
 
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $space-4;
   font-family: v.$font-sans;
   min-width: 0;
 
@@ -21,25 +27,39 @@
   &__tabs-list {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 0 0.5rem;
+    gap: $space-2;
+    border-bottom: 1px solid v.$border-default;
+    padding: 0 $space-2;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__tab-trigger {
-    padding-bottom: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: all 0.2s;
+    @include touch-target(48px);
+    padding-bottom: $space-4;
+    padding-left: $space-4;
+    padding-right: $space-4;
+    font-size: v.$text-sm;
+    font-weight: v.$font-semibold;
+    transition: v.$transition-fast;
     position: relative;
     background: none;
     border: none;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @include hover-only {
+      color: v.$text-secondary;
+    }
 
     &.active {
-      color: #e02020;
+      color: v.$brand-red;
 
       &::after {
         content: "";
@@ -48,18 +68,14 @@
         left: 0;
         width: 100%;
         height: 2px;
-        background-color: #e02020;
+        background-color: v.$brand-red;
         border-radius: 9999px 9999px 0 0;
-        box-shadow: 0 -2px 8px rgba(224, 32, 32, 0.4);
+        box-shadow: 0 -2px 8px rgba(v.$brand-red, 0.4);
       }
     }
 
     &.inactive {
-      color: #6b7280;
-
-      &:hover {
-        color: #374151;
-      }
+      color: v.$text-subtle;
     }
   }
 
@@ -68,52 +84,49 @@
     align-items: center;
     color: v.$brand-red;
 
-    @media (max-width: 640px) {
+    @include respond-to(sm) {
       width: 1rem;
       height: 1rem;
     }
   }
 
   &__tab-content {
-    margin-top: 0.5rem;
+    margin-top: $space-2;
     min-width: 0;
   }
 
   &__tab-panel {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: $space-6;
     animation: fade-in 0.25s ease;
     min-width: 0;
 
     &--tight {
-      gap: 1rem;
+      gap: $space-4;
     }
   }
 
   // ================= GENERAL TYPOGRAPHY & LAYOUT =================
   &__section-title {
     margin: 0;
-    font-size: 1rem;
+    font-size: v.$text-base;
     font-family: "Poppins", v.$font-sans;
-    font-weight: 700;
+    font-weight: v.$font-bold;
     color: v.$text-heading;
-    line-height: 1.25;
+    line-height: v.$leading-tight;
 
     &--with-gap {
-      margin-bottom: 0.25rem;
-    }
-    @media (max-width: 640px) {
-      font-size: 0.95rem;
+      margin-bottom: $space-1;
     }
   }
 
   &__info-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: $space-4;
 
-    @media (min-width: 768px) {
+    @include respond-to(md) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -125,13 +138,14 @@
   // ================= CARDS & META DATA =================
   &__card-content {
     display: flex;
-    gap: 0.75rem;
+    gap: $space-3;
 
     &--compact {
       align-items: center;
-      padding: 0.9rem;
-      @media (max-width: 640px) {
-        padding: 0.875rem;
+      padding: $space-4;
+
+      @include respond-to(sm) {
+        padding: $space-3;
       }
     }
 
@@ -139,31 +153,29 @@
       align-items: flex-start;
       justify-content: space-between;
       flex-direction: column;
-      gap: 1rem;
-      padding: 0.9rem;
+      gap: $space-4;
+      padding: $space-4;
 
-      @media (min-width: 768px) {
+      @include respond-to(md) {
         flex-direction: row;
         align-items: center;
-      }
-      @media (max-width: 640px) {
-        padding: 0.875rem;
       }
     }
   }
 
   &__branch-wrap {
-    @include flex-center(flex-start, 0.75rem);
+    @include flex-center(flex-start, $space-3);
   }
 
   &__meta-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: $space-1;
 
     &--right {
       align-items: flex-start;
-      @media (min-width: 768px) {
+
+      @include respond-to(md) {
         align-items: flex-end;
       }
     }
@@ -173,16 +185,18 @@
     @include flex-center(center);
     width: 2.25rem;
     height: 2.25rem;
-    border-radius: 0.625rem;
+    border-radius: $radius-sm;
 
     &--blue {
-      background: #fcecec;
+      background: v.$error-50;
       color: v.$brand-red-700;
     }
+
     &--emerald {
-      background: #fff1f1;
+      background: v.$brand-red-50;
       color: v.$brand-red;
     }
+
     &--amber {
       background: #f8f4ef;
       color: v.$brand-dark;
@@ -191,77 +205,82 @@
 
   &__meta-label {
     margin: 0;
-    font-size: 0.72rem;
+    font-size: v.$text-xs;
     color: v.$text-muted;
-    font-weight: 700;
+    font-weight: v.$font-bold;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   &__meta-value {
     margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: v.$text-sm;
+    font-weight: v.$font-semibold;
     color: v.$text-primary;
   }
 
   // ================= BADGES =================
   &__status-badge {
     border: 0;
-    padding: 0.2rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: $space-1 $space-3;
+    font-size: v.$text-xs;
+    font-weight: v.$font-bold;
 
     &--success {
-      background: #d1fae5;
-      color: #065f46;
+      background: v.$success-100;
+      color: v.$success-800;
     }
+
     &--warning {
-      background: #fef3c7;
-      color: #92400e;
+      background: v.$warning-100;
+      color: v.$warning-800;
     }
+
     &--danger {
-      background: #fee2e2;
-      color: #991b1b;
+      background: v.$error-100;
+      color: v.$error-800;
     }
+
     &--neutral {
-      background: #e5e7eb;
-      color: #1f2937;
+      background: v.$gray-200;
+      color: v.$gray-800;
     }
   }
 
   &__paid-badge {
     border: 0;
-    padding: 0.125rem 0.5rem;
-    background: #d1fae5;
-    color: #065f46;
-    font-size: 0.625rem;
-    font-weight: 700;
+    padding: 2px $space-2;
+    background: v.$success-100;
+    color: v.$success-800;
+    font-size: 10px;
+    font-weight: v.$font-bold;
   }
 
   // ================= ENROLLMENT =================
   &__enrollment-card {
     overflow: hidden;
     border-left: 4px solid v.$brand-red;
-    transition: box-shadow 0.2s ease;
+    transition: box-shadow v.$transition-fast;
 
-    &:hover {
-      box-shadow: 0 10px 24px rgba(26, 26, 46, 0.09);
+    @include hover-only {
+      box-shadow: v.$shadow-md;
     }
   }
 
   &__enrollment-content {
-    padding: 1rem;
-    @media (max-width: 640px) {
-      padding: 0.875rem;
+    padding: $space-4;
+
+    @include respond-to(sm) {
+      padding: $space-3;
     }
   }
 
   &__enrollment-row {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    @media (min-width: 768px) {
+    gap: $space-4;
+
+    @include respond-to(md) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
@@ -271,35 +290,36 @@
   &__enrollment-main {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: $space-1;
   }
 
   &__enrollment-title {
     margin: 0;
-    font-size: 1rem;
+    font-size: v.$text-base;
     color: v.$text-primary;
-    font-weight: 700;
+    font-weight: v.$font-bold;
   }
 
   &__enrollment-subline {
-    @include flex-center(flex-start, 0.5rem);
+    @include flex-center(flex-start, $space-2);
     margin: 0;
     color: v.$text-secondary;
-    font-size: 0.875rem;
+    font-size: v.$text-sm;
   }
 
   &__enrollment-side {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
-    @media (min-width: 768px) {
+    gap: $space-2;
+
+    @include respond-to(md) {
       align-items: flex-end;
     }
   }
 
   &__enrollment-note {
-    font-size: 0.75rem;
+    font-size: v.$text-xs;
     color: v.$text-muted;
     font-style: italic;
   }
@@ -307,9 +327,9 @@
   // ================= TABLES =================
   &__table-card {
     border: 1px solid #f0dfdf;
-    border-radius: 1rem;
-    background: #ffffff;
-    box-shadow: 0 3px 12px rgba(26, 26, 46, 0.05);
+    border-radius: $radius-md;
+    background: $bg-white;
+    box-shadow: v.$shadow-sm;
     overflow: hidden;
   }
 
@@ -321,10 +341,7 @@
   &__table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.82rem;
-    @media (max-width: 640px) {
-      font-size: 0.78rem;
-    }
+    font-size: v.$text-sm;
   }
 
   &__table-head-row {
@@ -335,18 +352,15 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
       color: v.$text-muted;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: v.$text-xs;
+      font-weight: v.$font-bold;
     }
   }
 
   &__th,
   &__td {
-    padding: 0.8rem 1rem;
+    padding: $space-3 $space-4;
     text-align: left;
-    @media (max-width: 640px) {
-      padding: 0.7rem 0.85rem;
-    }
   }
 
   &__td {
@@ -354,136 +368,139 @@
     color: v.$text-secondary;
 
     &--strong {
-      font-weight: 600;
+      font-weight: v.$font-semibold;
       color: v.$text-primary;
     }
+
     &--mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
+
     &--note {
       max-width: 13rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       font-style: italic;
-      @media (max-width: 640px) {
-        max-width: 10rem;
-      }
     }
   }
 
   &__tr {
-    transition: background-color 0.15s ease;
-    &:hover {
+    transition: background-color v.$transition-fast;
+
+    @include hover-only {
       background: #fff8f8;
     }
   }
 
   // ================= EVALUATIONS =================
   &__evaluation {
-    font-weight: 600;
+    font-weight: v.$font-semibold;
+
     &--good {
-      color: #059669;
+      color: v.$success-700;
     }
+
     &--bad {
-      color: #dc2626;
+      color: v.$error-600;
     }
+
     &--pass {
-      color: #2563eb;
+      color: v.$info-600;
     }
   }
 
   // ================= TUITION =================
   &__tuition-grid {
     display: grid;
-    gap: 1rem;
+    gap: $space-4;
   }
 
   &__tuition-card {
     border-left: 4px solid v.$brand-red;
-    transition: box-shadow 0.2s ease;
-    &:hover {
-      box-shadow: 0 8px 20px rgba(26, 26, 46, 0.08);
+    transition: box-shadow v.$transition-fast;
+
+    @include hover-only {
+      box-shadow: v.$shadow-md;
     }
   }
 
   &__tuition-content {
-    padding: 1rem;
+    padding: $space-4;
     display: flex;
     flex-direction: column;
-    gap: 0.875rem;
+    gap: $space-3;
 
-    @media (min-width: 768px) {
+    @include respond-to(md) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-    }
-    @media (max-width: 640px) {
-      padding: 0.875rem;
     }
   }
 
   &__tuition-main {
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
+    gap: $space-1;
   }
 
   &__tuition-amount-row {
-    @include flex-center(flex-start, 0.625rem);
+    @include flex-center(flex-start, $space-2);
   }
 
   &__tuition-amount {
     margin: 0;
-    font-size: 1rem;
+    font-size: v.$text-base;
     font-family: "Poppins", v.$font-sans;
     color: v.$text-primary;
-    font-weight: 700;
+    font-weight: v.$font-bold;
   }
 
   &__tuition-time {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: v.$text-sm;
     color: v.$text-secondary;
   }
 
   &__tuition-meta {
     width: 100%;
     border: 1px solid #f1e4e4;
-    border-radius: 0.625rem;
+    border-radius: $radius-sm;
     background: #fff9f9;
-    padding: 0.75rem;
+    padding: $space-3;
     color: v.$text-secondary;
-    font-size: 0.875rem;
+    font-size: v.$text-sm;
 
-    @media (min-width: 768px) {
+    @include respond-to(md) {
       width: auto;
       min-width: 16rem;
     }
 
     p {
       margin: 0;
+
       + p {
-        margin-top: 0.25rem;
+        margin-top: $space-1;
       }
     }
   }
 
   &__tuition-key {
     color: v.$text-muted;
-    font-weight: 600;
+    font-weight: v.$font-semibold;
   }
 
   &__tuition-allocation {
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid #d0d5dd;
-    color: #047857;
-    font-weight: 700;
+    margin-top: $space-2;
+    padding-top: $space-2;
+    border-top: 1px solid v.$border-default;
+    color: v.$success-700;
+    font-weight: v.$font-bold;
   }
 }
 
-// Global Keyframes
+// ── Global Keyframes ───────────────────────────────────────
+
 @keyframes fade-in {
   from {
     opacity: 0;

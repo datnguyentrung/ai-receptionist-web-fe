@@ -67,11 +67,7 @@ export default function QuarterSummaryDetail({
                   stats.excusedCount ||
                   stats.absentCount ? (
                     <small
-                      style={{
-                        color: "#9ca3af",
-                        marginLeft: "4px",
-                        fontSize: "0.85em",
-                      }}
+                      className={styles["score-tab__detail-note"]}
                     >
                       (5 - 1đ Vi phạm)
                     </small>

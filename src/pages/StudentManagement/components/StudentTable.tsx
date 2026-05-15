@@ -31,19 +31,10 @@ export function StudentTable({
     <>
       <div className={styles.tableWrap}>
         <table
-          className={styles.table}
-          style={{
-            opacity: isFetching ? 0.5 : 1,
-            transition: "opacity 0.2s",
-          }}
+          className={`${styles.table} ${isFetching ? styles["table--fetching"] : ""}`}
         >
           <thead>
-            <tr
-              style={{
-                background: "#FAFAFA",
-                borderBottom: "1px solid #F3F4F6",
-              }}
-            >
+            <tr className={styles.theadRow}>
               <th className={styles.th} style={{ width: "32px" }}>
                 <input
                   type="checkbox"
@@ -62,11 +53,7 @@ export function StudentTable({
                 "Trạng thái",
                 "",
               ].map((h) => (
-                <th
-                  key={h}
-                  className={styles.th}
-                  style={{ textAlign: "center" }}
-                >
+                <th key={h} className={styles.th} style={{ textAlign: "center" }}>
                   {h}
                 </th>
               ))}
@@ -107,7 +94,7 @@ export function StudentTable({
                     />
                   </td>
                   <td className={styles.td}>
-                    <div className={styles.avatarCell} >
+                    <div className={styles.avatarCell}>
                       <Avatar
                         fullName={student.fullName}
                         fontSize="10px"
@@ -116,63 +103,33 @@ export function StudentTable({
                         height="36px"
                       />
                       <div>
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            color: "#111827",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
+                        <p className={styles.studentName}>
                           {student.fullName}
                         </p>
-                        <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                        <p className={styles.studentCode}>
                           {student.studentCode}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className={styles.td}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       {student.phoneNumber}
                     </p>
-                    {/* <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
-                      {student.branchName}
-                    </p> */}
                   </td>
-                  <td
-                    className={styles.td}
-                    style={{
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                      maxWidth: "160px",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      textAlign: "center",
-                    }}
-                  >
-                    {student.classSchedules
-                      .map((c) => c.scheduleId)
-                      .join(", ") || "-"}
+                  <td className={styles.td}>
+                    <p
+                      className={`${styles.cellText} ${styles["cellText--truncated"]}`}
+                    >
+                      {student.classSchedules
+                        .map((c) => c.scheduleId)
+                        .join(", ") || "-"}
+                    </p>
                   </td>
-                  <td
-                    className={styles.td}
-                    style={{
-                      fontSize: "12px",
-                      color: "#374151",
-                      whiteSpace: "nowrap",
-                      textAlign: "center",
-                    }}
-                  >
-                    {formatDateDMY(student.birthDate)}
+                  <td className={styles.td}>
+                    <p className={styles.cellText}>
+                      {formatDateDMY(student.birthDate)}
+                    </p>
                   </td>
                   <td className={styles.td} style={{ textAlign: "center" }}>
                     <span
@@ -186,15 +143,7 @@ export function StudentTable({
                     </span>
                   </td>
                   <td className={styles.td} style={{ textAlign: "center" }}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#374151",
-                        whiteSpace: "nowrap",
-                        margin: 0,
-                        textAlign: "center",
-                      }}
-                    >
+                    <p className={styles.cellText}>
                       {student.roleName}
                     </p>
                   </td>
@@ -210,7 +159,7 @@ export function StudentTable({
                         onMenuAction?.(student, action as StudentMenuAction)
                       }
                     >
-                      <MoreHorizontal size={15} style={{ color: "#9CA3AF" }} />
+                      <MoreHorizontal size={15} />
                     </MiniActionPopover>
                   </td>
                 </tr>
@@ -222,8 +171,8 @@ export function StudentTable({
 
       {list.length === 0 && (
         <div className={styles.emptyState}>
-          <Users size={36} style={{ color: "#D1D5DB", margin: "0 auto 8px" }} />
-          <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+          <Users size={36} className={styles.emptyIcon} />
+          <p className={styles.emptyText}>
             Chưa có học viên nào
           </p>
         </div>

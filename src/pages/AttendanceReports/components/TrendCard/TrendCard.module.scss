@@ -1,24 +1,27 @@
-@use "@/styles/variables" as *;
+// ─────────────────────────────────────────────────────────────
+// TREND CARD — Weekly attendance trend (Mobile-first)
+// ─────────────────────────────────────────────────────────────
 
 .trendCard {
   grid-column: span 2;
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid #f0f0f5;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: $space-3;
 
-  @media (min-width: $sm) {
+  @include respond-to(sm) {
     grid-column: span 4;
+    padding: $space-4;
   }
 }
 
 .trendIconWrap {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,22 +33,38 @@
   min-width: 0;
 }
 
+.trendRate {
+  margin: 0;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-primary;
+}
+
+.trendDetail {
+  margin: $space-1 0 0;
+  font-size: $text-xs;
+  color: $text-subtle;
+  line-height: $leading-normal;
+}
+
+// ── Evaluation Bar Section ────────────────────────────────
+
 .evalSection {
-  margin-top: 10px;
+  margin-top: $space-3;
 }
 
 .evalTitle {
-  font-size: 11px;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 6px;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  color: $text-muted;
+  margin: 0 0 $space-2;
 }
 
 .evalBar {
   width: 100%;
   height: 10px;
-  background: #f3f4f6;
-  border-radius: 9999px;
+  background: $gray-100;
+  border-radius: $radius-full;
   overflow: hidden;
   display: flex;
 }
@@ -55,6 +74,11 @@
   border: 0;
   padding: 0;
   cursor: pointer;
+  transition: filter $transition-fast;
+
+  @include hover-only {
+    filter: brightness(1.15);
+  }
 }
 
 .evalSegmentActive {
@@ -62,41 +86,49 @@
 }
 
 .evalLegend {
-  margin-top: 8px;
+  margin-top: $space-2;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: $space-2 $space-3;
 }
 
 .evalLegendItem {
-  font-size: 11px;
-  color: #6b7280;
+  @include touch-target(32px);
+  font-size: $text-xs;
+  color: $text-muted;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: $space-1;
   border: 0;
   background: transparent;
-  padding: 0;
+  padding: 0 $space-1;
   cursor: pointer;
+  transition: $transition-fast;
+
+  @include hover-only {
+    color: $text-secondary;
+  }
 }
 
 .evalLegendItemActive {
-  color: #111827;
-  font-weight: 600;
+  color: $text-primary;
+  font-weight: $font-semibold;
 }
 
 .evalDot {
   width: 8px;
   height: 8px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   display: inline-block;
 }
+
+// ── Spark Bars (desktop only) ──────────────────────────────
 
 .sparkBarsOuter {
   margin-left: auto;
   display: none;
 
-  @media (min-width: $sm) {
+  @include respond-to(sm) {
     display: block;
   }
 }
@@ -109,5 +141,5 @@
 
 .sparkBar {
   width: 16px;
-  border-radius: 2px;
+  border-radius: $radius-xs;
 }

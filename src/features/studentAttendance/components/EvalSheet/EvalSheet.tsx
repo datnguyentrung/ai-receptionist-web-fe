@@ -72,6 +72,15 @@ export function EvalSheet({
   const [notes, setNotes] = useState(student.note ?? "");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
+  // Lock body scroll while sheet is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => textRef.current?.focus(), 200);
     return () => clearTimeout(t);
@@ -88,12 +97,12 @@ export function EvalSheet({
         onClick={onClose}
       />
 
-      {/* Sheet */}
+      {/* Sheet — slides up from bottom on mobile */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: "-50%", x: "-50%" }} // Chỉnh lại initial
-        animate={{ opacity: 1, scale: 1, y: "-50%", x: "-50%" }} // Chỉnh lại animate
-        exit={{ opacity: 0, scale: 0.95, y: "-50%", x: "-50%" }}
-        transition={{ duration: 0.2 }}
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
         className={styles.sheet}
       >
         {/* Handle */}

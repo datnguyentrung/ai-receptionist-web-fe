@@ -1,17 +1,19 @@
-// ── Status badge ──────────────────────────────────────────────
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 600;
+  gap: $space-2;
+  padding: $space-1 10px;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  background: var(--badge-bg, $gray-100);
+  color: var(--badge-color, $text-muted);
 }
 
 .statusDot {
   width: 6px;
   height: 6px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   flex-shrink: 0;
+  background: var(--badge-dot, $gray-400);
 }

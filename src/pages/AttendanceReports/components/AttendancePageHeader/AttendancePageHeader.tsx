@@ -11,10 +11,10 @@ export function AttendancePageHeader({ totalRecords }: Props) {
   return (
     <div className={styles.pageHead}>
       <div>
-        <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
+        <h2 className={styles.pageTitle}>
           Báo cáo Điểm Danh
         </h2>
-        <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+        <p className={styles.pageSubtitle}>
           Tuần 10/2026 · {totalRecords} bản ghi
         </p>
       </div>

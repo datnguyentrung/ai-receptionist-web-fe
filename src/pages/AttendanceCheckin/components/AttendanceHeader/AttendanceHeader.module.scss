@@ -1,19 +1,6 @@
 // ─────────────────────────────────────────────────────────────
-// ATTENDANCE HEADER - Sidebar Component
+// ATTENDANCE HEADER — Mobile-first refactored
 // ─────────────────────────────────────────────────────────────
-
-// ── Color & Spacing Variables ────────────────────────────────
-$color-white: #ffffff;
-$color-red-primary: #e02020;
-$color-red-dark: #7b0000;
-$color-text-dark: #111827;
-$color-text-light: #9ca3af;
-$color-bg-light: #f9fafb;
-$color-border-light: #f3f4f6;
-$gap-sm: 8px;
-$gap-base: 12px;
-$gap-lg: 16px;
-$gap-xl: 20px;
 
 // ── Header Container ────────────────────────────────────────
 
@@ -21,10 +8,10 @@ $gap-xl: 20px;
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: $color-white;
-  border-radius: 20px;
+  background: $bg-white;
+  border-radius: $radius-lg;
   overflow: hidden;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  box-shadow: $shadow-sm;
   width: 100%;
   box-sizing: border-box;
 }
@@ -34,33 +21,38 @@ $gap-xl: 20px;
 .topBar {
   display: flex;
   align-items: center;
-  gap: $gap-base;
-  padding: $gap-xl $gap-xl ($gap-lg) $gap-xl;
-  border-bottom: 1px solid $color-border-light;
+  gap: $space-3;
+  padding: $space-3 $space-3 ($space-3) $space-3;
+  border-bottom: 1px solid $border-subtle;
   box-sizing: border-box;
   width: 100%;
   flex-shrink: 0;
+
+  @include respond-to(sm) {
+    padding: $space-4 $space-5 ($space-4) $space-5;
+    gap: $space-3;
+  }
 }
 
 .backBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  @include touch-target(48px);
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $color-border-light;
+  background: $gray-100;
   border: none;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: $transition-fast;
   flex-shrink: 0;
+  padding: $space-1;
 
-  &:hover {
-    background: #e5e7eb;
+  @include hover-only {
+    background: $gray-200;
   }
 
   &:active {
-    background: #d1d5db;
+    background: $gray-300;
   }
 }
 
@@ -73,19 +65,17 @@ $gap-xl: 20px;
 }
 
 .className {
-  font-size: 16px;
-  font-weight: 800;
-  color: $color-text-dark;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: $text-base;
+  font-weight: $font-extrabold;
+  color: $text-primary;
+  line-height: $leading-tight;
+  @include truncate;
   margin: 0;
 }
 
 .classCode {
-  font-size: 12px;
-  color: $color-text-light;
+  font-size: $text-xs;
+  color: $text-subtle;
   margin: 0;
   line-height: 1.2;
 }
@@ -93,22 +83,22 @@ $gap-xl: 20px;
 .statusPill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 9999px;
+  gap: $space-2;
+  padding: 5px $space-3;
+  border-radius: $radius-full;
   flex-shrink: 0;
-  background: #fef2f2;
-  font-size: 11px;
-  font-weight: 700;
-  color: $color-red-primary;
-  border: 1px solid #fecaca;
+  background: $error-50;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  color: $brand-red;
+  border: 1px solid $error-200;
 }
 
 .statusDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: $color-red-primary;
+  background: $brand-red;
   animation: pulse 1.5s infinite;
   flex-shrink: 0;
 }
@@ -128,29 +118,31 @@ $gap-xl: 20px;
 .classInfoCard {
   display: flex;
   flex-direction: column;
-  gap: $gap-base;
-  background: linear-gradient(
-    135deg,
-    $color-red-primary 0%,
-    $color-red-dark 100%
-  );
-  border-radius: 16px;
-  padding: $gap-lg;
-  margin: $gap-lg;
+  gap: $space-3;
+  background: $gradient-brand;
+  border-radius: $radius-lg;
+  padding: $space-3;
+  margin: $space-3;
   position: relative;
   overflow: hidden;
   width: auto;
   box-sizing: border-box;
+
+  @include respond-to(sm) {
+    padding: $space-4;
+    margin: $space-4;
+    gap: $space-3;
+  }
 }
 
 .classInfoDecor {
   position: absolute;
-  right: 16px;
+  right: $space-4;
   top: -20px;
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: $color-white;
+  background: $white;
   opacity: 0.08;
   pointer-events: none;
 }
@@ -158,7 +150,7 @@ $gap-xl: 20px;
 .classInfoItem {
   display: flex;
   align-items: center;
-  gap: $gap-base;
+  gap: $space-3;
   position: relative;
   z-index: 1;
 }
@@ -166,7 +158,7 @@ $gap-xl: 20px;
 .classInfoIcon {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: $radius-sm;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,13 +167,18 @@ $gap-xl: 20px;
 }
 
 .classInfoText {
-  font-size: 13px;
-  font-weight: 600;
-  color: $color-white;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $white;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.35;
   margin: 0;
+
+  @include respond-to(sm) {
+    @include truncate;
+  }
 }
 
 // ── Progress Section ──────────────────────────────────────
@@ -189,57 +186,66 @@ $gap-xl: 20px;
 .progressSection {
   display: flex;
   flex-direction: column;
-  gap: $gap-sm;
-  padding: 0 $gap-xl $gap-lg;
+  gap: $space-2;
+  padding: 0 $space-3 $space-3;
   box-sizing: border-box;
   width: 100%;
+
+  @include respond-to(sm) {
+    padding: 0 $space-5 $space-4;
+  }
 }
 
 .progressHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $gap-base;
+  gap: $space-3;
 }
 
 .progressLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-secondary;
   margin: 0;
 }
 
 .progressCount {
-  font-size: 13px;
-  font-weight: 700;
-  color: $color-red-primary;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $brand-red;
   margin: 0;
 }
 
 .progressTrack {
   height: 8px;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   overflow: hidden;
-  background: $color-border-light;
+  background: $gray-100;
   width: 100%;
   box-sizing: border-box;
 }
 
 .progressBar {
   height: 100%;
-  border-radius: 9999px;
-  background: linear-gradient(90deg, $color-red-primary, #f87171);
+  border-radius: $radius-full;
+  background: linear-gradient(90deg, $brand-red, $error-400);
 }
 
 // ── Statistics Row ────────────────────────────────────────
+// Mobile: 2×2 grid. Desktop: 4-column row.
 
 .statRow {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $gap-sm;
-  margin-top: $gap-sm;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-2;
+  margin-top: $space-2;
   width: 100%;
   box-sizing: border-box;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .statItem {
@@ -248,23 +254,23 @@ $gap-xl: 20px;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: $color-bg-light;
-  border-radius: 10px;
-  padding: 8px 4px;
-  min-height: 52px;
+  background: $gray-50;
+  border-radius: $radius-sm + 2px;
+  padding: $space-2 $space-1;
+  min-height: 48px;
   box-sizing: border-box;
 }
 
 .statValue {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: $text-lg;
+  font-weight: $font-extrabold;
   line-height: 1;
   margin: 0;
 }
 
 .statLabel {
-  font-size: 10px;
-  color: $color-text-light;
+  font-size: $text-xs;
+  color: $text-subtle;
   margin: 0;
   line-height: 1;
 }
@@ -273,15 +279,19 @@ $gap-xl: 20px;
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 4px;
+  justify-content: flex-start;
+  gap: $space-1;
+  margin-top: $space-1;
   padding: 0;
+
+  @include respond-to(sm) {
+    justify-content: flex-end;
+  }
 }
 
 .evalCountText {
-  font-size: 12px;
-  color: $color-text-light;
+  font-size: $text-xs;
+  color: $text-subtle;
   margin: 0;
 }
 
@@ -290,72 +300,74 @@ $gap-xl: 20px;
 .quickActions {
   display: flex;
   flex-direction: column;
-  gap: $gap-base;
-  padding: 0 $gap-xl $gap-lg;
+  gap: $space-3;
+  padding: 0 $space-3 $space-3;
   box-sizing: border-box;
   width: 100%;
+
+  @include respond-to(sm) {
+    padding: 0 $space-5 $space-4;
+  }
 }
 
 .actionBtns {
   display: flex;
-  gap: $gap-sm;
+  gap: $space-2;
   width: 100%;
   box-sizing: border-box;
 }
 
 .btnMarkAll {
+  @include touch-target(48px);
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 9px 16px;
-  border-radius: 12px;
-  background: #f0fdf4;
-  color: #16a34a;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid #bbf7d0;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  background: $success-50;
+  color: $success-600;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  border: 1px solid $success-200;
   cursor: pointer;
-  transition: background 0.15s ease;
-  height: 36px;
+  transition: $transition-fast;
   box-sizing: border-box;
 
-  &:hover {
-    background: #dcfce7;
+  @include hover-only {
+    background: $success-100;
   }
 
   &:active {
-    background: #c6f6d5;
+    background: $success-200;
   }
 }
 
 .btnReset {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 9px 14px;
-  border-radius: 12px;
-  background: $color-bg-light;
-  color: $color-text-light;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid #e5e7eb;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  background: $gray-50;
+  color: $text-subtle;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  border: 1px solid $gray-200;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
-  height: 36px;
+  transition: $transition-colors;
   box-sizing: border-box;
 
-  &:hover {
-    background: #f3f4f6;
-    color: #6b7280;
+  @include hover-only {
+    background: $gray-100;
+    color: $text-muted;
   }
 
   &:active {
-    background: #e5e7eb;
+    background: $gray-200;
   }
 }
 
@@ -364,208 +376,61 @@ $gap-xl: 20px;
 }
 
 // ── Filter Tabs ────────────────────────────────────────────
+// Horizontal scrollable strip on mobile, inline on desktop.
 
 .filterTabs {
   display: flex;
   align-items: center;
-  gap: $gap-sm;
-  flex-wrap: wrap;
+  gap: $space-2;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
+  padding-bottom: $space-1;
+  -webkit-overflow-scrolling: touch;
+  @include hide-scrollbar;
+
+  @include respond-to(sm) {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
 }
 
 .filterBtn {
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  background: $color-border-light;
-  color: #6b7280;
+  @include touch-target(48px);
+  padding: 0 $space-3;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  background: $gray-100;
+  color: $text-muted;
   border: 1px solid transparent;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease;
-  height: 32px;
+  transition: $transition-colors;
   display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
   box-sizing: border-box;
+  flex-shrink: 0;
 
-  &:hover {
-    background: #e5e7eb;
-    color: #374151;
+  @include hover-only {
+    background: $gray-200;
+    color: $text-secondary;
   }
 
   &:active {
-    background: #d1d5db;
+    background: $gray-300;
   }
 
   &.active {
-    background: #fef2f2;
-    color: $color-red-primary;
-    border-color: #fecaca;
-  }
-}
-
-@media (max-width: 1200px) {
-  .topBar {
-    padding: 16px 16px 14px;
+    background: $error-50;
+    color: $brand-red;
+    border-color: $error-200;
   }
 
-  .classInfoCard {
-    margin: 12px 16px;
-    padding: 14px;
-  }
-
-  .progressSection,
-  .quickActions {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-@media (max-width: 992px) {
-  .header {
-    border-radius: 16px;
-  }
-
-  .topBar {
-    gap: 10px;
-  }
-
-  .className {
-    font-size: 15px;
-  }
-
-  .statRow {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .evalCount {
-    justify-content: flex-start;
-  }
-
-  .actionBtns {
-    flex-wrap: wrap;
-  }
-
-  .btnMarkAll,
-  .btnReset {
-    min-width: 140px;
-    flex: 1 1 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .topBar {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-
-  .headerTitle {
-    min-width: 0;
-    flex: 1 1 180px;
-  }
-
-  .statusPill {
-    order: 3;
-    margin-left: 0;
-  }
-
-  .classInfoText {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    line-height: 1.35;
-  }
-
-  .filterTabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .filterBtn {
-    flex-shrink: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .topBar {
-    padding: 14px 12px;
-  }
-
-  .className {
-    font-size: 14px;
-  }
-
-  .classCode {
-    font-size: 11px;
-  }
-
-  .backBtn {
-    width: 34px;
-    height: 34px;
-  }
-
-  .statusPill {
-    font-size: 10px;
-    padding: 4px 10px;
-  }
-
-  .classInfoCard {
-    margin: 10px 12px;
-    padding: 12px;
-    gap: 10px;
-  }
-
-  .classInfoIcon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .progressSection,
-  .quickActions {
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-bottom: 12px;
-  }
-
-  .progressLabel,
-  .progressCount {
-    font-size: 12px;
-  }
-
-  .statItem {
-    min-height: 46px;
-    padding: 6px 4px;
-  }
-
-  .statValue {
-    font-size: 16px;
-  }
-
-  .statLabel {
-    font-size: 10px;
-  }
-
-  .btnMarkAll,
-  .btnReset {
-    height: 34px;
-    font-size: 11px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .filterBtn {
-    height: 30px;
-    font-size: 11px;
-    padding: 6px 12px;
+  @include respond-to(sm) {
+    flex-shrink: initial;
   }
 }

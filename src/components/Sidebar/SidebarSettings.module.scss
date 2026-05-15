@@ -1,20 +1,20 @@
 .profileSection {
-  padding: 8px 16px;
+  padding: $space-2 $space-4;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
-  margin-bottom: 4px;
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  margin-bottom: $space-1;
   color: rgba(255, 255, 255, 0.3);
 }
 
 .sectionLabel {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: $font-semibold;
   letter-spacing: 1.5px;
 }
 
@@ -32,22 +32,24 @@
   gap: 2px;
 }
 
+// Touch-friendly profile switch item
 .profileItem {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: $space-2 $space-3;
+  border-radius: $radius-sm;
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all $transition-fast;
   text-align: left;
-  font-size: 13px;
+  font-size: $text-sm;
+  @include touch-target(44px);
 
-  &:hover:not(:disabled) {
+  @include hover-only {
     background: rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.8);
   }
@@ -60,9 +62,9 @@
 .profileItemActive {
   background: rgba(224, 32, 32, 0.15);
   color: white;
-  font-weight: 500;
+  font-weight: $font-medium;
 
-  &:hover {
+  @include hover-only {
     background: rgba(224, 32, 32, 0.2);
     color: white;
   }
@@ -71,7 +73,7 @@
 .profileAvatar {
   width: 24px;
   height: 24px;
-  border-radius: 8px;
+  border-radius: $radius-sm;
   background: rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;

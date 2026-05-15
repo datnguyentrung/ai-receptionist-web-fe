@@ -1,10 +1,9 @@
-@use "../../../styles/variables" as *;
-
-// ─── CARD ─────────────────────────────────────────────────────
+// ─── IDLE PROMO CARD ─────────────────────────────────────────
+// Shown when no check-in is in progress. Fluid and mobile-friendly.
 .card {
-  background: $white;
-  border-radius: 2rem;
-  box-shadow: 0 20px 60px -15px rgba($brand-red, 0.15);
+  background: $bg-white;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-lg;
   overflow: hidden;
   width: 100%;
   max-width: 30rem;
@@ -29,37 +28,45 @@
 // ─── BODY ─────────────────────────────────────────────────────
 .body {
   width: 100%;
-  padding: 2.5rem 2rem 2rem;
+  padding: $space-10 $space-8 $space-8;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @include below("sm") {
+    padding: $space-8 $space-5 $space-6;
+  }
 }
 
 // ─── LOGO ─────────────────────────────────────────────────────
 .logo {
-  width: 10rem;
+  width: 8rem;
   height: auto;
   object-fit: contain;
-  margin-bottom: 1.5rem;
+  margin-bottom: $space-6;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
   border-radius: 50%;
+
+  @include respond-to("sm") {
+    width: 10rem;
+  }
 }
 
 // ─── HEADING ──────────────────────────────────────────────────
 .heading {
   text-align: center;
-  margin-bottom: 1.75rem;
+  margin-bottom: $space-7;
 
   h2 {
-    font-size: 1.375rem;
-    font-weight: 700;
+    font-size: $text-xl;
+    font-weight: $font-bold;
     color: $gray-900;
-    margin: 0 0 0.375rem;
+    margin: 0 0 $space-2;
     letter-spacing: -0.01em;
   }
 
   p {
-    font-size: 0.9375rem;
+    font-size: $text-base;
     color: $gray-500;
     margin: 0;
   }
@@ -70,24 +77,28 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.75rem;
+  gap: $space-3;
+  margin-bottom: $space-7;
 }
 
+// 48px touch target for feature items
 .featureItem {
   display: flex;
   align-items: center;
-  padding: 0.875rem 1rem;
-  background-color: rgba(254, 242, 242, 0.5);
-  border-radius: 1rem;
+  padding: $space-3 $space-4;
+  background-color: rgba($error-light, 0.5);
+  border-radius: $radius-lg;
   border: 1px solid rgba($brand-red, 0.1);
   cursor: pointer;
   transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color $transition-fast,
+    box-shadow $transition-fast;
+  @include touch-target(48px);
 
-  &:hover {
-    background-color: #fef2f2;
+  @include press-effect(0.97);
+
+  @include hover-only {
+    background-color: $error-light;
     box-shadow: 0 4px 12px rgba($brand-red, 0.08);
 
     .featureIcon {
@@ -101,47 +112,49 @@
 }
 
 .featureIcon {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background-color: $white;
+  background-color: $bg-white;
   color: $brand-red;
   box-shadow: $shadow-sm;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-right: 0.875rem;
-  transition: transform 0.2s ease;
+  margin-right: $space-4;
+  transition: transform $transition-fast;
 }
 
 .featureContent {
   flex: 1;
+  min-width: 0;
 
   h3 {
-    font-size: 0.9375rem;
-    font-weight: 700;
+    font-size: $text-base;
+    font-weight: $font-bold;
     color: $gray-900;
-    margin: 0 0 0.125rem;
+    margin: 0 0 2px;
   }
 
   p {
-    font-size: 0.8125rem;
+    font-size: $text-sm;
     color: $gray-500;
     margin: 0;
+    @include truncate;
   }
 }
 
 .featureChevron {
   color: $gray-400;
   flex-shrink: 0;
-  transition: color 0.2s ease;
+  transition: color $transition-fast;
 }
 
 // ─── FOOTER / PROMPT ──────────────────────────────────────────
 .footer {
   width: 100%;
-  padding-top: 1.5rem;
+  padding-top: $space-6;
   border-top: 1px solid $gray-100;
 }
 
@@ -151,7 +164,7 @@
   align-items: center;
   justify-content: center;
   color: $brand-red;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 
 .promptIcon {
@@ -161,9 +174,9 @@
 }
 
 .promptText {
-  font-size: 1.0625rem;
-  font-weight: 600;
+  font-size: $text-base;
+  font-weight: $font-semibold;
   text-align: center;
-  line-height: 1.5;
+  line-height: $leading-normal;
   margin: 0;
 }

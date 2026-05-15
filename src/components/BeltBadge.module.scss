@@ -1,0 +1,47 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  border-radius: $radius-full;
+  border: 1px solid var(--belt-border, $gray-300);
+  background: var(--belt-bg, $gray-100);
+  color: var(--belt-color, $gray-700);
+  font-weight: $font-semibold;
+  white-space: nowrap;
+
+  .dot {
+    border-radius: $radius-full;
+    background: var(--belt-dot, $gray-400);
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+  }
+
+  // -------------------------------------------------------------------
+  // Size variants (font-size → fluid tokens)
+  // -------------------------------------------------------------------
+  &[data-size="xs"] {
+    padding: 2px $space-2;
+    font-size: $text-xs;
+
+    .dot {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  &[data-size="sm"] {
+    padding: 3px 10px;
+    font-size: $text-xs;
+  }
+
+  &[data-size="md"] {
+    padding: $space-1 $space-3;
+    font-size: $text-sm;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+    }
+  }
+}

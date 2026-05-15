@@ -1,7 +1,11 @@
+// ── Access Denied (403) — mobile-first ──────────────────────
+// Uses global BEM classes (non-module)
+
 .access-denied {
   position: relative;
   min-height: 100vh;
-  padding: 24px;
+  min-height: 100dvh;
+  padding: $space-6;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -17,6 +21,8 @@
       transparent 28%
     ),
     linear-gradient(180deg, #fff8f8 0%, #f6f7fb 100%);
+
+  @include safe-bottom($space-6);
 }
 
 .access-denied__ambient {
@@ -47,40 +53,50 @@
   position: relative;
   z-index: 1;
   width: min(100%, 720px);
-  padding: 36px 28px 28px;
+  padding: $space-8 $space-5 $space-6;
   border: 1px solid rgba(239, 68, 68, 0.12);
-  border-radius: 28px;
+  border-radius: $radius-2xl;
   background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 22px 60px rgba(17, 24, 39, 0.12);
+  box-shadow: $shadow-xl;
   backdrop-filter: blur(14px);
   text-align: center;
+
+  @include respond-to("sm") {
+    padding: $space-10 $space-8 $space-8;
+  }
 }
 
 .access-denied__icon-wrap {
-  width: 84px;
-  height: 84px;
-  margin: 0 auto 18px;
-  border-radius: 24px;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto $space-5;
+  border-radius: $radius-lg;
   display: grid;
   place-items: center;
-  color: #b91c1c;
+  color: $error-dark;
   background: linear-gradient(
     135deg,
     rgba(224, 32, 32, 0.14),
     rgba(127, 0, 0, 0.08)
   );
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+
+  @include respond-to("sm") {
+    width: 84px;
+    height: 84px;
+    margin-bottom: $space-5;
+  }
 }
 
 .access-denied__content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $space-3;
 }
 
 .access-denied__eyebrow {
-  font-size: 12px;
-  font-weight: 800;
+  font-size: $text-xs;
+  font-weight: $font-extrabold;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #9f1239;
@@ -88,70 +104,52 @@
 
 .access-denied__title {
   margin: 0;
-  font-size: clamp(2rem, 3vw, 3rem);
-  line-height: 1.05;
-  font-weight: 800;
-  color: #111827;
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: $leading-tight;
+  font-weight: $font-extrabold;
+  color: $text-primary;
 }
 
 .access-denied__subtitle {
   margin: 0 auto;
   max-width: 56ch;
-  font-size: 15px;
-  line-height: 1.7;
-  color: #4b5563;
+  font-size: $text-sm;
+  line-height: $leading-relaxed;
+  color: $text-secondary;
+
+  @include respond-to("sm") {
+    font-size: 15px;
+  }
 }
 
 .access-denied__actions {
-  margin-top: 28px;
+  margin-top: $space-7;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .access-denied__action {
-  min-width: 190px;
+  // Full width on mobile, auto on larger
+  width: 100%;
+  min-width: 0;
+  @include touch-target(48px);
+
+  @include respond-to("sm") {
+    width: auto;
+    min-width: 190px;
+  }
 }
 
 .access-denied__action--primary {
-  background: linear-gradient(135deg, #e02020 0%, #7b0000 100%);
+  background: linear-gradient(135deg, $brand-red 0%, $brand-red-dark 100%);
   color: #fff;
-  box-shadow: 0 12px 24px rgba(224, 32, 32, 0.2);
+  box-shadow: $shadow-brand;
 }
 
 .access-denied__hint {
-  margin-top: 18px;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-@media (max-width: 640px) {
-  .access-denied {
-    padding: 16px;
-  }
-
-  .access-denied__panel {
-    padding: 28px 18px 20px;
-    border-radius: 22px;
-  }
-
-  .access-denied__icon-wrap {
-    width: 72px;
-    height: 72px;
-    border-radius: 20px;
-  }
-
-  .access-denied__title {
-    font-size: 1.75rem;
-  }
-
-  .access-denied__subtitle {
-    font-size: 14px;
-  }
-
-  .access-denied__action {
-    width: 100%;
-    min-width: 0;
-  }
+  margin-top: $space-5;
+  font-size: $text-sm;
+  color: $text-muted;
 }

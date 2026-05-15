@@ -1,8 +1,8 @@
 .createClassModal {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px 14px 14px;
+  gap: $space-3;
+  padding: $space-3 $space-3 $space-4;
 }
 
 .createClassModal__fieldset {
@@ -19,93 +19,100 @@
 .createClassModal__loading {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
+  gap: $space-2;
+  padding: $space-2 $space-3;
   border-radius: 10px;
-  background: #fff1f1;
-  color: #9f1239;
-  font-size: 12px;
-  font-weight: 700;
+  background: $error-50;
+  color: $error-700;
+  font-size: $text-xs;
+  font-weight: $font-bold;
 }
 
 .createClassModal__spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(159, 18, 57, 0.2);
-  border-top-color: #9f1239;
-  border-radius: 999px;
+  border: 2px solid rgba($error-700, 0.2);
+  border-top-color: $error-700;
+  border-radius: $radius-full;
   animation: createClassSpin 700ms linear infinite;
 }
 
 .createClassModal__section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #f3f4f6;
-  border-radius: 12px;
-  background: #fff;
+  gap: $space-3;
+  padding: $space-3;
+  border: 1px solid $gray-100;
+  border-radius: $radius-md;
+  background: $bg-white;
 }
 
 .createClassModal__sectionHeader {
   h3 {
     margin: 0;
-    font-size: 13px;
-    line-height: 1.25;
-    font-weight: 700;
-    color: #111827;
+    font-size: $text-sm;
+    line-height: $leading-tight;
+    font-weight: $font-bold;
+    color: $text-heading;
   }
 
   p {
     margin: 2px 0 0;
-    font-size: 11px;
+    font-size: $text-xs;
     line-height: 1.35;
-    color: #6b7280;
+    color: $text-muted;
   }
 }
 
+// ── Grid: mobile-first inversion ──────────────────────────────
+// Mobile: single column. md+: 2-col (or 3-col with --compact).
 .createClassModal__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
+  gap: $space-3;
+  grid-template-columns: 1fr;
 
-.createClassModal__grid--compact {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    &--compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 }
 
 .createClassModal__field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $space-1;
 
   > span {
-    font-size: 11px;
-    font-weight: 700;
-    color: #4b5563;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+    color: $gray-600;
     letter-spacing: 0.02em;
   }
 
+  // iOS Safari anti-zoom: font-size ≥ 16px prevents auto-zoom on focus
   input,
   select {
     width: 100%;
-    height: 34px;
-    border: 1px solid #d1d5db;
-    border-radius: 9px;
-    padding: 0 12px;
-    font-size: 12px;
-    color: #111827;
-    background: #fff;
+    height: 40px;
+    border: 1px solid $border-strong;
+    border-radius: $radius-sm;
+    padding: 0 $space-3;
+    font-size: $text-base;
+    color: $text-heading;
+    background: $bg-white;
 
     &:focus {
       outline: none;
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+      border-color: $border-error;
+      box-shadow: 0 0 0 3px rgba($error, 0.12);
     }
 
     &:disabled {
-      background: #f9fafb;
-      color: #9ca3af;
+      background: $gray-50;
+      color: $text-subtle;
       cursor: not-allowed;
     }
   }
@@ -115,33 +122,80 @@
   grid-column: 1 / -1;
 }
 
+// ── Fee input row (input + ",000đ" suffix) ─────────────────────
+.feeRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  input {
+    text-align: right;
+  }
+}
+
+.feeSuffix {
+  color: $text-muted;
+  font-size: $text-sm;
+  white-space: nowrap;
+}
+
+// ── Duplicate schedule ID error ────────────────────────────────
+.duplicateError {
+  color: $error-600;
+  font-size: $text-xs;
+  margin-top: $space-1;
+}
+
+// ── Actions ────────────────────────────────────────────────────
 .createClassModal__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding-top: 6px;
-  border-top: 1px solid #f3f4f6;
+  gap: $space-3;
+  padding-top: $space-2;
+  border-top: 1px solid $gray-100;
+
+  @include below(sm) {
+    flex-direction: column-reverse;
+  }
 }
 
 .btn {
+  @include touch-target(48px);
+  @include press-effect;
   min-width: 130px;
-  height: 36px;
-  border-radius: 9px;
+  border-radius: $radius-sm;
   border: none;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: $text-sm;
+  font-weight: $font-bold;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include below(sm) {
+    width: 100%;
+  }
 }
 
 .btn--ghost {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid $border-strong;
+  background: $bg-white;
+  color: $gray-700;
+
+  @include hover-only {
+    background: $gray-50;
+    border-color: $gray-300;
+  }
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #e02020, #7b0000);
-  color: #fff;
+  background: $gradient-brand;
+  color: $text-on-brand;
+  box-shadow: $shadow-brand;
+
+  @include hover-only {
+    opacity: 0.9;
+  }
 }
 
 .btn:disabled {
@@ -152,27 +206,5 @@
 @keyframes createClassSpin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 720px) {
-  .createClassModal {
-    padding: 14px;
-  }
-
-  .createClassModal__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .createClassModal__grid--compact {
-    grid-template-columns: 1fr;
-  }
-
-  .createClassModal__actions {
-    flex-direction: column-reverse;
-  }
-
-  .btn {
-    width: 100%;
   }
 }

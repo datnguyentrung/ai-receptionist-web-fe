@@ -1,79 +1,79 @@
-// ── EvalQuick ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// EVAL QUICK — Popover evaluation buttons (Mobile-first)
+// ─────────────────────────────────────────────────────────────
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 4px 8px;
+  gap: $space-3;
+  margin: $space-1 $space-2;
 }
 
 .header {
-  font-size: 11px;
-  color: #9ca3af;
+  font-size: $text-xs;
+  color: $text-subtle;
   margin: 0;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: $leading-snug;
+  @include truncate;
 }
 
 .studentName {
-  color: #111827;
-  font-weight: 600;
+  color: $text-primary;
+  font-weight: $font-semibold;
 }
 
 .options {
   display: flex;
   flex-direction: row;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .optBtn {
+  @include touch-target(48px);
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 4px 3px;
-  border-radius: 10px;
+  gap: $space-1;
+  padding: $space-2 $space-1;
+  border-radius: $radius-sm + 2px;
   border: 2px solid transparent;
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: $text-xs;
+  font-weight: $font-medium;
   text-align: center;
-  opacity: 0.45;
+  opacity: 0.5;
   transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    border-color 0.12s ease,
-    opacity 0.15s ease;
+    transform $transition-fast,
+    box-shadow $transition-fast,
+    border-color $transition-fast,
+    opacity $transition-fast;
+  @include press-effect;
 
-  &:hover {
+  @include hover-only {
     opacity: 0.8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-sm;
   }
 
   &:active {
-    transform: translateY(0);
+    transform: none;
   }
 
   &.active {
-    font-weight: 700;
+    font-weight: $font-bold;
     opacity: 1;
     border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
-    transform: translateY(-1px);
+    box-shadow: $shadow-md;
   }
 }
 
 .emoji {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
 }
 
 .optLabel {
-  font-size: 8px;
+  font-size: $text-xs;
   line-height: 1;
 }

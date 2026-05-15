@@ -17,10 +17,10 @@ export function StudentHeader({
   return (
     <div className={styles.pageHead}>
       <div>
-        <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#111827" }}>
+        <h2 className={styles.pageTitle}>
           Quản lý Học Viên
         </h2>
-        <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
+        <p className={styles.pageSubtitle}>
           {totalStudents} học viên · {activeCount} đang học
         </p>
       </div>

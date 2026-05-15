@@ -1,96 +1,176 @@
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE FILTER PANEL — Bottom sheet (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
+// ── Backdrop ───────────────────────────────────────────────
+
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 100;
+  background: $bg-overlay;
+  z-index: $z-overlay;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+  align-items: flex-end;
+  justify-content: stretch;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  @include respond-to(md) {
+    align-items: center;
+    justify-content: center;
+  }
 }
+
+// ── Panel (bottom sheet on mobile, centered card on desktop)
 
 .panel {
-  background: #fff;
-  border-radius: 24px;
-  width: min(calc(100vw - 32px), 740px);
-  max-height: calc(100vh - 64px);
+  background: $bg-white;
+  width: 100%;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  // Mobile: bottom sheet
+  border-radius: $radius-2xl $radius-2xl 0 0;
+  @include safe-bottom($space-1);
+  animation: sheetIn 250ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @include respond-to(md) {
+    // Desktop: centered card
+    border-radius: $radius-2xl;
+    max-width: 740px;
+    margin: $space-6;
+    max-height: calc(100vh - #{$space-8} * 2);
+    animation: modalIn 220ms cubic-bezier(0.2, 0.85, 0.2, 1);
+  }
 }
 
+// ── Handle (mobile only) ───────────────────────────────────
+
 .header {
-  padding: 16px 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $space-3 0 $space-1;
   flex-shrink: 0;
+
+  @include respond-to(md) {
+    padding: $space-4 $space-5 $space-2;
+    justify-content: flex-end;
+  }
+}
+
+.handleBar {
+  width: 40px;
+  height: 4px;
+  border-radius: $radius-full;
+  background: $gray-300;
+
+  @include respond-to(md) {
+    display: none;
+  }
 }
 
 .closeBtn {
-  width: 32px;
-  height: 32px;
+  @include touch-target(48px);
   border-radius: 50%;
-  border: 1.5px solid #e8ebf0;
-  background: #fff;
-  display: flex;
+  border: 1.5px solid $gray-200;
+  background: $bg-white;
+  display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #374151;
-  transition: background 0.15s;
+  color: $text-secondary;
+  transition: $transition-fast;
 
-  &:hover {
-    background: #f9fafb;
+  @include respond-to(md) {
+    display: flex;
+  }
+
+  @include hover-only {
+    background: $gray-50;
+    border-color: $gray-300;
   }
 }
+
+// ── Scrollable Body ────────────────────────────────────────
 
 .body {
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: $gray-300 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-300;
+    border-radius: 3px;
+  }
 }
 
+// ── Sections ───────────────────────────────────────────────
+
 .section {
-  padding: 16px 20px;
+  padding: $space-3 $space-4;
+
+  @include respond-to(md) {
+    padding: $space-4 $space-5;
+  }
 }
 
 .sectionTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 12px;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-primary;
+  margin: 0 0 $space-3;
 }
 
 .divider {
   height: 1px;
-  background: #f3f4f6;
-  margin-bottom: 16px;
+  background: $border-subtle;
+  margin-bottom: $space-4;
 }
 
 .chipGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: $space-2;
 }
+
+// ── Input Row ──────────────────────────────────────────────
 
 .inputRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .inputBox {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: 12px;
-  border: 1.5px solid #e8ebf0;
-  background: #fff;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  border: 1.5px solid $gray-200;
+  background: $bg-white;
   flex: 1;
   min-width: 180px;
 }
 
 .inputIcon {
-  color: #9ca3af;
+  color: $text-subtle;
   flex-shrink: 0;
 }
 
@@ -98,30 +178,51 @@
   flex: 1;
   outline: none;
   background: transparent;
-  font-size: 13px;
-  color: #374151;
+  font-size: $text-sm;
+  color: $text-secondary;
   min-width: 0;
 }
 
+// ── Footer ─────────────────────────────────────────────────
+
 .footer {
-  padding: 16px 20px;
+  padding: $space-4 $space-4;
+  @include safe-bottom($space-3);
+  border-top: 1px solid $border-subtle;
   flex-shrink: 0;
-  border-top: 1px solid #f3f4f6;
+
+  @include respond-to(md) {
+    padding: $space-4 $space-5;
+  }
 }
 
 .applyBtn {
+  @include touch-target(48px);
+  @include press-effect;
   width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  background: #2563eb;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
+  border-radius: $radius-md + 2px;
+  background: $info-600;
+  color: $white;
+  font-size: $text-base;
+  font-weight: $font-bold;
   cursor: pointer;
   border: none;
-  transition: opacity 0.15s;
+  transition: $transition-fast;
+  box-shadow: 0 4px 14px rgba($info-600, 0.3);
 
-  &:hover {
+  @include hover-only {
     opacity: 0.9;
   }
+}
+
+// ── Animations ─────────────────────────────────────────────
+
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
 }

@@ -1,4 +1,4 @@
-import logo from "@/assets/taekwondo.jpg";
+import logo from "/taekwondo.jpg";
 import type { CheckInResponse } from "@/types";
 import { CheckCircle, Clock, MapPin, UserCircle, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";

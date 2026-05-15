@@ -1,5 +1,5 @@
-import logoImage from "@assets/taekwondo.jpg";
 import styles from "./LeftPanel.module.scss";
+import logoImage from "/taekwondo.jpg";
 
 export default function LeftPanel() {
   return (
@@ -108,58 +108,15 @@ export default function LeftPanel() {
           />
         </div>
 
-        <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.8)",
-              fontSize: "11px",
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-            }}
-          >
-            Chào mừng trở lại
-          </p>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.5)",
-              fontSize: "11px",
-              marginTop: "0.25rem",
-            }}
-          >
-            Đăng nhập để quản lý hệ thống
-          </p>
+        <div className={styles.welcomeText}>
+          <p className={styles.welcomeTitle}>Chào mừng trở lại</p>
+          <p className={styles.welcomeSubtitle}>Đăng nhập để quản lý hệ thống</p>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            width: "9rem",
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              height: "1px",
-              background: "rgba(255,255,255,0.2)",
-            }}
-          />
-          <div
-            style={{
-              width: "6px",
-              height: "6px",
-              borderRadius: "9999px",
-              background: "rgba(255,255,255,0.4)",
-            }}
-          />
-          <div
-            style={{
-              flex: 1,
-              height: "1px",
-              background: "rgba(255,255,255,0.2)",
-            }}
-          />
+        <div className={styles.brandDivider}>
+          <div className={styles.brandDividerLine} />
+          <div className={styles.brandDividerDot} />
+          <div className={styles.brandDividerLine} />
         </div>
       </div>
     </div>

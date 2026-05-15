@@ -1,26 +1,38 @@
 .weekClassItem {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #f0f0f5;
-  padding: 16px;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  border: 1px solid $border-subtle;
+  padding: $space-4;
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: box-shadow 0.2s;
+  gap: $space-4;
+  transition: $transition-base;
   cursor: pointer;
 
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  @include press-effect(0.98);
+
+  @include hover-only {
+    box-shadow: $shadow-sm;
   }
 }
 
 .timeBlock {
   flex-shrink: 0;
-  // width: 120px;
   text-align: center;
-  padding: 8px;
-  border-radius: 12px;
-  background: #fef2f2;
+  padding: $space-2;
+  border-radius: $radius-md;
+  background: $error-50;
+}
+
+.timeLabel {
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  color: $brand-red;
+}
+
+.timeDuration {
+  font-size: 10px;
+  color: $text-subtle;
 }
 
 .weekClassInfo {
@@ -31,84 +43,89 @@
 .weekClassTitleRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
   flex-wrap: wrap;
+}
+
+.weekClassTitle {
+  @include truncate;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  color: $text-heading;
 }
 
 .weekClassMetaRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: $space-3;
+  margin-top: $space-1;
   flex-wrap: wrap;
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: #9ca3af;
-  font-size: 11px;
+  gap: $space-1;
+  color: $text-subtle;
+  font-size: $text-xs;
 }
 
-// Menu button
+// ── Menu button ────────────────────────────────────────────────
 .menuBtn {
-  width: 30px;
-  height: 30px;
+  @include touch-target(44px);
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #d1d5db;
+  color: $text-disabled;
   flex-shrink: 0;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  border-radius: $radius-xs;
+  transition: $transition-fast;
 
-  &:hover {
-    background-color: #f3f4f6;
+  @include hover-only {
+    background-color: $gray-100;
   }
 
   &:active {
-    background-color: #e5e7eb;
+    background-color: $gray-200;
   }
 }
 
-// Menu content (Google Sheet style)
+// ── Menu content (Google Sheet style) ──────────────────────────
 .weekMenuContent {
   min-width: 200px;
-  padding: 6px 0;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: $space-2 0;
+  border: 1px solid $gray-250;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-md;
 }
 
-// Menu items with icons
 .menuItemWithIcon {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  height: 32px;
-  font-size: 13px;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+  height: $space-8;
+  font-size: $text-sm;
   cursor: pointer;
-  color: #202124;
-  transition: background-color 0.2s;
+  color: $gray-800;
+  transition: background-color $transition-fast;
 
-  &:hover {
-    background-color: #f8f9fa;
+  @include hover-only {
+    background-color: $gray-50;
   }
 
   svg {
     flex-shrink: 0;
-    color: #5f6368;
+    color: $gray-500;
   }
 }
 
-// Menu separator (Google Sheet style)
+// ── Menu separator (Google Sheet style) ────────────────────────
 :global([data-slot="dropdown-menu-separator"]) {
-  margin: 4px 0 !important;
+  margin: $space-1 0 !important;
   height: 1px !important;
-  background: #e8eaed !important;
+  background: $gray-200 !important;
 }

@@ -1,8 +1,8 @@
-﻿// ClassSchedules.module.scss
+// ClassSchedules.module.scss
 
 // ── Page wrapper ──────────────────────────────────────────────
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-5;
 }

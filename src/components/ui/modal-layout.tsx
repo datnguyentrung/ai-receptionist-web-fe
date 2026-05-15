@@ -115,6 +115,11 @@ export function ModalLayout({
         role="dialog"
         aria-modal="true"
       >
+        {/* Drag handle — visible on mobile, hidden on desktop */}
+        <div className={styles.handle} aria-hidden="true">
+          <div className={styles.handleBar} />
+        </div>
+
         {withSurface ? (
           <div className={cn(styles.surface, surfaceClassName)}>
             {(title || subtitle || showCloseButton) && (

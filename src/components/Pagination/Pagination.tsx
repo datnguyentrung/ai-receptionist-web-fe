@@ -48,7 +48,7 @@ export function Pagination({
 
   return (
     <div className={styles.footer}>
-      <p style={{ fontSize: "12px", color: "#9CA3AF" }}>
+      <p className={styles.resultCount}>
         Hiển thị {currentListLength} kết quả
       </p>
       <div className={styles.btns}>

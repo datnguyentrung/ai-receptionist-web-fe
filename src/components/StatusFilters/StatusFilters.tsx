@@ -41,7 +41,6 @@ export default function StatusFilters<T extends string>({
           placeholder={searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ fontSize: "13px", color: "#374151" }}
         />
       </div>
       {filterOptions.map((option) => {

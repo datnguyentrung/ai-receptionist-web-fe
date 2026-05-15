@@ -82,10 +82,10 @@ export function SummaryStatCards({
             >
               <Icon size={16} style={{ color: c.color }} />
             </div>
-            <p style={{ fontSize: "22px", fontWeight: 800, color: c.color }}>
+            <p className={styles.summaryValue} style={{ color: c.color }}>
               {c.value}
             </p>
-            <p style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: 500 }}>
+            <p className={styles.summaryLabel}>
               {c.label}
             </p>
           </button>

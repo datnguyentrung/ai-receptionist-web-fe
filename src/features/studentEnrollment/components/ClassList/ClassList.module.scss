@@ -1,11 +1,18 @@
+// ---------------------------------------------------------------------------
+// Class List — Mobile-first refactored
+// ---------------------------------------------------------------------------
+$accent: $brand-red;
+$accent-dark: $brand-red-dark;
+$accent-light: $brand-red-400;
+
 .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: $space-2;
 }
 
 .fieldTransition {
-  transition: all 0.2s;
+  transition: $transition-base;
 }
 
 .fieldDisabled {
@@ -15,13 +22,13 @@
 
 .stateBox {
   text-align: center;
-  padding: 28px 0;
-  color: #8a92a6;
-  font-size: 13px;
+  padding: $space-7 0;
+  color: $surface-subtle;
+  font-size: $text-sm;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .stateEmoji {
@@ -32,48 +39,56 @@
 .stateLoader {
   width: 24px;
   height: 24px;
-  color: #c0392b;
+  color: $brand-red;
 }
 
 .listRoot {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
+  gap: $space-3;
+  margin-top: $space-1;
 }
 
 .listRootGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
 }
 
 .listRootGridTwo {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .listRootGridThree {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  @include respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .classItem {
+  @include touch-target(48px);
   display: flex;
   align-items: center;
-  background: var(--tkd-bg3, #f7f8fa);
-  border: 1.5px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
-  border-radius: var(--tkd-radius, 12px);
-  padding: 13px 16px;
+  background: $surface-50;
+  border: 1.5px solid $border-default;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
   cursor: pointer;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-  gap: 12px;
+  transition: $transition-colors;
+  gap: $space-3;
   position: relative;
   overflow: hidden;
+  @include press-effect;
 
-  &:hover {
-    border-color: rgba(192, 57, 43, 0.35);
-    background: rgba(192, 57, 43, 0.05);
+  @include hover-only {
+    border-color: rgba($brand-red, 0.35);
+    background: rgba($brand-red, 0.05);
   }
 }
 
@@ -85,7 +100,7 @@
 .classItemGrid.classItemStaticAction {
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: $space-3;
 }
 
 .classItemGrid.classItemStaticAction .content {
@@ -94,15 +109,15 @@
 
 .classItemGrid.classItemStaticAction .meta {
   flex-wrap: wrap;
-  row-gap: 6px;
+  row-gap: $space-2;
 }
 
 .classItemStaticAction {
   cursor: default;
 
-  &:hover {
-    border-color: #e2e8f0;
-    background: #fff;
+  @include hover-only {
+    border-color: $border-default;
+    background: $bg-surface;
   }
 }
 
@@ -111,8 +126,8 @@
   cursor: not-allowed;
 
   &:hover {
-    border-color: var(--tkd-border, rgba(0, 0, 0, 0.09));
-    background: var(--tkd-bg3, #f7f8fa);
+    border-color: $border-default;
+    background: $surface-50;
   }
 }
 
@@ -129,33 +144,33 @@
 .classItemGrid .content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $space-1;
 }
 
 .title {
-  font-weight: 700;
-  color: #1a1d23;
-  font-size: 13.5px;
+  font-weight: $font-bold;
+  color: $text-primary;
+  font-size: $text-sm;
   line-height: 1.35;
 }
 
 .titleCompact {
-  font-size: 12.5px;
+  font-size: $text-xs;
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
-  font-size: 10.5px;
-  color: #8a92a6;
+  gap: $space-3;
+  margin-top: $space-1;
+  font-size: $text-xs;
+  color: $surface-subtle;
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: $space-1;
 }
 
 .metaIcon {
@@ -163,9 +178,9 @@
 }
 
 .classItemCompact {
-  padding: 10px 14px !important;
-  gap: 10px !important;
-  margin-bottom: 4px;
+  padding: $space-3 $space-4 !important;
+  gap: $space-3 !important;
+  margin-bottom: $space-1;
 
   &:last-child {
     margin-bottom: 0;
@@ -174,13 +189,13 @@
   .classCheck {
     width: 16px;
     height: 16px;
-    border-radius: 4px;
+    border-radius: $radius-xs;
   }
 }
 
 .classItemSelected {
-  border-color: var(--tkd-red-lt, #e74c3c);
-  background: rgba(192, 57, 43, 0.1);
+  border-color: $accent-light;
+  background: rgba($brand-red, 0.1);
 
   &::before {
     content: "";
@@ -189,8 +204,8 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: var(--tkd-red-lt, #e74c3c);
-    border-radius: 2px 0 0 2px;
+    background: $accent-light;
+    border-radius: $radius-xs 0 0 $radius-xs;
   }
 }
 
@@ -199,65 +214,54 @@
   height: 18px;
   flex-shrink: 0;
   border-radius: 5px;
-  border: 1.5px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
-  background: #fff;
+  border: 1.5px solid $border-default;
+  background: $white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .classItemSelected .classCheck {
-  background: var(--tkd-red-lt, #e74c3c);
-  border-color: var(--tkd-red-lt, #e74c3c);
-  color: #fff;
+  background: $accent-light;
+  border-color: $accent-light;
+  color: $white;
 }
 
 .deleteWrapper {
   margin-left: auto;
-  padding-left: 12px;
-  border-left: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  padding-left: $space-3;
+  border-left: 1px solid $border-default;
 }
 
 .classItemGrid .deleteWrapper {
   margin-left: 0;
   margin-top: auto;
   padding-left: 0;
-  padding-top: 12px;
+  padding-top: $space-3;
   border-left: 0;
-  border-top: 1px solid var(--tkd-border, rgba(0, 0, 0, 0.09));
+  border-top: 1px solid $border-default;
   width: 100%;
 }
 
 .btnDelete {
+  @include touch-target(44px);
+  @include press-effect;
+
   width: 100%;
-  padding: 6px 12px;
+  padding: $space-2 $space-3;
   background: transparent;
-  border: 1px solid var(--tkd-red-lt, #e74c3c);
-  color: var(--tkd-red-lt, #e74c3c);
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
+  border: 1px solid $accent-light;
+  color: $accent-light;
+  border-radius: $radius-sm;
+  font-size: $text-xs;
+  font-weight: $font-bold;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: $transition-fast;
   text-transform: uppercase;
 
-  &:hover {
-    background: var(--tkd-red-lt, #e74c3c);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.2);
-  }
-}
-
-@media (max-width: 1100px) {
-  .listRootGridThree {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .listRootGrid,
-  .listRootGridTwo,
-  .listRootGridThree {
-    grid-template-columns: 1fr;
+  @include hover-only {
+    background: $accent-light;
+    color: $white;
+    box-shadow: $shadow-brand;
   }
 }

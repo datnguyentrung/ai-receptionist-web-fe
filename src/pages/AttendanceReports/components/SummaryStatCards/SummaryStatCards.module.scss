@@ -1,36 +1,51 @@
+// ─────────────────────────────────────────────────────────────
+// SUMMARY STAT CARDS — Clickable filter cards (Mobile-first)
+// ─────────────────────────────────────────────────────────────
+
 .summaryCard {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid #f0f0f5;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $space-2;
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition:
-    border-color 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: $transition-fast;
+  @include press-effect;
 
-  &:hover {
-    border-color: #d1d5db;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
+  @include hover-only {
+    border-color: $border-strong;
+    box-shadow: $shadow-sm;
   }
 }
 
 .summaryIconWrap {
   width: 36px;
   height: 36px;
-  border-radius: 12px;
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.summaryValue {
+  margin: 0;
+  font-size: $text-2xl;
+  font-weight: $font-extrabold;
+  line-height: 1;
+}
+
+.summaryLabel {
+  margin: 0;
+  font-size: $text-xs;
+  color: $text-subtle;
+  font-weight: $font-medium;
+}
+
 .summaryCardActive {
-  border-color: #111827;
+  border-color: $gray-900;
   box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
 }

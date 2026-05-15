@@ -51,8 +51,8 @@ function ClassGridInner({
   if (classGroups.length === 0) {
     return (
       <div className={styles.emptyState}>
-        <Users size={40} style={{ color: "#D1D5DB", margin: "0 auto 12px" }} />
-        <p style={{ fontSize: "14px", color: "#9CA3AF" }}>
+        <Users size={40} />
+        <p>
           Không tìm thấy lớp học
         </p>
       </div>

@@ -1,37 +1,46 @@
-@use "../../../styles/variables" as *;
-
-// ─── CONTAINER ────────────────────────────────────────────────
+// ─── VOICE WAVE INDICATOR ────────────────────────────────────
+// Mobile: bottom-center, safe-area aware
+// Desktop: bottom-right (original position)
 .container {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: $space-5;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  background: #ffffff;
+  background: $bg-white;
   box-shadow: 0 10px 30px -5px rgba($brand-red, 0.15);
-  border-radius: 999px;
-  padding: 0.75rem 1.5rem 0.75rem 1rem;
-  border: 1px solid #f3f4f6;
-  z-index: 50;
+  border-radius: $radius-full;
+  padding: $space-3 $space-5 $space-3 $space-4;
+  border: 1px solid $gray-100;
+  z-index: $z-sticky;
+  @include safe-bottom($space-3);
+
+  @include respond-to("md") {
+    left: auto;
+    right: $space-8;
+    bottom: $space-8;
+    transform: none;
+  }
 }
 
 // ─── MIC ICON ─────────────────────────────────────────────────
 .micCircle {
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: #fef2f2;
+  width: 40px;
+  height: 40px;
+  background-color: $error-light;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1rem;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  margin-right: $space-4;
+  box-shadow: $shadow-inner;
   flex-shrink: 0;
 
   svg {
     color: $brand-red;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: $space-5;
+    height: $space-5;
   }
 }
 
@@ -39,7 +48,7 @@
 .bars {
   display: flex;
   align-items: flex-end;
-  height: 1.5rem;
+  height: $space-6;
   gap: 3px;
   width: 4rem;
 }
@@ -47,7 +56,7 @@
 .bar {
   width: 6px;
   background-color: $brand-red;
-  border-radius: 999px;
+  border-radius: $radius-full;
   transform-origin: bottom;
   opacity: 0.8;
   animation: waveBar 1.5s ease-in-out infinite;
@@ -87,9 +96,10 @@
 
 // ─── LABEL ────────────────────────────────────────────────────
 .label {
-  margin-left: 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6b7280;
+  margin-left: $space-4;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $text-muted;
   letter-spacing: 0.025em;
+  white-space: nowrap;
 }

@@ -1,5 +1,3 @@
-@use "../../../styles/variables" as *;
-
 // ─── MODAL OVERLAY ────────────────────────────────────────────
 .overlay {
   position: fixed;
@@ -7,24 +5,29 @@
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 200;
+  z-index: $z-tooltip;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: $space-4;
+  @include safe-bottom($space-4);
 }
 
 // ─── CARD ─────────────────────────────────────────────────────
 .card {
-  background: #ffffff;
-  border-radius: 2rem;
+  background: $bg-white;
+  border-radius: $radius-2xl;
   box-shadow:
     0 32px 80px -12px rgba(0, 0, 0, 0.35),
     0 0 0 1px rgba($brand-red, 0.08);
   overflow: hidden;
   width: 100%;
   max-width: 34rem;
-  border: 1px solid #f3f4f6;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  @include hide-scrollbar;
+  border: 1px solid $gray-100;
   position: relative;
 }
 
@@ -45,34 +48,29 @@
   border-radius: 0 2px 2px 0;
 }
 
-// ─── CLOSE BUTTON ─────────────────────────────────────────────
+// ─── CLOSE BUTTON — 48px touch target ────────────────────────
 .closeBtn {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: $space-5;
+  right: $space-5;
   z-index: 20;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
+  border-radius: $radius-full;
   border: none;
-  background: #f3f4f6;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  background: $gray-100;
+  color: $text-muted;
+  @include touch-target(36px);
   transition:
-    background 0.15s,
-    color 0.15s;
+    background $transition-fast,
+    color $transition-fast;
 
-  &:hover {
-    background: #fee2e2;
+  @include hover-only {
+    background: $error-light;
     color: $brand-red;
   }
 }
 
 .topStrip {
-  height: 8px;
+  height: $space-2;
   width: 100%;
   background-color: $brand-red;
 }
@@ -80,14 +78,18 @@
 // ─── DISMISS HINT ─────────────────────────────────────────────
 .dismissHint {
   text-align: center;
-  font-size: 0.75rem;
-  color: #9ca3af;
-  padding: 0.75rem 1rem 1rem;
-  border-top: 1px solid #f3f4f6;
+  font-size: $text-xs;
+  color: $text-subtle;
+  padding: $space-3 $space-4 $space-4;
+  border-top: 1px solid $gray-100;
 }
 
 .body {
-  padding: 2rem;
+  padding: $space-8;
+
+  @include below("sm") {
+    padding: $space-5;
+  }
 }
 
 // ─── SUCCESS HEADER ───────────────────────────────────────────
@@ -97,8 +99,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: $space-4;
+  margin-bottom: $space-8;
 }
 
 // ─── AI MESSAGE ───────────────────────────────────────────────
@@ -106,23 +108,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 0;
-  margin-bottom: 1.25rem;
+  padding: $space-6 0;
+  margin-bottom: $space-5;
   text-align: center;
 }
 
 .aiMessage {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1.15;
-  margin: 0 1rem;
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+  line-height: $leading-snug;
+  margin: 0 $space-4;
 }
 
 .iconCircle {
   width: 5rem;
   height: 5rem;
-  background-color: #fef2f2;
+  background-color: $error-light;
   color: $brand-red;
   border-radius: 50%;
   display: flex;
@@ -131,28 +133,34 @@
 }
 
 .successTitle {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: $text-3xl;
+  font-weight: $font-bold;
+  color: $text-primary;
   letter-spacing: -0.025em;
   margin: 0;
 }
 
 .successSubtitle {
   color: $brand-red;
-  font-weight: 500;
-  margin: 0.25rem 0 0;
+  font-weight: $font-medium;
+  margin: $space-1 0 0;
 }
 
 // ─── PROFILE ──────────────────────────────────────────────────
 .profile {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  background-color: rgba(249, 250, 251, 0.8);
-  border-radius: 1rem;
-  border: 1px solid #f3f4f6;
+  gap: $space-5;
+  padding: $space-5;
+  background-color: rgba($gray-50, 0.8);
+  border-radius: $radius-lg;
+  border: 1px solid $gray-100;
+
+  // Stack on very small screens
+  @include below("sm") {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 .avatarWrapper {
@@ -161,47 +169,52 @@
 }
 
 .avatar {
-  width: 7rem;
-  height: 7rem;
+  width: 5rem;
+  height: 5rem;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 4px solid $bg-white;
+  box-shadow: $shadow-md;
   display: block;
+
+  @include respond-to("sm") {
+    width: 7rem;
+    height: 7rem;
+  }
 }
 
 .verifiedBadge {
   position: absolute;
   bottom: 4px;
   right: 4px;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: $space-6;
+  height: $space-6;
   background-color: $brand-red;
-  border: 2px solid #ffffff;
+  border: 2px solid $bg-white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: $bg-white;
 }
 
 .studentName {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  color: $text-primary;
   margin: 0;
 }
 
 .beltBadge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  margin-top: 0.5rem;
-  border-radius: 999px;
-  background-color: rgba(254, 226, 226, 0.8);
+  padding: $space-1 $space-3;
+  margin-top: $space-2;
+  border-radius: $radius-full;
+  background-color: rgba($error-light, 0.8);
   color: $brand-red;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
   border: 1px solid rgba($brand-red, 0.2);
 }
 
@@ -210,117 +223,117 @@
   height: 8px;
   border-radius: 50%;
   background-color: $brand-red;
-  margin-right: 0.5rem;
+  margin-right: $space-2;
   box-shadow: 0 0 8px rgba($brand-red, 0.8);
 }
 
 .memberId {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0.5rem 0 0;
+  color: $text-muted;
+  font-size: $text-sm;
+  margin: $space-2 0 0;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: $space-1;
 }
 
 // ─── SCHEDULE GRID ────────────────────────────────────────────
 .scheduleGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: $space-3;
+  margin-top: $space-8;
 }
 
 .infoCard {
-  padding: 1.25rem;
-  background: #ffffff;
-  border: 1px solid #f3f4f6;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  border-radius: 0.75rem;
+  padding: $space-5;
+  background: $bg-white;
+  border: 1px solid $gray-100;
+  box-shadow: $shadow-xs;
+  border-radius: $radius-md;
 }
 
 .infoCardLabel {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
+  gap: $space-2;
+  color: $text-muted;
+  margin-bottom: $space-2;
 
   svg {
     color: $brand-red;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: $space-5;
+    height: $space-5;
   }
 
   span {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: $text-xs;
+    font-weight: $font-medium;
     text-transform: uppercase;
     letter-spacing: 0.075em;
   }
 }
 
 .infoCardTime {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: $text-3xl;
+  font-weight: $font-bold;
+  color: $text-primary;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.025em;
   margin: 0;
 }
 
 .infoCardNote {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  margin: 0.25rem 0 0;
+  font-size: $text-xs;
+  color: $text-subtle;
+  margin: $space-1 0 0;
 }
 
 .infoCardAccent {
-  padding: 1.25rem;
+  padding: $space-5;
   background-color: $brand-red;
-  border-radius: 0.75rem;
-  color: #ffffff;
+  border-radius: $radius-md;
+  color: $bg-white;
   box-shadow: 0 10px 30px -10px rgba($brand-red, 0.5);
 }
 
 .infoCardAccentLabel {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $space-2;
   color: #fecaca;
-  margin-bottom: 0.5rem;
+  margin-bottom: $space-2;
 
   svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: $space-5;
+    height: $space-5;
   }
 
   span {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: $text-xs;
+    font-weight: $font-medium;
     text-transform: uppercase;
     letter-spacing: 0.075em;
   }
 }
 
 .infoCardAccentTitle {
-  font-size: 1.125rem;
-  font-weight: 700;
-  line-height: 1.3;
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  line-height: $leading-snug;
   margin: 0;
 }
 
 .infoCardAccentNote {
   color: #fecaca;
-  font-size: 0.875rem;
-  margin: 0.25rem 0 0;
+  font-size: $text-sm;
+  margin: $space-1 0 0;
 }
 
 // ─── DECORATIVE DOTS ──────────────────────────────────────────
 .decorDots {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: $space-2;
+  right: $space-2;
   opacity: 0.05;
   pointer-events: none;
 }
