@@ -1,6 +1,10 @@
 @import "./styles/tailwind.css";
 @import "./styles/fonts.css";
 
+/* ============================================================
+   BASE RESETS
+   (Consolidated from base.scss + original index.css — no duplicates)
+   ============================================================ */
 @layer base {
   *,
   *::before,
@@ -27,10 +31,30 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    min-width: 320px;
+  html {
+    font-size: var(--font-size, 16px);
+    -webkit-text-size-adjust: 100%;
   }
 
+  body {
+    background-color: #f4f6fa;
+    color: #111827;
+    min-width: 320px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Typography reset */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+  }
+
+  /* Interactive element resets */
   button {
     font-family: inherit;
     cursor: pointer;
@@ -43,16 +67,152 @@
     color: inherit;
   }
 
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
+  /* Media resets */
   img {
     display: block;
     max-width: 100%;
+    height: auto;
   }
 
   table {
     border-collapse: collapse;
+    width: 100%;
   }
 
   svg {
     flex-shrink: 0;
+  }
+
+  /* Tailwind border/ring defaults */
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Default typography for HTML elements (from theme.css) */
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label,
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* ============================================================
+   MOBILE OPTIMIZATIONS
+   ============================================================ */
+
+/* Remove tap highlight on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Prevent body scroll when overlay/modal is open */
+body.overlay-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Smooth momentum scrolling for scrollable containers */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Safe area support for notch/home-indicator devices */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Skeleton shimmer animation (for skeleton loaders) */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 25%,
+    #f3f4f6 50%,
+    #e5e7eb 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* Disable hover effects on touch devices to prevent "sticky" hover */
+@media (hover: none) {
+  .hover-none:hover {
+    background: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+    box-shadow: inherit !important;
   }
 }

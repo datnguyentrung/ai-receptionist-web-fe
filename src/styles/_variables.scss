@@ -3,8 +3,9 @@
 // ============================================================
 
 // ------------------------------------------------------------
-// Breakpoints
+// Breakpoints (mobile-first)
 // ------------------------------------------------------------
+$xs: 375px;
 $sm: 640px;
 $md: 768px;
 $lg: 1024px;
@@ -232,19 +233,21 @@ $space-16: 64px;
 $space-20: 80px;
 
 // ------------------------------------------------------------
-// Typography
+// Typography — Fluid sizing via clamp()
+// Scales smoothly between mobile and desktop without breakpoints
+// Format: clamp(min, preferred, max)
 // ------------------------------------------------------------
 $font-sans: "Inter", "Poppins", system-ui, sans-serif;
 $font-mono: "Fira Code", "Cascadia Code", monospace;
 
-$text-xs: 0.75rem; // 12px
-$text-sm: 0.875rem; // 14px
-$text-base: 1rem; // 16px
-$text-lg: 1.125rem; // 18px
-$text-xl: 1.25rem; // 20px
-$text-2xl: 1.5rem; // 24px
-$text-3xl: 1.875rem; // 30px
-$text-4xl: 2.25rem; // 36px
+$text-xs: clamp(0.6875rem, 0.65rem + 0.2vw, 0.75rem); // 11–12px
+$text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem); // 12.8–14px
+$text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem); // 15–16px
+$text-lg: clamp(1.05rem, 1rem + 0.3vw, 1.125rem); // 16.8–18px
+$text-xl: clamp(1.15rem, 1.05rem + 0.5vw, 1.25rem); // 18.4–20px
+$text-2xl: clamp(1.3rem, 1.15rem + 0.75vw, 1.5rem); // 20.8–24px
+$text-3xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem); // 24–30px
+$text-4xl: clamp(1.75rem, 1.5rem + 1.25vw, 2.25rem); // 28–36px
 
 $font-normal: 400;
 $font-medium: 500;
