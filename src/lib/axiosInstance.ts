@@ -180,6 +180,7 @@ export const javaApi = setupInterceptors(
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "ngrok-skip-browser-warning": "true", // Header đặc biệt để bỏ qua cảnh báo của ngrok khi dùng tunnel
       },
     }),
   ),

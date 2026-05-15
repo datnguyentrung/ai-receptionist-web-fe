@@ -1,0 +1,21 @@
+{
+  "short_name": "VoDuong",
+  "name": "Hệ thống Điểm danh Võ đường",
+  "icons": [
+    {
+      "src": "/taekwondo.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/taekwondo.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#000000"
+}

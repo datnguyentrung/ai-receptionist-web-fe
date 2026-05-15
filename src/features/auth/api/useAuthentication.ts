@@ -1,6 +1,7 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import { userAPI } from "@/features/user";
+import { cleanupFcm, requestNotificationPermission } from "@/services/fcm";
 import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -82,6 +83,8 @@ export const useLogin = () => {
 
         showSuccessToast("Đăng nhập thành công");
         navigate("/");
+
+        requestNotificationPermission().catch(() => {});
       } catch (error) {
         showErrorToast(
           "Lỗi khi lấy thông tin user: " + getLoginErrorMessage(error),
@@ -102,6 +105,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
+      cleanupFcm().catch(() => {});
       logout();
       queryClient.clear();
       navigate("/login");
