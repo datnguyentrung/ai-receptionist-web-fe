@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm run:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx sass:*)",
+      "Bash(xargs wc:*)"
     ]
   }
 }

@@ -1,17 +1,45 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 1. Quan trọng: Link đến file manifest để biến web thành App -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Cấu hình màu sắc thanh công cụ trên điện thoại -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
     <script
       src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
       crossorigin="anonymous"
     ></script>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="/src/assets/taekwondo.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" type="image/jpeg" href="/taekwondo.jpg" />
     <title>Taekwondo Văn Quán</title>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Script chạy chính của React/Vite -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- 2. Script đăng ký Service Worker (Nằm trong body) -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          // Đăng ký file service worker của Firebase
+          navigator.serviceWorker
+            .register("/firebase-messaging-sw.js")
+            .then((reg) => {
+              console.log("FCM Service Worker đã sẵn sàng!", reg.scope);
+            })
+            .catch((err) => {
+              console.log("Lỗi đăng ký Service Worker:", err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
