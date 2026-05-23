@@ -1,6 +1,7 @@
 import { ChevronRight, Sparkles, Star, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 import styles from "./IdlePromoCard.module.scss";
+import logoImg from "/taekwondo.jpg";
 
 export function IdlePromoCard() {
   return (
@@ -19,7 +20,7 @@ export function IdlePromoCard() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          src="/taekwondo.jpg"
+          src={logoImg}
           alt="Taekwondo Văn Quán Logo"
           className={styles.logo}
         />
