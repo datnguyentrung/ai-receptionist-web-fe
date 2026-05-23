@@ -52,16 +52,16 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 
-  // Mobile: tighter padding + safe bottom for notched devices
-  padding: $space-3;
+  // // Mobile: tighter padding + safe bottom for notched devices
+  // padding: $space-3;
 
-  @include safe-bottom($space-3);
+  // @include safe-bottom($space-3);
 
-  @include respond-to("sm") {
-    padding: $space-4;
-  }
+  // @include respond-to("sm") {
+  //   padding: $space-4;
+  // }
 
-  @include respond-to("md") {
-    padding: $space-6;
-  }
+  // @include respond-to("md") {
+  //   // padding: $space-6;
+  // }
 }
