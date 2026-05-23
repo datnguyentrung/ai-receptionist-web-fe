@@ -1,5 +1,4 @@
 import type { Belt } from "@/config/constants";
-import type { QuarterSummary } from "@/types/Report/YearlySummaryTypes";
 
 export interface LeaderboardResponse<T> {
   year: number;
@@ -15,5 +14,4 @@ export interface RankItem<T> {
   fullName: string;
   belt: Belt;
   data: T;
-  quarterSummary?: QuarterSummary;
 }

@@ -1,4 +1,5 @@
 // ── Login Page (rendered inside AuthLayout) ─────────────────
+@use "sass:color" as color;
 .formHeader {
   margin-bottom: $space-8;
 }
@@ -51,6 +52,6 @@
   align-items: center;
 
   @include hover-only {
-    color: darken($brand-red, 15%);
+    color: color.adjust($brand-red, $lightness: -15%);
   }
 }

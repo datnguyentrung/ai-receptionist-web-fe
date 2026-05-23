@@ -1,3 +1,4 @@
+@use "sass:color"; // Thêm dòng này ở ĐẦU FILE
 // ── Welcome Page ────────────────────────────────────────────
 // Mobile-first: single column, fluid cards
 .homeContainer {
@@ -154,7 +155,7 @@
   }
 
   .featureTitle {
-    color: darken(#166534, 5%);
+    color: color.adjust(#166534, $lightness: -5%);
   }
 }
 

@@ -323,8 +323,8 @@ export default function QuarterLeaderboard({
                       metric="điểm"
                       getScore={(data) => data.totalQuarterScore}
                       renderExpanded={(item) =>
-                        item.quarterSummary ? (
-                          <QuarterSummaryDetail summary={item.quarterSummary} />
+                        item.data ? (
+                          <QuarterSummaryDetail summary={item.data} />
                         ) : null
                       }
                     />

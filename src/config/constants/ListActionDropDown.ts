@@ -61,10 +61,11 @@ export const useLeaderboardActionDropDownItems: ListActionDropDownItem[] = [
   {
     id: "quarterly-score",
     label: "Điểm thi đua quý",
-    display: false, // tạm ẩn vì backend chưa xong
+    display: true, //false: tạm ẩn vì backend chưa xong, true: hiển thị bình thường
   },
   {
     id: "quarterly-fitness",
     label: "Kỹ năng: Thể lực & Tốc độ",
+    display: true, //false: tạm ẩn vì backend chưa xong, true: hiển thị bình thường
   },
 ];
