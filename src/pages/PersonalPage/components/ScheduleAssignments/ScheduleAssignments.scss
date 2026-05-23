@@ -26,6 +26,7 @@ $tint-border-warm-light: #f4e9e9;
   box-shadow: 0 8px 24px rgba($brand-dark, 0.05);
 }
 
+// ================= HERO CARD =================
 .schedule-assignments__hero-card {
   background: linear-gradient(135deg, $tint-warm-50 0%, $tint-warm-100 52%, $white 100%);
 }
@@ -48,9 +49,7 @@ $tint-border-warm-light: #f4e9e9;
   gap: $space-1;
 }
 
-.schedule-assignments__eyebrow,
-.schedule-assignments__footer-label,
-.schedule-assignments__meta-label {
+.schedule-assignments__eyebrow {
   margin: 0;
   color: $text-muted;
   font-size: $text-xs;
@@ -79,67 +78,17 @@ $tint-border-warm-light: #f4e9e9;
 .schedule-assignments__status-badge {
   border: 0;
   font-weight: $font-bold;
+  white-space: nowrap;
 }
 
-.schedule-assignments__summary-grid,
-.schedule-assignments__meta-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $space-3;
-}
-
-.schedule-assignments__summary-grid {
-  margin-top: $space-4;
-}
-
-.schedule-assignments__meta-grid {
-  margin-top: $space-4;
-}
-
-.schedule-assignments__meta-item {
-  display: flex;
-  gap: $space-3;
-  align-items: flex-start;
-  border: 1px solid $tint-border-warm-light;
-  background: $tint-warm-50;
-  border-radius: $radius-lg;
-  padding: $space-4;
-}
-
-.schedule-assignments__meta-icon {
-  width: $space-8;
-  height: $space-8;
-  border-radius: $radius-md;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: $error-50;
-  color: $brand-red-700;
-  flex-shrink: 0;
-}
-
-.schedule-assignments__meta-copy {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-  min-width: 0;
-}
-
-.schedule-assignments__meta-value {
-  margin: 0;
-  color: $text-primary;
-  font-size: $text-sm;
-  font-weight: $font-semibold;
-  line-height: $leading-snug;
-  word-break: break-word;
-}
-
+// ================= LIST =================
 .schedule-assignments__list {
   display: flex;
   flex-direction: column;
   gap: $space-4;
 }
 
+// ================= ITEM CARD =================
 .schedule-assignments__item-card {
   overflow: hidden;
   border-left: 4px solid $brand-red;
@@ -151,16 +100,16 @@ $tint-border-warm-light: #f4e9e9;
 
 .schedule-assignments__item-head {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  gap: $space-4;
+  gap: $space-3;
 }
 
 .schedule-assignments__item-heading {
   display: flex;
   flex-direction: column;
-  gap: $space-1;
+  gap: 2px;
+  min-width: 0;
 }
 
 .schedule-assignments__item-title {
@@ -177,19 +126,45 @@ $tint-border-warm-light: #f4e9e9;
   font-size: $text-sm;
 }
 
-.schedule-assignments__footer-note {
+// ================= COMPACT INFO GRID =================
+.schedule-assignments__info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-2;
   margin-top: $space-4;
-  border-top: 1px solid $tint-border-warm-light;
   padding-top: $space-4;
+  border-top: 1px solid $tint-border-warm-light;
 }
 
-.schedule-assignments__footer-value {
-  margin: $space-1 0 0;
-  color: $text-primary;
+.schedule-assignments__info-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
   font-size: $text-sm;
-  font-weight: $font-semibold;
+  min-width: 0;
 }
 
+.schedule-assignments__info-icon {
+  color: $brand-red;
+  flex-shrink: 0;
+}
+
+.schedule-assignments__info-label {
+  color: $text-muted;
+  flex-shrink: 0;
+  font-size: $text-xs;
+  white-space: nowrap;
+}
+
+.schedule-assignments__info-value {
+  color: $text-primary;
+  font-weight: $font-semibold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ================= EMPTY STATES =================
 .schedule-assignments__empty-card,
 .schedule-assignments__empty-state-card {
   background: linear-gradient(135deg, $tint-warm-50 0%, $tint-warm-200 100%);
@@ -215,24 +190,16 @@ $tint-border-warm-light: #f4e9e9;
 }
 
 // ---------------------------------------------------------------------------
-// Responsive — column → row at md, 2-col at md, 4-col at lg
+// Responsive
 // ---------------------------------------------------------------------------
 @include respond-to(md) {
-  .schedule-assignments__hero-top,
-  .schedule-assignments__item-head {
+  .schedule-assignments__hero-top {
     flex-direction: row;
     align-items: flex-start;
   }
 
-  .schedule-assignments__summary-grid,
-  .schedule-assignments__meta-grid {
+  .schedule-assignments__info-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@include respond-to(lg) {
-  .schedule-assignments__summary-grid,
-  .schedule-assignments__meta-grid {
-    grid-template-columns: repeat(4, 1fr);
+    gap: $space-3 $space-6;
   }
 }

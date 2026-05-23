@@ -52,12 +52,15 @@
 
     .sidebarLogo {
       flex-direction: column;
+      align-items: center;
       padding: $space-4 0;
       gap: $space-4;
     }
 
     .logoGroup {
       gap: 0;
+      padding: $space-2 0;
+      justify-content: center;
     }
 
     .closeBtn {

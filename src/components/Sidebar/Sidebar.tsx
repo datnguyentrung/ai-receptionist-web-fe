@@ -178,8 +178,8 @@ export default function Sidebar({
           })}
         </nav>
 
-        {/* Profile switcher (visible only when multi-profile) */}
-        <SidebarSettings />
+        {/* Profile switcher (visible only when multi-profile and not collapsed) */}
+        {!isCollapsed && <SidebarSettings />}
 
         {/* Bottom user card */}
         <div className={styles.sidebarBottom}>

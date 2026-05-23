@@ -20,11 +20,9 @@ import type { LucideIcon } from "lucide-react";
 import {
   CalendarDays,
   Clock,
-  CreditCard,
   Landmark,
   MapPinned,
   Route,
-  School2,
 } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import "./ScheduleAssignments.scss";
@@ -34,10 +32,10 @@ type TimelineRecord =
   | StudentEnrollmentSimpleResponse
   | CoachAssignmentSimpleResponse;
 
-type MetaItemProps = {
+type InfoRowProps = {
+  icon: LucideIcon;
   label: string;
   value: string;
-  icon: LucideIcon;
 };
 
 const enrollmentStatusLabel: Record<StudentEnrollmentStatus, string> = {
@@ -82,20 +80,10 @@ function formatScheduleWeekday(weekday: number) {
   return WeekdayCodeToLabel[weekday] ?? `Thứ ${weekday}`;
 }
 
-function getRecordTitle(record: TimelineRecord) {
-  return "classScheduleSummary" in record
-    ? record.classScheduleSummary.scheduleId
-    : record.classSchedule.scheduleId;
-}
-
 function getScheduleSummary(record: TimelineRecord) {
   return "classScheduleSummary" in record
     ? record.classScheduleSummary
     : record.classSchedule;
-}
-
-function getPrimaryParty(record: TimelineRecord) {
-  return "studentSummary" in record ? record.studentSummary : record.coach;
 }
 
 function getRecordDate(record: TimelineRecord) {
@@ -110,22 +98,12 @@ function getRecordLabel(profile: StudentDetail | CoachDetail) {
   return "enrollments" in profile ? "lớp đăng ký" : "lớp phân công";
 }
 
-function getIdentifier(record: TimelineRecord) {
-  return "studentSummary" in record
-    ? record.studentSummary.code
-    : record.coach.staffCode;
-}
-
-function MetaItem({ label, value, icon: Icon }: MetaItemProps) {
+function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
   return (
-    <div className="schedule-assignments__meta-item">
-      <div className="schedule-assignments__meta-icon">
-        <Icon size={15} />
-      </div>
-      <div className="schedule-assignments__meta-copy">
-        <p className="schedule-assignments__meta-label">{label}</p>
-        <p className="schedule-assignments__meta-value">{value}</p>
-      </div>
+    <div className="schedule-assignments__info-row">
+      <Icon size={14} className="schedule-assignments__info-icon" />
+      <span className="schedule-assignments__info-label">{label}</span>
+      <span className="schedule-assignments__info-value">{value}</span>
     </div>
   );
 }
@@ -198,7 +176,6 @@ export default function ScheduleAssignments() {
         ) : (
           records.map((record) => {
             const summary = getScheduleSummary(record);
-            const party = getPrimaryParty(record);
             const recordDate = getRecordDate(record);
 
             const recordKey =
@@ -212,10 +189,10 @@ export default function ScheduleAssignments() {
                   <div className="schedule-assignments__item-head">
                     <div className="schedule-assignments__item-heading">
                       <h4 className="schedule-assignments__item-title">
-                        Mã lớp học: {getRecordTitle(record)}
+                        {summary.scheduleId}
                       </h4>
                       <p className="schedule-assignments__item-subtitle">
-                        {party.fullName} · {getIdentifier(record)}
+                        {ScheduleLevelLabel[summary.scheduleLevel]}
                       </p>
                     </div>
                     <Badge
@@ -226,56 +203,39 @@ export default function ScheduleAssignments() {
                     </Badge>
                   </div>
 
-                  <div className="schedule-assignments__meta-grid">
-                    <MetaItem
-                      label={getRecordDateLabel(record)}
-                      value={formatDateDMY(recordDate)}
-                      icon={Clock}
-                    />
-                    <MetaItem
+                  <div className="schedule-assignments__info-grid">
+                    <InfoRow
+                      icon={Landmark}
                       label="Chi nhánh"
                       value={summary.branchName}
-                      icon={Landmark}
                     />
-                    <MetaItem
-                      label="Cấp độ lớp"
-                      value={ScheduleLevelLabel[summary.scheduleLevel]}
-                      icon={School2}
-                    />
-                    <MetaItem
-                      label="Địa điểm"
-                      value={ScheduleLocationLabel[summary.scheduleLocation]}
+                    <InfoRow
                       icon={MapPinned}
+                      label="Địa điểm"
+                      value={
+                        ScheduleLocationLabel[summary.scheduleLocation]
+                      }
                     />
-                    <MetaItem
+                    <InfoRow
+                      icon={Route}
                       label="Ca học"
                       value={ScheduleShiftLabel[summary.scheduleShift]}
-                      icon={Route}
                     />
-                    <MetaItem
+                    <InfoRow
+                      icon={CalendarDays}
                       label="Thứ"
                       value={formatScheduleWeekday(summary.weekday)}
-                      icon={CalendarDays}
                     />
-                    <MetaItem
+                    <InfoRow
+                      icon={Clock}
                       label="Thời gian"
                       value={`${summary.startTime} - ${summary.endTime}`}
-                      icon={Clock}
                     />
-                    <MetaItem
-                      label="Mã lịch học"
-                      value={summary.scheduleId}
-                      icon={CreditCard}
+                    <InfoRow
+                      icon={CalendarDays}
+                      label={getRecordDateLabel(record)}
+                      value={formatDateDMY(recordDate)}
                     />
-                  </div>
-
-                  <div className="schedule-assignments__footer-note">
-                    <p className="schedule-assignments__footer-label">
-                      Thông tin học viên
-                    </p>
-                    <p className="schedule-assignments__footer-value">
-                      {party.fullName} · {getIdentifier(record)}
-                    </p>
                   </div>
                 </CardContent>
               </Card>
