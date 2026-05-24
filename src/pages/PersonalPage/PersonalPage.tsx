@@ -40,6 +40,7 @@
 // }
 
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { Skeleton } from "boneyard-js/react";
 import { Navigate, useParams } from "react-router-dom";
 import { coachAPI } from "../../features/coach";
 import { studentAPI } from "../../features/student";
@@ -50,6 +51,7 @@ import { useRoleStudent } from "../../utils/roleUtils";
 import ProfileHeader from "./components/ProfileHeader";
 import { TabViews } from "./components/TabViews";
 import S from "./PersonalPage.module.scss";
+import PersonalPageSkeleton from "./PersonalPageSkeleton/PersonalPageSkeleton";
 
 export default function PersonalPage() {
   const { canViewCoach, canViewManagerSenior } = useRoleStudent();
@@ -89,9 +91,7 @@ export default function PersonalPage() {
 
   console.log("Fetched User Info:", userInfo); // Debug: Kiểm tra dữ liệu nhận được từ API
 
-  useDocumentTitle(
-    userInfo?.fullName ? `${userInfo.fullName}` : "Đang tải...",
-  );
+  useDocumentTitle(userInfo?.fullName ? `${userInfo.fullName}` : "Đang tải...");
 
   // ---------------------------------------------------------------------------
   // 2. XỬ LÝ ĐIỀU KIỆN RẼ NHÁNH (Early Returns) SAU KHI ĐÃ GỌI XONG HOOKS
@@ -105,37 +105,44 @@ export default function PersonalPage() {
   }
 
   // Gộp cờ loading
-  if (isFetchingCoach || isFetchingStudent) {
-    return <div>Đang tải thông tin...</div>;
-  }
+  const isLoading = isFetchingCoach || isFetchingStudent;
 
-  if (!userInfo) {
+  if (!userInfo && !isLoading) {
     return <div>Không tìm thấy dữ liệu.</div>;
   }
 
   return (
     <div className={S.page}>
       <div className={S.container}>
-        {/* Hero Section */}
-        <ProfileHeader user={userInfo} currentUserData={user} />
+        <Skeleton
+          loading={isLoading}
+          name="personal-page"
+          fallback={<PersonalPageSkeleton />}
+        >
+          {/* Hero Section */}
+          <ProfileHeader
+            user={userInfo as StudentDetail | CoachDetail}
+            currentUserData={user}
+          />
 
-        {/* Tab Navigation */}
-        {/* Render TabViews rẽ nhánh để thỏa mãn TypeScript Discriminated Union */}
-        {isCoach ? (
-          <TabViews
-            userType="coach"
-            userInfo={userInfo as CoachDetail}
-            canViewCoach={canViewCoach}
-            canViewManagerSenior={canViewManagerSenior}
-          />
-        ) : (
-          <TabViews
-            userType="student"
-            userInfo={userInfo as StudentDetail}
-            canViewCoach={canViewCoach}
-            canViewManagerSenior={canViewManagerSenior}
-          />
-        )}
+          {/* Tab Navigation */}
+          {/* Render TabViews rẽ nhánh để thỏa mãn TypeScript Discriminated Union */}
+          {isCoach ? (
+            <TabViews
+              userType="coach"
+              userInfo={userInfo as CoachDetail}
+              canViewCoach={canViewCoach}
+              canViewManagerSenior={canViewManagerSenior}
+            />
+          ) : (
+            <TabViews
+              userType="student"
+              userInfo={userInfo as StudentDetail}
+              canViewCoach={canViewCoach}
+              canViewManagerSenior={canViewManagerSenior}
+            />
+          )}
+        </Skeleton>
       </div>
     </div>
   );

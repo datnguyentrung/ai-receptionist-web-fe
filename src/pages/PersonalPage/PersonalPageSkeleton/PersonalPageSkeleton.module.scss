@@ -1,0 +1,115 @@
+.pageSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cover {
+  height: 120px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e6e9ee 25%, #f5f7fb 50%, #e6e9ee 75%);
+  background-size: 200% 100%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.headerRow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #eef2f6;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.headerLines {
+  flex: 1;
+}
+
+.lineLarge {
+  height: 20px;
+  width: 60%;
+  background: #eef2f6;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.lineMedium {
+  height: 14px;
+  width: 40%;
+  background: #f2f5f9;
+  border-radius: 6px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  height: 36px;
+  width: 14%;
+  background: #eef2f6;
+  border-radius: 6px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.card {
+  height: 140px;
+  border-radius: 8px;
+  background: #f7fafc;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.tabSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tabHeader {
+  display: flex;
+  gap: 8px;
+}
+
+.tabPill {
+  height: 28px;
+  width: 120px;
+  background: #eef2f6;
+  border-radius: 999px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  height: 14px;
+  background: #f2f5f9;
+  border-radius: 6px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

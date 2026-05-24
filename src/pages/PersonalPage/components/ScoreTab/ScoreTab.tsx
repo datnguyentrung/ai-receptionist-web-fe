@@ -4,7 +4,9 @@ import type {
   QuarterSummary,
   YearlySummaryResponse,
 } from "@/types/Report/YearlySummaryTypes";
+import { Skeleton } from "boneyard-js/react";
 import { useOutletContext } from "react-router-dom";
+import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
 import QuarterSummaryDetail from "./QuarterSummaryDetail/QuarterSummaryDetail";
 import styles from "./ScoreTab.module.scss";
@@ -15,12 +17,26 @@ export default function ScoreTab() {
   const isStudent = !!profile && "studentCode" in profile;
   const studentCode = isStudent ? profile.studentCode : undefined;
 
-  const { data } = useGetQuery(
+  const query = useGetQuery(
     ["student-yearly-summary", studentCode],
     (): Promise<YearlySummaryResponse> =>
       studentAPI.getYearlySummary(studentCode!, new Date().getFullYear()),
     { enabled: !!studentCode, staleTime: 5 * 60 * 1000 },
   );
+
+  const { data } = query;
+
+  if (query.isLoading) {
+    return (
+      <Skeleton
+        loading
+        name="score-tab"
+        fallback={<PersonalPageSkeleton variant="tab" />}
+      >
+        <div />
+      </Skeleton>
+    );
+  }
 
   return (
     <div className={styles["score-tab"]}>

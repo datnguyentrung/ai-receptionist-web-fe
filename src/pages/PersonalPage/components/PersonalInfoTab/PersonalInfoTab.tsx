@@ -1,4 +1,5 @@
 import { formatDateDMY } from "@/utils/format";
+import { Skeleton } from "boneyard-js/react";
 import {
   Activity,
   BookOpen,
@@ -19,6 +20,7 @@ import {
   CoachStatusLabel,
   type CoachRoleCode,
 } from "../../../../config/constants";
+import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
 import S from "./PersonalInfoTab.module.scss";
 
@@ -30,7 +32,16 @@ export default function PersonalInfoTab() {
 
   console.log("PersonalInfoTab Context:", context); // Debug: Kiểm tra dữ liệu context nhận được
 
-  if (!user) return null;
+  if (!user)
+    return (
+      <Skeleton
+        loading
+        name="personal-info-tab"
+        fallback={<PersonalPageSkeleton variant="tab" />}
+      >
+        <div />
+      </Skeleton>
+    );
 
   const handleNavigateToEnrollments = () => {
     navigate("classes"); // React Router tự động hiểu là nối thêm "classes" vào "/:userCode" hiện tại

@@ -16,17 +16,13 @@ import type {
   StudentEnrollmentSimpleResponse,
 } from "@/types";
 import { formatDateDMY } from "@/utils/format";
+import { Skeleton } from "boneyard-js/react";
 import type { LucideIcon } from "lucide-react";
-import {
-  CalendarDays,
-  Clock,
-  Landmark,
-  MapPinned,
-  Route,
-} from "lucide-react";
+import { CalendarDays, Clock, Landmark, MapPinned, Route } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
-import "./ScheduleAssignments.scss";
+import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
+import "./ScheduleAssignments.scss";
 
 type TimelineRecord =
   | StudentEnrollmentSimpleResponse
@@ -114,18 +110,13 @@ export default function ScheduleAssignments() {
 
   if (!profile) {
     return (
-      <div className="schedule-assignments">
-        <Card className="schedule-assignments__empty-card">
-          <CardContent className="schedule-assignments__empty-content">
-            <p className="schedule-assignments__empty-title">
-              Không có dữ liệu lớp học.
-            </p>
-            <p className="schedule-assignments__empty-text">
-              Hồ sơ người dùng chưa sẵn sàng hoặc chưa được tải về từ hệ thống.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Skeleton
+        loading
+        name="schedule-assignments"
+        fallback={<PersonalPageSkeleton variant="tab" />}
+      >
+        <div />
+      </Skeleton>
     );
   }
 
@@ -212,9 +203,7 @@ export default function ScheduleAssignments() {
                     <InfoRow
                       icon={MapPinned}
                       label="Địa điểm"
-                      value={
-                        ScheduleLocationLabel[summary.scheduleLocation]
-                      }
+                      value={ScheduleLocationLabel[summary.scheduleLocation]}
                     />
                     <InfoRow
                       icon={Route}

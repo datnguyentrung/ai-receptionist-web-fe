@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { useGetQuery } from "@/hooks/useCrud";
+import { Skeleton } from "boneyard-js/react";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { AttendanceTable } from "../../../AttendanceReports/components/AttendanceTable";
+import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
 import "./AttendanceTab.scss";
 const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;
@@ -14,7 +16,7 @@ export default function AttendanceTab() {
   const isStudent = !!profile && "studentCode" in profile;
   const studentCode = isStudent ? profile.studentCode : undefined;
   const [currentPage, setCurrentPage] = useState(1);
-  const { data } = useGetQuery(
+  const query = useGetQuery(
     [
       "student-attendance",
       studentCode,
@@ -28,6 +30,8 @@ export default function AttendanceTab() {
       }),
     { enabled: !!studentCode, staleTime: 5 * 60 * 1000 },
   );
+
+  const { data } = query;
 
   console.log("Profile Data:", profile);
   console.log("studentCode Data:", studentCode);
@@ -61,6 +65,18 @@ export default function AttendanceTab() {
           </CardContent>
         </Card>
       </div>
+    );
+  }
+
+  if (query.isLoading) {
+    return (
+      <Skeleton
+        loading
+        name="attendance-tab"
+        fallback={<PersonalPageSkeleton variant="tab" />}
+      >
+        <div />
+      </Skeleton>
     );
   }
 
