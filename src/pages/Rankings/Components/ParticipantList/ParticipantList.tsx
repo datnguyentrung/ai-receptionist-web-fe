@@ -102,9 +102,42 @@ export function ParticipantList<T>({
                   className="rankings-list-card__avatar"
                 />
 
-                <div className="rankings-list-card__identity">
-                  <p className="rankings-list-card__name">{item.fullName}</p>
-                  <p className="rankings-list-card__status">
+                <div
+                  className={
+                    "rankings-list-card__identity" +
+                    (styles["rankings-list-card__identity"]
+                      ? ` ${styles["rankings-list-card__identity"]}`
+                      : "")
+                  }
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: "0.25rem",
+                  }}
+                >
+                  <a
+                    className={
+                      "rankings-list-card__name" +
+                      (styles["rankings-list-card__name"]
+                        ? ` ${styles["rankings-list-card__name"]}`
+                        : "")
+                    }
+                    href={`/${item.studentCode}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {item.fullName}
+                  </a>
+                  <p
+                    className={
+                      "rankings-list-card__status" +
+                      (styles["rankings-list-card__status"]
+                        ? ` ${styles["rankings-list-card__status"]}`
+                        : "")
+                    }
+                  >
                     {BeltLabel[item.belt]}
                   </p>
                 </div>

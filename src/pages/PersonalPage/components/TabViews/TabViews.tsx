@@ -43,7 +43,7 @@ export function TabViews({
   return (
     <Tabs value={activeTabId} onValueChange={handleTabChange} className="views">
       {/* --- GIỮ NGUYÊN 100% CẤU TRÚC CHUẨN CỦA BẠN --- */}
-      <TabsList className="views__tabs-list">
+      <TabsList className="views__tabs-list" style={{ width: "100%" }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -51,6 +51,7 @@ export function TabViews({
               key={tab.id}
               value={tab.id}
               className={`views__tab-trigger ${location.pathname === tab.linkTo ? "active" : "inactive"}`}
+              style={{ flex: "0 0 auto" }}
             >
               <span className="views__tab-icon">
                 <Icon />

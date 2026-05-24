@@ -108,6 +108,23 @@ export default function AppRoutes() {
           <Route path="fitness" element={<Rankings />} />
         </Route>
 
+        {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
+        <Route path="/" element={<MainLayout />}>
+          <Route path="/:userCode" element={<PersonalPage />}>
+            {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
+            <Route index element={<PersonalInfoTab />} />
+
+            {/* Các tab con của STUDENT */}
+            <Route path="classes" element={<ScheduleAssignments />} />
+            <Route path="progress" element={<AttendanceTab />} />
+            <Route path="tuition" element={<TuitionTab />} />
+            <Route path="score" element={<ScoreTab />} />
+
+            {/* Các tab con cả COACH */}
+            <Route path="timesheet" element={<TimesheetTab />} />
+          </Route>
+        </Route>
+
         {/* --- PROTECTED ROUTES --- */}
         <Route
           path="/"
@@ -151,23 +168,6 @@ export default function AppRoutes() {
             />
             <Route path="history" element={<AttendanceReports />} />
             <Route path="ai/check-in" element={<AICheckIn />} />
-          </Route>
-
-          {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
-          <Route>
-            <Route path="/:userCode" element={<PersonalPage />}>
-              {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
-              <Route index element={<PersonalInfoTab />} />
-
-              {/* Các tab con của STUDENT */}
-              <Route path="classes" element={<ScheduleAssignments />} />
-              <Route path="progress" element={<AttendanceTab />} />
-              <Route path="tuition" element={<TuitionTab />} />
-              <Route path="score" element={<ScoreTab />} />
-
-              {/* Các tab con cả COACH */}
-              <Route path="timesheet" element={<TimesheetTab />} />
-            </Route>
           </Route>
         </Route>
 

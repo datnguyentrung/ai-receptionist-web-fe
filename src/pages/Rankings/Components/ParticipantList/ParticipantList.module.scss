@@ -84,28 +84,47 @@
   }
 
   &__identity {
+    display: flex;
+    flex-direction: column; /* xếp chồng: tên trên, đai dưới */
+    align-items: flex-start; /* canh trái để tên/đai sát lề */
+    gap: 0.25rem; /* Khoảng cách nhỏ giữa tên và đai */
     min-width: 0;
     flex: 1;
   }
 
   &__name {
+    display: inline-block;
+    max-width: 100%;
     margin: 0;
     color: #1e293b;
     font-size: 0.96rem;
     font-weight: 700;
-    white-space: nowrap;
+    text-decoration: none;
+    white-space: normal; /* cho phép xuống dòng khi cần */
     overflow: hidden;
     text-overflow: ellipsis;
     transition: color 0.25s ease;
+    flex-shrink: 1; /* Quan trọng: Cho phép tên co lại và hiện dấu ... nếu quá dài */
+
+    &:visited {
+      color: #1e293b;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: #e02020;
+      text-decoration: underline;
+    }
   }
 
   &__status {
-    margin: 0.3rem 0 0;
+    margin: 0.25rem 0 0; /* Đặt khoảng cách nhỏ phía trên khi xếp chồng */
     display: inline-flex;
     align-items: center;
     gap: 0.38rem;
     color: #64748b;
     font-size: 0.78rem;
+    flex-shrink: 0; /* Quan trọng: Đảm bảo phần đai không bị co lại mất chữ khi tên quá dài */
 
     &::before {
       content: "";
@@ -508,6 +527,7 @@
 
     &__name {
       font-size: 0.87rem;
+      text-decoration: none;
     }
 
     &__status {
