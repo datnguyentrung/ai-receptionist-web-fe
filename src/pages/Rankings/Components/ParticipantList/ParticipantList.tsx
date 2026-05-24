@@ -1,6 +1,7 @@
 import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { clsx } from "clsx";
-import { ChevronDown, TrendingUp } from "lucide-react";
+import { ChevronDown, Search, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Avatar from "../../../../components/Avatar";
 import { BeltLabel } from "../../../../config/constants";
@@ -23,17 +24,42 @@ export function ParticipantList<T>({
   getScore,
   renderExpanded,
 }: ParticipantListProps<T>) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredItems = useMemo(
+    () =>
+      searchQuery.trim()
+        ? items.filter((item) =>
+            item.fullName
+              .toLowerCase()
+              .includes(searchQuery.trim().toLowerCase()),
+          )
+        : items,
+    [items, searchQuery],
+  );
+
   return (
     <section className="rankings-list" aria-label="Participant list">
-      <h3 className="rankings-list__heading">
-        <span>DANH SÁCH HỌC VIÊN</span>
-        <span className="rankings-list__counter">
-          TOP {items.length} HỌC VIÊN
-        </span>
-      </h3>
+      <div className="rankings-list__heading">
+        <h3 className={styles.headingTitle}>
+          DANH SÁCH HỌC VIÊN
+          <span className={styles.headingCount}>{items.length}</span>
+        </h3>
+
+        <div className={styles.search}>
+          <Search size={16} className={styles.searchIcon} />
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Tìm kiếm học viên..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
 
       <div className="rankings-list__items">
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const isItemExpanded = expandedRank === item.rank;
           const rankDelta =
             item.rankBefore != null ? item.rankBefore - item.rank : null;

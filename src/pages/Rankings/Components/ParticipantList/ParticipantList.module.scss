@@ -10,26 +10,97 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.8rem;
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: #64748b;
-    font-weight: 800;
-  }
-
-  &__counter {
-    background: #fff5f5;
-    color: #e02020;
-    border: 1px solid #fee2e2;
-    border-radius: 999px;
-    padding: 0.3rem 0.65rem;
-    letter-spacing: 0.08em;
   }
 
   &__items {
     display: flex;
     flex-direction: column;
     gap: 0.72rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Heading title & count badge                                       */
+/* ------------------------------------------------------------------ */
+
+.headingTitle {
+  margin: 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #64748b;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.headingCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35em;
+  margin-left: 0.55em;
+  padding: 0.18em 0.45em;
+  font-size: 0.85em;
+  font-weight: 800;
+  color: #e02020;
+  background: #fff5f5;
+  border: 1px solid #fee2e2;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Search bar                                                        */
+/* ------------------------------------------------------------------ */
+
+.search {
+  position: relative;
+  flex-shrink: 0;
+
+  &Icon {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    transition: color 0.2s ease;
+  }
+
+  &Input {
+    width: 220px;
+    height: 2.15rem;
+    padding: 0 0.75rem 0 2.25rem;
+    font-size: 0.82rem;
+    color: #1e293b;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+
+    &:hover {
+      border-color: #cbd5e1;
+    }
+
+    &:hover + .searchIcon {
+      color: #64748b;
+    }
+
+    &:focus {
+      border-color: #e02020;
+      box-shadow: 0 0 0 3px rgba(224, 32, 32, 0.1);
+    }
+
+    &:focus + .searchIcon {
+      color: #e02020;
+    }
   }
 }
 
@@ -508,6 +579,14 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 0.5rem;
+    }
+  }
+
+  .search {
+    width: 100%;
+
+    &Input {
+      width: 100%;
     }
   }
 
