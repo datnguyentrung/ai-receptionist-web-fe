@@ -202,7 +202,7 @@ export default function QuarterLeaderboard({
         quarter,
         fitnessSkillLevel,
         0,
-        30,
+        100,
       ),
     { enabled: mode === "fitness" },
   );
