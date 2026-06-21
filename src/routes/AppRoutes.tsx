@@ -92,6 +92,9 @@ export default function AppRoutes() {
         {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/marketing" element={<MainLayout />}>
+          <Route path="facebook" element={<div>Facebook Marketing</div>} />
+        </Route>
 
         <Route path="/403" element={<AccessDeniedView />} />
 

@@ -141,7 +141,7 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
           console.log("🔒 Refresh Token hết hạn, đá văng về Login!");
           queryClient.clear();
           useAuthStore.getState().clearAuth(); // Xóa sạch state
-          window.location.href = "/login"; // Force redirect
+          window.location.href = "/welcome"; // Force redirect
 
           return Promise.reject(refreshError);
         } finally {
