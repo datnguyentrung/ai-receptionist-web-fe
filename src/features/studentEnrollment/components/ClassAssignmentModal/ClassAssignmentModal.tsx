@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 import { CoachAssignmentSection } from "@/features/studentEnrollment/components/ClassAssignmentModal/CoachAssignmentSection";
 import { StudentAssignmentSection } from "../StudentAssignmentSection/StudentAssignmentSection";
@@ -99,7 +99,7 @@ type ClassAssignmentModalProps =
   | StudentClassAssignmentModalProps
   | CoachInlineClassAssignmentModalProps;
 
-export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
+export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
   const isCoachInline = props.mode === "coach-inline";
   const initialStudent = isCoachInline ? null : (props.initialStudent ?? null);
   const coachAssignmentRequest = isCoachInline ? props.assignmentRequest : null;
@@ -246,17 +246,19 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
     Array<ClassScheduleSummary & { displayLabel: string }>
   >(
     () =>
-      selectedBranchSchedules.map((schedule) => ({
-        scheduleId: schedule.scheduleId,
-        branchName: schedule.branchName,
-        scheduleLocation: schedule.scheduleLocation as ScheduleLocation,
-        scheduleLevel: schedule.scheduleLevel,
-        scheduleShift: schedule.scheduleShift,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-        weekday: schedule.weekday,
-        displayLabel: buildClassLabel(schedule),
-      })),
+      selectedBranchSchedules
+        .map((schedule) => ({
+          scheduleId: schedule.scheduleId,
+          branchName: schedule.branchName,
+          scheduleLocation: schedule.scheduleLocation as ScheduleLocation,
+          scheduleLevel: schedule.scheduleLevel,
+          scheduleShift: schedule.scheduleShift,
+          startTime: schedule.startTime,
+          endTime: schedule.endTime,
+          weekday: schedule.weekday,
+          displayLabel: buildClassLabel(schedule),
+        }))
+        .sort((a, b) => a.scheduleId.localeCompare(b.scheduleId)),
     [selectedBranchSchedules],
   );
 
@@ -466,4 +468,4 @@ export const ClassAssignmentModal = (props: ClassAssignmentModalProps) => {
       </div>
     </div>
   ) : null;
-};
+});

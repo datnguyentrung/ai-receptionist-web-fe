@@ -3,6 +3,7 @@
 // BEM naming: .views__* — consumed across all PersonalPage tabs
 // ─────────────────────────────────────────────────────────────
 
+@use "sass:color";
 @use "../../../../styles/variables" as v;
 
 // ── Local mixin ─────────────────────────────────────────────
@@ -53,7 +54,7 @@
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background-color: darken(v.$brand-red, 8%);
+      background-color: color.adjust(v.$brand-red, $lightness: -8%);
     }
   }
 

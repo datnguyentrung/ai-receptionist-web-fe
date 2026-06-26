@@ -4,6 +4,7 @@ import type { ClassScheduleSummary } from "@/types";
 import { formatTimeStringHM } from "@/utils/format";
 import { getLabelClassScheduleNoBranch } from "@/utils/getInitials";
 import { Calendar, Check, Loader2, MapPin } from "lucide-react";
+import { memo } from "react";
 import styles from "./ClassList.module.scss";
 
 interface ClassListProps {
@@ -24,7 +25,7 @@ interface ClassListProps {
  * Component hiển thị danh sách Lớp học - Custom UI.
  * Hỗ trợ 2 chế độ: Chọn (Checkbox) hoặc Hành động (Nút bấm như Xóa).
  */
-export default function ClassList({
+const ClassList = memo(function ClassList({
   hasBranch,
   isLoading,
   classList,
@@ -37,8 +38,6 @@ export default function ClassList({
   variant = "stack",
   gridColumns = "auto",
 }: ClassListProps) {
-  console.log("Rendering ClassList with classList:", classList);
-
   return (
     <div
       className={cn(
@@ -77,9 +76,7 @@ export default function ClassList({
             variant === "grid" && gridColumns === 3 && styles.listRootGridThree,
           )}
         >
-          {classList
-            .sort((a, b) => a.scheduleId.localeCompare(b.scheduleId))
-            .map((cls) => {
+          {classList.map((cls) => {
               const isSelected = selectedIds.has(cls.scheduleId);
               const isDisabled = disabledIds.has(cls.scheduleId);
 
@@ -158,4 +155,6 @@ export default function ClassList({
       )}
     </div>
   );
-}
+});
+
+export default ClassList;

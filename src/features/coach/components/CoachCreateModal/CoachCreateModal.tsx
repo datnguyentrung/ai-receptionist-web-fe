@@ -13,7 +13,7 @@ import type {
   CoachCreateRequest,
   CoachDetail,
 } from "@/types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useGenericMutation } from "@/hooks/useCrud";
 import { coachAPI } from "../../api/coachAPI";
@@ -144,6 +144,13 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleAssignmentChange = useCallback(
+    (next: CoachAssignmentCreateRequest) => {
+      setField("assignmentRequest", next);
+    },
+    [],
+  );
+
   const handleClose = () => {
     if (isPending) {
       return;
@@ -246,6 +253,7 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
       title="Thêm huấn luyện viên mới"
       subtitle="Nhập thông tin cơ bản để tạo hồ sơ HLV"
       maxWidth={860}
+      overlayClassName="coach-create-modal__overlay"
     >
       <form className="coach-create-modal" onSubmit={handleSubmit}>
         {isPending ? (
@@ -360,9 +368,7 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
           <ClassAssignmentModal
             mode="coach-inline"
             assignmentRequest={form.assignmentRequest}
-            onAssignmentChange={(next: CoachAssignmentCreateRequest) =>
-              setField("assignmentRequest", next)
-            }
+            onAssignmentChange={handleAssignmentChange}
             disabled={isPending}
           />
         </div>

@@ -1,3 +1,9 @@
+// ── Overlay override: disable backdrop-filter blur to reduce GPU compositing cost during scroll
+.noBlurOverlay {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 .studentCreateModal {
   display: flex;
   flex-direction: column;
