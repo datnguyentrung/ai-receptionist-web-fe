@@ -5,7 +5,9 @@
       "Bash(npm run:*)",
       "Bash(npx vite:*)",
       "Bash(npx sass:*)",
-      "Bash(xargs wc:*)"
+      "Bash(xargs wc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
