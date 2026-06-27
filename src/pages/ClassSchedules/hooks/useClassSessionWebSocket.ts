@@ -120,7 +120,9 @@ export function useClassSessionWebSocket(queryClient: QueryClient) {
       shouldReconnect = false;
       window.clearTimeout(reconnectTimer);
       try {
-        ws?.close();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.close(1000, "Component unmounted");
+        }
       } catch {
         // ignore
       }
