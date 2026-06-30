@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <LeftPanel />
 
           {/* Cột phải: LỖ HỔNG ĐỂ NHÉT COMPONENT VÀO */}
-          <div className={styles.rightPanel}>{children}</div>
+          <main className={styles.rightPanel}>{children}</main>
         </div>
       </div>
     </div>

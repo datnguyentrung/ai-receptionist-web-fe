@@ -1,6 +1,5 @@
 import ConfirmModal from "@/components/ConfirmModal";
 import { useLogin } from "@/features/auth";
-import { requestNotificationPermission } from "@/services/fcm"; // <-- Thêm dòng này
 import { Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import styles from "./LoginForm.module.scss";
@@ -62,22 +61,11 @@ export default function LoginForm() {
       return;
     }
 
-    login(
-      {
-        phoneNumber: phoneNumber.trim(),
-        password,
-        idDevice: navigator.userAgent,
-      },
-      {
-        onSuccess: () => {
-          // Kích hoạt xin quyền thông báo ngay khi vừa đăng nhập thành công
-          // Lúc này axiosInstance đã có đầy đủ quyền (Token/Cookie) để gọi API của BE
-          requestNotificationPermission().catch((err) => {
-            console.error("Lỗi kích hoạt xin quyền FCM:", err);
-          });
-        },
-      },
-    );
+    login({
+      phoneNumber: phoneNumber.trim(),
+      password,
+      idDevice: navigator.userAgent,
+    });
   };
 
   const canSubmit = phoneNumber.trim().length > 0 && password.length > 0;
@@ -177,16 +165,13 @@ export default function LoginForm() {
             </p>
           ) : null}
           <div className={styles.forgotPassword}>
-            <a
-              href="#"
+            <button
+              type="button"
               className={styles.forgotLink}
-              onClick={(event) => {
-                event.preventDefault();
-                openSupportModal();
-              }}
+              onClick={openSupportModal}
             >
               Quên mật khẩu?
-            </a>
+            </button>
           </div>
         </div>
 
@@ -198,7 +183,7 @@ export default function LoginForm() {
         >
           {isPending ? (
             <span className={styles.loadingContent}>
-              <svg className={styles.spinner} viewBox="0 0 24 24" fill="none">
+              <svg className={styles.spinner} viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle
                   cx="12"
                   cy="12"

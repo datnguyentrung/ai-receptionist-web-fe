@@ -32,3 +32,9 @@ dist-ssr
 .github
 
 skills-lock.json
+
+# Local assistant/tooling state
+package-lock.json
+.codegraph/
+.impeccable/
+.claude/settings.local.json

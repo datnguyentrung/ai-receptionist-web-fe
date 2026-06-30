@@ -1,6 +1,7 @@
 // ── Left Panel ──────────────────────────────────────────────
-// Mobile: compact banner at top of auth page
-// Desktop: full-height side panel (45% width)
+// Mobile: compact brand identity, transparent on $bg-base
+// Desktop: full-height side panel with gradient background
+
 .leftPanel {
   position: relative;
   overflow: hidden;
@@ -8,60 +9,82 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(150deg, #c0392b 0%, $brand-red-dark 100%);
 
-  // Mobile: compact banner height
-  min-height: 220px;
+  // Mobile: compact brand header — brand presence without consuming screen
+  padding: $space-5 $space-5 $space-3;
   flex-shrink: 0;
+  @include safe-top($space-4);
+  @include safe-left($space-1);
+  @include safe-right($space-1);
 
   @include respond-to("md") {
+    background: $gradient-brand;
     width: 45%;
-    flex-shrink: 0;
-    min-height: auto;
+    padding: $space-12 $space-8;
   }
 }
 
+// ── Decorative SVG — hidden on mobile ───────────────────────
+.decorations {
+  position: absolute;
+  // Phần tử absolute BỎ QUA padding của .leftPanel, nên env() thêm ở cha
+  // không tác dụng tới SVG. Phải áp safe-area trực tiếp ở đây để SVG không
+  // tràn ra dưới tai thỏ (notch) phía trên/trái/phải.
+  top: env(safe-area-inset-top);
+  right: env(safe-area-inset-right);
+  bottom: 0;
+  left: env(safe-area-inset-left);
+  display: none;
+  // Lớp chỉ để trang trí — phải tắt pointer-events để không nuốt click.
+  pointer-events: none;
+
+  @include respond-to("md") {
+    display: block;
+  }
+}
+
+.decorationSvg {
+  width: 100%;
+  height: 100%;
+}
+
+// ── Content container ───────────────────────────────────────
 .leftPanelContent {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: $space-6 $space-4;
-  gap: $space-4;
-  width: 100%;
-  height: 100%;
+  gap: $space-1;
 
   @include respond-to("md") {
-    padding: $space-12 $space-8;
     gap: $space-5;
   }
 }
 
 // ── Logo ───────────────────────────────────────────────────
 .logoWrapper {
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
   border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.25),
-    0 0 0 6px rgba(255, 255, 255, 0.2);
-  @include press-effect(0.96);
+  box-shadow: $shadow-sm;
 
   @include respond-to("md") {
     width: 200px;
     height: 200px;
+    box-shadow:
+      0 8px 40px rgba(0, 0, 0, 0.25),
+      0 0 0 6px rgba(255, 255, 255, 0.2);
   }
 }
 
 .logoImage {
-  width: 88px;
-  height: 88px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   border-radius: 50%;
 
@@ -71,39 +94,86 @@
   }
 }
 
-// ── Welcome text (hidden on mobile to save space) ──────────
+// ── Brand name ─────────────────────────────────────────────
+.brandName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.brandNameMain {
+  color: $brand-dark;
+  font-size: $text-base;
+  font-weight: $font-bold;
+
+  @include respond-to("md") {
+    color: $text-on-dark;
+    font-size: $text-2xl;
+  }
+}
+
+.brandNameAccent {
+  color: $brand-red-700;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  letter-spacing: 2px;
+
+  @include respond-to("md") {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: $text-sm;
+    letter-spacing: 3px;
+  }
+}
+
+// ── Welcome text — desktop only ────────────────────────────
 .welcomeText {
   text-align: center;
-  margin-top: $space-2;
+  margin-top: $space-1;
 
   @include below("md") {
     display: none;
   }
+
+  @include respond-to("md") {
+    margin-top: $space-2;
+  }
 }
 
 .welcomeTitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 11px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  letter-spacing: 1px;
   margin: 0;
+
+  @include respond-to("md") {
+    font-size: $text-base;
+  }
 }
 
 .welcomeSubtitle {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: $text-xs;
   margin-top: $space-1;
+
+  @include respond-to("md") {
+    font-size: $text-sm;
+  }
 }
 
-// ── Decorative divider ─────────────────────────────────────
+// ── Brand divider — desktop only ───────────────────────────
 .brandDivider {
-  display: flex;
+  display: none;
   align-items: center;
   gap: $space-2;
-  width: 9rem;
+  width: 6rem;
+  margin-top: $space-2;
 
-  @include below("md") {
-    display: none;
+  @include respond-to("md") {
+    display: flex;
+    width: 9rem;
+    margin-top: $space-3;
   }
 }
 
@@ -114,8 +184,8 @@
 }
 
 .brandDividerDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: $radius-full;
   background: rgba(255, 255, 255, 0.4);
 }
