@@ -58,11 +58,14 @@ export default function Header({
         {/* Notif */}
         <div className={styles.notifContainer}>
           <button
+            type="button"
             onClick={() => setNotifOpen(!notifOpen)}
             className={styles.iconBtn}
+            aria-label="Mở thông báo"
+            aria-expanded={notifOpen}
           >
-            <Bell size={17} style={{ color: "#374151" }} />
-            <span className={styles.notifDot} />
+            <Bell size={18} />
+            <span className={styles.notifDot} aria-hidden="true" />
           </button>
           {notifOpen && (
             <div className={styles.notifDropdown}>

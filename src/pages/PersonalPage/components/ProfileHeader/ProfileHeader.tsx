@@ -53,15 +53,19 @@ export default function ProfileHeader({
           {/* Action Buttons */}
           <div className={S.actions}>
             <button
+              type="button"
               className={S.btnChangePassword}
               onClick={() => showComingSoonActionToast("Đổi mật khẩu")}
+              aria-label="Đổi mật khẩu"
             >
               <KeyRound size={16} />
               <span>Đổi mật khẩu</span>
             </button>
             <button
+              type="button"
               className={S.btnEditProfile}
               onClick={() => showComingSoonActionToast("Chỉnh sửa hồ sơ")}
+              aria-label="Chỉnh sửa hồ sơ"
             >
               <Edit3 size={16} />
               <span>Chỉnh sửa hồ sơ</span>

@@ -299,3 +299,98 @@ $tint-violet: #7c3aed;
     transform: translateY(0);
   }
 }
+
+@media (max-width: 767px) {
+  .wrapper {
+    gap: $space-4;
+  }
+
+  .statsGrid,
+  .contentGrid {
+    gap: $space-3;
+  }
+
+  .statCard {
+    min-height: 72px;
+    padding: $space-4;
+    border-radius: $radius-md;
+    gap: $space-3;
+  }
+
+  .statIcon {
+    width: $space-10;
+    height: $space-10;
+    border-radius: $radius-sm;
+  }
+
+  .statLabel {
+    font-size: 0.6875rem;
+    letter-spacing: 0.03em;
+  }
+
+  .statValue,
+  .statSmall {
+    font-size: $text-sm;
+  }
+
+  .infoCard {
+    padding: $space-4;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xs;
+  }
+
+  .cardTitle {
+    margin-bottom: $space-4;
+    font-size: $text-base;
+    line-height: 1.35;
+  }
+
+  .infoList {
+    gap: $space-4;
+  }
+
+  .infoRow {
+    gap: $space-3;
+  }
+
+  .infoIcon {
+    width: $space-9;
+    height: $space-9;
+    border-radius: $radius-sm;
+  }
+
+  .infoContent {
+    min-width: 0;
+    padding-bottom: $space-3;
+  }
+
+  .infoLabel {
+    font-size: $text-xs;
+  }
+
+  .infoValue {
+    overflow-wrap: anywhere;
+    font-size: $text-sm;
+    line-height: 1.45;
+  }
+
+  .enrolledRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .viewingBadge {
+    min-height: 44px;
+    padding: $space-2 $space-4;
+  }
+}
+
+@media (max-width: 420px) {
+  .statCard {
+    padding: $space-3;
+  }
+
+  .infoCard {
+    padding: $space-3;
+  }
+}

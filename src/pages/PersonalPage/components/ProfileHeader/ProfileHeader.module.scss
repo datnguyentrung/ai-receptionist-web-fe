@@ -242,3 +242,153 @@
   font-weight: $font-medium;
   color: $text-secondary;
 }
+
+@media (max-width: 767px) {
+  .card {
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xs;
+  }
+
+  .coverPhoto {
+    height: clamp(7.75rem, 34vw, 9.5rem);
+
+    img {
+      object-position: center 66%;
+    }
+  }
+
+  .coverOverlay {
+    background:
+      linear-gradient(to top, rgba(0, 0, 0, 0.52), transparent 72%),
+      linear-gradient(135deg, rgba($brand-red, 0.2), transparent 45%);
+  }
+
+  .mainContent {
+    padding: 0 $space-4 $space-5;
+  }
+
+  .topRow {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    gap: $space-3;
+  }
+
+  .avatarWrapper {
+    margin-top: -2.75rem;
+  }
+
+  .avatar {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-width: 3px;
+    box-shadow: $shadow-md;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-2;
+    margin-top: 0;
+    min-width: 0;
+  }
+
+  .btnChangePassword,
+  .btnEditProfile {
+    min-width: 0;
+    width: 100%;
+    justify-content: center;
+    padding: $space-2;
+    border-radius: $radius-sm;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: $text-xs;
+    }
+  }
+
+  .identitySection {
+    margin-top: $space-4;
+  }
+
+  .nameRow {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  .name {
+    width: 100%;
+    font-size: clamp(1.35rem, 7vw, 1.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .badges {
+    gap: $space-2;
+    width: 100%;
+  }
+
+  .beltChip,
+  .roleBadge {
+    min-height: 2rem;
+    letter-spacing: 0.02em;
+  }
+
+  .detailsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-2;
+    margin-top: $space-4;
+  }
+
+  .detailItem {
+    min-width: 0;
+    gap: $space-2;
+    padding: $space-2;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-md;
+    background: $bg-base;
+  }
+
+  .detailIcon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .detailText {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: $text-xs;
+  }
+}
+
+@media (max-width: 420px) {
+  .mainContent {
+    padding-right: $space-3;
+    padding-left: $space-3;
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .btnChangePassword,
+  .btnEditProfile {
+    min-height: 44px;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -127,28 +127,38 @@
 .iconBtn {
   @include touch-target(48px);
   border-radius: $radius-md;
-  border: 1px solid $border-subtle;
-  background: none;
+  color: $text-secondary;
+  background: transparent;
   cursor: pointer;
   position: relative;
-  transition: background $transition-fast;
+  transition:
+    background $transition-fast,
+    color $transition-fast;
 
   @include press-effect(0.92);
 
   @include hover-only {
+    color: $text-heading;
     background: $gray-50;
+  }
+
+  &[aria-expanded="true"] {
+    color: $brand-red;
+    background: rgba($brand-red, 0.08);
   }
 }
 
 .notifDot {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
+  top: 9px;
+  right: 25px;
+  width: 7px;
+  height: 7px;
   border-radius: $radius-full;
   background: $brand-red;
-  border: 2px solid white;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px rgba($brand-red, 0.14);
 }
 
 // ── Notification dropdown ──────────────────────────────────
