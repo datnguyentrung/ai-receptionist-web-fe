@@ -32,6 +32,7 @@ export const NAV_ITEMS = ({
 }: { studentCode?: string } = {}): NavigationItem[] => [
   // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
   {
+    id: "personal-page",
     to: studentCode ? `/${studentCode}` : "/welcome",
     label: "Trang cá nhân",
     icon: UserRoundCheck, // Thay icon tùy ý bạn
@@ -39,6 +40,7 @@ export const NAV_ITEMS = ({
     display: true, // true: luôn hiển thị nếu studentCode có, false: ẩn nếu studentCode không có
   },
   {
+    id: "classes",
     to: `/${studentCode}/classes`,
     label: "Lớp học",
     icon: BookOpen,
@@ -47,6 +49,7 @@ export const NAV_ITEMS = ({
     display: false,
   },
   {
+    id: "progress",
     to: `/${studentCode}/progress`,
     label: "Tiến trình",
     icon: Activity,
@@ -55,6 +58,7 @@ export const NAV_ITEMS = ({
     display: false,
   },
   {
+    id: "tuition",
     to: `/${studentCode}/tuition`,
     label: "Học phí",
     icon: CreditCard,
@@ -63,36 +67,42 @@ export const NAV_ITEMS = ({
     display: false,
   },
   {
+    id: "overview",
     to: "/",
     label: "Tổng quan",
     icon: LayoutDashboard,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
+    id: "coaches",
     to: "/coaches",
     label: "Đội ngũ HLV",
     icon: UserRoundCheck,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
+    id: "students",
     to: "/students",
     label: "Hồ sơ Võ sinh",
     icon: Users,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
+    id: "schedules",
     to: "/schedules",
     label: "Lịch tập & Lớp học",
     icon: CalendarRange,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
+    id: "history",
     to: "/history",
     label: "Nhật ký điểm danh",
     icon: History,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
+    id: "check-in",
     to: "/check-in",
     label: "Trợ lý AI Check-in",
     icon: ScanFace,
@@ -100,12 +110,14 @@ export const NAV_ITEMS = ({
   },
 
   {
+    id: "exam",
     to: "/public/exam",
     label: "Quản lý Khảo thí",
     icon: ClipboardCheck,
     // minLevel: ROLE_LEVELS.DEVELOPER,
   },
   {
+    id: "rankings",
     to: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,

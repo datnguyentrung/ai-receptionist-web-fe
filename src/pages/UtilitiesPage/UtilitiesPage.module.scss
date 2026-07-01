@@ -1,0 +1,343 @@
+.utilitiesPage {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  width: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(
+      135deg,
+      rgba($brand-red, 0.98) 0%,
+      rgba($brand-red-900, 0.96) 100%
+    ),
+    $brand-red;
+  box-shadow: $shadow-brand;
+  color: $white;
+}
+
+.headerCopy {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+
+  h1 {
+    margin: 0;
+    font-size: $text-3xl;
+    font-weight: $font-extrabold;
+    line-height: $leading-tight;
+  }
+
+  p {
+    margin: 0;
+    color: rgba($white, 0.78);
+    font-size: $text-sm;
+    line-height: $leading-normal;
+  }
+}
+
+.headerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  width: fit-content;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($white, 0.14);
+  color: rgba($white, 0.92);
+  font-size: 11px;
+  font-weight: $font-semibold;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-height: 48px;
+  padding: 0 $space-3;
+  border: 1px solid rgba($white, 0.22);
+  border-radius: $radius-md;
+  background: rgba($white, 0.96);
+  color: $text-muted;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $text-primary;
+    font-size: $text-base;
+
+    &::placeholder {
+      color: $gray-500;
+    }
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-3;
+
+  h2 {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-lg;
+    font-weight: $font-bold;
+    line-height: $leading-tight;
+  }
+
+  p {
+    margin: $space-1 0 0;
+    color: $text-muted;
+    font-size: $text-sm;
+    line-height: $leading-normal;
+  }
+}
+
+.countBadge {
+  flex: 0 0 auto;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  background: rgba($brand-red, 0.08);
+  color: $brand-red;
+  font-size: 11px;
+  font-weight: $font-bold;
+}
+
+.utilityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-2;
+}
+
+.quickGrid {
+  .utilityCard {
+    background: linear-gradient(180deg, $white 0%, $brand-red-50 100%);
+  }
+}
+
+.utilityCard {
+  position: relative;
+  min-width: 0;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  background: $white;
+  box-shadow: $shadow-xs;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+
+  @include press-effect(0.98);
+
+  @include hover-only {
+    border-color: rgba($brand-red, 0.24);
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+}
+
+.utilityCardPinned {
+  border-color: rgba($brand-red, 0.28);
+}
+
+.utilityCardDisabled {
+  background: rgba($gray-100, 0.7);
+  box-shadow: none;
+  opacity: 0.72;
+}
+
+.utilityMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  min-height: 96px;
+  padding: $space-3 $space-2;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.8);
+    outline-offset: 2px;
+  }
+}
+
+.utilityIconWrap {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-md;
+  background: rgba($brand-red, 0.08);
+  color: $brand-red;
+  flex: 0 0 auto;
+}
+
+.utilityText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  width: 100%;
+}
+
+.utilityTitle {
+  display: -webkit-box;
+  width: 100%;
+  overflow: hidden;
+  color: $text-primary;
+  font-size: 12px;
+  font-weight: $font-bold;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.utilityMeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+  min-height: 12px;
+  overflow: hidden;
+  color: $text-muted;
+  font-size: 10px;
+  font-weight: $font-medium;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinButton {
+  position: absolute;
+  top: $space-1;
+  right: $space-1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: $radius-full;
+  background: rgba($gray-50, 0.9);
+  color: $gray-500;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+
+  &[aria-pressed="true"] {
+    background: $brand-red;
+    color: $white;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.8);
+    outline-offset: 2px;
+  }
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  min-height: 78px;
+  padding: $space-4;
+  border: 1px dashed rgba($brand-red, 0.28);
+  border-radius: $radius-md;
+  background: rgba($brand-red, 0.04);
+  color: $brand-red;
+
+  p {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-sm;
+    font-weight: $font-bold;
+  }
+
+  span {
+    display: block;
+    margin-top: 2px;
+    color: $text-muted;
+    font-size: $text-xs;
+    line-height: $leading-normal;
+  }
+}
+
+@include respond-to("sm") {
+  .utilitiesPage {
+    gap: $space-6;
+  }
+
+  .pageHeader {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: $space-5;
+  }
+
+  .searchBox {
+    width: min(320px, 40vw);
+  }
+
+  .utilityGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: $space-3;
+  }
+
+  .utilityMain {
+    min-height: 108px;
+  }
+}
+
+@include respond-to("md") {
+  .utilityGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@include respond-to("lg") {
+  .utilityGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .utilityMain {
+    min-height: 112px;
+  }
+}

@@ -3,6 +3,7 @@ import { useNavItems } from "@/hooks/useNavItems";
 import { Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
+import { isPWA } from "../../config/appMode";
 import styles from "./Header.module.scss";
 
 export default function Header({
@@ -39,9 +40,14 @@ export default function Header({
   return (
     <header className={styles.header}>
       <div className={styles.headerLeft}>
-        <button className={styles.menuBtn} onClick={() => setSidebarOpen(true)}>
-          <Menu size={20} />
-        </button>
+        {!isPWA && (
+          <button
+            className={styles.menuBtn}
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu size={20} />
+          </button>
+        )}
 
         {/* Title & Date */}
         <div className={styles.titleBlock}>

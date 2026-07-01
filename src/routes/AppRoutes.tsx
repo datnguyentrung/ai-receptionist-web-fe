@@ -53,6 +53,11 @@ const AttendanceReports = lazy(() =>
     default: module.AttendanceReports,
   })),
 );
+const UtilitiesPage = lazy(() =>
+  import("@/pages/UtilitiesPage").then((module) => ({
+    default: module.UtilitiesPage,
+  })),
+);
 const AICheckIn = lazy(() => import("@/pages/AICheckIn"));
 const ExaminationManagement = lazy(
   () => import("@/pages/ExaminationManagement/ExaminationManagement"),
@@ -141,15 +146,7 @@ export default function AppRoutes() {
           }
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
-          <Route
-            path="utilities"
-            element={
-              <ComingSoonView
-                featureName="Tiện ích"
-                description="Khu vực tiện ích đang được hoàn thiện cho phiên bản tiếp theo."
-              />
-            }
-          />
+          <Route path="utilities" element={<UtilitiesPage />} />
           <Route
             path="notifications"
             element={
