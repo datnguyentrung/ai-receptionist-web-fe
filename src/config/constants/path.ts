@@ -1,4 +1,5 @@
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
+import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   Bell,
@@ -16,7 +17,26 @@ import {
   Users,
 } from "lucide-react";
 
-export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
+type NavigationItemKind = "path" | "link";
+
+export type NavigationItem<TKind extends NavigationItemKind = NavigationItemKind> = {
+  label: string;
+  icon: LucideIcon;
+  minLevel?: number;
+  maxLevel?: number;
+} & (TKind extends "path"
+  ? {
+      path: string;
+      display?: boolean;
+    }
+  : {
+      id: string;
+      linkTo: string;
+    });
+
+export const NAV_ITEMS = (
+  { studentCode }: { studentCode?: string } = {},
+): NavigationItem<"path">[] => [
   // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
   {
     path: studentCode ? `/${studentCode}` : "/welcome",
@@ -100,7 +120,9 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
   },
 ];
 
-export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [
+export const STUDENT_TABS = (
+  { studentCode }: { studentCode: string },
+): NavigationItem<"link">[] => [
   {
     id: "profile",
     label: "Hồ sơ cá nhân",
@@ -133,7 +155,9 @@ export const STUDENT_TABS = ({ studentCode }: { studentCode: string }) => [
   },
 ];
 
-export const COACH_TABS = ({ coachCode }: { coachCode: string }) => [
+export const COACH_TABS = (
+  { coachCode }: { coachCode: string },
+): NavigationItem<"link">[] => [
   {
     id: "profile",
     label: "Hồ sơ cá nhân",
@@ -154,7 +178,9 @@ export const COACH_TABS = ({ coachCode }: { coachCode: string }) => [
   },
 ];
 
-export const BOTTOM_NAV_ITEMS = ({ userId }: { userId: string }) => [
+export const BOTTOM_NAV_ITEMS = (
+  { userId }: { userId: string },
+): NavigationItem<"link">[] => [
   {
     id: "overview",
     label: "Tổng quan",

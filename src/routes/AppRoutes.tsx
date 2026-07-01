@@ -3,6 +3,7 @@ import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
+import ComingSoonView from "../components/ComingSoonView";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
 import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
 import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
@@ -140,6 +141,24 @@ export default function AppRoutes() {
           }
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+          <Route
+            path="utilities"
+            element={
+              <ComingSoonView
+                featureName="Tiện ích"
+                description="Khu vực tiện ích đang được hoàn thiện cho phiên bản tiếp theo."
+              />
+            }
+          />
+          <Route
+            path="notifications"
+            element={
+              <ComingSoonView
+                featureName="Thông báo"
+                description="Bảng thông báo trung tâm đang được kết nối lại."
+              />
+            }
+          />
           <Route
             element={
               <RequireRole
