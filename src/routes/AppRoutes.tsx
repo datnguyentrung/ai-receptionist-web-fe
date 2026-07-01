@@ -170,7 +170,7 @@ export default function AppRoutes() {
               element={<AttendanceCheckin />}
             />
             <Route path="history" element={<AttendanceReports />} />
-            <Route path="ai/check-in" element={<AICheckIn />} />
+            <Route path="check-in" element={<AICheckIn />} />
           </Route>
         </Route>
 

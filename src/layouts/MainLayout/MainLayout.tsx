@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
+import BottomNavigationBar from "../../components/BottomNavigationBar";
 import Header from "../../components/Header/Header";
 import styles from "./MainLayout.module.scss";
 
@@ -36,6 +37,8 @@ export function MainLayout() {
         <main className={styles.content}>
           <Outlet />
         </main>
+
+        <BottomNavigationBar />
       </div>
     </div>
   );

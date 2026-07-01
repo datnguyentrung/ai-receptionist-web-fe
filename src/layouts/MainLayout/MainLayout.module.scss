@@ -55,10 +55,11 @@
   // Mobile: tighter padding + safe bottom for notched devices
   padding: $space-3;
 
-  @include safe-bottom($space-3);
+  @include safe-bottom(104px);
 
   @include respond-to("sm") {
     padding: $space-4;
+    @include safe-bottom(112px);
   }
 
   @include respond-to("md") {

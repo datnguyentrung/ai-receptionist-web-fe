@@ -1,11 +1,13 @@
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import {
   Activity,
+  Bell,
   BookOpen,
   CalendarRange,
   ClipboardCheck,
   CreditCard,
   History,
+  House,
   Info,
   LayoutDashboard,
   ScanFace,
@@ -47,7 +49,6 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     maxLevel: ROLE_LEVELS.PARENT, // Chỉ hiển thị cho phụ huynh
     display: false,
   },
-
   {
     path: "/",
     label: "Tổng quan",
@@ -79,7 +80,7 @@ export const NAV_ITEMS = ({ studentCode }: { studentCode?: string } = {}) => [
     minLevel: ROLE_LEVELS.COACH,
   },
   {
-    path: "/ai/check-in",
+    path: "/check-in",
     label: "Trợ lý AI Check-in",
     icon: ScanFace,
     minLevel: ROLE_LEVELS.DEVELOPER,
@@ -150,5 +151,39 @@ export const COACH_TABS = ({ coachCode }: { coachCode: string }) => [
     label: "Bảng chấm công",
     icon: CalendarRange,
     linkTo: `/${coachCode}/timesheet`,
+  },
+];
+
+export const BOTTOM_NAV_ITEMS = ({ userId }: { userId: string }) => [
+  {
+    id: "overview",
+    label: "Tổng quan",
+    icon: House,
+    minLevel: ROLE_LEVELS.MANAGER_SENIOR,
+    linkTo: "/",
+  },
+  {
+    id: "utilities",
+    label: "Tiện ích",
+    icon: LayoutDashboard,
+    linkTo: "/utilities",
+  },
+  {
+    id: "check-in",
+    label: "Điểm danh",
+    icon: ScanFace,
+    linkTo: "/check-in",
+  },
+  {
+    id: "notifications",
+    label: "Thông báo",
+    icon: Bell,
+    linkTo: "/notifications",
+  },
+  {
+    id: "profile",
+    label: "Hồ sơ cá nhân",
+    icon: Info,
+    linkTo: `/${userId}`,
   },
 ];
