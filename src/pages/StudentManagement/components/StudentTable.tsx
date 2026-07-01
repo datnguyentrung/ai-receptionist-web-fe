@@ -11,22 +11,17 @@ type StudentMenuAction = "assign-class" | "view-info" | "view-history";
 
 interface StudentTableProps {
   list: StudentOverview[];
-  selected: string[];
-  onToggleSelect: (id: string) => void;
-  onSelectAll: (checked: boolean) => void;
   isFetching: boolean;
   onMenuAction?: (student: StudentOverview, action: StudentMenuAction) => void;
 }
 
 export function StudentTable({
   list,
-  selected,
-  onToggleSelect,
-  onSelectAll,
   isFetching,
   onMenuAction,
 }: StudentTableProps) {
   const { canViewManagerSenior } = useRoleStudent();
+
   return (
     <>
       <div className={styles.tableWrap}>
@@ -35,14 +30,6 @@ export function StudentTable({
         >
           <thead>
             <tr className={styles.theadRow}>
-              <th className={styles.th} style={{ width: "32px" }}>
-                <input
-                  type="checkbox"
-                  className="rounded"
-                  onChange={(e) => onSelectAll(e.target.checked)}
-                  checked={selected.length === list.length && list.length > 0}
-                />
-              </th>
               {[
                 "Học viên",
                 "Liên hệ",
@@ -82,18 +69,25 @@ export function StudentTable({
                 (action): action is { id: string; label: string } =>
                   action !== null,
               );
+              const beltColor = BELT_COLORS[student.belt];
 
               return (
-                <tr key={student.studentCode} className={styles.tr}>
-                  <td className={styles.td}>
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                      checked={selected.includes(student.studentCode)}
-                      onChange={() => onToggleSelect(student.studentCode)}
-                    />
-                  </td>
-                  <td className={styles.td}>
+                <tr
+                  key={student.studentCode}
+                  className={`${styles.tr} ${
+                    student.studentStatus === "ACTIVE"
+                      ? styles["tr--active"]
+                      : ""
+                  } ${
+                    student.studentStatus === "RESERVED"
+                      ? styles["tr--reserved"]
+                      : ""
+                  }`}
+                >
+                  <td
+                    className={`${styles.td} ${styles.studentCell}`}
+                    data-label="Học viên"
+                  >
                     <div className={styles.avatarCell}>
                       <Avatar
                         fullName={student.fullName}
@@ -107,17 +101,26 @@ export function StudentTable({
                           {student.fullName}
                         </p>
                         <p className={styles.studentCode}>
-                          {student.studentCode}
+                          <span
+                            className={styles.studentCodeBelt}
+                            style={{
+                              background: beltColor?.bg ?? "#F3F4F6",
+                              color: beltColor?.color ?? "#374151",
+                            }}
+                          >
+                            {student.belt}
+                          </span>
+                          <span>{student.studentCode}</span>
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Liên hệ">
                     <p className={styles.cellText}>
                       {student.phoneNumber}
                     </p>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Lớp học">
                     <p
                       className={`${styles.cellText} ${styles["cellText--truncated"]}`}
                     >
@@ -126,31 +129,43 @@ export function StudentTable({
                         .join(", ") || "-"}
                     </p>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Ngày sinh">
                     <p className={styles.cellText}>
                       {formatDateDMY(student.birthDate)}
                     </p>
                   </td>
-                  <td className={styles.td} style={{ textAlign: "center" }}>
+                  <td
+                    className={`${styles.td} ${styles.beltCell}`}
+                    style={{ textAlign: "center" }}
+                    data-label="Cấp đai"
+                  >
                     <span
                       className={styles.beltBadge}
                       style={{
-                        background: BELT_COLORS[student.belt]?.bg ?? "#F3F4F6",
-                        color: BELT_COLORS[student.belt]?.color ?? "#374151",
+                        background: beltColor?.bg ?? "#F3F4F6",
+                        color: beltColor?.color ?? "#374151",
                       }}
                     >
                       {student.belt}
                     </span>
                   </td>
-                  <td className={styles.td} style={{ textAlign: "center" }}>
+                  <td
+                    className={styles.td}
+                    style={{ textAlign: "center" }}
+                    data-label="Chức vụ"
+                  >
                     <p className={styles.cellText}>
                       {student.roleName}
                     </p>
                   </td>
-                  <td className={styles.td} style={{ textAlign: "center" }}>
+                  <td
+                    className={`${styles.td} ${styles.statusCell}`}
+                    style={{ textAlign: "center" }}
+                    data-label="Trạng thái"
+                  >
                     <StatusBadge status={student.studentStatus} />
                   </td>
-                  <td className={styles.td}>
+                  <td className={`${styles.td} ${styles.actionCell}`}>
                     <MiniActionPopover
                       itemLabel={student.fullName}
                       triggerClassName={styles.moreBtn}

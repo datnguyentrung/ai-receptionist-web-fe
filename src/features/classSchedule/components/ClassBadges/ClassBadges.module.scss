@@ -6,3 +6,11 @@
   white-space: nowrap;
   line-height: $leading-normal;
 }
+
+@media (max-width: 991px) {
+  .badge {
+    padding: 3px 7px;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+}

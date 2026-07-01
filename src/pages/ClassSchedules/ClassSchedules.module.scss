@@ -6,3 +6,9 @@
   flex-direction: column;
   gap: $space-5;
 }
+
+@media (max-width: 767px) {
+  .page {
+    gap: $space-4;
+  }
+}

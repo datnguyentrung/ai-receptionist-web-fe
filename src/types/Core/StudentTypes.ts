@@ -12,6 +12,7 @@ export interface GetStudentsParams {
   search?: string;
   status?: StudentStatus;
   scheduleIds?: string[];
+  belts?: Belt[];
   page?: number;
   size?: number;
   sortBy?: string;

@@ -4,6 +4,40 @@
   gap: $space-5;
 }
 
+.classSchedulesFilterBar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  overflow-x: auto;
+  padding-bottom: $space-1;
+}
+
+.classSchedulesFilterBtn {
+  @include touch-target(40px);
+  @include press-effect(0.98);
+  border: 1px solid $border-default;
+  border-radius: $radius-full;
+  background: $bg-white;
+  color: $text-muted;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  padding: $space-1 $space-3;
+  transition: $transition-colors;
+
+  @include hover-only {
+    border-color: $border-strong;
+    color: $text-secondary;
+  }
+}
+
+.classSchedulesFilterBtnActive {
+  border-color: $brand-red;
+  background: $brand-red;
+  color: $text-on-brand;
+}
+
 .branchGroup {
   display: flex;
   flex-direction: column;
@@ -64,5 +98,67 @@
   p {
     font-size: $text-sm;
     color: $text-subtle;
+  }
+}
+
+@media (max-width: 767px) {
+  .classGroups {
+    gap: $space-3;
+  }
+
+  .classSchedulesFilterBar {
+    gap: $space-1;
+    margin-inline: -$space-1;
+    padding: 0 $space-1 $space-1;
+  }
+
+  .classSchedulesFilterBtn {
+    min-width: 38px;
+    min-height: 36px;
+    padding: $space-1 $space-2;
+  }
+
+  .branchGroup {
+    gap: $space-2;
+    padding: $space-2;
+    border-radius: $radius-md;
+  }
+
+  .branchGroupHeader {
+    align-items: center;
+  }
+
+  .branchGroupTitle {
+    font-size: $text-lg;
+    line-height: $leading-snug;
+  }
+
+  .cardsGrid {
+    gap: $space-2;
+  }
+
+  .emptyState {
+    padding: $space-8 $space-3;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .classGroups {
+    gap: $space-4;
+  }
+
+  .branchGroup {
+    padding: $space-3;
+  }
+
+  .cardsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $space-3;
   }
 }

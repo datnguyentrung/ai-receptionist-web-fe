@@ -213,3 +213,186 @@
   height: 1px !important;
   background: $gray-200 !important;
 }
+
+@media (max-width: 767px) {
+  .classCard {
+    border-radius: $radius-md;
+  }
+
+  .cardAccent {
+    height: 4px;
+  }
+
+  .cardBody {
+    padding: $space-3;
+  }
+
+  .cardTop {
+    gap: $space-2;
+    margin-bottom: $space-2;
+  }
+
+  .weekdayLabel {
+    font-size: $text-sm;
+    line-height: $leading-snug;
+  }
+
+  .coachHint {
+    @include line-clamp(1);
+    line-height: $leading-normal;
+  }
+
+  .menuBtn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .coachRow {
+    gap: $space-1;
+    margin-bottom: $space-2;
+
+    span {
+      font-size: 11px;
+    }
+  }
+
+  .infoBadgeSection {
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  .infoRows {
+    gap: $space-1;
+    width: 100%;
+  }
+
+  .infoRow {
+    align-items: flex-start;
+    gap: $space-1;
+    font-size: 11px;
+    line-height: $leading-normal;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    span {
+      @include line-clamp(1);
+    }
+  }
+
+  .cardBadges {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: $space-1;
+  }
+
+  .capacitySection {
+    margin-top: $space-2;
+  }
+
+  .capacityHeader {
+    margin-bottom: 4px;
+  }
+
+  .capacityUsers,
+  .capacityValue {
+    font-size: 11px;
+  }
+
+  .capacityBar {
+    height: 4px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .cardAccent {
+    height: 4px;
+  }
+
+  .cardBody {
+    padding: $space-3;
+  }
+
+  .cardTop {
+    gap: $space-2;
+    margin-bottom: $space-2;
+  }
+
+  .weekdayLabel {
+    font-size: $text-sm;
+    line-height: $leading-snug;
+  }
+
+  .coachHint {
+    @include line-clamp(1);
+    line-height: $leading-normal;
+  }
+
+  .menuBtn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .coachRow {
+    gap: $space-1;
+    margin-bottom: $space-2;
+
+    span {
+      font-size: 11px;
+    }
+  }
+
+  .infoBadgeSection {
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  .infoRows {
+    gap: $space-1;
+  }
+
+  .infoRow {
+    gap: $space-1;
+    font-size: 11px;
+    line-height: $leading-normal;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    span {
+      @include line-clamp(1);
+    }
+  }
+
+  .cardBadges {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .capacitySection {
+    margin-top: $space-2;
+  }
+
+  .capacityHeader {
+    margin-bottom: 4px;
+  }
+
+  .capacityUsers,
+  .capacityValue {
+    font-size: 11px;
+  }
+
+  .capacityBar {
+    height: 4px;
+  }
+}

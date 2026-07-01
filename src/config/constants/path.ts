@@ -7,6 +7,7 @@ import {
   CalendarRange,
   ClipboardCheck,
   CreditCard,
+  GraduationCap,
   History,
   House,
   Info,
@@ -77,7 +78,7 @@ export const NAV_ITEMS = ({
     id: "coaches",
     to: "/coaches",
     label: "Đội ngũ HLV",
-    icon: UserRoundCheck,
+    icon: GraduationCap,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
