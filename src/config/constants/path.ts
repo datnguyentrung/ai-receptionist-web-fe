@@ -17,36 +17,29 @@ import {
   Users,
 } from "lucide-react";
 
-type NavigationItemKind = "path" | "link";
-
-export type NavigationItem<TKind extends NavigationItemKind = NavigationItemKind> = {
+export type NavigationItem = {
   label: string;
   icon: LucideIcon;
   minLevel?: number;
   maxLevel?: number;
-} & (TKind extends "path"
-  ? {
-      path: string;
-      display?: boolean;
-    }
-  : {
-      id: string;
-      linkTo: string;
-    });
+  id?: string;
+  to?: string;
+  display?: boolean;
+};
 
-export const NAV_ITEMS = (
-  { studentCode }: { studentCode?: string } = {},
-): NavigationItem<"path">[] => [
+export const NAV_ITEMS = ({
+  studentCode,
+}: { studentCode?: string } = {}): NavigationItem[] => [
   // Ví dụ thêm menu Trang cá nhân dùng đến studentCode
   {
-    path: studentCode ? `/${studentCode}` : "/welcome",
+    to: studentCode ? `/${studentCode}` : "/welcome",
     label: "Trang cá nhân",
     icon: UserRoundCheck, // Thay icon tùy ý bạn
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
     display: true, // true: luôn hiển thị nếu studentCode có, false: ẩn nếu studentCode không có
   },
   {
-    path: `/${studentCode}/classes`,
+    to: `/${studentCode}/classes`,
     label: "Lớp học",
     icon: BookOpen,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
@@ -54,7 +47,7 @@ export const NAV_ITEMS = (
     display: false,
   },
   {
-    path: `/${studentCode}/progress`,
+    to: `/${studentCode}/progress`,
     label: "Tiến trình",
     icon: Activity,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
@@ -62,7 +55,7 @@ export const NAV_ITEMS = (
     display: false,
   },
   {
-    path: `/${studentCode}/tuition`,
+    to: `/${studentCode}/tuition`,
     label: "Học phí",
     icon: CreditCard,
     minLevel: ROLE_LEVELS.STUDENT, // Sửa lại level phù hợp
@@ -70,146 +63,152 @@ export const NAV_ITEMS = (
     display: false,
   },
   {
-    path: "/",
+    to: "/",
     label: "Tổng quan",
     icon: LayoutDashboard,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
-    path: "/coaches",
+    to: "/coaches",
     label: "Đội ngũ HLV",
     icon: UserRoundCheck,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
   },
   {
-    path: "/students",
+    to: "/students",
     label: "Hồ sơ Võ sinh",
     icon: Users,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
-    path: "/schedules",
+    to: "/schedules",
     label: "Lịch tập & Lớp học",
     icon: CalendarRange,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
-    path: "/history",
+    to: "/history",
     label: "Nhật ký điểm danh",
     icon: History,
     minLevel: ROLE_LEVELS.COACH,
   },
   {
-    path: "/check-in",
+    to: "/check-in",
     label: "Trợ lý AI Check-in",
     icon: ScanFace,
     minLevel: ROLE_LEVELS.DEVELOPER,
   },
 
   {
-    path: "/public/exam",
+    to: "/public/exam",
     label: "Quản lý Khảo thí",
     icon: ClipboardCheck,
     // minLevel: ROLE_LEVELS.DEVELOPER,
   },
   {
-    path: "/rankings",
+    to: "/rankings",
     label: "Bảng xếp hạng",
     icon: Trophy,
     // minLevel: ROLE_LEVELS.DEVELOPER,
   },
 ];
 
-export const STUDENT_TABS = (
-  { studentCode }: { studentCode: string },
-): NavigationItem<"link">[] => [
+export const STUDENT_TABS = ({
+  studentCode,
+}: {
+  studentCode: string;
+}): NavigationItem[] => [
   {
     id: "profile",
     label: "Hồ sơ cá nhân",
     icon: Info,
-    linkTo: `/${studentCode}`,
+    to: `/${studentCode}`,
   },
   {
     id: "classes",
     label: "Lớp học & Lịch sử",
     icon: BookOpen,
-    linkTo: `/${studentCode}/classes`,
+    to: `/${studentCode}/classes`,
   },
   {
     id: "progress",
     label: "Tiến trình & Điểm danh",
     icon: Activity,
-    linkTo: `/${studentCode}/progress`,
+    to: `/${studentCode}/progress`,
   },
   {
     id: "score",
     label: "Điểm rèn luyện",
     icon: Trophy,
-    linkTo: `/${studentCode}/score`,
+    to: `/${studentCode}/score`,
   },
   {
     id: "tuition",
     label: "Học phí",
     icon: CreditCard,
-    linkTo: `/${studentCode}/tuition`,
+    to: `/${studentCode}/tuition`,
   },
 ];
 
-export const COACH_TABS = (
-  { coachCode }: { coachCode: string },
-): NavigationItem<"link">[] => [
+export const COACH_TABS = ({
+  coachCode,
+}: {
+  coachCode: string;
+}): NavigationItem[] => [
   {
     id: "profile",
     label: "Hồ sơ cá nhân",
     icon: Info,
-    linkTo: `/${coachCode}`,
+    to: `/${coachCode}`,
   },
   {
     id: "classes",
     label: "Lớp phụ trách",
     icon: Users,
-    linkTo: `/${coachCode}/classes`,
+    to: `/${coachCode}/classes`,
   },
   {
     id: "timesheet",
     label: "Bảng chấm công",
     icon: CalendarRange,
-    linkTo: `/${coachCode}/timesheet`,
+    to: `/${coachCode}/timesheet`,
   },
 ];
 
-export const BOTTOM_NAV_ITEMS = (
-  { userId }: { userId: string },
-): NavigationItem<"link">[] => [
+export const BOTTOM_NAV_ITEMS = ({
+  userId,
+}: {
+  userId: string;
+}): NavigationItem[] => [
   {
     id: "overview",
     label: "Tổng quan",
     icon: House,
     minLevel: ROLE_LEVELS.MANAGER_SENIOR,
-    linkTo: "/",
+    to: "/",
   },
   {
     id: "utilities",
     label: "Tiện ích",
     icon: LayoutDashboard,
-    linkTo: "/utilities",
+    to: "/utilities",
   },
   {
     id: "check-in",
     label: "Điểm danh",
     icon: ScanFace,
-    linkTo: "/check-in",
+    to: "/check-in",
   },
   {
     id: "notifications",
     label: "Thông báo",
     icon: Bell,
-    linkTo: "/notifications",
+    to: "/notifications",
   },
   {
     id: "profile",
     label: "Hồ sơ cá nhân",
     icon: Info,
-    linkTo: `/${userId}`,
+    to: `/${userId}`,
   },
 ];

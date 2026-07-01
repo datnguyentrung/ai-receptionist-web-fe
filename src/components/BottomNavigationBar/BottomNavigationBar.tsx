@@ -1,8 +1,8 @@
 import { BOTTOM_NAV_ITEMS } from "@/config/constants/path";
 import { useAuthStore } from "@/store/authStore";
 import { NavLink } from "react-router";
+import { isPWA } from "../../config/appMode";
 import styles from "./BottomNavigationBar.module.scss";
-import { isPWA } from '../../config/appMode';
 
 export default function BottomNavigationBar() {
   const activeProfile = useAuthStore((state) => state.activeProfile);
@@ -18,14 +18,18 @@ export default function BottomNavigationBar() {
   return (
     <nav className={styles.bottomNav} aria-label="Dieu huong nhanh">
       <div className={styles.navShell}>
-        {items.map(({ id, label, icon: Icon, linkTo }) => {
+        {items.map(({ id, label, icon: Icon, to }) => {
           const isCheckIn = id === "check-in";
+
+          if (!to) {
+            return null;
+          }
 
           return (
             <NavLink
               key={id}
-              to={linkTo}
-              end={linkTo === "/"}
+              to={to}
+              end={to === "/"}
               aria-label={label}
               title={label}
               className={({ isActive }) =>

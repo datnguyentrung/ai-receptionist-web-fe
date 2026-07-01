@@ -17,13 +17,15 @@ export default function Header({
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
     nav_items.find((n) => {
-      if (n.path === "/") {
+      if (n.to === "/") {
         return location.pathname === "/";
       }
 
       // matchPath sẽ hiểu "/:userCode" có thể match với "/TQC" hoặc "/VQT_123"
       // end: false giúp nó match cả các path con như "/TQC/classes" nếu có
-      return matchPath({ path: n.path, end: false }, location.pathname);
+      return n.to
+        ? matchPath({ path: n.to, end: false }, location.pathname)
+        : null;
     })?.label ?? "Dashboard";
 
   const formatVietnameseDate = (date: Date = new Date()): string => {
