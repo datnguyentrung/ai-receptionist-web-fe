@@ -4,8 +4,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { queryClient } from "./lib/react-query";
-import { useAuthStore } from "./store/authStore";
 import { initFcm, syncFcmToken } from "./services/fcm";
+import { useAuthStore } from "./store/authStore";
 
 initFcm()
   .then((isSupported) => {

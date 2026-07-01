@@ -1,17 +1,15 @@
 import { BOTTOM_NAV_ITEMS } from "@/config/constants/path";
 import { useAuthStore } from "@/store/authStore";
 import { NavLink } from "react-router";
-import { getAppMode } from "../../utils/getAppMode";
 import styles from "./BottomNavigationBar.module.scss";
-
-export const ENABLE_BOTTOM_NAVIGATION_BAR = getAppMode() === "pwa";
+import { isPWA } from '../../config/appMode';
 
 export default function BottomNavigationBar() {
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const userId =
     activeProfile?.userInfo?.userCode ?? activeProfile?.userInfo?.idUser;
 
-  if (!ENABLE_BOTTOM_NAVIGATION_BAR || !userId) {
+  if (!isPWA || !userId) {
     return null;
   }
 
