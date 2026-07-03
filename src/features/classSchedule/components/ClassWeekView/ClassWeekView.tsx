@@ -108,7 +108,9 @@ function ClassWeekViewInner({
             </p>
           </div>
         ) : (
-          filtered.map((cls) => (
+          filtered
+          .sort((a, b) => a.branchId - b.branchId)
+          .map((cls) => (
             <ClassWeekItem
               key={cls.scheduleId}
               cls={cls}

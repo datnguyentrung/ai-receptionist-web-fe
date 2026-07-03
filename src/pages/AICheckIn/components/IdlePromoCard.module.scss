@@ -180,3 +180,32 @@
   line-height: $leading-normal;
   margin: 0;
 }
+
+/* Flat professional treatment */
+.card,
+.featureIcon {
+  box-shadow: none;
+}
+
+.topStrip {
+  background: $brand-red;
+}
+
+.logo {
+  filter: none;
+}
+
+.featureItem {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+
+  @include hover-only {
+    background-color: #ffffff;
+    box-shadow: none;
+  }
+}
+
+.featureIcon {
+  border: 1px solid #e5e7eb;
+}

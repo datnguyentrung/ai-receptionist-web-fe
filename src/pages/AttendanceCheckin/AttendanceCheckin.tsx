@@ -1,7 +1,13 @@
 import ConfirmModal from "@/components/ConfirmModal";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
+import { isPWA } from "@/config/appMode";
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+} from "@/config/constants";
+import { BeltLabel } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import { EvalSheet } from "@/features/studentAttendance";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
@@ -26,6 +32,46 @@ import { BottomBar } from "./components/BottomBar";
 import { StudentCard } from "./components/StudentCard";
 import { SuccessOverlay } from "./components/SuccessOverlay";
 
+type BeltFilter = "all" | "unknown" | Belt;
+type BeltOptionKey = Exclude<BeltFilter, "all">;
+type BeltSort = "asc" | "desc";
+type StudentAttendanceWithBelt = StudentAttendanceResponse & {
+  belt?: Belt | null;
+};
+
+const BELT_ORDER: Belt[] = [
+  "C10",
+  "C9",
+  "C8",
+  "C7",
+  "C6",
+  "C5",
+  "C4",
+  "C3",
+  "C2",
+  "C1",
+  "D1",
+  "D2",
+  "D3",
+  "D4",
+  "D5",
+  "D6",
+  "D7",
+  "D8",
+  "D9",
+  "D10",
+];
+
+function getBeltRank(belt: Belt | null | undefined) {
+  const rank = belt ? BELT_ORDER.indexOf(belt) : -1;
+  return rank >= 0 ? rank : BELT_ORDER.length;
+}
+
+function readBelt(source: unknown): Belt | null {
+  const belt = (source as { belt?: unknown } | null)?.belt;
+  return typeof belt === "string" && belt in BeltLabel ? (belt as Belt) : null;
+}
+
 function nowTime() {
   return new Date().toLocaleTimeString("vi-VN", {
     hour: "2-digit",
@@ -44,6 +90,8 @@ export function AttendanceCheckin() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedTime, setSubmittedTime] = useState("");
   const [filter, setFilter] = useState<"all" | AttendanceStatus>("all");
+  const [beltFilter, setBeltFilter] = useState<BeltFilter>("all");
+  const [beltSort, setBeltSort] = useState<BeltSort>("asc");
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitPending, setIsSubmitPending] = useState(false);
   const submitTimeoutRef = useRef<number | null>(null);
@@ -71,6 +119,8 @@ export function AttendanceCheckin() {
       ),
     { enabled: !!selectedScheduleId },
   );
+
+  console.log("Enrollments: ", enrollments);
 
   const currentDate = formatDateYMD(new Date());
 
@@ -109,13 +159,23 @@ export function AttendanceCheckin() {
   // console.log("Attendance data:", data);
 
   // Merge server data once, then apply local mutations on top
-  const baseMerged = useMemo<StudentAttendanceResponse[]>(() => {
+  const baseMerged = useMemo<StudentAttendanceWithBelt[]>(() => {
     if (!data || !enrollments) return [];
+    const beltByStudentId = new Map<string, Belt | null>(
+      enrollments.enrollments.map((enrollment) => [
+        enrollment.studentSummary.userId,
+        readBelt(enrollment.studentSummary),
+      ]),
+    );
+
     return mergeAttendanceData(
       enrollments.enrollments,
       data.attendances.content,
       CLASS_SESSION.date,
-    );
+    ).map((student) => ({
+      ...student,
+      belt: readBelt(student) ?? beltByStudentId.get(student.studentId) ?? null,
+    }));
   }, [data, enrollments]);
 
   // Stable refs so callbacks don't become stale or recreate on every render
@@ -140,10 +200,31 @@ export function AttendanceCheckin() {
     };
   }, []);
 
-  const students = useMemo(
+  const students = useMemo<StudentAttendanceWithBelt[]>(
     () => baseMerged.map((s) => ({ ...s, ...(mutations[s.studentId] ?? {}) })),
     [baseMerged, mutations],
   );
+
+  const beltOptions = useMemo(() => {
+    const counts = new Map<BeltOptionKey, number>();
+
+    for (const student of students) {
+      const belt: BeltOptionKey = student.belt ?? "unknown";
+      counts.set(belt, (counts.get(belt) ?? 0) + 1);
+    }
+
+    return Array.from(counts.entries())
+      .map(([belt, count]) => ({
+        belt,
+        count,
+        label: belt === "unknown" ? "Chưa rõ" : BeltLabel[belt],
+      }))
+      .sort(
+        (a, b) =>
+          getBeltRank(a.belt === "unknown" ? null : a.belt) -
+          getBeltRank(b.belt === "unknown" ? null : b.belt),
+      );
+  }, [students]);
 
   const {
     presentCount,
@@ -199,12 +280,25 @@ export function AttendanceCheckin() {
         total > 0
           ? Math.round(((present + absent + excused) / total) * 100)
           : 0,
-      filtered:
-        filter === "all"
-          ? students
-          : students.filter((s) => s.attendanceStatus === filter),
+      filtered: students
+        .filter((s) => filter === "all" || s.attendanceStatus === filter)
+        .filter((s) =>
+          beltFilter === "all"
+            ? true
+            : beltFilter === "unknown"
+              ? !s.belt
+              : s.belt === beltFilter,
+        )
+        .sort((a, b) => {
+          const beltCompare = getBeltRank(a.belt) - getBeltRank(b.belt);
+          const orderedBeltCompare =
+            beltSort === "asc" ? beltCompare : -beltCompare;
+
+          if (orderedBeltCompare !== 0) return orderedBeltCompare;
+          return a.studentName.localeCompare(b.studentName, "vi");
+        }),
     };
-  }, [students, filter]);
+  }, [students, filter, beltFilter, beltSort]);
 
   const updateStatus = useCallback(
     (id: string, status: AttendanceStatus | null) => {
@@ -379,10 +473,11 @@ export function AttendanceCheckin() {
     );
   }
 
-  console.log("Enrollments: ", enrollments);
+  // console.log("Enrollments: ", enrollments);
+  console.log("Filtered: ", filtered);
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${isPWA ? styles.pagePwa : ""}`}>
       <div className={styles.grid}>
         {/* -- Left Sidebar -- */}
         <RenderProfiler id="AttendanceCheckin:Sidebar" thresholdMs={6}>
@@ -399,6 +494,14 @@ export function AttendanceCheckin() {
               evalCount={evalCount}
               filter={filter}
               onFilterChange={setFilter}
+              beltFilter={beltFilter}
+              beltOptions={beltOptions}
+              beltSort={beltSort}
+              compact={isPWA}
+              onBeltFilterChange={setBeltFilter}
+              onBeltSortChange={() =>
+                setBeltSort((current) => (current === "asc" ? "desc" : "asc"))
+              }
             />
           </aside>
         </RenderProfiler>

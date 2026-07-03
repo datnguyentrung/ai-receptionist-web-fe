@@ -9,10 +9,15 @@
   flex-direction: column;
   width: 100%;
   min-height: 100%;
+  --attendance-bottom-nav-offset: 0px;
   background: $bg-base;
   overflow-x: hidden;
   @include safe-top($space-1);
   @include safe-bottom($space-1);
+}
+
+.pagePwa {
+  --attendance-bottom-nav-offset: 72px;
 }
 
 // ── Main Content Grid ────────────────────────────────────────
@@ -268,4 +273,70 @@
   width: 72px;
   border-radius: $radius-full;
   background: $gray-200;
+}
+
+@media (max-width: 639px) {
+  .page {
+    min-height: 100dvh;
+    background:
+      linear-gradient(180deg, #f8fafc 0%, #f1f5f9 46%, #ffffff 100%);
+    padding-bottom: calc(
+      92px + var(--attendance-bottom-nav-offset) +
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .grid {
+    gap: $space-4;
+    padding: $space-3 $space-3 0;
+  }
+
+  .sidebar {
+    height: auto;
+    overflow: visible;
+  }
+
+  .main {
+    gap: $space-4;
+    padding-bottom: calc(
+      124px + var(--attendance-bottom-nav-offset) +
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .studentList {
+    gap: $space-3;
+    padding-bottom: $space-8;
+  }
+
+  .emptyState {
+    min-height: 190px;
+    padding: $space-8 $space-4;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+  }
+
+  .skeletonSidebar,
+  .skeletonCard {
+    border-radius: 22px;
+  }
+
+  .skeletonCard {
+    padding: $space-4;
+  }
+
+  .pagePwa {
+    padding-bottom: calc(
+      74px + var(--attendance-bottom-nav-offset) +
+        env(safe-area-inset-bottom, 0px)
+    );
+
+    .main {
+      padding-bottom: calc(
+        86px + var(--attendance-bottom-nav-offset) +
+          env(safe-area-inset-bottom, 0px)
+      );
+    }
+  }
 }

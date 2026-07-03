@@ -172,6 +172,18 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
               : "Đang phát âm thanh hướng dẫn..."}
           </div>
 
+          {isAudioFinished && (
+            <div className={styles.mobileActions}>
+              <button
+                type="button"
+                className={styles.mobileOkButton}
+                onClick={onClose}
+              >
+                OK
+              </button>
+            </div>
+          )}
+
           <div className={styles.decorDots}>
             <svg width="100" height="100" viewBox="0 0 100 100">
               <pattern

@@ -163,6 +163,20 @@
   white-space: nowrap;
 }
 
+.beltTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  background: $gray-100;
+  color: $text-muted;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .streakText {
   font-size: $text-xs;
   color: $text-subtle;
@@ -439,5 +453,208 @@
     background: $gray-300;
     color: $gray-600;
     border: 1px solid $gray-200;
+  }
+}
+
+@media (max-width: 639px) {
+  .studentCard {
+    border-radius: 22px;
+    border-left-width: 0;
+    box-shadow:
+      0 10px 26px rgba(15, 23, 42, 0.07),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset;
+
+    &.present {
+      background: linear-gradient(180deg, #ffffff 0%, #f5fff9 100%);
+      border-color: rgba(22, 163, 74, 0.28);
+    }
+
+    &.absent {
+      background: linear-gradient(180deg, #ffffff 0%, #fff7f7 100%);
+      border-color: rgba(224, 32, 32, 0.26);
+    }
+
+    &.excused {
+      background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
+      border-color: rgba(217, 119, 6, 0.3);
+    }
+
+    &.unmarked {
+      background: #ffffff;
+      border-color: rgba(203, 213, 225, 0.8);
+    }
+  }
+
+  .studentRow {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    align-items: start;
+    gap: $space-3;
+    padding: $space-4;
+  }
+
+  .avatarWrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .avatar {
+    border-radius: 16px;
+    font-size: $text-sm;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  }
+
+  .studentInfo {
+    min-width: 0;
+    padding-top: 1px;
+  }
+
+  .nameRow {
+    display: block;
+  }
+
+  .studentName {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-size: 0.98rem;
+    line-height: 1.32;
+    letter-spacing: 0;
+  }
+
+  .metaRow {
+    min-height: 20px;
+    margin-top: 4px;
+  }
+
+  .checkInTime {
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: $radius-full;
+    background: rgba(22, 163, 74, 0.1);
+    font-size: 0.76rem;
+  }
+
+  .beltTag {
+    min-height: 24px;
+    padding: 4px 9px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 0.76rem;
+  }
+
+  .pillWrap {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin-top: $space-1;
+
+    :global([class*="pillContainer"]) {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: $space-2;
+      padding: 5px;
+      border-radius: 18px;
+      background: #f1f5f9;
+    }
+
+    :global([class*="pillBtn"]) {
+      min-width: 0;
+      width: 100%;
+      min-height: 48px;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: $font-bold;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset;
+    }
+
+    :global([class*="pillLabelFull"]) {
+      display: inline;
+    }
+
+    :global([class*="pillLabelShort"]) {
+      display: none;
+    }
+  }
+
+  .quickEvalBtn {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 0;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .quickEvalBtnWithLabel {
+    min-width: 0;
+    padding: 0 $space-3;
+  }
+
+  .quickEvalLabel {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    justify-content: center;
+    line-height: 1.2;
+  }
+
+  .disabledExpandTriggerWrap.quickEvalWrap {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    width: 100%;
+
+    .quickEvalBtn {
+      width: 100%;
+    }
+  }
+
+  .expandToggleBtn,
+  .disabledExpandTriggerWrap:not(.quickEvalWrap) {
+    grid-column: 3;
+    grid-row: 3;
+    width: 100%;
+    min-height: 48px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .disabledExpandTriggerWrap:not(.quickEvalWrap) .expandToggleBtn {
+    width: 100%;
+  }
+
+  .expandedPanel {
+    border-radius: 0 0 22px 22px;
+  }
+
+  .expandedInner {
+    padding: $space-4;
+    background: rgba(248, 250, 252, 0.72);
+  }
+
+  .studentMeta {
+    gap: $space-2;
+  }
+
+  .metaItem {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+
+  .evalBtn {
+    min-height: 52px;
+    white-space: normal;
+    text-overflow: clip;
+    line-height: 1.25;
+    border-radius: 16px;
   }
 }

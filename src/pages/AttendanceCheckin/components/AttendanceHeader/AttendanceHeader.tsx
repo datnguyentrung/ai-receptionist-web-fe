@@ -1,5 +1,6 @@
-import type { AttendanceStatus } from "@/config/constants";
+import type { AttendanceStatus, Belt } from "@/config/constants";
 import {
+  BeltLabel,
   ScheduleLevelLabel,
   ScheduleLocationLabel,
   ScheduleShiftLabel,
@@ -8,10 +9,21 @@ import {
 import { useNavigateBack } from "@/hooks/useNavigation";
 import type { ClassScheduleSummary } from "@/types";
 import { formatDateDMY } from "@/utils/format";
-import { Calendar, ChevronLeft, Clock, MapPin, Star } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowUpAZ,
+  Calendar,
+  ChevronLeft,
+  Clock,
+  MapPin,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { memo } from "react";
 import styles from "./AttendanceHeader.module.scss";
+
+type BeltFilter = "all" | "unknown" | Belt;
 
 interface AttendanceHeaderProps {
   session: ClassScheduleSummary;
@@ -24,7 +36,17 @@ interface AttendanceHeaderProps {
   unmarkedCount: number;
   evalCount: number;
   filter: "all" | AttendanceStatus;
+  beltFilter: BeltFilter;
+  beltOptions: {
+    belt: Exclude<BeltFilter, "all">;
+    count: number;
+    label: string;
+  }[];
+  beltSort: "asc" | "desc";
+  compact?: boolean;
   onFilterChange: (f: "all" | AttendanceStatus) => void;
+  onBeltFilterChange: (f: BeltFilter) => void;
+  onBeltSortChange: () => void;
 }
 
 // Link: /schedules/[:scheduleId]
@@ -39,7 +61,13 @@ function AttendanceHeaderInner({
   unmarkedCount,
   evalCount,
   filter,
+  beltFilter,
+  beltOptions,
+  beltSort,
+  compact = false,
   onFilterChange,
+  onBeltFilterChange,
+  onBeltSortChange,
 }: AttendanceHeaderProps) {
   const onBack = useNavigateBack();
   const scheduleLevelLabel =
@@ -52,14 +80,18 @@ function AttendanceHeaderInner({
   const weekdayLabel = WeekdayCodeToLabel[session.weekday] ?? "Không xác định";
 
   return (
-    <div className={styles.header}>
+    <div className={`${styles.header} ${compact ? styles.compact : ""}`}>
       {/* Top bar */}
       <div className={styles.topBar}>
         <button className={styles.backBtn} onClick={onBack}>
           <ChevronLeft size={18} style={{ color: "#374151" }} />
         </button>
         <div className={styles.headerTitle}>
-          <p className={styles.className}>{session.branchName}</p>
+          <span className={styles.headerBadge}>
+            <Sparkles size={14} />
+            Điểm danh học viên
+          </span>
+          <h1 className={styles.className}>{session.branchName}</h1>
           <p className={styles.classCode}>
             {scheduleLevelLabel} · {scheduleShiftLabel}
           </p>
@@ -73,27 +105,29 @@ function AttendanceHeaderInner({
       </div>
 
       {/* Class Info Card */}
-      <div className={styles.classInfoCard}>
-        <div className={styles.classInfoDecor} />
-        {[
-          {
-            icon: MapPin,
-            text: scheduleLocationLabel,
-          },
-          { icon: Clock, text: `${session.startTime} – ${session.endTime}` },
-          {
-            icon: Calendar,
-            text: `${weekdayLabel}, ${formatDateDMY(new Date())}`,
-          },
-        ].map(({ icon: Icon, text }) => (
-          <div key={text} className={styles.classInfoItem}>
-            <div className={styles.classInfoIcon}>
-              <Icon size={12} style={{ color: "white" }} />
+      {!compact && (
+        <div className={styles.classInfoCard}>
+          <div className={styles.classInfoDecor} />
+          {[
+            {
+              icon: MapPin,
+              text: scheduleLocationLabel,
+            },
+            { icon: Clock, text: `${session.startTime} – ${session.endTime}` },
+            {
+              icon: Calendar,
+              text: `${weekdayLabel}, ${formatDateDMY(new Date())}`,
+            },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className={styles.classInfoItem}>
+              <div className={styles.classInfoIcon}>
+                <Icon size={12} style={{ color: "white" }} />
+              </div>
+              <p className={styles.classInfoText}>{text}</p>
             </div>
-            <p className={styles.classInfoText}>{text}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Progress bar + stats */}
       <div className={styles.progressSection}>
@@ -166,6 +200,43 @@ function AttendanceHeaderInner({
               {f.label}
             </button>
           ))}
+        </div>
+        <div className={styles.beltToolbar}>
+          <button
+            type="button"
+            className={styles.beltSortBtn}
+            onClick={onBeltSortChange}
+            aria-label="Đổi thứ tự cấp đai"
+          >
+            {beltSort === "asc" ? <ArrowDownAZ size={15} /> : <ArrowUpAZ size={15} />}
+            <span>Đai {beltSort === "asc" ? "thấp-cao" : "cao-thấp"}</span>
+          </button>
+          <div className={styles.beltTabs}>
+            <button
+              type="button"
+              onClick={() => onBeltFilterChange("all")}
+              className={`${styles.beltBtn} ${beltFilter === "all" ? styles.active : ""}`}
+            >
+              Tất cả <span>{beltOptions.reduce((sum, item) => sum + item.count, 0)}</span>
+            </button>
+            {beltOptions.map((option) => (
+              <button
+                type="button"
+                key={option.belt}
+                onClick={() => onBeltFilterChange(option.belt)}
+                className={`${styles.beltBtn} ${
+                  beltFilter === option.belt ? styles.active : ""
+                }`}
+                title={
+                  option.belt === "unknown"
+                    ? "Chưa rõ cấp đai"
+                    : BeltLabel[option.belt]
+                }
+              >
+                {option.label} <span>{option.count}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

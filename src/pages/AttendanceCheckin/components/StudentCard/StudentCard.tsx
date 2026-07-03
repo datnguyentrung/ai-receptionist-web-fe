@@ -1,4 +1,9 @@
-import type { AttendanceStatus, EvaluationStatus } from "@/config/constants";
+import { BeltLabel } from "@/config/constants";
+import type {
+  AttendanceStatus,
+  Belt,
+  EvaluationStatus,
+} from "@/config/constants";
 import { AttendancePill, EvalQuick } from "@/features/studentAttendance";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
@@ -37,7 +42,7 @@ function evalLabel(e: EvaluationStatus | null): string | null {
 }
 
 interface StudentCardProps {
-  student: StudentAttendanceResponse;
+  student: StudentAttendanceResponse & { belt?: Belt | null };
   index: number;
   onUpdateStatus: (id: string, status: AttendanceStatus | null) => void;
   onUpdateEval: (id: string, status: EvaluationStatus) => void;
@@ -89,6 +94,9 @@ export function StudentCardInner({
             <p className={styles.studentName}>{student.studentName}</p>
           </div>
           <div className={styles.metaRow}>
+            <span className={styles.beltTag}>
+              {student.belt ? BeltLabel[student.belt] : "Chưa rõ đai"}
+            </span>
             {student.checkInTime && (
               <span className={styles.checkInTime}>
                 <Clock size={9} />{" "}
@@ -265,6 +273,7 @@ export const StudentCard = memo(StudentCardInner, (prev, next) => {
   return (
     prev.index === next.index &&
     prev.student.studentId === next.student.studentId &&
+    prev.student.belt === next.student.belt &&
     prev.student.attendanceStatus === next.student.attendanceStatus &&
     prev.student.evaluationStatus === next.student.evaluationStatus &&
     prev.student.checkInTime === next.student.checkInTime &&
