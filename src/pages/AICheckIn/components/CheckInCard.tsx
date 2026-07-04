@@ -45,6 +45,20 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
     hour: "2-digit",
     minute: "2-digit",
   });
+  const attendanceRecord = user?.attendance_record;
+  const checkedInTime = attendanceRecord?.checkInTime
+    ? new Date(attendanceRecord.checkInTime).toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : timeStr;
+  const displayName =
+    user?.user?.userProfile?.name ?? attendanceRecord?.studentName;
+  const displayBelt = user?.user?.userProfile?.belt ?? "Thông tin điểm danh";
+  const memberId = user?.user?.userProfile?.phone ?? attendanceRecord?.studentId;
+  const classLabel = attendanceRecord?.classScheduleId
+    ? `Mã lớp ${attendanceRecord.classScheduleId}`
+    : "Ca học phù hợp";
 
   // Tính toán % để thanh progress chạy mượt
   const progress = isAudioFinished
@@ -103,7 +117,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
               </motion.h1>
             </div>
 
-            {user?.user && (
+            {displayName && (
               <div className={styles.profile}>
                 <div className={styles.avatarWrapper}>
                   <motion.img
@@ -120,16 +134,18 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                 </div>
                 <div>
                   <h2 className={styles.studentName}>
-                    {user.user?.userProfile?.name}
+                    {displayName}
                   </h2>
                   <div className={styles.beltBadge}>
                     <span className={styles.beltDot} />
-                    {user.user?.userProfile?.belt || "No Belt"}
+                    {displayBelt}
                   </div>
-                  <p className={styles.memberId}>
-                    <UserCircle size={16} />
-                    Member #{user.user?.userProfile?.phone}
-                  </p>
+                  {memberId && (
+                    <p className={styles.memberId}>
+                      <UserCircle size={16} />
+                      Member #{memberId}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -145,7 +161,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                   <Clock />
                   <span>Time</span>
                 </div>
-                <p className={styles.infoCardTime}>{timeStr}</p>
+                <p className={styles.infoCardTime}>{checkedInTime}</p>
                 <p className={styles.infoCardNote}>On Time</p>
               </motion.div>
 
@@ -159,8 +175,10 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                   <MapPin />
                   <span>Next Class</span>
                 </div>
-                <p className={styles.infoCardAccentTitle}>Advanced Sparring</p>
-                <p className={styles.infoCardAccentNote}>18:00 - Mat B</p>
+                <p className={styles.infoCardAccentTitle}>{classLabel}</p>
+                <p className={styles.infoCardAccentNote}>
+                  {attendanceRecord?.sessionDate ?? "Hôm nay"}
+                </p>
               </motion.div>
             </div>
           </div>

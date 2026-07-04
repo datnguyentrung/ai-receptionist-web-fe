@@ -2,6 +2,7 @@ import { javaApi } from "@/lib/axiosInstance";
 import { ensureArray, ensureAttendanceListResponse } from "@/lib/runtimeGuards";
 import type {
   AttendanceBatchCreateRequest,
+  AttendanceCheckInRequest,
   AttendanceFilterParams,
   AttendanceListResponse,
   AttendanceManualLogRequest,
@@ -49,6 +50,13 @@ export const studentAttendanceAPI = {
     data: AttendanceManualLogRequest,
   ): Promise<StudentAttendanceResponse> => {
     const response = await javaApi.post("/student-attendances", data);
+    return response.data;
+  },
+
+  checkInByScan: async (
+    data: AttendanceCheckInRequest,
+  ): Promise<StudentAttendanceResponse> => {
+    const response = await javaApi.post("/student-attendances/check-in", data);
     return response.data;
   },
 

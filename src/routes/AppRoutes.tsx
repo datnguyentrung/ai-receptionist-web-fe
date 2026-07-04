@@ -82,15 +82,21 @@ function RouteLoadingFallback() {
 export default function AppRoutes() {
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const user = useAuthStore((state) => state.activeProfile);
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
-  const { canViewManagerSenior, canViewCoach } = useRoleStudent();
+  const { canViewManagerSenior, canViewCoach, canUseCheckIn } =
+    useRoleStudent();
 
   // Xác định đường dẫn trang cá nhân của user hiện tại
   const personalPageRoute = user?.userInfo?.userCode
     ? `/${user.userInfo.userCode}`
     : "/welcome";
+
+  if (!hasHydrated) {
+    return <RouteLoadingFallback />;
+  }
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
@@ -186,6 +192,16 @@ export default function AppRoutes() {
               element={<AttendanceCheckin />}
             />
             <Route path="history" element={<AttendanceReports />} />
+          </Route>
+
+          <Route
+            element={
+              <RequireRole
+                isAllowed={canUseCheckIn}
+                fallbackPath="/403"
+              />
+            }
+          >
             <Route path="check-in" element={<AICheckIn />} />
           </Route>
         </Route>

@@ -82,6 +82,10 @@
   z-index: 10;
 }
 
+.logoutAction {
+  margin-top: $space-3;
+}
+
 // ── Action Buttons ────────────────────────────────────────
 
 .btnChangePassword {
@@ -127,6 +131,31 @@
 
   @include hover-only {
     background: $brand-red-700;
+  }
+
+  span {
+    font-size: $text-sm;
+  }
+}
+
+.btnLogout {
+  @include touch-target(48px);
+  @include press-effect;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  width: 100%;
+  background: $error-50;
+  color: $brand-red;
+  font-weight: $font-semibold;
+  border-radius: $radius-md;
+  border: 1px solid $error-200;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  @include hover-only {
+    background: $error-100;
   }
 
   span {
@@ -293,8 +322,13 @@
     min-width: 0;
   }
 
+  .logoutAction {
+    margin-top: $space-2;
+  }
+
   .btnChangePassword,
-  .btnEditProfile {
+  .btnEditProfile,
+  .btnLogout {
     min-width: 0;
     width: 100%;
     justify-content: center;

@@ -126,3 +126,7 @@ export interface CheckInResponse {
   message?: string;
   isAudioFinished?: boolean; // Cờ báo hiệu đã đọc xong, dùng để trigger đếm ngược đóng Modal
 }
+
+export interface AttendanceCheckInRequest {
+  studentCode: string;
+}

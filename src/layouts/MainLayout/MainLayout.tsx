@@ -1,44 +1,58 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import BottomNavigationBar from "../../components/BottomNavigationBar";
 import Header from "../../components/Header/Header";
 import styles from "./MainLayout.module.scss";
 
+const FULLSCREEN_ROUTES = new Set(["/check-in"]);
+
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isFullscreenRoute = FULLSCREEN_ROUTES.has(pathname.replace(/\/$/, ""));
 
   // Lock body scroll when sidebar is open on mobile
   useEffect(() => {
-    if (sidebarOpen) {
+    if (sidebarOpen && !isFullscreenRoute) {
       document.body.classList.add("overlay-open");
     } else {
       document.body.classList.remove("overlay-open");
     }
     return () => document.body.classList.remove("overlay-open");
-  }, [sidebarOpen]);
+  }, [isFullscreenRoute, sidebarOpen]);
 
   return (
-    <div className={styles.layout}>
+    <div
+      className={`${styles.layout} ${
+        isFullscreenRoute ? styles.layoutFullscreen : ""
+      }`}
+    >
       {/* ── Mobile overlay ── */}
-      {sidebarOpen && (
+      {sidebarOpen && !isFullscreenRoute && (
         <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* ── Sidebar ── */}
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      {!isFullscreenRoute && (
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      )}
 
       {/* ── Main content ── */}
       <div className={styles.main}>
         {/* Top header */}
-        <Header setSidebarOpen={setSidebarOpen} />
+        {!isFullscreenRoute && <Header setSidebarOpen={setSidebarOpen} />}
 
         {/* Page content */}
-        <main className={styles.content}>
+        <main
+          className={`${styles.content} ${
+            isFullscreenRoute ? styles.contentFullscreen : ""
+          }`}
+        >
           <Outlet />
         </main>
 
-        <BottomNavigationBar />
+        {!isFullscreenRoute && <BottomNavigationBar />}
       </div>
     </div>
   );

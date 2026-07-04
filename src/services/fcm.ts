@@ -1,10 +1,10 @@
+import { messaging, vapidKey } from "@/firebase";
+import { javaApi } from "@/lib/axiosInstance";
 import {
   getToken,
   isSupported,
   onMessage as onFcmMessage,
 } from "firebase/messaging";
-import { messaging, vapidKey } from "@/firebase";
-import { javaApi } from "@/lib/axiosInstance";
 
 const FCM_TOKEN_KEY = "fcm_token";
 
@@ -99,6 +99,8 @@ export const requestNotificationPermission = async (): Promise<
     // SỬA TẠI ĐÂY: Lấy instance đăng ký SW truyền vào getToken
     const registration = await getSWRegistration();
     if (!registration) return null;
+
+    console.log("vapidKey:", vapidKey);
 
     const token = await getToken(messaging, {
       vapidKey,

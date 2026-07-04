@@ -1,6 +1,10 @@
 import Avatar from "@/components/Avatar";
+import ConfirmModal from "@/components/ConfirmModal";
+import { isPWA } from "@/config/appMode";
 import type { CoachDetail, StudentDetail, UserResponse } from "@/types";
+import { useAuthStore } from "@/store/authStore";
 import { formatDateDMY } from "@/utils/format";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Award,
   Calendar,
@@ -9,7 +13,9 @@ import {
   Mail,
   Phone,
   User,
+  LogOut,
 } from "lucide-react";
+import { useCallback, useState } from "react";
 import { BeltBadge } from "../../../../components/BeltBadge";
 import { showComingSoonActionToast } from "../../../../components/ui/mini-action-popover.toast";
 import S from "./ProfileHeader.module.scss";
@@ -24,6 +30,34 @@ export default function ProfileHeader({
   user,
   currentUserData,
 }: ProfileHeaderProps) {
+  const logout = useAuthStore((state) => state.logout);
+  const queryClient = useQueryClient();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutPending, setIsLogoutPending] = useState(false);
+
+  const openLogoutModal = useCallback(() => {
+    setIsLogoutModalOpen(true);
+  }, []);
+
+  const cancelLogout = useCallback(() => {
+    setIsLogoutPending(false);
+    setIsLogoutModalOpen(false);
+  }, []);
+
+  const confirmLogout = useCallback(async () => {
+    if (isLogoutPending) return;
+
+    setIsLogoutPending(true);
+    try {
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 900));
+      logout();
+      queryClient.clear();
+      setIsLogoutModalOpen(false);
+    } finally {
+      setIsLogoutPending(false);
+    }
+  }, [isLogoutPending, logout, queryClient]);
+
   console.log("ProfileHeader received user:", user); // Debug: Kiểm tra dữ liệu nhận được từ props
   console.log("ProfileHeader received currentUserData:", currentUserData); // Debug: Kiểm tra dữ liệu user đã đăng nhập
 
@@ -72,6 +106,20 @@ export default function ProfileHeader({
             </button>
           </div>
         </div>
+
+        {isPWA ? (
+          <div className={S.logoutAction}>
+            <button
+              type="button"
+              className={S.btnLogout}
+              onClick={openLogoutModal}
+              aria-label="Đăng xuất"
+            >
+              <LogOut size={16} />
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        ) : null}
 
         {/* Identity & Details */}
         <div className={S.identitySection}>
@@ -131,6 +179,21 @@ export default function ProfileHeader({
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={isLogoutModalOpen}
+        title="Bạn có chắc muốn đăng xuất?"
+        description="Bạn sẽ kết thúc phiên đăng nhập hiện tại. Bạn có thể đăng nhập lại bất kỳ lúc nào."
+        cancelText="Hủy"
+        confirmText="Có, đăng xuất"
+        loadingText="Đang đăng xuất..."
+        isLoading={isLogoutPending}
+        linkGoToAfterConfirm="/login"
+        successToastMessage="Đăng xuất thành công"
+        errorToastMessage="Đăng xuất thất bại. Vui lòng thử lại."
+        onCancel={cancelLogout}
+        onConfirm={confirmLogout}
+      />
     </div>
   );
 }
