@@ -1,8 +1,13 @@
 .utilitiesPage {
+  --attendance-bottom-nav-offset: 10px;
+
   display: flex;
   flex-direction: column;
   gap: $space-5;
   width: 100%;
+  padding-bottom: calc(
+    10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px)
+  );
 }
 
 .pageHeader {
