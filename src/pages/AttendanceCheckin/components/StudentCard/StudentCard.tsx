@@ -1,45 +1,29 @@
-import { BeltLabel } from "@/config/constants";
 import type {
   AttendanceStatus,
   Belt,
   EvaluationStatus,
 } from "@/config/constants";
+import { BeltLabel } from "@/config/constants";
 import { AttendancePill, EvalQuick } from "@/features/studentAttendance";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
-import { ChevronDown, Clock, Eye, Zap } from "lucide-react";
+import { ChevronDown, Clock, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useState } from "react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "../../../../components/ui/hover-card";
 import styles from "./StudentCard.module.scss";
 
-function getEvalClassName(status: EvaluationStatus | null): string {
-  if (!status) return "";
-  const classMap: Record<EvaluationStatus, string> = {
-    GOOD: "good",
-    AVERAGE: "average",
-    WEAK: "weak",
-    PENDING: "pending",
-  };
-  return classMap[status];
-}
-
-function evalLabel(e: EvaluationStatus | null): string | null {
-  if (!e) return null;
-  return (
-    {
-      GOOD: "👍 Tốt",
-      AVERAGE: "👌 Trung bình",
-      WEAK: "😔 Yếu",
-      PENDING: "⏳ Chờ",
-    }[e] ?? null
-  );
-}
+// function evalLabel(e: EvaluationStatus | null): string | null {
+//   if (!e) return null;
+//   return (
+//     {
+//       GOOD: "👍 Tốt",
+//       AVERAGE: "👌 Trung bình",
+//       WEAK: "😔 Yếu",
+//       PENDING: "⏳ Chờ",
+//     }[e] ?? null
+//   );
+// }
 
 interface StudentCardProps {
   student: StudentAttendanceResponse & { belt?: Belt | null };
@@ -57,7 +41,7 @@ export function StudentCardInner({
   onOpenEval,
 }: StudentCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const changeAttendance = !student?.attendanceId;
+  const hasAttendanceRecord = Boolean(student.attendanceId);
 
   return (
     <motion.div
@@ -109,110 +93,43 @@ export function StudentCardInner({
           </div>
         </div>
 
-        {/* Attendance pill */}
-        <div className={styles.pillWrap}>
-          <AttendancePill
-            attendanceId={
-              student.attendanceId ? student.attendanceId : undefined
-            }
-            value={student.attendanceStatus}
-            onChange={(v) => onUpdateStatus(student.studentId, v)}
+        {/* Evaluation moved to the top/main row */}
+        <div className={styles.evalInlineWrap}>
+          <EvalQuick
+            value={student.evaluationStatus}
+            onChange={(v) => {
+              if (v !== student.evaluationStatus) {
+                onUpdateEval(student.studentId, v);
+              }
+            }}
           />
         </div>
 
-        {/* Nút Eye kèm Popover */}
-        {changeAttendance ? (
-          <HoverCard openDelay={0} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              <div
-                className={`${styles.disabledExpandTriggerWrap} ${styles.quickEvalWrap}`}
-              >
-                <button
-                  disabled
-                  className={`${styles.expandBtn} ${styles.quickEvalBtn} ${styles.expandBtnDisabled}`}
-                >
-                  <Eye size={14} className={`${styles.chevron}`} />
-                </button>
-              </div>
-            </HoverCardTrigger>
-
-            <HoverCardContent
-              side="top"
-              align="center"
-              className={styles.missingAttendanceHoverCard}
-            >
-              Học viên này chưa có bản ghi điểm danh hôm nay
-            </HoverCardContent>
-          </HoverCard>
-        ) : (
-          <HoverCard openDelay={0} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              <button
-                className={`${styles.expandBtn} ${styles.quickEvalBtn} ${
-                  student.evaluationStatus ? styles.quickEvalBtnWithLabel : ""
-                }`}
-              >
-                {student.evaluationStatus ? (
-                  <span
-                    className={`${styles.evalLabel} ${styles.quickEvalLabel} ${styles[getEvalClassName(student.evaluationStatus)]}`}
-                  >
-                    {evalLabel(student.evaluationStatus)}
-                  </span>
-                ) : (
-                  <Eye size={14} className={`${styles.chevron}`} />
-                )}
-              </button>
-            </HoverCardTrigger>
-
-            {/* Nội dung sẽ hiển thị khi di chuột vào con mắt */}
-            <HoverCardContent
-              side="top"
-              align="center"
-              className={styles.evalHoverCard}
-            >
-              <EvalQuick
-                value={student.evaluationStatus}
-                onChange={(v) => onUpdateEval(student.studentId, v)}
-                studentName={student.studentName}
-              />
-            </HoverCardContent>
-          </HoverCard>
-        )}
-
         {/* Expand toggle */}
-        {changeAttendance ? (
-          <HoverCard openDelay={0} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              {/* Phải bọc div vì button disabled bị mất pointer-events, không trigger được hover */}
-              <div className={styles.disabledExpandTriggerWrap}>
-                <button
-                  disabled
-                  className={`${styles.expandBtn} ${styles.expandToggleBtn} ${styles.expandBtnDisabled}`}
-                >
-                  <ChevronDown size={14} className={styles.chevron} />
-                </button>
-              </div>
-            </HoverCardTrigger>
+        <button
+          type="button"
+          disabled={!hasAttendanceRecord}
+          onClick={() => setExpanded((prev) => !prev)}
+          className={`${styles.expandBtn} ${styles.expandToggleBtn} ${
+            expanded ? styles.expanded : ""
+          } ${!hasAttendanceRecord ? styles.expandBtnDisabled : ""}`}
+          aria-expanded={expanded}
+          aria-label={expanded ? "Thu gọn chi tiết" : "Mở chi tiết"}
+        >
+          <ChevronDown
+            size={14}
+            className={`${styles.chevron} ${expanded ? styles.rotated : ""}`}
+          />
+        </button>
+      </div>
 
-            <HoverCardContent
-              side="top"
-              align="center"
-              className={styles.missingAttendanceHoverCard}
-            >
-              Học viên này chưa có bản ghi điểm danh hôm nay
-            </HoverCardContent>
-          </HoverCard>
-        ) : (
-          <button
-            onClick={() => setExpanded((prev) => !prev)}
-            className={`${styles.expandBtn} ${styles.expandToggleBtn} ${expanded ? styles.expanded : ""}`}
-          >
-            <ChevronDown
-              size={14}
-              className={`${styles.chevron} ${expanded ? styles.rotated : ""}`}
-            />
-          </button>
-        )}
+      {/* Attendance moved to the bottom */}
+      <div className={styles.attendanceBottomWrap}>
+        <AttendancePill
+          attendanceId={student.attendanceId ? student.attendanceId : undefined}
+          value={student.attendanceStatus}
+          onChange={(v) => onUpdateStatus(student.studentId, v)}
+        />
       </div>
 
       {/* Expanded evaluation area */}
@@ -227,7 +144,7 @@ export function StudentCardInner({
           >
             <div className={styles.expandedInner}>
               {/* Student meta */}
-              <div className={styles.studentMeta}>
+              {/* <div className={styles.studentMeta}>
                 <p className={styles.metaItem}>
                   Mã HV:{" "}
                   <span className={styles.metaValue}>{student.studentId}</span>
@@ -242,7 +159,7 @@ export function StudentCardInner({
                     </span>
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* Notes preview */}
               {student.note && (
@@ -251,15 +168,16 @@ export function StudentCardInner({
                 </div>
               )}
 
-              {/* Quick eval button */}
+              {/* Full evaluation entry remains available from expanded panel */}
               <button
+                type="button"
                 onClick={() => onOpenEval(student)}
-                className={`${styles.evalBtn} ${student.evaluationStatus ? styles.evaluated : ""}`}
+                className={`${styles.evalBtn} ${
+                  student.evaluationStatus ? styles.evaluated : ""
+                }`}
               >
                 <Zap size={14} />
-                {student.evaluationStatus
-                  ? `Đã nhận xét: ${evalLabel(student.evaluationStatus)} · Sửa`
-                  : "Nhận xét nhanh"}
+                {student.note ? `Sửa chi tiết` : "Nhận xét nhanh"}
               </button>
             </div>
           </motion.div>
@@ -274,6 +192,7 @@ export const StudentCard = memo(StudentCardInner, (prev, next) => {
     prev.index === next.index &&
     prev.student.studentId === next.student.studentId &&
     prev.student.belt === next.student.belt &&
+    prev.student.attendanceId === next.student.attendanceId &&
     prev.student.attendanceStatus === next.student.attendanceStatus &&
     prev.student.evaluationStatus === next.student.evaluationStatus &&
     prev.student.checkInTime === next.student.checkInTime &&

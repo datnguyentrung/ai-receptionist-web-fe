@@ -1,12 +1,14 @@
 // ─────────────────────────────────────────────────────────────
-// EVAL QUICK — Popover evaluation buttons (Mobile-first)
+// EVAL QUICK — Compact direct evaluation buttons
 // ─────────────────────────────────────────────────────────────
 
 .container {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
-  margin: $space-1 $space-2;
+  gap: $space-2;
+  margin: 0;
+  min-width: 0;
 }
 
 .header {
@@ -25,25 +27,31 @@
 .options {
   display: flex;
   flex-direction: row;
-  gap: $space-2;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: $space-1;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .optBtn {
-  @include touch-target(48px);
-  flex: 1;
+  @include touch-target(40px);
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $space-1;
-  padding: $space-2 $space-1;
-  border-radius: $radius-sm + 2px;
-  border: 2px solid transparent;
+  gap: 4px;
+  padding: 7px $space-2;
+  border-radius: $radius-full;
+  border: 1px solid transparent;
   cursor: pointer;
   font-size: $text-xs;
-  font-weight: $font-medium;
+  font-weight: $font-bold;
   text-align: center;
-  opacity: 0.5;
+  opacity: 0.86;
+  white-space: nowrap;
   transition:
     transform $transition-fast,
     box-shadow $transition-fast,
@@ -52,7 +60,7 @@
   @include press-effect;
 
   @include hover-only {
-    opacity: 0.8;
+    opacity: 1;
     box-shadow: $shadow-sm;
   }
 
@@ -61,19 +69,40 @@
   }
 
   &.active {
-    font-weight: $font-bold;
+    font-weight: $font-extrabold;
     opacity: 1;
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.6);
     box-shadow: $shadow-md;
   }
 }
 
 .emoji {
-  font-size: 20px;
+  font-size: 15px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .optLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: $text-xs;
   line-height: 1;
+}
+
+@media (max-width: 420px) {
+  .options {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .optBtn {
+    flex: 1 1 calc(33.333% - #{$space-1});
+    padding: 8px $space-1;
+  }
+
+  .optLabel {
+    white-space: normal;
+    line-height: 1.1;
+  }
 }
