@@ -64,6 +64,20 @@
   gap: 2px;
 }
 
+.headerBadge {
+  display: none;
+  align-items: center;
+  gap: $space-2;
+  width: fit-content;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($brand-red, 0.08);
+  color: $brand-red;
+  font-size: 11px;
+  font-weight: $font-semibold;
+  line-height: 1.2;
+}
+
 .className {
   font-size: $text-base;
   font-weight: $font-extrabold;
@@ -432,5 +446,403 @@
 
   @include respond-to(sm) {
     flex-shrink: initial;
+  }
+}
+
+.beltToolbar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+  min-width: 0;
+}
+
+.beltSortBtn {
+  @include touch-target(44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $gray-200;
+  background: $bg-white;
+  color: $text-secondary;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  @include hover-only {
+    background: $gray-50;
+    border-color: $gray-300;
+  }
+}
+
+.beltTabs {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: $space-1;
+  -webkit-overflow-scrolling: touch;
+  @include hide-scrollbar;
+}
+
+.beltBtn {
+  @include touch-target(44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  flex-shrink: 0;
+  padding: 0 $space-3;
+  border-radius: $radius-full;
+  border: 1px solid $gray-200;
+  background: $bg-white;
+  color: $text-muted;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: $radius-full;
+    background: $gray-100;
+    color: $text-subtle;
+    font-size: 11px;
+  }
+
+  @include hover-only {
+    background: $gray-50;
+    border-color: $gray-300;
+  }
+
+  &.active {
+    background: $error-50;
+    color: $brand-red;
+    border-color: $error-200;
+
+    span {
+      background: $white;
+      color: $brand-red;
+    }
+  }
+}
+
+@media (max-width: 639px) {
+  .header {
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow:
+      0 12px 30px rgba(15, 23, 42, 0.07),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  }
+
+  .topBar {
+    align-items: flex-start;
+    padding: $space-4;
+    gap: $space-3;
+  }
+
+  .backBtn {
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .className {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    font-size: 1.06rem;
+    line-height: 1.25;
+  }
+
+  .classCode {
+    margin-top: 3px;
+    line-height: 1.35;
+  }
+
+  .statusPill {
+    min-height: 32px;
+    padding: 6px 10px;
+  }
+
+  .classInfoCard {
+    margin: 0 $space-4 $space-4;
+    padding: $space-4;
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.2), transparent 34%),
+      linear-gradient(135deg, #e02020 0%, #9f1239 100%);
+  }
+
+  .classInfoItem {
+    align-items: flex-start;
+  }
+
+  .classInfoIcon {
+    width: 30px;
+    height: 30px;
+    border-radius: 12px;
+  }
+
+  .classInfoText {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .progressSection {
+    padding: 0 $space-4 $space-4;
+    gap: $space-3;
+  }
+
+  .progressTrack {
+    height: 10px;
+  }
+
+  .statRow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .statItem {
+    min-height: 58px;
+    border-radius: 16px;
+    padding: $space-2 3px;
+  }
+
+  .statValue {
+    font-size: 1.05rem;
+  }
+
+  .statLabel {
+    font-size: 0.68rem;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .evalCount {
+    justify-content: flex-start;
+    padding: $space-1 0 0;
+  }
+
+  .quickActions {
+    padding: 0 $space-4 $space-4;
+  }
+
+  .filterTabs {
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+    gap: $space-2;
+    margin: 0 (-$space-4);
+    padding: 0 $space-4 $space-1;
+    scroll-padding-inline: $space-4;
+  }
+
+  .filterBtn {
+    min-height: 44px;
+    padding: 0 $space-4;
+    border-radius: 999px;
+    background: #f8fafc;
+    border-color: rgba(226, 232, 240, 0.95);
+
+    &.active {
+      box-shadow: 0 6px 14px rgba(224, 32, 32, 0.16);
+    }
+  }
+
+  .compact {
+    gap: 0;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    background:
+      linear-gradient(
+        135deg,
+        rgba($brand-red, 0.98) 0%,
+        rgba($brand-red-900, 0.96) 100%
+      ),
+      $brand-red;
+    box-shadow: $shadow-brand;
+    color: $white;
+
+    .topBar {
+      align-items: center;
+      padding: $space-3;
+      border-bottom: 0;
+      gap: $space-3;
+    }
+
+    .backBtn {
+      min-width: 44px;
+      min-height: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: $radius-md;
+      background: rgba($white, 0.96);
+      border-color: rgba($white, 0.22);
+      box-shadow: 0 10px 22px rgba(127, 29, 29, 0.18);
+    }
+
+    .headerTitle {
+      gap: $space-1;
+    }
+
+    .headerBadge {
+      display: inline-flex;
+      padding: $space-1 $space-2;
+      background: rgba($white, 0.14);
+      color: rgba($white, 0.92);
+      font-size: 10px;
+      font-weight: $font-semibold;
+    }
+
+    .className {
+      margin: 0;
+      font-size: 1.52rem;
+      line-height: 1.05;
+      font-weight: $font-extrabold;
+      letter-spacing: 0;
+      color: $white;
+      text-shadow: 0 10px 24px rgba(69, 10, 10, 0.24);
+    }
+
+    .classCode {
+      max-width: 100%;
+      min-height: 0;
+      margin-top: 4px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      color: rgba($white, 0.78);
+      font-size: $text-sm;
+      font-weight: $font-medium;
+      line-height: $leading-normal;
+    }
+
+    .progressSection {
+      padding: 0 $space-3 $space-3;
+      gap: $space-2;
+    }
+
+    .progressHeader {
+      display: none;
+    }
+
+    .progressTrack {
+      height: 7px;
+      background: rgba($white, 0.2);
+    }
+
+    .progressBar {
+      background: linear-gradient(90deg, rgba($white, 0.92), rgba($white, 0.62));
+    }
+
+    .statRow {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 0;
+      gap: 5px;
+    }
+
+    .statItem {
+      min-height: 43px;
+      padding: 6px 2px;
+      border-radius: 13px;
+      background: rgba($white, 0.12);
+      border: 1px solid rgba($white, 0.14);
+      box-shadow: none;
+    }
+
+    .statValue {
+      font-size: 0.95rem;
+      color: $white !important;
+    }
+
+    .statLabel {
+      font-size: 0.64rem;
+      color: rgba($white, 0.72);
+    }
+
+    .evalCount {
+      display: none;
+    }
+
+    .quickActions {
+      gap: $space-2;
+      padding: $space-3;
+      background: $bg-white;
+    }
+
+    .filterTabs,
+    .beltTabs {
+      margin: 0 (-$space-3);
+      padding-inline: $space-3;
+    }
+
+    .filterBtn,
+    .beltBtn,
+    .beltSortBtn {
+      min-height: 44px;
+      border-color: rgba(254, 226, 226, 0.95);
+    }
+
+    .filterBtn,
+    .beltBtn {
+      padding: 0 12px;
+
+      &.active {
+        background:
+          linear-gradient(135deg, rgba(255, 241, 242, 0.98), rgba(255, 247, 237, 0.96));
+        color: #be123c;
+        border-color: rgba(251, 113, 133, 0.55);
+      }
+    }
+
+    .beltSortBtn {
+      background: rgba(255, 255, 255, 0.9);
+      color: #9f1239;
+      border-radius: 999px;
+    }
+  }
+
+  .beltToolbar {
+    gap: $space-2;
+  }
+
+  .beltSortBtn {
+    min-height: 46px;
+    justify-content: flex-start;
+    border-radius: 16px;
+    background: #ffffff;
+    border-color: rgba(226, 232, 240, 0.95);
+  }
+
+  .beltTabs {
+    margin: 0 (-$space-4);
+    padding: 0 $space-4 $space-1;
+    scroll-padding-inline: $space-4;
+  }
+
+  .beltBtn {
+    min-height: 44px;
+    border-radius: 999px;
+    background: #ffffff;
+    border-color: rgba(226, 232, 240, 0.95);
+
+    &.active {
+      box-shadow: 0 6px 14px rgba(224, 32, 32, 0.14);
+    }
   }
 }

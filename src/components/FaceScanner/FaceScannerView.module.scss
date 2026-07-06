@@ -360,3 +360,72 @@
     transform: rotate(360deg);
   }
 }
+
+/* Flat professional check-in treatment */
+.videoContainer {
+  border: 1px solid #d1d5db;
+  box-shadow: none;
+  animation: none;
+  background: #ffffff;
+}
+
+.overlay {
+  background: transparent;
+}
+
+.cornerBracket {
+  filter: none;
+}
+
+.scanLine {
+  background: #e02020;
+  box-shadow: none;
+}
+
+.statusBadge {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.statusDot {
+  box-shadow: none;
+}
+
+.statusText {
+  color: #111827;
+}
+
+.startButton,
+.stopButton {
+  box-shadow: none;
+}
+
+.pendingOverlay {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.pendingCard {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  box-shadow: none;
+}
+
+.cancelButton {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+.pendingTitle {
+  color: #111827;
+}
+
+.pendingSubtitle,
+.loadingText {
+  color: #6b7280;
+}

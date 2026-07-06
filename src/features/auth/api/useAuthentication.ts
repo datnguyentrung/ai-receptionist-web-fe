@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { authApi } from "./authApi";
 
 const POST_LOGIN_LOADING_MS = 900;
@@ -73,6 +74,9 @@ export const useLogin = () => {
         // 1. Lưu token mới vào store TRƯỚC để các Axios Interceptor kịp cập nhật
         useAuthStore.setState({ accessToken: data.accessToken });
 
+        localStorage.setItem("access_token", data.accessToken);
+        localStorage.setItem("refresh_token", data.refreshToken);
+
         // 2. getUserInfo trả về UserResponse[] (multi-profile)
         const profiles = await userAPI.getUserInfo(data.accessToken);
 
@@ -84,7 +88,12 @@ export const useLogin = () => {
         showSuccessToast("Đăng nhập thành công");
         navigate("/");
 
-        requestNotificationPermission().catch(() => {});
+        await requestNotificationPermission().catch((error) => {
+          console.error("FCM init sau login lỗi:", error);
+          toast.error(
+            "Không thể đăng ký nhận thông báo. Vui lòng kiểm tra cài đặt trình duyệt.",
+          );
+        });
       } catch (error) {
         showErrorToast(
           "Lỗi khi lấy thông tin user: " + getLoginErrorMessage(error),

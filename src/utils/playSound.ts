@@ -2,7 +2,7 @@
 // Max volume is 1.0, and you can set it lower if the sound is too loud on some devices
 const NEGATIVE_VOLUME = 0.5;
 
-export const playSound = (type: "success" | "error") => {
+export const playSound = async (type: "success" | "error"): Promise<void> => {
   try {
     const AudioContext =
       window.AudioContext ||
@@ -14,6 +14,10 @@ export const playSound = (type: "success" | "error") => {
     if (!AudioContext) return;
 
     const audioCtx = new AudioContext();
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
+    }
+
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -46,7 +50,11 @@ export const playSound = (type: "success" | "error") => {
       oscillator.start();
       oscillator.stop(audioCtx.currentTime + 0.3);
     }
+
+    oscillator.onended = () => {
+      void audioCtx.close().catch(() => undefined);
+    };
   } catch (e) {
-    console.error("Audio playback failed", e);
+    console.warn("Audio playback skipped", e);
   }
 };

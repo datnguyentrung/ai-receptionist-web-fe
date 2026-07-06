@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "./TabViews.scss";
 
+import type { NavigationItem } from "@/config/constants/path";
 import { COACH_TABS, STUDENT_TABS } from "@/config/constants/path";
 import type { CoachDetail, StudentDetail } from "@/types";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +16,8 @@ export type OutletContextType = {
   canViewManagerSenior: boolean;
 };
 
+type TabItem = NavigationItem & { id: string; to: string };
+
 export function TabViews({
   userInfo,
   userType,
@@ -25,19 +28,19 @@ export function TabViews({
   const navigate = useNavigate();
   const tabs =
     userType === "student"
-      ? STUDENT_TABS({ studentCode: userInfo.studentCode })
-      : COACH_TABS({ coachCode: userInfo.staffCode });
+      ? (STUDENT_TABS({ studentCode: userInfo.studentCode }) as TabItem[])
+      : (COACH_TABS({ coachCode: userInfo.staffCode }) as TabItem[]);
 
   // 1. Xác định tab đang active dựa trên URL hiện tại
   // Tìm tab có linkTo khớp hoàn toàn với URL. Nếu không tìm thấy, mặc định là tab đầu tiên.
   const activeTabId =
-    tabs.find((tab) => location.pathname === tab.linkTo)?.id || tabs[0].id;
+    tabs.find((tab) => location.pathname === tab.to)?.id || tabs[0].id;
 
   // 2. Xử lý chuyển URL khi click vào TabTrigger
   const handleTabChange = (value: string) => {
     const selectedTab = tabs.find((tab) => tab.id === value);
-    if (selectedTab) {
-      navigate(selectedTab.linkTo); // Cập nhật URL thay vì đổi state nội bộ
+    if (selectedTab?.to) {
+      navigate(selectedTab.to); // Cập nhật URL thay vì đổi state nội bộ
     }
   };
   return (
@@ -50,7 +53,7 @@ export function TabViews({
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className={`views__tab-trigger ${location.pathname === tab.linkTo ? "active" : "inactive"}`}
+              className={`views__tab-trigger ${location.pathname === tab.to ? "active" : "inactive"}`}
               style={{ flex: "0 0 auto" }}
             >
               <span className="views__tab-icon">

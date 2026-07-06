@@ -6,7 +6,7 @@ import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
 import type { ClassScheduleDetail } from "@/types";
 import { formatTimeStringHM, getDurationInMinutes } from "@/utils/format";
 import { useRoleStudent } from "@/utils/roleUtils";
-import { EllipsisVertical, MapPin, Users } from "lucide-react";
+import { Clock, EllipsisVertical, MapPin, Users } from "lucide-react";
 import { memo } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassWeekItem.module.scss";
@@ -36,37 +36,38 @@ function ClassWeekItemInner({
         })
       }
     >
-      <div className={styles.timeBlock}>
-        <p className={styles.timeLabel}>
-          {formatTimeStringHM(cls.startTime)} -{" "}
-          {formatTimeStringHM(cls.endTime)}
-        </p>
-        <p className={styles.timeDuration}>
-          {getDurationInMinutes(cls.startTime, cls.endTime)} phút
-        </p>
-      </div>
-
       <div className={styles.weekClassInfo}>
         <div className={styles.weekClassTitleRow}>
           <p className={styles.weekClassTitle}>
             {cls.branchName} - {ScheduleShiftLabel[cls.scheduleShift]}
           </p>
-          <LevelBadge level={cls.scheduleLevel} />
+          <div className={styles.weekClassBadges}>
+            <LevelBadge level={cls.scheduleLevel} />
+            <StatusBadge status={cls.scheduleStatus} />
+          </div>
         </div>
+
         <div className={styles.weekClassMetaRow}>
+          <span className={`${styles.metaItem} ${styles.timeMetaItem}`}>
+            <Clock size={11} />
+            {formatTimeStringHM(cls.startTime)} -{" "}
+            {formatTimeStringHM(cls.endTime)}
+            <span className={styles.metaMuted}>
+              {getDurationInMinutes(cls.startTime, cls.endTime)} phút
+            </span>
+          </span>
           <span className={styles.metaItem}>
             <Users size={11} /> {cls.totalStudents} HV
           </span>
           <span className={styles.metaItem}>
             <MapPin size={11} /> {ScheduleLocationLabel[cls.scheduleLocation]}
           </span>
-          <span className={styles.metaItem}>
+          <span className={`${styles.metaItem} ${styles.coachMetaItem}`}>
             HLV: {cls.coaches.map((c) => c.fullName).join(", ")}
           </span>
         </div>
       </div>
 
-      <StatusBadge status={cls.scheduleStatus} />
       <MiniActionPopover
         triggerClassName={styles.menuBtn}
         contentClassName={styles.weekMenuContent}

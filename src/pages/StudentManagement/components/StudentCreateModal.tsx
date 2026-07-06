@@ -13,7 +13,7 @@ import type {
   StudentCreateRequest,
   StudentDetail,
 } from "@/types";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styles from "./StudentCreateModal.module.scss";
 
 type BranchOption = {
@@ -243,7 +243,7 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
     setSelectedScheduleIds(new Set());
   };
 
-  const handleToggleSchedule = (scheduleId: string) => {
+  const handleToggleSchedule = useCallback((scheduleId: string) => {
     setSelectedScheduleIds((current) => {
       const next = new Set(current);
 
@@ -255,7 +255,7 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
 
       return next;
     });
-  };
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -333,6 +333,7 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
       title="Thêm học viên mới"
       subtitle="Nhập thông tin cơ bản và chọn lớp học phù hợp cho học viên"
       maxWidth={1180}
+      overlayClassName={styles.noBlurOverlay}
     >
       <form className={styles.studentCreateModal} onSubmit={handleSubmit}>
         {isPending ? (

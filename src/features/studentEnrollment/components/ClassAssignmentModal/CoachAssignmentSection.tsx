@@ -1,6 +1,7 @@
 import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
 import { StudentScheduleSection } from "@/components/StudentScheduleSection/StudentScheduleSection";
 import { cn } from "@/components/ui/utils";
+import { memo } from "react";
 import type {
   ClassScheduleSummary,
   CoachAssignmentCreateRequest,
@@ -38,7 +39,7 @@ type CoachAssignmentSectionProps = {
   onToggleSchedule: (scheduleId: string) => void;
 };
 
-export function CoachAssignmentSection({
+export const CoachAssignmentSection = memo(function CoachAssignmentSection({
   coachName,
   coachStatus,
   coachCode,
@@ -204,4 +205,4 @@ export function CoachAssignmentSection({
       </div>
     </section>
   );
-}
+});

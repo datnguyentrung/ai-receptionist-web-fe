@@ -61,14 +61,19 @@ export default function EvalQuick({
           return (
             <button
               key={opt.value}
+              type="button"
+              aria-pressed={active}
               className={`${styles.optBtn} ${active ? styles.active : ""}`}
-              disabled={active}
               style={
                 active
                   ? { background: opt.activeBg, color: "white" }
                   : { background: opt.bg, color: opt.color }
               }
-              onClick={() => onChange(opt.value)}
+              onClick={() => {
+                if (!active) {
+                  onChange(opt.value);
+                }
+              }}
             >
               <span className={styles.emoji}>{active ? "✓" : opt.emoji}</span>
               <span className={styles.optLabel}>{opt.label}</span>

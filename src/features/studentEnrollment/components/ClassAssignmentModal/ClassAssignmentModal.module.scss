@@ -372,6 +372,7 @@
   background: $bg-surface;
   margin-top: $space-2;
   @include hide-scrollbar;
+  contain: content;
 }
 
 .selectionSummaryBar {

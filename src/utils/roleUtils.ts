@@ -13,6 +13,10 @@ export const isDeveloper = (role?: string) => {
   return role === "DEVELOPER";
 };
 
+export const isSystem = (role?: string) => {
+  return role === "SYSTEM" || isDeveloper(role);
+};
+
 export const isHeadCoach = (role?: string) => {
   return role === "HEAD_COACH" || isDeveloper(role);
 };
@@ -68,6 +72,7 @@ export const useRoleStudent = () => {
   const canViewHeadCoach = isHeadCoach(idRole);
   const canViewManagerSenior = isManagerSenior(idRole);
   const canViewCoach = isCoach(idRole);
+  const canUseCheckIn = isCoach(idRole) || isSystem(idRole);
   const canViewAssistant = isAssistant(idRole);
   const canViewStudent = isStudent(idRole);
 
@@ -75,6 +80,7 @@ export const useRoleStudent = () => {
   return {
     canViewManagerSenior,
     canViewCoach,
+    canUseCheckIn,
     canViewStudent,
     canViewAssistant,
     canViewHeadCoach,

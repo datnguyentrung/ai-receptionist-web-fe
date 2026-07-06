@@ -24,6 +24,17 @@ dist-ssr
 *.sw?
 
 .env
-.claude/*
-.codegraph/*
-.agents/*
+.agents/**
+.agents
+.claude/**
+.claude
+.github/**
+.github
+
+skills-lock.json
+
+# Local assistant/tooling state
+package-lock.json
+.codegraph/
+.impeccable/
+.claude/settings.local.json

@@ -1,59 +1,270 @@
 // ─────────────────────────────────────────────────────────────
-// ATTENDANCE PILL — Coach action toggle (Mobile-first)
+// ATTENDANCE PILL — Single trigger + floating options
 // ─────────────────────────────────────────────────────────────
 
 .pillContainer {
+  position: relative;
+  width: 100%;
   display: flex;
   align-items: center;
-  border-radius: $radius-md;
-  padding: $space-1;
-  gap: 2px;
-  background: $gray-100;
+  border-radius: 18px;
+  box-sizing: border-box;
+  user-select: none;
 }
 
-.pillBtn {
+.triggerBtn {
   @include touch-target(48px);
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: $space-1;
-  padding: $space-1 $space-3;
-  border-radius: $radius-sm;
-  border: none;
+  justify-content: center;
+  gap: $space-2;
+  min-height: 48px;
+  padding: $space-2 $space-3;
+  border-radius: 18px;
+  border: 1px solid $border-subtle;
   cursor: pointer;
-  font-size: $text-xs;
-  font-weight: $font-medium;
-  background: transparent;
-  color: $text-subtle;
-  transition: $transition-fast;
-  @include press-effect;
+  background: $gray-50;
+  color: $text-secondary;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  line-height: 1.15;
+  box-sizing: border-box;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
+  touch-action: none;
 
   @include hover-only {
-    background: $gray-200;
-    color: $text-secondary;
+    background: $gray-100;
+    box-shadow: $shadow-sm;
   }
 
-  &.active {
-    font-weight: $font-bold;
-    color: $white;
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 
-    @include hover-only {
-      background: inherit;
-    }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    background: $gray-100;
+    color: $text-subtle;
+    box-shadow: none;
   }
 }
 
-.pillLabelFull {
-  display: none;
+.statusIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
-  @include respond-to(sm) {
+.triggerText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.triggerHint {
+  display: none;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: $font-semibold;
+  color: $text-subtle;
+  white-space: nowrap;
+}
+
+.desktopHint,
+.touchHint {
+  display: none;
+}
+
+.floatingMenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-2;
+  padding: $space-2;
+  border-radius: 18px;
+  background: $bg-white;
+  border: 1px solid $border-subtle;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+  box-sizing: border-box;
+}
+
+.floatingMenu::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  background: $bg-white;
+  border-right: 1px solid $border-subtle;
+  border-bottom: 1px solid $border-subtle;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.menuOption {
+  @include touch-target(44px);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-1;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background $transition-fast,
+    color $transition-fast,
+    border-color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
+
+  @include hover-only {
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+}
+
+.menuOption.present {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.menuOption.absent {
+  background: #fef2f2;
+  color: #e02020;
+}
+
+.menuOption.late {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.menuOption.active,
+.menuOption.highlighted {
+  color: $white;
+  box-shadow: $shadow-md;
+}
+
+.menuOption.present.active,
+.menuOption.present.highlighted {
+  background: #16a34a;
+  border-color: #15803d;
+}
+
+.menuOption.absent.active,
+.menuOption.absent.highlighted {
+  background: #e02020;
+  border-color: #b91c1c;
+}
+
+.menuOption.late.active,
+.menuOption.late.highlighted {
+  background: #d97706;
+  border-color: #b45309;
+}
+
+.pillContainer.present .triggerBtn {
+  background: #f0fdf4;
+  border-color: rgba(22, 163, 74, 0.28);
+  color: #16a34a;
+}
+
+.pillContainer.absent .triggerBtn {
+  background: #fef2f2;
+  border-color: rgba(224, 32, 32, 0.24);
+  color: #e02020;
+}
+
+.pillContainer.late .triggerBtn {
+  background: #fffbeb;
+  border-color: rgba(217, 119, 6, 0.28);
+  color: #d97706;
+}
+
+.pillContainer.unmarked .triggerBtn {
+  background: $gray-50;
+  border-color: $border-subtle;
+  color: $text-secondary;
+}
+
+.pillContainer.disabled .triggerBtn {
+  background: $gray-100;
+  border-color: $border-subtle;
+  color: $text-subtle;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pillContainer:hover .floatingMenu,
+  .pillContainer.menuOpen .floatingMenu {
+    display: grid;
+  }
+
+  .desktopHint {
     display: inline;
   }
+
+  .triggerHint {
+    display: inline-flex;
+  }
 }
 
-.pillLabelShort {
-  display: inline;
+@media (hover: none) and (pointer: coarse) {
+  .touchHint {
+    display: inline;
+  }
 
-  @include respond-to(sm) {
-    display: none;
+  .triggerHint {
+    display: inline-flex;
+  }
+
+  .floatingMenu {
+    gap: $space-2;
+    padding: $space-2;
+  }
+
+  .menuOption {
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 420px) {
+  .triggerBtn {
+    justify-content: flex-start;
+  }
+
+  .triggerHint {
+    margin-left: auto;
+  }
+
+  .floatingMenu {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .menuOption {
+    flex-direction: column;
+    gap: 3px;
+    min-height: 50px;
   }
 }

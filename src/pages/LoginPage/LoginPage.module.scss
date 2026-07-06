@@ -1,0 +1,27 @@
+// ── Login Page ──────────────────────────────────────────────
+
+.formHeader {
+  margin-bottom: $space-6;
+
+  @include respond-to("md") {
+    margin-bottom: $space-8;
+  }
+}
+
+.formTitle {
+  font-size: $text-2xl;
+
+  @include respond-to("md") {
+    font-size: $text-3xl;
+  }
+  font-weight: $font-bold;
+  color: $brand-dark;
+  margin: 0 0 $space-1;
+  line-height: $leading-tight;
+}
+
+.formSubtitle {
+  font-size: $text-sm;
+  color: $gray-600;
+  margin: 0;
+}

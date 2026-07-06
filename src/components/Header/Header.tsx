@@ -3,6 +3,7 @@ import { useNavItems } from "@/hooks/useNavItems";
 import { Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
+import { isPWA } from "../../config/appMode";
 import styles from "./Header.module.scss";
 
 export default function Header({
@@ -17,13 +18,15 @@ export default function Header({
   // Tìm title dựa trên URL hiện tại
   const pageTitle =
     nav_items.find((n) => {
-      if (n.path === "/") {
+      if (n.to === "/") {
         return location.pathname === "/";
       }
 
       // matchPath sẽ hiểu "/:userCode" có thể match với "/TQC" hoặc "/VQT_123"
       // end: false giúp nó match cả các path con như "/TQC/classes" nếu có
-      return matchPath({ path: n.path, end: false }, location.pathname);
+      return n.to
+        ? matchPath({ path: n.to, end: false }, location.pathname)
+        : null;
     })?.label ?? "Dashboard";
 
   const formatVietnameseDate = (date: Date = new Date()): string => {
@@ -37,9 +40,14 @@ export default function Header({
   return (
     <header className={styles.header}>
       <div className={styles.headerLeft}>
-        <button className={styles.menuBtn} onClick={() => setSidebarOpen(true)}>
-          <Menu size={20} />
-        </button>
+        {!isPWA && (
+          <button
+            className={styles.menuBtn}
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu size={20} />
+          </button>
+        )}
 
         {/* Title & Date */}
         <div className={styles.titleBlock}>
@@ -58,11 +66,14 @@ export default function Header({
         {/* Notif */}
         <div className={styles.notifContainer}>
           <button
+            type="button"
             onClick={() => setNotifOpen(!notifOpen)}
             className={styles.iconBtn}
+            aria-label="Mở thông báo"
+            aria-expanded={notifOpen}
           >
-            <Bell size={17} style={{ color: "#374151" }} />
-            <span className={styles.notifDot} />
+            <Bell size={18} />
+            <span className={styles.notifDot} aria-hidden="true" />
           </button>
           {notifOpen && (
             <div className={styles.notifDropdown}>

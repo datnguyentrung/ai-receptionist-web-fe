@@ -1,4 +1,5 @@
 import type { UserResponse } from "@/types";
+import { writeDebugStorage } from "@/utils/debugStorage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -10,6 +11,7 @@ interface AuthState {
   profiles: UserResponse[];
   activeProfile: UserResponse | null;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
 
   // Auth lifecycle
   login: (token: string, profiles: UserResponse[]) => void;
@@ -20,6 +22,7 @@ interface AuthState {
   initProfile: (profiles: UserResponse[]) => void;
   switchProfile: (profileId: string) => void;
   clearAuth: () => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────
@@ -80,6 +83,7 @@ export const useAuthStore = create<AuthState>()(
       profiles: [],
       activeProfile: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       login: (token, profiles) => {
         const activeProfile = resolveActiveProfile(profiles);
@@ -97,7 +101,12 @@ export const useAuthStore = create<AuthState>()(
       setAccessToken: (token) =>
         set({ accessToken: token, isAuthenticated: true }),
 
+      setHasHydrated: (hasHydrated) => set({ hasHydrated }),
+
       logout: () => {
+        writeDebugStorage("auth_logout_debug", {
+          source: "authStore.logout",
+        });
         clearRoleDebugSessionFlags();
         safeRemoveLastProfileId();
         set({
@@ -105,6 +114,7 @@ export const useAuthStore = create<AuthState>()(
           profiles: [],
           activeProfile: null,
           isAuthenticated: false,
+          hasHydrated: true,
         });
         api.persist.clearStorage();
       },
@@ -129,6 +139,9 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearAuth: () => {
+        writeDebugStorage("auth_logout_debug", {
+          source: "authStore.clearAuth",
+        });
         clearRoleDebugSessionFlags();
         safeRemoveLastProfileId();
         set({
@@ -136,6 +149,7 @@ export const useAuthStore = create<AuthState>()(
           profiles: [],
           activeProfile: null,
           isAuthenticated: false,
+          hasHydrated: true,
         });
         api.persist.clearStorage();
       },
@@ -148,6 +162,9 @@ export const useAuthStore = create<AuthState>()(
         activeProfile: state.activeProfile,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

@@ -22,15 +22,34 @@ if (projectId) {
   const messaging = firebase.messaging();
 
   messaging.onBackgroundMessage((payload) => {
-    const { title, body, icon } = payload.notification || {};
+    console.log("[SW] Background FCM payload:", payload);
+
+    const title = payload.data?.title || payload.notification?.title;
     if (!title) return;
+
+    const body = payload.data?.body || payload.notification?.body || "";
+
+    const icon =
+      payload.data?.icon ||
+      payload.notification?.icon ||
+      "/logo/android/launchericon-192x192.png";
+
+    // const badge = payload.data?.badge || "/logo/android/launchericon-96x96.png";
+
     const clickUrl = payload.data?.clickUrl || payload.data?.url || "/";
 
-    self.registration.showNotification(title, {
-      body: body || "",
-      icon: icon || "/assets/taekwondo.jpg",
-      data: { clickUrl, ...payload.data },
-      badge: "/assets/taekwondo.jpg",
+    return self.registration.showNotification(title, {
+      body,
+      icon,
+      // badge,
+      data: {
+        clickUrl,
+        ...payload.data,
+      },
+      tag: payload.data?.tag || "attendance-notification",
+      renotify: true,
+      requireInteraction: true,
+      silent: false,
     });
   });
 } else {

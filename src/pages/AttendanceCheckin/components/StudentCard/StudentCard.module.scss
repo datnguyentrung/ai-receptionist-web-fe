@@ -1,8 +1,6 @@
 // ─────────────────────────────────────────────────────────────
-// STUDENT CARD — Mobile-first refactored
+// STUDENT CARD — Attendance/Evaluation flow refactor
 // ─────────────────────────────────────────────────────────────
-
-// ── Student Card Main Container ───────────────────────────
 
 .studentCard {
   display: flex;
@@ -10,7 +8,7 @@
   width: 100%;
   background: $bg-white;
   border-radius: $radius-lg;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid $border-subtle;
   border-left-width: 4px;
   box-sizing: border-box;
@@ -22,7 +20,6 @@
     box-shadow: $shadow-md;
   }
 
-  // ── Status indicators ──────────────────────────────────
   &.present {
     border-color: $success-100;
     border-left-color: $status-present;
@@ -50,14 +47,13 @@
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: $space-3 $space-3;
+  padding: $space-3 $space-3 $space-2;
   width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
 
   @include respond-to(sm) {
-    padding: $space-3 $space-4;
-    gap: $space-3;
+    padding: $space-3 $space-4 $space-2;
   }
 }
 
@@ -112,7 +108,7 @@
 // ── Student Info Section ──────────────────────────────────
 
 .studentInfo {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -163,13 +159,51 @@
   white-space: nowrap;
 }
 
+.beltTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  background: $gray-100;
+  color: $text-muted;
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .streakText {
   font-size: $text-xs;
   color: $text-subtle;
   white-space: nowrap;
 }
 
-// ── Pill Wrapper ──────────────────────────────────────────
+// ── Evaluation moved to top/main row ──────────────────────
+
+.evalInlineWrap {
+  flex: 0 1 280px;
+  min-width: 190px;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// ── Attendance moved to bottom action area ────────────────
+
+.attendanceBottomWrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  padding: 0 $space-3 $space-3;
+  box-sizing: border-box;
+
+  @include respond-to(sm) {
+    padding: 0 $space-4 $space-3;
+  }
+}
 
 .pillWrap {
   flex-shrink: 0;
@@ -178,7 +212,6 @@
 }
 
 // ── Expand Button Section ─────────────────────────────────
-// All interactive buttons meet 48px touch target via @include touch-target.
 
 .expandBtn {
   @include touch-target(48px);
@@ -192,6 +225,7 @@
   background: $gray-50;
   padding: $space-1;
   color: $text-subtle;
+  flex-shrink: 0;
 
   @include hover-only {
     background: $gray-100;
@@ -207,7 +241,8 @@
   }
 }
 
-.expandBtnDisabled {
+.expandBtnDisabled,
+.expandBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 
@@ -232,62 +267,8 @@
   }
 }
 
-.disabledExpandTriggerWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.quickEvalWrap {
-  display: flex;
-}
-
-.quickEvalBtn {
-  display: flex;
-}
-
-.quickEvalBtnWithLabel {
-  width: auto;
-  min-width: 96px;
-  padding: 0 $space-3;
-  border-radius: $radius-full;
-  gap: $space-1;
-  overflow: hidden;
-}
-
-.quickEvalLabel {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: none;
-  transform: none;
-
-  @include hover-only {
-    transform: none;
-    box-shadow: none;
-  }
-}
-
 .expandToggleBtn {
   display: flex;
-}
-
-// ── Hover Cards ───────────────────────────────────────────
-
-.evalHoverCard {
-  width: 12rem;
-  padding: 0.75rem;
-  box-sizing: border-box;
-}
-
-.missingAttendanceHoverCard {
-  width: 12rem;
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  text-align: center;
-  line-height: $leading-normal;
-  color: $text-secondary;
-  box-sizing: border-box;
 }
 
 // ── Expanded Panel Section ────────────────────────────────
@@ -362,7 +343,7 @@
   margin: 0;
 }
 
-// ── Evaluation Button ─────────────────────────────────────
+// ── Evaluation Button in expanded panel ───────────────────
 
 .evalBtn {
   @include touch-target(48px);
@@ -439,5 +420,151 @@
     background: $gray-300;
     color: $gray-600;
     border: 1px solid $gray-200;
+  }
+}
+
+@media (max-width: 639px) {
+  .studentCard {
+    border-radius: 22px;
+    border-left-width: 0;
+    box-shadow:
+      0 10px 26px rgba(15, 23, 42, 0.07),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset;
+
+    &.present {
+      background: linear-gradient(180deg, #ffffff 0%, #f5fff9 100%);
+      border-color: rgba(22, 163, 74, 0.28);
+    }
+
+    &.absent {
+      background: linear-gradient(180deg, #ffffff 0%, #fff7f7 100%);
+      border-color: rgba(224, 32, 32, 0.26);
+    }
+
+    &.excused {
+      background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
+      border-color: rgba(217, 119, 6, 0.3);
+    }
+
+    &.unmarked {
+      background: #ffffff;
+      border-color: rgba(203, 213, 225, 0.8);
+    }
+  }
+
+  .studentRow {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    align-items: start;
+    gap: $space-3;
+    padding: $space-4 $space-4 $space-2;
+  }
+
+  .avatarWrap {
+    grid-column: 1;
+    grid-row: 1;
+    width: 48px;
+    height: 48px;
+  }
+
+  .avatar {
+    border-radius: 16px;
+    font-size: $text-sm;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  }
+
+  .studentInfo {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    padding-top: 1px;
+  }
+
+  .nameRow {
+    display: block;
+  }
+
+  .studentName {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-size: 0.98rem;
+    line-height: 1.32;
+    letter-spacing: 0;
+  }
+
+  .metaRow {
+    min-height: 20px;
+    margin-top: 4px;
+  }
+
+  .checkInTime {
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: $radius-full;
+    background: rgba(22, 163, 74, 0.1);
+    font-size: 0.76rem;
+  }
+
+  .beltTag {
+    min-height: 24px;
+    padding: 4px 9px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 0.76rem;
+  }
+
+  .evalInlineWrap {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    justify-content: stretch;
+    margin-top: 0;
+  }
+
+  .attendanceBottomWrap {
+    padding: 0 $space-4 $space-4;
+  }
+
+  .expandToggleBtn {
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+    min-height: 48px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .expandedPanel {
+    border-radius: 0 0 22px 22px;
+  }
+
+  .expandedInner {
+    padding: $space-4;
+    background: rgba(248, 250, 252, 0.72);
+  }
+
+  .studentMeta {
+    gap: $space-2;
+  }
+
+  .metaItem {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+
+  .evalBtn {
+    min-height: 52px;
+    white-space: normal;
+    text-overflow: clip;
+    line-height: 1.25;
+    border-radius: 16px;
   }
 }

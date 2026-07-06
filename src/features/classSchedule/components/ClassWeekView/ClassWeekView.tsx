@@ -1,6 +1,11 @@
 import { DaySelector } from "@/components/DaySelector";
-import type { ScheduleStatus } from "@/config/constants";
-import { WeekdayCode, WeekdayFromCode, WeekdayLabel } from "@/config/constants";
+import type { ScheduleShift, ScheduleStatus } from "@/config/constants";
+import {
+  ScheduleShiftLabel,
+  WeekdayCode,
+  WeekdayFromCode,
+  WeekdayLabel,
+} from "@/config/constants";
 import type { ClassScheduleDetail } from "@/types";
 import { getCurrentWeekday } from "@/utils/format";
 import { Calendar } from "lucide-react";
@@ -23,21 +28,35 @@ function ClassWeekViewInner({
   onOpenSessionsModal,
 }: Props) {
   const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
+  const [selectedShift, setSelectedShift] = useState<ScheduleShift | "ALL">(
+    "ALL",
+  );
+
+  const classesByShift = useMemo(
+    () =>
+      selectedShift === "ALL"
+        ? classes
+        : classes.filter((c) => c.scheduleShift === selectedShift),
+    [classes, selectedShift],
+  );
 
   const counts = useMemo(
     () =>
       Object.fromEntries(
         Object.entries(WeekdayCode).map(([key, code]) => [
           key,
-          classes.filter((c) => c.weekday === code).length,
+          classesByShift.filter((c) => c.weekday === code).length,
         ]),
       ),
-    [classes],
+    [classesByShift],
   );
 
   const filtered = useMemo(
-    () => classes.filter((c) => c.weekday === selectedDay),
-    [classes, selectedDay],
+    () =>
+      classesByShift
+        .filter((c) => c.weekday === selectedDay)
+        .sort((left, right) => left.startTime.localeCompare(right.startTime)),
+    [classesByShift, selectedDay],
   );
 
   return (
@@ -50,6 +69,31 @@ function ClassWeekViewInner({
         }
         counts={counts}
       />
+      <div className={styles.classSchedulesFilterBar} aria-label="Lọc ca học">
+        <button
+          type="button"
+          className={`${styles.classSchedulesFilterBtn} ${
+            selectedShift === "ALL" ? styles.classSchedulesFilterBtnActive : ""
+          }`}
+          onClick={() => setSelectedShift("ALL")}
+        >
+          Tất cả
+        </button>
+        {(["CA_1", "CA_2"] as const).map((shift) => (
+          <button
+            type="button"
+            key={shift}
+            className={`${styles.classSchedulesFilterBtn} ${
+              selectedShift === shift
+                ? styles.classSchedulesFilterBtnActive
+                : ""
+            }`}
+            onClick={() => setSelectedShift(shift)}
+          >
+            {ScheduleShiftLabel[shift]}
+          </button>
+        ))}
+      </div>
       <div className={styles.classList}>
         {filtered.length === 0 ? (
           <div className={styles.emptyState}>
@@ -64,7 +108,9 @@ function ClassWeekViewInner({
             </p>
           </div>
         ) : (
-          filtered.map((cls) => (
+          filtered
+          .sort((a, b) => a.branchId - b.branchId)
+          .map((cls) => (
             <ClassWeekItem
               key={cls.scheduleId}
               cls={cls}

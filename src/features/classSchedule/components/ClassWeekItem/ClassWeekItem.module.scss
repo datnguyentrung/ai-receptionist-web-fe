@@ -3,9 +3,10 @@
   border-radius: $radius-lg;
   border: 1px solid $border-subtle;
   padding: $space-4;
-  display: flex;
-  align-items: center;
-  gap: $space-4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: $space-3;
   transition: $transition-base;
   cursor: pointer;
 
@@ -16,35 +17,15 @@
   }
 }
 
-.timeBlock {
-  flex-shrink: 0;
-  text-align: center;
-  padding: $space-2;
-  border-radius: $radius-md;
-  background: $error-50;
-}
-
-.timeLabel {
-  font-size: $text-xs;
-  font-weight: $font-bold;
-  color: $brand-red;
-}
-
-.timeDuration {
-  font-size: 10px;
-  color: $text-subtle;
-}
-
 .weekClassInfo {
-  flex: 1;
   min-width: 0;
 }
 
 .weekClassTitleRow {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: $space-2;
-  flex-wrap: wrap;
 }
 
 .weekClassTitle {
@@ -52,25 +33,54 @@
   font-size: $text-sm;
   font-weight: $font-bold;
   color: $text-heading;
+  line-height: $leading-snug;
+}
+
+.weekClassBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: $space-1;
 }
 
 .weekClassMetaRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, auto));
   align-items: center;
-  gap: $space-3;
-  margin-top: $space-1;
-  flex-wrap: wrap;
+  gap: $space-2 $space-3;
+  margin-top: $space-2;
 }
 
 .metaItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  min-width: 0;
   gap: $space-1;
   color: $text-subtle;
   font-size: $text-xs;
+  line-height: $leading-normal;
+
+  svg {
+    flex-shrink: 0;
+  }
 }
 
-// ── Menu button ────────────────────────────────────────────────
+.timeMetaItem {
+  font-weight: $font-semibold;
+  color: $brand-red;
+}
+
+.metaMuted {
+  color: $text-subtle;
+  font-size: 10px;
+  font-weight: $font-normal;
+  white-space: nowrap;
+}
+
+.coachMetaItem {
+  @include truncate;
+}
+
 .menuBtn {
   @include touch-target(44px);
   display: flex;
@@ -93,7 +103,6 @@
   }
 }
 
-// ── Menu content (Google Sheet style) ──────────────────────────
 .weekMenuContent {
   min-width: 200px;
   padding: $space-2 0;
@@ -123,9 +132,73 @@
   }
 }
 
-// ── Menu separator (Google Sheet style) ────────────────────────
 :global([data-slot="dropdown-menu-separator"]) {
   margin: $space-1 0 !important;
   height: 1px !important;
   background: $gray-200 !important;
+}
+
+@media (max-width: 991px) {
+  .weekClassItem {
+    gap: $space-2;
+    min-height: 0;
+    padding: $space-2 $space-4;
+    border-radius: $radius-md;
+  }
+
+  .weekClassTitleRow {
+    grid-template-columns: 1fr;
+    gap: $space-1;
+  }
+
+  .weekClassTitle {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .weekClassBadges {
+    justify-content: flex-start;
+  }
+
+  .weekClassMetaRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-1 $space-2;
+    margin-top: $space-2;
+  }
+
+  .metaItem {
+    align-items: flex-start;
+    font-size: 11px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+      margin-top: 2px;
+    }
+  }
+
+  .timeMetaItem,
+  .coachMetaItem {
+    grid-column: 1 / -1;
+  }
+
+  .menuBtn {
+    min-width: 40px;
+    min-height: 40px;
+    border: 1px solid $border-default;
+    background: $gray-50;
+  }
+}
+
+@media (max-width: 575px) {
+  .weekClassMetaRow {
+    grid-template-columns: 1fr auto;
+  }
+
+  .coachMetaItem {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
 }

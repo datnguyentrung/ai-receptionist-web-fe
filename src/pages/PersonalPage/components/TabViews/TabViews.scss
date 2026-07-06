@@ -521,6 +521,110 @@
 
 // ── Global Keyframes ───────────────────────────────────────
 
+@media (max-width: 767px) {
+  .views {
+    gap: $space-3;
+    margin-top: $space-3;
+
+    &__tabs-list {
+      gap: $space-2;
+      height: auto;
+      min-height: 56px;
+      align-items: center;
+      margin-right: -$space-3;
+      margin-left: -$space-3;
+      padding: $space-2 $space-3;
+      border-bottom: 0;
+      overflow-y: visible;
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    &__tab-trigger {
+      height: auto;
+      min-height: 44px;
+      padding: $space-2 $space-3;
+      border: 1px solid v.$border-default;
+      border-radius: $radius-full;
+      background: v.$bg-white;
+      box-shadow: v.$shadow-xs;
+      line-height: 1.2;
+      overflow: visible;
+      scroll-snap-align: start;
+
+      &.active {
+        color: v.$brand-red;
+        border-color: rgba(v.$brand-red, 0.28);
+        background: v.$brand-red-50;
+        box-shadow: 0 4px 12px rgba(v.$brand-red, 0.12);
+
+        &::after {
+          display: none;
+        }
+      }
+
+      &.inactive {
+        color: v.$text-secondary;
+      }
+    }
+
+    &__tab-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &__tab-content {
+      margin-top: 0;
+    }
+
+    &__tab-panel {
+      gap: $space-4;
+    }
+
+    &__section-title {
+      font-size: v.$text-sm;
+      line-height: 1.35;
+    }
+
+    &__card-content {
+      &--compact,
+      &--split {
+        padding: $space-3;
+      }
+    }
+
+    &__th,
+    &__td {
+      padding: $space-2 $space-3;
+    }
+
+    &__table {
+      min-width: 42rem;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .views {
+    &__tabs-list {
+      margin-right: -$space-2;
+      margin-left: -$space-2;
+      padding-right: $space-2;
+      padding-left: $space-2;
+    }
+
+    &__tab-trigger {
+      padding-right: $space-2;
+      padding-left: $space-2;
+      font-size: v.$text-xs;
+    }
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

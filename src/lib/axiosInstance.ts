@@ -6,6 +6,7 @@ import type {
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import { useAuthStore } from "../store/authStore";
+import { writeDebugStorage } from "../utils/debugStorage";
 import { queryClient } from "./react-query";
 
 const JAVA_API_URL =
@@ -137,11 +138,28 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
         } catch (refreshError) {
           // TRƯỜNG HỢP XẤU NHẤT: Refresh Token cũng hết hạn hoặc bị lỗi
           processQueue(refreshError, null);
+          writeDebugStorage("axios_redirect_debug", {
+            source: "axiosInstance.refreshToken",
+            originalUrl: originalRequest.url,
+            originalStatus: status,
+            refreshStatus: axios.isAxiosError(refreshError)
+              ? refreshError.response?.status
+              : undefined,
+            refreshMessage:
+              refreshError instanceof Error ? refreshError.message : undefined,
+          });
+
+          const refreshStatus = axios.isAxiosError(refreshError)
+            ? refreshError.response?.status
+            : undefined;
+
+          if (refreshStatus !== 401 && refreshStatus !== 403) {
+            return Promise.reject(refreshError);
+          }
 
           console.log("🔒 Refresh Token hết hạn, đá văng về Login!");
           queryClient.clear();
           useAuthStore.getState().clearAuth(); // Xóa sạch state
-          window.location.href = "/login"; // Force redirect
 
           return Promise.reject(refreshError);
         } finally {

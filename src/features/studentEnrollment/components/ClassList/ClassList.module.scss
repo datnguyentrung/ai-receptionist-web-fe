@@ -80,11 +80,11 @@ $accent-light: $brand-red-400;
   border-radius: $radius-md;
   padding: $space-3 $space-4;
   cursor: pointer;
-  transition: $transition-colors;
   gap: $space-3;
   position: relative;
   overflow: hidden;
-  @include press-effect;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 70px;
 
   @include hover-only {
     border-color: rgba($brand-red, 0.35);

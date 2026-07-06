@@ -1,5 +1,6 @@
 // ── Login Form ──────────────────────────────────────────────
 @use "sass:color" as color;
+
 .formGroup {
   margin-bottom: $space-5;
 }
@@ -25,8 +26,8 @@
   top: 50%;
   transform: translateY(-50%);
   color: $brand-red;
-  width: $space-5;
-  height: $space-5;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
 }
 
@@ -36,36 +37,34 @@
   padding: $space-4 $space-4 $space-4 $space-11;
   border-radius: $radius-md;
   border: 1px solid $border-default;
-  background-color: #f8f9fc;
+  background-color: $white;
   color: $brand-dark;
   // iOS Safari auto-zooms on inputs < 16px — keep this at 16px
   font-size: 16px;
   outline: none;
-  transition: all $transition-fast;
-  @include touch-target(52px);
+  transition: $transition-fast;
+  @include touch-target(48px);
   min-width: 0;
 
   &::placeholder {
-    color: $text-subtle;
+    color: $text-muted;
   }
 
   &:focus {
-    border-color: $brand-red;
-    background-color: white;
-    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+    box-shadow: $shadow-brand;
   }
 }
 
 .inputError {
   border-color: $error;
   background-color: $error-light;
-  box-shadow: 0 0 0 3px rgba($error, 0.1);
+  box-shadow: $shadow-error;
 }
 
 .helpText {
   margin-top: $space-2;
   font-size: $text-xs;
-  color: $text-muted;
+  color: $gray-600;
 }
 
 .errorText {
@@ -89,7 +88,7 @@
   border: none;
   color: $text-subtle;
   cursor: pointer;
-  @include touch-target(44px);
+  @include touch-target(48px);
   transition: color $transition-fast;
 
   @include hover-only {
@@ -99,14 +98,14 @@
   @include press-effect(0.9);
 
   &:focus-visible {
-    outline: 2px solid rgba(192, 57, 43, 0.4);
+    outline: 2px solid rgba($brand-red, 0.4);
     outline-offset: 2px;
-    border-radius: $radius-sm;
+    border-radius: $radius-xs;
   }
 
   svg {
-    width: $space-5;
-    height: $space-5;
+    width: 20px;
+    height: 20px;
   }
 }
 
@@ -120,45 +119,73 @@
 .forgotLink {
   font-size: $text-sm;
   font-weight: $font-medium;
-  color: $brand-red;
+  color: $brand-red-700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   text-decoration: none;
   transition: color $transition-fast;
-  @include touch-target(44px);
+  @include touch-target(48px);
   display: inline-flex;
   align-items: center;
 
   @include hover-only {
-    color: color.adjust($brand-red, $lightness: -15%);
+    color: $brand-red-800;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.4);
+    outline-offset: 2px;
+    border-radius: $radius-xs;
   }
 }
 
-// ── Submit button — 52px touch target ─────────────────────
+// ── Submit button — 48px touch target ─────────────────────
 .loginButton {
   width: 100%;
   padding: $space-4;
   border-radius: $radius-md;
-  color: white;
-  transition: all $transition-slow;
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #96281b 100%);
-  box-shadow: $shadow-brand;
+  color: $white;
+  background: $brand-red;
+  font-family: $font-sans;
   font-size: $text-base;
-  font-weight: $font-bold;
-  letter-spacing: 2px;
+  font-weight: $font-semibold;
   border: none;
   cursor: pointer;
-  text-transform: uppercase;
-  @include touch-target(52px);
+  transition: $transition-base;
+  @include touch-target(48px);
 
   @include press-effect(0.97);
 
   @include hover-only {
-    box-shadow: $shadow-brand-lg;
+    background: $brand-red-500;
+  }
+
+  @include respond-to("md") {
+    background: $gradient-brand;
+    box-shadow: $shadow-brand;
+    font-weight: $font-bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    @include hover-only {
+      box-shadow: $shadow-brand-lg;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.4);
+    outline-offset: 2px;
   }
 
   &:disabled {
-    opacity: 0.75;
+    opacity: 0.5;
     cursor: not-allowed;
-    box-shadow: none;
+  }
+
+  &:disabled:active {
+    transform: none;
   }
 }
 

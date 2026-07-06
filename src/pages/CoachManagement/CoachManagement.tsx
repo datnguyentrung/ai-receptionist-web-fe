@@ -119,6 +119,7 @@ export function CoachManagement() {
           onClose={handleCloseUpdateModal}
           withSurface={false}
           maxWidth={1020}
+          overlayClassName="coach-create-modal__overlay"
         >
           <div className={styles.modalContainer}>
             <CoachUpdateModal

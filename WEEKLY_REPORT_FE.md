@@ -27,7 +27,7 @@
 
 ### Màn hình và luồng mới đã hoàn thành
 
-- **Màn hình AI Check-in** tại route `/ai/check-in`:
+- **Màn hình AI Check-in** tại route `/check-in`:
   - Tạo mới trang `AICheckIn` với bố cục kiosk (panel camera + panel thông tin).
   - Tích hợp các component hiển thị mới: `FaceScanner`, `CheckInCard`, `IdlePromoCard`, `VoiceWave`.
   - Hiển thị kết quả check-in người dùng trực tiếp trên màn hình sau khi nhận diện.

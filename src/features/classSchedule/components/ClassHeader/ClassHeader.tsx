@@ -68,7 +68,7 @@ export function ClassHeader({
                 onClick={() => onViewChange(v)}
                 className={`${styles.viewToggleBtn} ${view === v ? styles.viewToggleBtnActive : ""}`}
               >
-                {v === "grid" ? "Thẻ lớp" : "Theo ngày"}
+                {v === "grid" ? "Theo cơ sở" : "Theo ngày"}
               </button>
             ))}
           </div>

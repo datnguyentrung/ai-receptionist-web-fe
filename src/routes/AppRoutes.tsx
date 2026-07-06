@@ -3,6 +3,7 @@ import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
+import ComingSoonView from "../components/ComingSoonView";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
 import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
 import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
@@ -52,6 +53,11 @@ const AttendanceReports = lazy(() =>
     default: module.AttendanceReports,
   })),
 );
+const UtilitiesPage = lazy(() =>
+  import("@/pages/UtilitiesPage").then((module) => ({
+    default: module.UtilitiesPage,
+  })),
+);
 const AICheckIn = lazy(() => import("@/pages/AICheckIn"));
 const ExaminationManagement = lazy(
   () => import("@/pages/ExaminationManagement/ExaminationManagement"),
@@ -76,15 +82,21 @@ function RouteLoadingFallback() {
 export default function AppRoutes() {
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const user = useAuthStore((state) => state.activeProfile);
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
-  const { canViewManagerSenior, canViewCoach } = useRoleStudent();
+  const { canViewManagerSenior, canViewCoach, canUseCheckIn } =
+    useRoleStudent();
 
   // Xác định đường dẫn trang cá nhân của user hiện tại
   const personalPageRoute = user?.userInfo?.userCode
     ? `/${user.userInfo.userCode}`
     : "/welcome";
+
+  if (!hasHydrated) {
+    return <RouteLoadingFallback />;
+  }
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
@@ -92,6 +104,9 @@ export default function AppRoutes() {
         {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/marketing" element={<MainLayout />}>
+          <Route path="facebook" element={<div>Facebook Marketing</div>} />
+        </Route>
 
         <Route path="/403" element={<AccessDeniedView />} />
 
@@ -137,6 +152,16 @@ export default function AppRoutes() {
           }
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+          <Route path="utilities" element={<UtilitiesPage />} />
+          <Route
+            path="notifications"
+            element={
+              <ComingSoonView
+                featureName="Thông báo"
+                description="Bảng thông báo trung tâm đang được kết nối lại."
+              />
+            }
+          />
           <Route
             element={
               <RequireRole
@@ -167,7 +192,17 @@ export default function AppRoutes() {
               element={<AttendanceCheckin />}
             />
             <Route path="history" element={<AttendanceReports />} />
-            <Route path="ai/check-in" element={<AICheckIn />} />
+          </Route>
+
+          <Route
+            element={
+              <RequireRole
+                isAllowed={canUseCheckIn}
+                fallbackPath="/403"
+              />
+            }
+          >
+            <Route path="check-in" element={<AICheckIn />} />
           </Route>
         </Route>
 

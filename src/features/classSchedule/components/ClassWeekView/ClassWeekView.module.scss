@@ -4,6 +4,40 @@
   gap: $space-4;
 }
 
+.classSchedulesFilterBar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  overflow-x: auto;
+  padding-bottom: $space-1;
+}
+
+.classSchedulesFilterBtn {
+  @include touch-target(40px);
+  @include press-effect(0.98);
+  border: 1px solid $border-default;
+  border-radius: $radius-full;
+  background: $bg-white;
+  color: $text-muted;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  padding: $space-1 $space-3;
+  transition: $transition-colors;
+
+  @include hover-only {
+    border-color: $border-strong;
+    color: $text-secondary;
+  }
+}
+
+.classSchedulesFilterBtnActive {
+  border-color: $brand-red;
+  background: $brand-red;
+  color: $text-on-brand;
+}
+
 .classList {
   display: flex;
   flex-direction: column;
@@ -25,5 +59,58 @@
   p {
     font-size: $text-sm;
     color: $text-subtle;
+  }
+}
+
+@media (max-width: 767px) {
+  .weekView {
+    gap: $space-2;
+  }
+
+  .classSchedulesFilterBar {
+    gap: $space-1;
+    margin-inline: -$space-1;
+    padding: 0 $space-1 $space-1;
+  }
+
+  .classSchedulesFilterBtn {
+    min-height: 36px;
+    padding: $space-1 $space-2;
+  }
+
+  .classList {
+    gap: $space-2;
+  }
+
+  .emptyState {
+    padding: $space-10 $space-3;
+    border-radius: $radius-md;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .classList {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .emptyState {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .weekView {
+    gap: $space-3;
+  }
+
+  .classList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $space-3;
+  }
+
+  .emptyState {
+    grid-column: 1 / -1;
   }
 }

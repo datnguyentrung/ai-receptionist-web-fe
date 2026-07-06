@@ -4,14 +4,15 @@ import { useGetQuery } from "@/hooks/useCrud";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
 import { useState } from "react";
 import { Pagination } from "../../components/Pagination";
-import StatusFilters from "../../components/StatusFilters";
-import type { StudentStatus } from "../../config/constants";
+import type { Belt, StudentStatus } from "../../config/constants";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAuthStore } from "../../store/authStore";
 import type { StudentOverview } from "../../types";
+import { isPWA } from "../../config/appMode";
 import styles from "./StudentManagement.module.scss";
 import { AttendanceTableModal } from "./components/AttendanceTableModal/AttendanceTableModal";
 import { StudentCreateModal } from "./components/StudentCreateModal";
+import { StudentFilters } from "./components/StudentFilters";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
@@ -30,7 +31,7 @@ export function StudentManagement() {
   const [statusFilter, setStatusFilter] = useState<"all" | StudentStatus>(
     "all",
   );
-  const [selected, setSelected] = useState<string[]>([]);
+  const [beltFilter, setBeltFilter] = useState<Belt[]>([]);
   const [page, setPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isClassAssignmentOpen, setIsClassAssignmentOpen] = useState(false);
@@ -44,7 +45,7 @@ export function StudentManagement() {
   const debouncedSearch = useDebounce(search, 500);
 
   const { data, isFetching: isStudentsFetching } = useGetQuery(
-    ["students", { search: debouncedSearch, status: statusFilter, scheduleIds: userInfo?.userInfo?.assignedClasses?.map((c) => c?.classSchedule?.scheduleId)?.filter((id): id is string => Boolean(id)) ?? [], page: page - 1, size: 10 }],
+    ["students", { search: debouncedSearch, status: statusFilter, belts: beltFilter, scheduleIds: userInfo?.userInfo?.assignedClasses?.map((c) => c?.classSchedule?.scheduleId)?.filter((id): id is string => Boolean(id)) ?? [], page: page - 1, size: 10 }],
     () => studentAPI.getStudents({
       search: debouncedSearch,
       status: statusFilter === "all" ? undefined : statusFilter,
@@ -52,6 +53,7 @@ export function StudentManagement() {
         userInfo?.userInfo?.assignedClasses
           ?.map((c) => c?.classSchedule?.scheduleId)
           ?.filter((id): id is string => Boolean(id)) ?? [],
+      belts: beltFilter.length > 0 ? beltFilter : undefined,
       page: page - 1,
       size: 10,
     }),
@@ -88,14 +90,6 @@ export function StudentManagement() {
     },
   };
 
-  const handleSelectAll = (checked: boolean) =>
-    setSelected(checked ? list.map((s) => s.studentCode) : []);
-
-  const toggleSelect = (id: string) =>
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-
   const handleMenuAction = (
     student: StudentOverview,
     action: StudentMenuAction,
@@ -121,8 +115,17 @@ export function StudentManagement() {
     setStudentForHistory(null);
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setStatusFilter("all");
+    setBeltFilter([]);
+    setPage(1);
+  };
+
   return (
-    <div className={styles.page}>
+    <div
+      className={`${styles.page} ${isPWA ? styles["page--pwa"] : ""}`}
+    >
       {/* 1. Header */}
       <StudentHeader
         totalStudents={totalStudents}
@@ -140,36 +143,33 @@ export function StudentManagement() {
 
       {/* 3. Bộ lọc */}
       <div className={styles.filters}>
-        <StatusFilters
+        <StudentFilters
           search={search}
-          setSearch={(val) => {
+          onSearchChange={(val) => {
             setSearch(val);
             setPage(1);
           }}
           filter={statusFilter}
-          setFilter={(val) => {
+          onFilterChange={(val) => {
             setStatusFilter(val);
             setPage(1);
           }}
           filterOptions={STUDENT_FILTER_OPTIONS}
           optionState={statusFilterState}
-          searchPlaceholder="Tìm học viên, lớp, HLV..."
-          searchWidth="260px"
+          belts={beltFilter}
+          onBeltsChange={(val) => {
+            setBeltFilter(val);
+            setPage(1);
+          }}
+          resultCount={list.length}
+          onClearAll={handleClearFilters}
         />
-        {selected.length > 0 && (
-          <span className={styles.selectedBadge}>
-            Đã chọn {selected.length}
-          </span>
-        )}
       </div>
 
       {/* 4. Bảng dữ liệu và Phân trang */}
       <div className={styles.tableCard}>
         <StudentTable
           list={list}
-          selected={selected}
-          onToggleSelect={toggleSelect}
-          onSelectAll={handleSelectAll}
           isFetching={isStudentsFetching}
           onMenuAction={handleMenuAction}
         />

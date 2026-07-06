@@ -11,6 +11,10 @@
   width: 100%;
 }
 
+.layoutFullscreen {
+  background: transparent;
+}
+
 // ── Mobile overlay ───────────────────────────────────────────
 .overlay {
   position: fixed;
@@ -55,13 +59,19 @@
   // Mobile: tighter padding + safe bottom for notched devices
   padding: $space-3;
 
-  @include safe-bottom($space-3);
+  @include safe-bottom(66px);
 
   @include respond-to("sm") {
     padding: $space-4;
+    @include safe-bottom(72px);
   }
 
   @include respond-to("md") {
     padding: $space-6;
   }
+}
+
+.contentFullscreen {
+  padding: 0;
+  @include safe-bottom(0);
 }

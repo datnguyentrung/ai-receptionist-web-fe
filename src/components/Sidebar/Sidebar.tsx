@@ -1,4 +1,3 @@
-import logoImage from "/taekwondo.jpg";
 import { useSettingsMenu } from "@/config/constants/ListActionDropDown";
 import { useNavItems } from "@/hooks/useNavItems";
 import { useAuthStore } from "@/store/authStore";
@@ -12,6 +11,7 @@ import { MiniActionPopover } from "../ui/mini-action-popover";
 import { showComingSoonActionToast } from "../ui/mini-action-popover.toast";
 import styles from "./Sidebar.module.scss";
 import SidebarSettings from "./SidebarSettings";
+import logoImage from "/taekwondo.jpg";
 
 export default function Sidebar({
   sidebarOpen,
@@ -28,7 +28,6 @@ export default function Sidebar({
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutPending, setIsLogoutPending] = useState(false);
   const queryClient = useQueryClient();
-  const studentCode = activeProfile?.userInfo?.userCode;
 
   const handleSidebarToggle = useCallback(() => {
     // Nếu màn hình lớn, thao tác là thu hẹp/mở rộng
@@ -89,12 +88,18 @@ export default function Sidebar({
       >
         {/* Logo */}
         <div className={styles.sidebarLogo}>
-          <div className={styles.logoGroup} onClick={() => navigate("/")} role="button" tabIndex={0} onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              navigate("/");
-            }
-          }}>
+          <div
+            className={styles.logoGroup}
+            onClick={() => navigate("/")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate("/");
+              }
+            }}
+          >
             <div className={styles.logoIconWrapper}>
               <img src={logoImage} alt="Logo" className={styles.logoImg} />
             </div>
@@ -134,17 +139,16 @@ export default function Sidebar({
         {/* Nav */}
         <nav className={styles.nav}>
           <p className={styles.navLabel}>MENU CHÍNH</p>
-          {nav_items.map(({ path, label, icon: Icon, display = true }) => {
+          {nav_items.map(({ to, label, icon: Icon, display = true }) => {
             if (!display) return null;
+
+            if (!to) return null;
 
             return (
               <NavLink
-                key={path}
-                to={path}
-                end={
-                  path === "/" ||
-                  (!!studentCode && path === `/${studentCode}/*`)
-                }
+                key={to}
+                to={to}
+                end={to === "/"}
                 onClick={() => {
                   if (window.innerWidth < 768) setSidebarOpen(false);
                 }}
