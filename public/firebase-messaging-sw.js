@@ -1,6 +1,10 @@
 const urlParams = new URLSearchParams(location.search);
 const projectId = urlParams.get("projectId");
 
+const assetUrl = (path) => new URL(path, self.location.origin).href;
+
+const DEFAULT_ICON = assetUrl("/logo/android/launchericon-192x192.png?v=2");
+
 if (projectId) {
   const firebaseConfig = {
     apiKey: urlParams.get("apiKey"),
@@ -30,9 +34,7 @@ if (projectId) {
     const body = payload.data?.body || payload.notification?.body || "";
 
     const icon =
-      payload.data?.icon ||
-      payload.notification?.icon ||
-      "/logo/android/launchericon-192x192.png";
+      payload.data?.icon || payload.notification?.icon || DEFAULT_ICON;
 
     // const badge = payload.data?.badge || "/logo/android/launchericon-96x96.png";
 

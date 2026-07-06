@@ -15,6 +15,8 @@ type ExtendedNotificationOptions = NotificationOptions & {
   requireInteraction?: boolean;
 };
 
+const NOTIFICATION_ICON = `${window.location.origin}/logo/android/launchericon-192x192.png?v=2`;
+
 let unsubscribeForegroundListener: (() => void) | null = null;
 
 const saveTokenLocal = (token: string) => {
@@ -174,9 +176,7 @@ export const initFcmForegroundListener = () => {
     const options: ExtendedNotificationOptions = {
       body,
       icon:
-        payload.data?.icon ||
-        payload.notification?.icon ||
-        "/logo/android/launchericon-192x192.png",
+        payload.data?.icon || payload.notification?.icon || NOTIFICATION_ICON,
       // badge: payload.data?.badge || "/logo/android/launchericon-96x96.png",
       data: {
         clickUrl,
