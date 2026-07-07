@@ -442,6 +442,84 @@
   overflow: hidden;
 }
 
+.skeletonTable {
+  display: grid;
+  gap: $space-2;
+  padding: $space-4;
+}
+
+.skeletonStudentRow {
+  display: grid;
+  grid-template-columns: 44px minmax(140px, 1.4fr) minmax(80px, 1fr) minmax(
+      80px,
+      1fr
+    ) 84px;
+  align-items: center;
+  gap: $space-3;
+  min-height: 58px;
+  padding: $space-3;
+  border-radius: 14px;
+  background: $gray-50;
+}
+
+.skeletonAvatar,
+.skeletonCell,
+.skeletonPill,
+.skeletonStudentLines div {
+  position: relative;
+  overflow: hidden;
+  background: $gray-200;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba($white, 0.72),
+      transparent
+    );
+    animation: studentSkeletonSweep 1.15s ease-in-out infinite;
+  }
+}
+
+.skeletonAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-full;
+}
+
+.skeletonStudentLines {
+  display: grid;
+  gap: $space-2;
+
+  div {
+    height: 12px;
+    border-radius: $radius-full;
+
+    &:first-child {
+      width: 72%;
+      height: 16px;
+    }
+
+    &:last-child {
+      width: 46%;
+    }
+  }
+}
+
+.skeletonCell {
+  height: 14px;
+  border-radius: $radius-full;
+}
+
+.skeletonPill {
+  height: 28px;
+  border-radius: $radius-full;
+}
+
 .tableWrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -854,6 +932,29 @@
     box-shadow: none;
   }
 
+  .skeletonTable {
+    padding: 0;
+    gap: $space-3;
+  }
+
+  .skeletonStudentRow {
+    grid-template-columns: 42px 1fr 38px;
+    min-height: 96px;
+    border: 1px solid rgba($brand-red, 0.08);
+    border-radius: 16px;
+    background: $bg-surface;
+    box-shadow: 0 8px 22px rgba(17, 24, 39, 0.055);
+  }
+
+  .skeletonCell {
+    display: none;
+  }
+
+  .skeletonPill {
+    width: 34px;
+    height: 34px;
+  }
+
   .tableWrap {
     overflow: visible;
   }
@@ -1069,5 +1170,11 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes studentSkeletonSweep {
+  100% {
+    transform: translateX(100%);
   }
 }

@@ -26,6 +26,25 @@ const STUDENT_FILTER_OPTIONS = [
   { value: "DROPPED" as StudentStatus, label: "Nghỉ học" },
 ];
 
+function StudentManagementSkeleton() {
+  return (
+    <div className={styles.skeletonTable} aria-hidden>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className={styles.skeletonStudentRow}>
+          <div className={styles.skeletonAvatar} />
+          <div className={styles.skeletonStudentLines}>
+            <div />
+            <div />
+          </div>
+          <div className={styles.skeletonCell} />
+          <div className={styles.skeletonCell} />
+          <div className={styles.skeletonPill} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function StudentManagement() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | StudentStatus>(
@@ -61,6 +80,7 @@ export function StudentManagement() {
   );
 
   const list = data?.students.content ?? [];
+  const isInitialLoading = !data && isStudentsFetching;
   const totalPages = data?.students.totalPages ?? 1;
   const totalStudents =
     (data?.activeStudentCount ?? 0) +
@@ -168,17 +188,23 @@ export function StudentManagement() {
 
       {/* 4. Bảng dữ liệu và Phân trang */}
       <div className={styles.tableCard}>
-        <StudentTable
-          list={list}
-          isFetching={isStudentsFetching}
-          onMenuAction={handleMenuAction}
-        />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          currentListLength={list.length}
-        />
+        {isInitialLoading ? (
+          <StudentManagementSkeleton />
+        ) : (
+          <>
+            <StudentTable
+              list={list}
+              isFetching={isStudentsFetching}
+              onMenuAction={handleMenuAction}
+            />
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              currentListLength={list.length}
+            />
+          </>
+        )}
       </div>
 
       <StudentCreateModal

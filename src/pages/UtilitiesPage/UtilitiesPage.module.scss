@@ -8,6 +8,9 @@
   padding-bottom: calc(
     10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px)
   );
+  content-visibility: auto;
+  contain-intrinsic-size: 860px;
+  animation: utilitiesPageIn 180ms ease-out both;
 }
 
 .pageHeader {
@@ -161,6 +164,39 @@
 
 .utilityCardPinned {
   border-color: rgba($brand-red, 0.28);
+}
+
+.utilityCardNavigating {
+  border-color: rgba($brand-red, 0.36);
+  background: linear-gradient(180deg, $white 0%, $brand-red-50 100%);
+  box-shadow: $shadow-sm;
+  transform: scale(0.985);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: $space-3;
+    right: $space-3;
+    bottom: $space-2;
+    height: 3px;
+    border-radius: $radius-full;
+    background: linear-gradient(
+      90deg,
+      rgba($brand-red, 0.2),
+      $brand-red,
+      rgba($brand-red, 0.2)
+    );
+    animation: utilityNavigateSweep 760ms ease-in-out infinite;
+  }
+
+  .utilityIconWrap {
+    background: $brand-red;
+    color: $white;
+  }
+
+  .utilityMeta {
+    color: $brand-red;
+  }
 }
 
 .utilityCardDisabled {
@@ -344,5 +380,37 @@
 
   .utilityMain {
     min-height: 112px;
+  }
+}
+
+@keyframes utilitiesPageIn {
+  from {
+    opacity: 0.72;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes utilityNavigateSweep {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scaleX(0.46);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .utilitiesPage,
+  .utilityCardNavigating::after {
+    animation: none;
   }
 }

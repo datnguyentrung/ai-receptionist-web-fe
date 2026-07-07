@@ -5,6 +5,7 @@ import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
+import { classSchedulesQueryKey } from "../classSchedulesQueries";
 
 export function useClassSchedulesLogic() {
   const [view, setView] = useState<"grid" | "week">("week");
@@ -79,11 +80,17 @@ export function useClassSchedulesLogic() {
   const {
     data: classSchedules,
     isLoading,
+    isFetching,
     error,
+    refetch: refetchClassSchedules,
   } = useGetQuery(
-    ["class-schedules", { scheduleIds }],
+    classSchedulesQueryKey(scheduleIds),
     () => classScheduleAPI.getAllClassSchedules({ scheduleIds }),
-    { enabled: !!user },
+    {
+      enabled: !!user,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+    },
   );
 
   const {
@@ -145,7 +152,9 @@ export function useClassSchedulesLogic() {
     // Data
     classSchedules,
     isLoading,
+    isFetching,
     error,
+    refetchClassSchedules,
     upcomingSessions,
     isLoadingSessions,
     sessionsError,

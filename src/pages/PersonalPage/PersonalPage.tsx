@@ -106,6 +106,8 @@ export default function PersonalPage() {
 
   // Gộp cờ loading
   const isLoading = isFetchingCoach || isFetchingStudent;
+  const isInitialLoading = !userInfo && isLoading;
+  const isRefreshing = Boolean(userInfo) && isLoading;
 
   if (!userInfo && !isLoading) {
     return <div>Không tìm thấy dữ liệu.</div>;
@@ -115,10 +117,16 @@ export default function PersonalPage() {
     <div className={S.page}>
       <div className={S.container}>
         <Skeleton
-          loading={isLoading}
+          loading={isInitialLoading}
           name="personal-page"
           fallback={<PersonalPageSkeleton />}
         >
+          {isRefreshing ? (
+            <div className={S.refreshNotice} role="status">
+              Đang cập nhật hồ sơ...
+            </div>
+          ) : null}
+
           {/* Hero Section */}
           <ProfileHeader
             user={userInfo as StudentDetail | CoachDetail}

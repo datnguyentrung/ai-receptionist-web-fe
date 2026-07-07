@@ -17,16 +17,21 @@ import { useAuthStore } from "@/store/authStore";
 import type {
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
+  ClassScheduleSummary,
   StudentAttendanceResponse,
 } from "@/types";
-import { formatDateYMD } from "@/utils/format";
 import { mergeAttendanceData } from "@/utils/mergeAttendanceData";
 import { useRoleStudent } from "@/utils/roleUtils";
-import { Users } from "lucide-react";
+import { RefreshCcw, Users } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import styles from "./AttendanceCheckin.module.scss";
+import {
+  attendanceRecordsQueryKey,
+  attendanceStudentsQueryKey,
+  getAttendanceSessionDate,
+} from "./attendanceCheckinQueries";
 import { AttendanceHeader } from "./components/AttendanceHeader";
 import { BottomBar } from "./components/BottomBar";
 import { StudentCard } from "./components/StudentCard";
@@ -79,6 +84,58 @@ function nowTime() {
   });
 }
 
+function StudentListSkeleton({ count = 8 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className={styles.skeletonCard}>
+          <div className={styles.skeletonCardRow}>
+            <Skeleton className={styles.skeletonAvatar} />
+            <div className={styles.skeletonCardInfo}>
+              <Skeleton className={styles.skeletonName} />
+              <Skeleton className={styles.skeletonMeta} />
+            </div>
+          </div>
+          <div className={styles.skeletonPills}>
+            {Array.from({ length: 3 }).map((_, j) => (
+              <Skeleton key={j} className={styles.skeletonPill} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+function AttendanceHeaderSkeleton() {
+  return (
+    <div className={styles.skeletonSidebar}>
+      <Skeleton className={styles.skeletonTitle} />
+      <Skeleton className={styles.skeletonSubtitle} />
+      <Skeleton className={styles.skeletonProgress} />
+      <div className={styles.skeletonStatRow}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className={styles.skeletonStat} />
+        ))}
+      </div>
+      <Skeleton className={styles.skeletonFilterBar} />
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className={styles.emptyState}>
+      <Users size={40} style={{ color: "#E5E7EB", margin: "0 auto 10px" }} />
+      <p className={styles.emptyText}>Không thể tải danh sách học viên.</p>
+      <button type="button" className={styles.retryButton} onClick={onRetry}>
+        <RefreshCcw size={14} />
+        Thử lại
+      </button>
+    </div>
+  );
+}
+
 // -- Main component ---------------------------------------------
 export function AttendanceCheckin() {
   // Local edits (attendanceStatus, evaluationStatus, note, checkInTime) keyed by studentId
@@ -99,6 +156,10 @@ export function AttendanceCheckin() {
   const { canViewManagerSenior } = useRoleStudent();
 
   const { scheduleId } = useParams();
+  const location = useLocation();
+  const routeState = location.state as
+    | { classScheduleSummary?: ClassScheduleSummary }
+    | null;
   const user = useAuthStore((state) => state.activeProfile);
   const allowedScheduleIds =
     user?.userInfo?.assignedClasses
@@ -111,30 +172,45 @@ export function AttendanceCheckin() {
   const selectedScheduleId = hasScheduleAccess ? scheduleId : "";
   const attendanceScheduleIds = hasScheduleAccess ? [scheduleId] : undefined;
 
-  const { data: enrollments, isLoading: enrollmentsLoading } = useGetQuery(
-    ["student-enrollments", "class-schedule", selectedScheduleId],
+  const {
+    data: enrollments,
+    isLoading: enrollmentsLoading,
+    isFetching: enrollmentsFetching,
+    isError: enrollmentsError,
+    refetch: refetchEnrollments,
+  } = useGetQuery(
+    attendanceStudentsQueryKey(selectedScheduleId),
     () =>
       studentEnrollmentAPI.getStudentEnrollmentsByClassScheduleId(
         selectedScheduleId,
       ),
-    { enabled: !!selectedScheduleId },
+    {
+      enabled: !!selectedScheduleId,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+    },
   );
 
-  console.log("Enrollments: ", enrollments);
+  const currentDate = getAttendanceSessionDate();
 
-  const currentDate = formatDateYMD(new Date());
-
-  const { data, isLoading: attendanceLoading } = useGetQuery(
-    [
-      "student-attendance",
-      { sessionDate: currentDate, scheduleIds: attendanceScheduleIds },
-    ],
+  const {
+    data,
+    isLoading: attendanceLoading,
+    isFetching: attendanceFetching,
+    isError: attendanceError,
+    refetch: refetchAttendance,
+  } = useGetQuery(
+    attendanceRecordsQueryKey(currentDate, selectedScheduleId),
     () =>
       studentAttendanceAPI.filter({
         sessionDate: currentDate,
         scheduleIds: attendanceScheduleIds,
       }),
-    { enabled: !!attendanceScheduleIds },
+    {
+      enabled: !!attendanceScheduleIds,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+    },
   );
 
   const { mutate: updateAttendance } = usePlainMutation(
@@ -426,55 +502,16 @@ export function AttendanceCheckin() {
     );
   }
 
-  const isLoading = enrollmentsLoading || attendanceLoading;
-
-  if (isLoading || !enrollments || !data) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.grid}>
-          {/* Sidebar skeleton */}
-          <aside className={styles.sidebar}>
-            <div className={styles.skeletonSidebar}>
-              <Skeleton className={styles.skeletonTitle} />
-              <Skeleton className={styles.skeletonSubtitle} />
-              <Skeleton className={styles.skeletonProgress} />
-              <div className={styles.skeletonStatRow}>
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className={styles.skeletonStat} />
-                ))}
-              </div>
-              <Skeleton className={styles.skeletonFilterBar} />
-            </div>
-          </aside>
-
-          {/* Cards skeleton */}
-          <main className={styles.main}>
-            <div className={styles.studentList}>
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className={styles.skeletonCard}>
-                  <div className={styles.skeletonCardRow}>
-                    <Skeleton className={styles.skeletonAvatar} />
-                    <div className={styles.skeletonCardInfo}>
-                      <Skeleton className={styles.skeletonName} />
-                      <Skeleton className={styles.skeletonMeta} />
-                    </div>
-                  </div>
-                  <div className={styles.skeletonPills}>
-                    {[...Array(3)].map((_, j) => (
-                      <Skeleton key={j} className={styles.skeletonPill} />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  }
-
-  // console.log("Enrollments: ", enrollments);
-  console.log("Filtered: ", filtered);
+  const hasData = Boolean(enrollments && data);
+  const isInitialLoading = !hasData && (enrollmentsLoading || attendanceLoading);
+  const isInitialError = !hasData && (enrollmentsError || attendanceError);
+  const isRefreshing = hasData && (enrollmentsFetching || attendanceFetching);
+  const displaySession =
+    enrollments?.classScheduleSummary ?? routeState?.classScheduleSummary;
+  const retryLoad = () => {
+    void refetchEnrollments();
+    void refetchAttendance();
+  };
 
   return (
     <div className={`${styles.page} ${isPWA ? styles.pagePwa : ""}`}>
@@ -482,36 +519,51 @@ export function AttendanceCheckin() {
         {/* -- Left Sidebar -- */}
         <RenderProfiler id="AttendanceCheckin:Sidebar" thresholdMs={6}>
           <aside className={styles.sidebar}>
-            <AttendanceHeader
-              session={enrollments.classScheduleSummary}
-              markedCount={markedCount}
-              totalCount={totalCount}
-              progress={progress}
-              presentCount={presentCount}
-              absentCount={absentCount}
-              excusedCount={excusedCount}
-              unmarkedCount={unmarkedCount}
-              evalCount={evalCount}
-              filter={filter}
-              onFilterChange={setFilter}
-              beltFilter={beltFilter}
-              beltOptions={beltOptions}
-              beltSort={beltSort}
-              compact={isPWA}
-              onBeltFilterChange={setBeltFilter}
-              onBeltSortChange={() =>
-                setBeltSort((current) => (current === "asc" ? "desc" : "asc"))
-              }
-            />
+            {displaySession ? (
+              <AttendanceHeader
+                session={displaySession}
+                markedCount={markedCount}
+                totalCount={totalCount}
+                progress={progress}
+                presentCount={presentCount}
+                absentCount={absentCount}
+                excusedCount={excusedCount}
+                unmarkedCount={unmarkedCount}
+                evalCount={evalCount}
+                filter={filter}
+                onFilterChange={setFilter}
+                beltFilter={beltFilter}
+                beltOptions={beltOptions}
+                beltSort={beltSort}
+                compact={isPWA}
+                onBeltFilterChange={setBeltFilter}
+                onBeltSortChange={() =>
+                  setBeltSort((current) =>
+                    current === "asc" ? "desc" : "asc",
+                  )
+                }
+              />
+            ) : (
+              <AttendanceHeaderSkeleton />
+            )}
           </aside>
         </RenderProfiler>
 
         {/* -- Right Main -- */}
         <main className={styles.main}>
+          {isRefreshing && (
+            <div className={styles.refreshNotice} role="status">
+              Đang cập nhật dữ liệu mới...
+            </div>
+          )}
           {/* Student Grid */}
           <RenderProfiler id="AttendanceCheckin:StudentList" thresholdMs={10}>
             <div className={styles.studentList}>
-              {filtered.length === 0 && (
+              {isInitialLoading && <StudentListSkeleton />}
+
+              {isInitialError && <ErrorState onRetry={retryLoad} />}
+
+              {hasData && filtered.length === 0 && (
                 <div className={styles.emptyState}>
                   <Users
                     size={40}
@@ -521,18 +573,20 @@ export function AttendanceCheckin() {
                 </div>
               )}
 
-              <AnimatePresence initial={false}>
-                {filtered.map((student, index) => (
-                  <StudentCard
-                    key={student.studentId}
-                    student={student}
-                    index={index}
-                    onUpdateStatus={updateStatus}
-                    onUpdateEval={updateEval}
-                    onOpenEval={setEvalTarget}
-                  />
-                ))}
-              </AnimatePresence>
+              {hasData && (
+                <AnimatePresence initial={false}>
+                  {filtered.map((student, index) => (
+                    <StudentCard
+                      key={student.studentId}
+                      student={student}
+                      index={index}
+                      onUpdateStatus={updateStatus}
+                      onUpdateEval={updateEval}
+                      onOpenEval={setEvalTarget}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
             </div>
           </RenderProfiler>
 
@@ -580,13 +634,13 @@ export function AttendanceCheckin() {
 
       {/* -- Success Overlay -- */}
       <AnimatePresence>
-        {showSuccess && (
+        {showSuccess && displaySession && (
           <SuccessOverlay
             onClose={() => setShowSuccess(false)}
             present={presentCount}
             absent={absentCount}
             excused={excusedCount}
-            className={enrollments.classScheduleSummary.branchName}
+            className={displaySession.branchName}
             submittedTime={submittedTime}
           />
         )}

@@ -81,6 +81,20 @@
   }
 }
 
+.refreshNotice {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: $space-3;
+  padding: $space-2 $space-3;
+  border: 1px solid rgba($brand-red, 0.12);
+  border-radius: $radius-full;
+  background: rgba($brand-red, 0.06);
+  color: $brand-red;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+}
+
 @media (max-width: 767px) {
   .page {
     min-height: 100dvh;

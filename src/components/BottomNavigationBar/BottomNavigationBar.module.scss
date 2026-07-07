@@ -50,8 +50,12 @@
   flex-direction: column;
   gap: 1px;
   padding: 2px 2px 5px;
+  border: 0;
   border-radius: 12px;
+  background: transparent;
   color: $gray-500;
+  cursor: pointer;
+  font: inherit;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -64,6 +68,31 @@
   &:focus-visible {
     outline: 2px solid rgba($brand-red, 0.78);
     outline-offset: 2px;
+  }
+}
+
+.navItemPending {
+  color: $brand-red;
+  background: rgba($brand-red, 0.06);
+  transform: translateY(-1px) scale(0.98);
+
+  .iconWrap {
+    background: $brand-red;
+    color: $white;
+    box-shadow: 0 8px 18px rgba($brand-red, 0.18);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 18px;
+    height: 3px;
+    border-radius: $radius-full;
+    background: $brand-red;
+    transform: translateX(-50%);
+    animation: navPendingPulse 720ms ease-in-out infinite;
   }
 }
 
@@ -158,6 +187,23 @@
     box-shadow:
       0 12px 20px rgba($brand-red, 0.36),
       0 0 0 5px rgba($brand-red, 0.1);
+  }
+}
+
+.checkInItem.navItemPending {
+  transform: translateY(-15px) scale(0.98);
+}
+
+@keyframes navPendingPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    width: 14px;
+  }
+
+  50% {
+    opacity: 1;
+    width: 24px;
   }
 }
 

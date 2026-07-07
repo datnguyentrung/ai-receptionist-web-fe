@@ -3,8 +3,10 @@ import {
   type NavigationItem,
 } from "@/config/constants/path";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
+import { prefetchClassSchedules } from "@/pages/ClassSchedules/classSchedulesQueries";
 import { useAuthStore } from "@/store/authStore";
 import { useUserLevel } from "@/utils/roleUtils";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Check,
   LockKeyhole,
@@ -13,7 +15,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./UtilitiesPage.module.scss";
 
@@ -120,12 +122,16 @@ function UtilityCard({
   item,
   isQuick,
   onNavigate,
+  onPrefetch,
   onToggleQuick,
+  isNavigating,
 }: {
   item: UtilityItem;
   isQuick: boolean;
   onNavigate: (item: UtilityItem) => void;
+  onPrefetch: (item: UtilityItem) => void;
   onToggleQuick: (item: UtilityItem) => void;
+  isNavigating: boolean;
 }) {
   const Icon = item.icon;
   const QuickIcon = isQuick ? Check : Pin;
@@ -134,13 +140,17 @@ function UtilityCard({
     <article
       className={`${styles.utilityCard} ${
         item.isDisabled ? styles.utilityCardDisabled : ""
-      } ${isQuick ? styles.utilityCardPinned : ""}`}
+      } ${isQuick ? styles.utilityCardPinned : ""} ${
+        isNavigating ? styles.utilityCardNavigating : ""
+      }`}
     >
       <button
         type="button"
         className={styles.utilityMain}
         disabled={item.isDisabled}
+        onMouseEnter={() => onPrefetch(item)}
         onClick={() => onNavigate(item)}
+        aria-busy={isNavigating}
       >
         <span className={styles.utilityIconWrap}>
           <Icon size={20} strokeWidth={2.15} />
@@ -175,9 +185,11 @@ function UtilityCard({
 
 export function UtilitiesPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const { level, isAuthenticated } = useUserLevel();
   const [searchValue, setSearchValue] = useState("");
+  const [navigatingItemId, setNavigatingItemId] = useState<string | null>(null);
 
   const studentCode = activeProfile?.userInfo?.userCode;
   const currentLevel = isAuthenticated ? level : ROLE_LEVELS.GUEST;
@@ -213,9 +225,56 @@ export function UtilitiesPage() {
     [quickIds, utilityItems],
   );
 
+  const scheduleIds = useMemo(
+    () =>
+      activeProfile?.userInfo?.assignedClasses
+        ?.map((c) => c?.classSchedule?.scheduleId)
+        ?.filter((id): id is string => Boolean(id)) ?? [],
+    [activeProfile],
+  );
+
+  const prefetchSchedules = useCallback(
+    (options?: { includeRoute?: boolean }) => {
+      prefetchClassSchedules(queryClient, scheduleIds, options);
+    },
+    [queryClient, scheduleIds],
+  );
+
+  useEffect(() => {
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (
+        callback: () => void,
+        options?: { timeout: number },
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(
+        () => prefetchSchedules(),
+        { timeout: 1800 },
+      );
+      return () => idleWindow.cancelIdleCallback?.(idleId);
+    }
+
+    const timeoutId = window.setTimeout(() => prefetchSchedules(), 700);
+    return () => window.clearTimeout(timeoutId);
+  }, [prefetchSchedules]);
+
   const handleNavigate = (item: UtilityItem) => {
     if (item.isDisabled || !item.to) return;
-    navigate(item.to);
+    const targetRoute = item.to;
+    setNavigatingItemId(item.id);
+
+    window.requestAnimationFrame(() => {
+      navigate(targetRoute);
+    });
+  };
+
+  const handlePrefetch = (item: UtilityItem) => {
+    if (item.isDisabled || item.to !== "/schedules") return;
+
+    prefetchSchedules();
   };
 
   const handleToggleQuick = (item: UtilityItem) => {
@@ -264,7 +323,9 @@ export function UtilitiesPage() {
                 item={item}
                 isQuick
                 onNavigate={handleNavigate}
+                onPrefetch={handlePrefetch}
                 onToggleQuick={handleToggleQuick}
+                isNavigating={navigatingItemId === item.id}
               />
             ))}
           </div>
@@ -295,7 +356,9 @@ export function UtilitiesPage() {
               item={item}
               isQuick={quickIds.includes(item.id)}
               onNavigate={handleNavigate}
+              onPrefetch={handlePrefetch}
               onToggleQuick={handleToggleQuick}
+              isNavigating={navigatingItemId === item.id}
             />
           ))}
         </div>

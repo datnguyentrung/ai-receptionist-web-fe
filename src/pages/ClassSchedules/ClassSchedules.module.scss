@@ -7,8 +7,268 @@
   gap: $space-5;
 }
 
+.refreshNotice {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  padding: $space-2 $space-3;
+  border-radius: $radius-full;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  color: $text-subtle;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  box-shadow: $shadow-xs;
+}
+
+.routeShellHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.routeShellTitle {
+  margin: 0;
+  color: $text-heading;
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+
+  span {
+    color: $text-link;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+}
+
+.routeShellSubtitle {
+  width: 180px;
+  height: 18px;
+  margin-top: $space-2;
+  border-radius: $radius-xs;
+  background: $gray-200;
+}
+
+.routeShellActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.routeShellToggle {
+  width: 260px;
+  height: 48px;
+  border-radius: $radius-md;
+  background: $gray-200;
+}
+
+.routeShellButton {
+  width: 156px;
+  height: 48px;
+  border-radius: $radius-md;
+  background: $gray-200;
+}
+
+.errorState {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  padding: $space-8 $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $bg-white;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: $text-subtle;
+    font-size: $text-sm;
+    font-weight: $font-medium;
+  }
+}
+
+.retryButton {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: 0 $space-4;
+  border: 0;
+  border-radius: $radius-full;
+  background: $brand-red;
+  color: $text-on-brand;
+  cursor: pointer;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  box-shadow: $shadow-sm;
+}
+
+.skeletonWeek,
+.skeletonGroups,
+.skeletonClassList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.skeletonDayRow,
+.skeletonFilterRow,
+.skeletonShiftRow {
+  display: flex;
+  gap: $space-2;
+  overflow-x: hidden;
+}
+
+.skeletonDayCard {
+  flex: 0 0 132px;
+  height: 74px;
+  border-radius: $radius-md;
+  background: $gray-200;
+}
+
+.skeletonFilterChip,
+.skeletonShiftChip {
+  flex: 0 0 76px;
+  height: 40px;
+  border-radius: $radius-full;
+  background: $gray-200;
+}
+
+.skeletonWeekCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: $space-3;
+  min-height: 132px;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $bg-white;
+  box-sizing: border-box;
+}
+
+.skeletonCardTitle {
+  width: 48%;
+  height: 20px;
+  border-radius: $radius-xs;
+  background: $gray-200;
+}
+
+.skeletonBadgeRow {
+  display: flex;
+  gap: $space-2;
+  margin-top: $space-3;
+}
+
+.skeletonBadge {
+  width: 86px;
+  height: 24px;
+  border-radius: $radius-full;
+  background: $gray-200;
+}
+
+.skeletonMetaLine {
+  width: 76%;
+  height: 16px;
+  margin-top: $space-4;
+  border-radius: $radius-xs;
+  background: $gray-200;
+}
+
+.skeletonMetaShort {
+  width: 42%;
+  height: 16px;
+  margin-top: $space-3;
+  border-radius: $radius-xs;
+  background: $gray-200;
+}
+
+.skeletonMenuButton {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background: $gray-200;
+}
+
+.skeletonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.skeletonGroupTitle {
+  width: 160px;
+  height: 22px;
+  border-radius: $radius-xs;
+  background: $gray-200;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: $space-3;
+}
+
+.skeletonGridCard {
+  height: 220px;
+  border-radius: $radius-lg;
+  background: $gray-200;
+}
+
 @media (max-width: 767px) {
   .page {
     gap: $space-4;
+  }
+
+  .routeShellHead {
+    align-items: stretch;
+  }
+
+  .routeShellActions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .routeShellToggle,
+  .routeShellButton {
+    width: 100%;
+  }
+
+  .skeletonWeek,
+  .skeletonGroups,
+  .skeletonClassList {
+    gap: $space-2;
+  }
+
+  .skeletonDayRow {
+    margin-inline: -$space-1;
+  }
+
+  .skeletonDayCard {
+    flex-basis: 136px;
+    height: 88px;
+    border-radius: $radius-md;
+  }
+
+  .skeletonWeekCard {
+    min-height: 172px;
+    padding: $space-4;
+    border-radius: 22px;
+  }
+
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeletonGridCard {
+    height: 248px;
+    border-radius: 22px;
   }
 }

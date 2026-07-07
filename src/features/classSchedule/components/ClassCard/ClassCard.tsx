@@ -4,11 +4,13 @@ import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.t
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
+import { prefetchAttendanceCheckin } from "@/pages/AttendanceCheckin/attendanceCheckinQueries";
 import type { ClassScheduleDetail } from "@/types";
 import { getDurationInMinutes } from "@/utils/format";
 import { useRoleStudent } from "@/utils/roleUtils";
+import { useQueryClient } from "@tanstack/react-query";
 import { Calendar, Clock, EllipsisVertical, MapPin, Users } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { LevelBadge, StatusBadge } from "../ClassBadges";
 import styles from "./ClassCard.module.scss";
 
@@ -29,18 +31,37 @@ function ClassCardInner({
   const occupancyRate = capacity > 0 ? totalStudents / capacity : 0;
   const navigateToStudentListByClassScheduleId =
     useNavigateStudentListByClassScheduleId();
+  const queryClient = useQueryClient();
   const { canViewManagerSenior } = useRoleStudent();
   const shiftLabel =
     ScheduleShiftLabel[cls.scheduleShift] ?? "Ca không xác định";
   const locationLabel =
     ScheduleLocationLabel[cls.scheduleLocation] ?? "Địa điểm không xác định";
 
+  const classScheduleSummary = {
+    scheduleId: cls.scheduleId,
+    branchName: cls.branchName,
+    scheduleLocation: cls.scheduleLocation,
+    scheduleLevel: cls.scheduleLevel,
+    scheduleShift: cls.scheduleShift,
+    startTime: cls.startTime,
+    endTime: cls.endTime,
+    weekday: cls.weekday,
+  };
+  const prefetchAttendance = useCallback(() => {
+    prefetchAttendanceCheckin(queryClient, cls.scheduleId);
+  }, [cls.scheduleId, queryClient]);
+
   return (
     <div
       className={styles.classCard}
+      onMouseEnter={prefetchAttendance}
+      onFocus={prefetchAttendance}
+      onTouchStart={prefetchAttendance}
       onClick={() =>
         navigateToStudentListByClassScheduleId({
           classScheduleId: cls.scheduleId,
+          classScheduleSummary,
         })
       }
     >

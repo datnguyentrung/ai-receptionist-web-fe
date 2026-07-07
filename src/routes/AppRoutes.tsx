@@ -1,9 +1,10 @@
 import { RequireRole } from "@/config/RequireRole";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
 import ComingSoonView from "../components/ComingSoonView";
+import { ClassSchedulesRoute } from "../pages/ClassSchedules/ClassSchedulesRoute";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
 import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
 import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
@@ -13,6 +14,7 @@ import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
 import PersonalPage from "../pages/PersonalPage/PersonalPage";
 import Rankings from "../pages/Rankings";
 import { useAuthStore } from "../store/authStore";
+import fallbackStyles from "./RouteLoadingFallback.module.scss";
 
 const MainLayout = lazy(() =>
   import("@/layouts/MainLayout").then((module) => ({
@@ -38,11 +40,6 @@ const StudentManagement = lazy(() =>
     default: module.StudentManagement,
   })),
 );
-const ClassSchedules = lazy(() =>
-  import("@/pages/ClassSchedules").then((module) => ({
-    default: module.ClassSchedules,
-  })),
-);
 const AttendanceCheckin = lazy(() =>
   import("@/pages/AttendanceCheckin").then((module) => ({
     default: module.AttendanceCheckin,
@@ -63,23 +60,75 @@ const ExaminationManagement = lazy(
   () => import("@/pages/ExaminationManagement/ExaminationManagement"),
 );
 
-function RouteLoadingFallback() {
+function RouteLoadingFallback({ pathname = "/" }: { pathname?: string }) {
+  const normalizedPath = pathname.replace(/\/$/, "") || "/";
+  const isProfileRoute =
+    /^\/[^/]+/.test(normalizedPath) &&
+    ![
+      "/coaches",
+      "/students",
+      "/schedules",
+      "/history",
+      "/utilities",
+      "/check-in",
+      "/notifications",
+      "/welcome",
+      "/login",
+    ].includes(normalizedPath);
+  const rowCount = normalizedPath.includes("history") ? 7 : 5;
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        color: "#6B7280",
-        fontSize: "14px",
-      }}
-    >
-      Đang tải trang...
+    <div className={fallbackStyles.routeShell} aria-busy="true">
+      <div className={fallbackStyles.appChrome}>
+        <div className={fallbackStyles.topBar} />
+        {isProfileRoute ? (
+          <>
+            <div className={fallbackStyles.profileHeader}>
+              <div className={fallbackStyles.avatar} />
+              <div className={fallbackStyles.profileLines}>
+                <div className={fallbackStyles.line} />
+                <div className={fallbackStyles.line} />
+              </div>
+            </div>
+            <div className={fallbackStyles.tabRow}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className={fallbackStyles.pill} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={fallbackStyles.hero} />
+            <div className={fallbackStyles.metrics}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className={fallbackStyles.metric} />
+              ))}
+            </div>
+          </>
+        )}
+        <div className={fallbackStyles.panel} />
+        {normalizedPath.includes("students") ||
+        normalizedPath.includes("history") ? (
+          <div className={fallbackStyles.table}>
+            {Array.from({ length: rowCount }).map((_, index) => (
+              <div key={index} className={fallbackStyles.row} />
+            ))}
+          </div>
+        ) : (
+          <div className={fallbackStyles.contentGrid}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className={fallbackStyles.card} />
+            ))}
+          </div>
+        )}
+      </div>
+      <div className={fallbackStyles.bottomDock} />
     </div>
   );
 }
 
 export default function AppRoutes() {
+  const { pathname } = useLocation();
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
@@ -95,11 +144,11 @@ export default function AppRoutes() {
     : "/welcome";
 
   if (!hasHydrated) {
-    return <RouteLoadingFallback />;
+    return <RouteLoadingFallback pathname={pathname} />;
   }
 
   return (
-    <Suspense fallback={<RouteLoadingFallback />}>
+    <Suspense fallback={<RouteLoadingFallback pathname={pathname} />}>
       <Routes>
         {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
@@ -186,7 +235,7 @@ export default function AppRoutes() {
             }
           >
             <Route path="students" element={<StudentManagement />} />
-            <Route path="schedules" element={<ClassSchedules />} />
+            <Route path="schedules" element={<ClassSchedulesRoute />} />
             <Route
               path="schedules/:scheduleId"
               element={<AttendanceCheckin />}

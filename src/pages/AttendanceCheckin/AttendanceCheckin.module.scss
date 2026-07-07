@@ -153,6 +153,38 @@
   margin: 0;
 }
 
+.retryButton {
+  margin-top: $space-4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  min-height: 36px;
+  padding: 0 $space-4;
+  border: 0;
+  border-radius: $radius-full;
+  background: $brand-red;
+  color: #ffffff;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+}
+
+.refreshNotice {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  padding: $space-2 $space-3;
+  border-radius: $radius-full;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  color: $text-subtle;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  box-shadow: $shadow-xs;
+}
+
 // ── Skeleton Loading States ──────────────────────────────────
 
 .skeletonSidebar {

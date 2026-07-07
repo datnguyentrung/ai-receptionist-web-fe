@@ -9,13 +9,6 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { authApi } from "./authApi";
 
-const POST_LOGIN_LOADING_MS = 900;
-
-const wait = (ms: number) =>
-  new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-
 const getLoginErrorMessage = (error: unknown) => {
   if (!error) {
     return "Đăng nhập thất bại. Vui lòng thử lại.";
@@ -83,17 +76,19 @@ export const useLogin = () => {
         // 3. Set toàn bộ data — login() tự resolve activeProfile từ localStorage
         login(data.accessToken, profiles);
 
-        await wait(POST_LOGIN_LOADING_MS);
-
         showSuccessToast("Đăng nhập thành công");
-        navigate("/");
-
-        await requestNotificationPermission().catch((error) => {
-          console.error("FCM init sau login lỗi:", error);
-          toast.error(
-            "Không thể đăng ký nhận thông báo. Vui lòng kiểm tra cài đặt trình duyệt.",
-          );
+        window.requestAnimationFrame(() => {
+          navigate("/", { replace: true });
         });
+
+        window.setTimeout(() => {
+          void requestNotificationPermission().catch((error) => {
+            console.error("FCM init sau login lỗi:", error);
+            toast.error(
+              "Không thể đăng ký nhận thông báo. Vui lòng kiểm tra cài đặt trình duyệt.",
+            );
+          });
+        }, 0);
       } catch (error) {
         showErrorToast(
           "Lỗi khi lấy thông tin user: " + getLoginErrorMessage(error),

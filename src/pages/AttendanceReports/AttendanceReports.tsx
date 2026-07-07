@@ -42,6 +42,26 @@ const EMPTY_ATTENDANCE_STATS: AttendanceStats = {
   evalPendingCount: 0,
 };
 
+function AttendanceReportsSkeleton() {
+  return (
+    <div className={styles.skeletonTable} aria-hidden>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index} className={styles.skeletonRow}>
+          <div className={styles.skeletonCheck} />
+          <div className={styles.skeletonCell} />
+          <div className={styles.skeletonStudent}>
+            <div className={styles.skeletonAvatar} />
+            <div className={styles.skeletonName} />
+          </div>
+          <div className={styles.skeletonCell} />
+          <div className={styles.skeletonPill} />
+          <div className={styles.skeletonPill} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function AttendanceReports() {
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -94,7 +114,7 @@ export function AttendanceReports() {
     setCurrentPage(1);
   };
 
-  const { data } = useGetQuery(
+  const { data, isFetching } = useGetQuery(
     [
       "student-attendance",
       {
@@ -136,6 +156,8 @@ export function AttendanceReports() {
       staleTime: 5 * 60 * 1000,
     },
   );
+  const isInitialLoading = !data && isFetching;
+  const isRefreshing = Boolean(data) && isFetching;
 
   const toCheckInString = (value: Date | string | null): string | null => {
     if (!value) return null;
@@ -422,6 +444,11 @@ export function AttendanceReports() {
         onAttendanceFilterChange={setAttendanceDrillDown}
         onEvaluationFilterChange={setEvaluationDrillDown}
       />
+      {isRefreshing ? (
+        <div className={styles.refreshNotice} role="status">
+          Đang cập nhật dữ liệu mới...
+        </div>
+      ) : null}
       <div
         style={{
           display: "flex",
@@ -503,21 +530,25 @@ export function AttendanceReports() {
           </span>
         </button>
       </div>
-      <AttendanceTable
-        data={data}
-        currentPage={currentPage}
-        pageSize={data?.attendances.size || PAGE_SIZE}
-        setCurrentPage={setCurrentPage}
-        selectedAttendanceIds={selectedAttendanceIdsOnPage}
-        onToggleSelect={handleToggleSelectRow}
-        onSelectAll={handleSelectAllRows}
-        editedRows={editedRows}
-        onAttendanceChange={handleAttendanceChange}
-        onEvaluationChange={handleEvaluationChange}
-        onNoteChange={handleNoteChange}
-        onUndoRow={handleUndoRow}
-        onDeleteRow={openDeleteConfirmForSingle}
-      />
+      {isInitialLoading ? (
+        <AttendanceReportsSkeleton />
+      ) : (
+        <AttendanceTable
+          data={data}
+          currentPage={currentPage}
+          pageSize={data?.attendances.size || PAGE_SIZE}
+          setCurrentPage={setCurrentPage}
+          selectedAttendanceIds={selectedAttendanceIdsOnPage}
+          onToggleSelect={handleToggleSelectRow}
+          onSelectAll={handleSelectAllRows}
+          editedRows={editedRows}
+          onAttendanceChange={handleAttendanceChange}
+          onEvaluationChange={handleEvaluationChange}
+          onNoteChange={handleNoteChange}
+          onUndoRow={handleUndoRow}
+          onDeleteRow={openDeleteConfirmForSingle}
+        />
+      )}
 
       <ConfirmModal
         open={isConfirmOpen}

@@ -14,6 +14,33 @@ import type { CoachStatus } from "../../config/constants";
 import type { CoachDetail } from "../../types";
 import styles from "./CoachManagement.module.scss";
 
+function CoachManagementSkeleton() {
+  return (
+    <div className={styles.skeletonWrap} aria-hidden>
+      <div className={styles.skeletonFilters} />
+      <div className={styles.skeletonGroups}>
+        {Array.from({ length: 2 }).map((_, groupIndex) => (
+          <div key={groupIndex} className={styles.skeletonGroup}>
+            <div className={styles.skeletonGroupTitle} />
+            <div className={styles.coachGrid}>
+              {Array.from({ length: 3 }).map((_, cardIndex) => (
+                <div key={cardIndex} className={styles.skeletonCard}>
+                  <div className={styles.skeletonAvatar} />
+                  <div className={styles.skeletonLines}>
+                    <div />
+                    <div />
+                    <div />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function CoachManagement() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | CoachStatus>("all");
@@ -42,10 +69,6 @@ export function CoachManagement() {
 
   // Calculate filteredCoaches from groups to ensure consistency
   const filteredCoaches = coachGroups.flatMap((group) => group.coaches);
-
-  if (isLoading) {
-    return <div>Đang tải dữ liệu...</div>;
-  }
 
   return (
     <div className={styles.page}>
@@ -79,7 +102,9 @@ export function CoachManagement() {
       />
 
       {/* Coach groups */}
-      {coachGroups.length > 0 ? (
+      {isLoading ? (
+        <CoachManagementSkeleton />
+      ) : coachGroups.length > 0 ? (
         <div className={styles.coachGroups}>
           {coachGroups.map((group) => (
             <div key={group.roleCode} className={styles.roleGroup}>

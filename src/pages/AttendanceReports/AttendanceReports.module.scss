@@ -8,6 +8,102 @@
   gap: $space-5;
 }
 
+.refreshNotice {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  padding: $space-2 $space-3;
+  border: 1px solid rgba($brand-red, 0.12);
+  border-radius: $radius-full;
+  background: rgba($brand-red, 0.06);
+  color: $brand-red;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+}
+
+.skeletonTable {
+  display: grid;
+  gap: $space-2;
+  padding: $space-3;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $bg-surface;
+  overflow: hidden;
+}
+
+.skeletonRow {
+  display: grid;
+  grid-template-columns: 24px minmax(72px, 0.8fr) minmax(150px, 1.4fr) minmax(
+      80px,
+      1fr
+    ) 88px 88px;
+  align-items: center;
+  gap: $space-3;
+  min-height: 52px;
+  padding: $space-3;
+  border-radius: 12px;
+  background: $gray-50;
+}
+
+.skeletonCheck,
+.skeletonCell,
+.skeletonAvatar,
+.skeletonName,
+.skeletonPill {
+  position: relative;
+  overflow: hidden;
+  background: $gray-200;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba($white, 0.72),
+      transparent
+    );
+    animation: attendanceSkeletonSweep 1.15s ease-in-out infinite;
+  }
+}
+
+.skeletonCheck {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+}
+
+.skeletonCell,
+.skeletonName {
+  height: 14px;
+  border-radius: $radius-full;
+}
+
+.skeletonStudent {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.skeletonAvatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: $radius-full;
+}
+
+.skeletonName {
+  width: min(160px, 80%);
+}
+
+.skeletonPill {
+  height: 26px;
+  border-radius: $radius-full;
+}
+
 // ── Delete Preview ─────────────────────────────────────────
 
 .deletePreviewWrap {
@@ -88,4 +184,22 @@
   margin: $space-2 0 0;
   font-size: $text-sm;
   color: $text-muted;
+}
+
+@media (max-width: 767px) {
+  .skeletonRow {
+    grid-template-columns: 24px 1fr 72px;
+    min-height: 76px;
+  }
+
+  .skeletonRow .skeletonCell:nth-of-type(n + 2),
+  .skeletonRow .skeletonPill:last-child {
+    display: none;
+  }
+}
+
+@keyframes attendanceSkeletonSweep {
+  100% {
+    transform: translateX(100%);
+  }
 }
