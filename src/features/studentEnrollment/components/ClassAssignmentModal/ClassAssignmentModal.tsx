@@ -1,4 +1,12 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+} from "react";
 
 import { CoachAssignmentSection } from "@/features/studentEnrollment/components/ClassAssignmentModal/CoachAssignmentSection";
 import { StudentAssignmentSection } from "../StudentAssignmentSection/StudentAssignmentSection";
@@ -17,6 +25,8 @@ import {
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
+import { isPWA as isPwa } from "@/config/appMode";
+import { cn } from "@/components/ui/utils";
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
@@ -25,6 +35,7 @@ import type {
   StudentEnrollmentResponse,
   StudentOverview,
 } from "@/types";
+import { X } from "lucide-react";
 
 import styles from "./ClassAssignmentModal.module.scss";
 
@@ -107,6 +118,15 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
     ? props.onAssignmentChange
     : null;
   const isCoachInlineDisabled = isCoachInline ? !!props.disabled : false;
+  const onClose = isCoachInline ? undefined : props.onClose;
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef({
+    pointerId: -1,
+    startY: 0,
+    lastY: 0,
+    startedAt: 0,
+    isDragging: false,
+  });
 
   const [selectedBranchId, setSelectedBranchId] = useState<string>("");
   const [selectedScheduleIds, setSelectedScheduleIds] = useState<Set<string>>(
@@ -410,6 +430,91 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
     setSelectedBranchId("");
   };
 
+  const resetSheetPosition = useCallback(() => {
+    const sheet = sheetRef.current;
+    if (!sheet) {
+      return;
+    }
+
+    sheet.style.setProperty("--sheet-translate-y", "0px");
+    sheet.classList.remove(styles.studentModalShellDragging);
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    const sheet = sheetRef.current;
+    if (!sheet || !onClose) {
+      onClose?.();
+      return;
+    }
+
+    sheet.classList.remove(styles.studentModalShellDragging);
+    sheet.style.setProperty("--sheet-translate-y", "100dvh");
+    window.setTimeout(onClose, 140);
+  }, [onClose]);
+
+  const handleSheetPointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (!isPwa || !onClose || event.button !== 0) {
+        return;
+      }
+
+      dragStateRef.current = {
+        pointerId: event.pointerId,
+        startY: event.clientY,
+        lastY: event.clientY,
+        startedAt: performance.now(),
+        isDragging: true,
+      };
+
+      event.currentTarget.setPointerCapture(event.pointerId);
+      sheetRef.current?.classList.add(styles.studentModalShellDragging);
+    },
+    [onClose],
+  );
+
+  const handleSheetPointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const dragState = dragStateRef.current;
+      if (!isPwa || !dragState.isDragging || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const nextOffset = Math.max(0, event.clientY - dragState.startY);
+      dragState.lastY = event.clientY;
+      sheetRef.current?.style.setProperty(
+        "--sheet-translate-y",
+        `${nextOffset}px`,
+      );
+    },
+    [],
+  );
+
+  const finishSheetDrag = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const dragState = dragStateRef.current;
+      if (!isPwa || !dragState.isDragging || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const distance = Math.max(0, dragState.lastY - dragState.startY);
+      const elapsed = Math.max(1, performance.now() - dragState.startedAt);
+      const velocity = distance / elapsed;
+
+      dragStateRef.current.isDragging = false;
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+
+      if (distance > 112 || (distance > 56 && velocity > 0.8)) {
+        closeSheet();
+        return;
+      }
+
+      resetSheetPosition();
+    },
+    [closeSheet, resetSheetPosition],
+  );
+
   if (isCoachInline && coachAssignmentRequest && onCoachAssignmentChange) {
     return (
       <CoachAssignmentSection
@@ -434,7 +539,41 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
   }
 
   return initialStudent ? (
-    <div className={styles.studentModalShell}>
+    <div
+      ref={sheetRef}
+      className={cn(
+        styles.studentModalShell,
+        isPwa && styles.studentModalShellPwa,
+      )}
+    >
+      {isPwa ? (
+        <div
+          className={styles.pwaSheetHeader}
+          onPointerDown={handleSheetPointerDown}
+          onPointerMove={handleSheetPointerMove}
+          onPointerUp={finishSheetDrag}
+          onPointerCancel={finishSheetDrag}
+        >
+          <div className={styles.pwaSheetHandle} aria-hidden="true" />
+          <div className={styles.pwaSheetTitleRow}>
+            <div>
+              <h2 className={styles.pwaSheetTitle}>Xếp lớp võ sinh</h2>
+              <p className={styles.pwaSheetSubtitle}>
+                Chọn lịch học và quản lý lớp hiện tại
+              </p>
+            </div>
+            <button
+              type="button"
+              className={styles.pwaSheetClose}
+              aria-label="Đóng"
+              onClick={onClose}
+              onPointerDown={(event) => event.stopPropagation()}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className={styles.studentModalBody}>
         <StudentAssignmentSection
           student={initialStudent}

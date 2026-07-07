@@ -759,6 +759,18 @@
   overflow: hidden;
 }
 
+.classAssignmentOverlayPwa {
+  align-items: flex-end;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.classAssignmentDialogPwa {
+  max-width: none !important;
+  max-height: 100dvh;
+  padding-bottom: 0;
+}
+
 // Mobile and PWA enhancements are capped below desktop so the current
 // desktop table layout remains unchanged from 768px upward.
 @media (max-width: 767px) {
@@ -868,6 +880,22 @@
 
   .emptyState {
     padding: $space-10 $space-4;
+  }
+
+  .classAssignmentOverlayPwa {
+    background: rgba(14, 14, 30, 0.46);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .classAssignmentDialogPwa {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .classAssignmentDialogPwa .modalContainer {
+    max-width: none;
+    max-height: 100dvh;
   }
 }
 

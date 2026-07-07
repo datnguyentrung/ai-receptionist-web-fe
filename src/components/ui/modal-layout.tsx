@@ -26,6 +26,7 @@ type ModalLayoutProps = {
   dialogClassName?: string;
   surfaceClassName?: string;
   bodyClassName?: string;
+  showMobileHandle?: boolean;
 };
 
 function toCssMaxWidth(value: number | string | undefined): string | undefined {
@@ -52,6 +53,7 @@ export function ModalLayout({
   dialogClassName,
   surfaceClassName,
   bodyClassName,
+  showMobileHandle = true,
 }: ModalLayoutProps) {
   useEffect(() => {
     if (!open) {
@@ -116,9 +118,11 @@ export function ModalLayout({
         aria-modal="true"
       >
         {/* Drag handle — visible on mobile, hidden on desktop */}
-        <div className={styles.handle} aria-hidden="true">
-          <div className={styles.handleBar} />
-        </div>
+        {showMobileHandle ? (
+          <div className={styles.handle} aria-hidden="true">
+            <div className={styles.handleBar} />
+          </div>
+        ) : null}
 
         {withSurface ? (
           <div className={cn(styles.surface, surfaceClassName)}>

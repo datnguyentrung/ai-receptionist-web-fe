@@ -51,11 +51,12 @@ $accent-light: $brand-red-400;
 
 .listRootGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: $space-3;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: $space-2;
 
   @include respond-to(md) {
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: $space-3;
   }
 }
 

@@ -217,6 +217,9 @@ export function StudentManagement() {
         onClose={handleCloseClassAssignment}
         withSurface={false}
         maxWidth={1020}
+        showMobileHandle={!isPWA}
+        overlayClassName={isPWA ? styles.classAssignmentOverlayPwa : undefined}
+        dialogClassName={isPWA ? styles.classAssignmentDialogPwa : undefined}
       >
         <div className={styles.modalContainer}>
           <ClassAssignmentModal
