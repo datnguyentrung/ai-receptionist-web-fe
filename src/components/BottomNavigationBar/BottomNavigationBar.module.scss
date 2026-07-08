@@ -5,7 +5,7 @@
   bottom: 0;
   z-index: $z-sticky;
   display: block;
-  padding: 0 $space-3 calc(env(safe-area-inset-bottom, 0px) + 12px);
+  padding: 0 $space-4 calc(env(safe-area-inset-bottom, 0px) + 12px);
   pointer-events: none;
 
   @include respond-to("md") {

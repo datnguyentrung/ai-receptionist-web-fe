@@ -124,6 +124,13 @@ export const NAV_ITEMS = ({
     icon: Trophy,
     // minLevel: ROLE_LEVELS.DEVELOPER,
   },
+  {
+    id: "utilities",
+    to: "/utilities",
+    label: "Tiện ích",
+    icon: LayoutDashboard,
+    display: false
+  }
 ];
 
 export const STUDENT_TABS = ({

@@ -304,6 +304,10 @@
 }
 
 .mobileCameraSwitchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 38px;
   padding: 0 12px;
   border-radius: 999px;
@@ -1731,9 +1735,7 @@
 
   .mobileFeedbackPanel_success {
     border-color: #86efac;
-    background:
-      linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%),
-      #f0fdf4;
+    background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%), #f0fdf4;
     box-shadow:
       0 24px 62px rgba(15, 23, 42, 0.26),
       0 0 0 1px rgba(255, 255, 255, 0.72),
@@ -2011,20 +2013,19 @@
     padding: 0;
     border-radius: 11px;
     font-size: 0;
-    color: transparent;
+    color: #ffffff;
     position: relative;
 
-    &::before {
-      content: "";
-      width: 15px;
-      height: 15px;
-      display: block;
-      margin: 0 auto;
-      border: 2px solid #ffffff;
-      border-radius: 50%;
-      box-shadow:
-        0 -5px 0 -3px #ffffff,
-        0 5px 0 -3px #ffffff;
+    svg {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      color: currentColor;
+      stroke: currentColor;
+    }
+
+    span {
+      display: none;
     }
   }
 

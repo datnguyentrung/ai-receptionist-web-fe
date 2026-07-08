@@ -1,12 +1,13 @@
 .screen {
   position: fixed;
-  inset: 0;
+  inset: 0 0 calc(env(safe-area-inset-bottom, 0px) * -1);
   z-index: $z-modal;
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   background: $bg-base;
   color: $text-primary;
@@ -17,9 +18,9 @@
   position: relative;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 48px;
-  align-items: end;
+  align-items: center;
   // min-height: calc(132px + env(safe-area-inset-top, 0px));
-  padding: calc(env(safe-area-inset-top, 0px) + 24px) $space-4 $space-6;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) $space-4 $space-4;
   overflow: hidden;
   background:
     radial-gradient(
@@ -80,7 +81,7 @@
   justify-content: center;
   border: 0;
   border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.12);
+  // background: rgba(255, 255, 255, 0.12);
   color: $white;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -128,11 +129,24 @@
     $bg-base;
 }
 
+.contentWithBottomNav {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+
 @media (min-width: 0) {
   :global(body[data-app-mode="pwa"]) {
     .screen {
       width: 100vw;
-      height: 100dvh;
+      height: auto;
+      min-height: 100dvh;
+    }
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  :global(body[data-app-mode="pwa"]) {
+    .screen {
+      min-height: -webkit-fill-available;
     }
   }
 }

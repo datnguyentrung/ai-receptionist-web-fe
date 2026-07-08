@@ -1,3 +1,4 @@
+import BottomNavigationBar from "@/components/BottomNavigationBar";
 import { ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,8 @@ type PwaStackScreenLayoutProps = {
   title: string;
   children: ReactNode;
   onBack?: () => void;
+  showBackButton?: boolean;
+  showBottomNavigation?: boolean;
   className?: string;
   contentClassName?: string;
 };
@@ -15,6 +18,8 @@ export function PwaStackScreenLayout({
   title,
   children,
   onBack,
+  showBackButton = true,
+  showBottomNavigation = true,
   className = "",
   contentClassName = "",
 }: PwaStackScreenLayoutProps) {
@@ -41,21 +46,30 @@ export function PwaStackScreenLayout({
     >
       <header className={styles.header}>
         <div className={styles.headerArt} aria-hidden="true" />
-        <button
-          type="button"
-          className={styles.backButton}
-          aria-label="Quay lại"
-          onClick={handleBack}
-        >
-          <ChevronLeft size={28} strokeWidth={2.4} />
-        </button>
+        {showBackButton ? (
+          <button
+            type="button"
+            className={styles.backButton}
+            aria-label="Quay lại"
+            onClick={handleBack}
+          >
+            <ChevronLeft size={28} strokeWidth={2.4} />
+          </button>
+        ) : (
+          <div className={styles.headerSpacer} aria-hidden="true" />
+        )}
         <h1 className={styles.title}>{title}</h1>
         <div className={styles.headerSpacer} aria-hidden="true" />
       </header>
 
-      <main className={`${styles.content} ${contentClassName}`}>
+      <main
+        className={`${styles.content} ${
+          showBottomNavigation ? styles.contentWithBottomNav : ""
+        } ${contentClassName}`}
+      >
         {children}
       </main>
+      {showBottomNavigation ? <BottomNavigationBar /> : null}
     </section>
   );
 }

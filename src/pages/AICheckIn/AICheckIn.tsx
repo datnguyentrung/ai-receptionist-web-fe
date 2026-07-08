@@ -1,4 +1,4 @@
-import { APP_MODE } from "@/config/appMode";
+﻿import { APP_MODE } from "@/config/appMode";
 import { AttendanceStatusLabel } from "@/config/constants";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import type {
@@ -14,6 +14,7 @@ import {
 } from "@/utils/validateScannedCheckInCode";
 import { FaceScanner } from "@components/FaceScanner";
 import { Scanner, type IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import axios from "axios";
 import type { BarcodeFormat } from "barcode-detector";
 import {
   CheckCircle2,
@@ -22,10 +23,10 @@ import {
   QrCode,
   RotateCcw,
   ShieldAlert,
+  SwitchCamera,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AICheckIn.module.scss";
@@ -96,11 +97,18 @@ const getCheckInErrorMessage = (error: unknown) => {
 
   switch (status) {
     case 400:
-      return backendMessage ?? "Học viên không hợp lệ hoặc chưa ở trạng thái hoạt động.";
+      return (
+        backendMessage ??
+        "Học viên không hợp lệ hoặc chưa ở trạng thái hoạt động."
+      );
     case 404:
-      return backendMessage ?? "Không tìm thấy ca học phù hợp cho học viên này.";
+      return (
+        backendMessage ?? "Không tìm thấy ca học phù hợp cho học viên này."
+      );
     case 409:
-      return backendMessage ?? "Học viên đã được điểm danh trong ca học phù hợp.";
+      return (
+        backendMessage ?? "Học viên đã được điểm danh trong ca học phù hợp."
+      );
     default:
       return backendMessage ?? "Không thể kết nối API. Vui lòng quét lại.";
   }
@@ -352,9 +360,10 @@ export default function AICheckIn() {
         setMobileScanStatus("error");
         setMobileScanMessage(message);
         setCheckInResult({
-          audio_signal: axios.isAxiosError(error) && error.response?.status === 409
-            ? "ALREADY_CHECKED_IN"
-            : "NO_VALID_SESSION",
+          audio_signal:
+            axios.isAxiosError(error) && error.response?.status === 409
+              ? "ALREADY_CHECKED_IN"
+              : "NO_VALID_SESSION",
           status: false,
           user: null,
           attendance_record: null,
@@ -459,7 +468,10 @@ export default function AICheckIn() {
             </div>
           </div>
 
-          <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
+          <div
+            className={styles.mobileModeSwitch}
+            aria-label="Chọn chế độ check-in"
+          >
             <button
               type="button"
               className={`${styles.mobileModeButton} ${
@@ -531,7 +543,8 @@ export default function AICheckIn() {
                       )
                     }
                   >
-                    Đổi camera
+                    <SwitchCamera size={14} aria-hidden="true" />
+                    <span>Đổi camera</span>
                   </button>
                 </div>
               </div>
@@ -617,7 +630,8 @@ export default function AICheckIn() {
 
                     {successfulScanCount > 0 && (
                       <p className={styles.mobileSuccessCount}>
-                        Đã điểm danh {successfulScanCount} người trong phiên này.
+                        Đã điểm danh {successfulScanCount} người trong phiên
+                        này.
                       </p>
                     )}
 
@@ -631,20 +645,23 @@ export default function AICheckIn() {
                   </div>
                 ) : (
                   <>
-                    <p className={styles.mobileFeedbackLabel}>{mobileStatusLabel}</p>
-                <p className={styles.mobileFeedbackMessage}>
-                  {mobileScanMessage}
-                </p>
-                {lastScannedCode && (
-                  <p className={styles.mobileScannedCode}>
-                    Mã vừa quét: <span>{lastScannedCode}</span>
-                  </p>
-                )}
-                {successfulScanCount > 0 && (
-                  <p className={styles.mobileSuccessCount}>
-                    Đã điểm danh {successfulScanCount} người trong phiên này.
-                  </p>
-                )}
+                    <p className={styles.mobileFeedbackLabel}>
+                      {mobileStatusLabel}
+                    </p>
+                    <p className={styles.mobileFeedbackMessage}>
+                      {mobileScanMessage}
+                    </p>
+                    {lastScannedCode && (
+                      <p className={styles.mobileScannedCode}>
+                        Mã vừa quét: <span>{lastScannedCode}</span>
+                      </p>
+                    )}
+                    {successfulScanCount > 0 && (
+                      <p className={styles.mobileSuccessCount}>
+                        Đã điểm danh {successfulScanCount} người trong phiên
+                        này.
+                      </p>
+                    )}
                   </>
                 )}
               </div>
