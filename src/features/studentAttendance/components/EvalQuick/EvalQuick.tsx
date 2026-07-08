@@ -1,4 +1,6 @@
 import type { EvaluationStatus } from "@/config/constants";
+import { AlertTriangle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./EvalQuick.module.scss";
 
 interface EvalOption {
@@ -41,13 +43,38 @@ interface EvalQuickProps {
   value: EvaluationStatus | null;
   onChange: (v: EvaluationStatus) => void;
   studentName?: string;
+  canEvaluate?: boolean;
 }
 
 export default function EvalQuick({
   value,
   onChange,
   studentName,
+  canEvaluate = true,
 }: EvalQuickProps) {
+  const [showWarning, setShowWarning] = useState(false);
+  const hideTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
+
+  const triggerWarning = () => {
+    setShowWarning(true);
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+    }
+
+    hideTimerRef.current = window.setTimeout(() => {
+      setShowWarning(false);
+      hideTimerRef.current = null;
+    }, 3000);
+  };
+
   return (
     <div className={styles.container}>
       {studentName && (
@@ -55,6 +82,14 @@ export default function EvalQuick({
           Đánh giá · <span className={styles.studentName}>{studentName}</span>
         </p>
       )}
+      <div
+        className={`${styles.warningPopover} ${showWarning ? styles.warningVisible : ""}`}
+        role="status"
+        aria-live="polite"
+      >
+        <AlertTriangle size={14} />
+        <span>Hãy điểm danh trước khi đánh giá võ sinh.</span>
+      </div>
       <div className={styles.options}>
         {EVAL_OPTIONS.map((opt) => {
           const active = value === opt.value;
@@ -70,6 +105,11 @@ export default function EvalQuick({
                   : { background: opt.bg, color: opt.color }
               }
               onClick={() => {
+                if (!canEvaluate) {
+                  triggerWarning();
+                  return;
+                }
+
                 if (!active) {
                   onChange(opt.value);
                 }

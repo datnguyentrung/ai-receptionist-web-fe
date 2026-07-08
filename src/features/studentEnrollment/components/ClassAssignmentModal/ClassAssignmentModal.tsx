@@ -12,6 +12,8 @@ import { CoachAssignmentSection } from "@/features/studentEnrollment/components/
 import { StudentAssignmentSection } from "../StudentAssignmentSection/StudentAssignmentSection";
 
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
+import { cn } from "@/components/ui/utils";
+import { isPWA as isPwa } from "@/config/appMode";
 import type {
   ScheduleLevel,
   ScheduleLocation,
@@ -25,8 +27,6 @@ import {
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
-import { isPWA as isPwa } from "@/config/appMode";
-import { cn } from "@/components/ui/utils";
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
@@ -232,10 +232,12 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
       }
     });
 
-    return Array.from(branchMap.entries()).map(([branchId, branchName]) => ({
-      branchId,
-      branchName,
-    }));
+    return Array.from(branchMap.entries())
+      .map(([branchId, branchName]) => ({
+        branchId,
+        branchName,
+      }))
+      .sort((a, b) => a.branchId - b.branchId);
   }, [classSchedules]);
 
   const resolvedBranchId = useMemo(() => {
@@ -475,7 +477,11 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
   const handleSheetPointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       const dragState = dragStateRef.current;
-      if (!isPwa || !dragState.isDragging || dragState.pointerId !== event.pointerId) {
+      if (
+        !isPwa ||
+        !dragState.isDragging ||
+        dragState.pointerId !== event.pointerId
+      ) {
         return;
       }
 
@@ -492,7 +498,11 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
   const finishSheetDrag = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       const dragState = dragStateRef.current;
-      if (!isPwa || !dragState.isDragging || dragState.pointerId !== event.pointerId) {
+      if (
+        !isPwa ||
+        !dragState.isDragging ||
+        dragState.pointerId !== event.pointerId
+      ) {
         return;
       }
 

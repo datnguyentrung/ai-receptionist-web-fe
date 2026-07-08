@@ -5,8 +5,8 @@ import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import type { Belt, StudentStatus } from "@/config/constants";
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
 import { studentAPI } from "@/features/student/api/studentAPI";
-import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import ClassList from "@/features/studentEnrollment/components/ClassList/ClassList";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import type {
   ClassScheduleDetail,
   ClassScheduleSummary,
@@ -189,10 +189,12 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
       }
     });
 
-    return Array.from(branchMap.entries()).map(([branchId, branchName]) => ({
-      branchId,
-      branchName,
-    }));
+    return Array.from(branchMap.entries())
+      .map(([branchId, branchName]) => ({
+        branchId,
+        branchName,
+      }))
+      .sort((a, b) => a.branchId - b.branchId);
   }, [schedules]);
 
   const resolvedBranchId = useMemo(() => {

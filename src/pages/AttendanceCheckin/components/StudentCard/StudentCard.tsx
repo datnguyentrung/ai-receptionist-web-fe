@@ -97,6 +97,7 @@ export function StudentCardInner({
         <div className={styles.evalInlineWrap}>
           <EvalQuick
             value={student.evaluationStatus}
+            canEvaluate={hasAttendanceRecord}
             onChange={(v) => {
               if (v !== student.evaluationStatus) {
                 onUpdateEval(student.studentId, v);
