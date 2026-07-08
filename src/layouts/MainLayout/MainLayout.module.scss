@@ -75,3 +75,21 @@
   padding: 0;
   @include safe-bottom(0);
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .overlay {
+      display: none;
+    }
+
+    .content {
+      padding: $space-3;
+      @include safe-bottom(76px);
+    }
+
+    .contentFullscreen {
+      padding: 0;
+      @include safe-bottom(0);
+    }
+  }
+}

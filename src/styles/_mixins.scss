@@ -21,7 +21,15 @@
 
   @if map.has-key($bp, $breakpoint) {
     @media (min-width: map.get($bp, $breakpoint)) {
-      @content;
+      @if & {
+        body:not([data-app-mode="pwa"]) & {
+          @content;
+        }
+      } @else {
+        body:not([data-app-mode="pwa"]) {
+          @content;
+        }
+      }
     }
   } @else {
     @warn "Unknown breakpoint `#{$breakpoint}`. Available: #{map-keys($bp)}";

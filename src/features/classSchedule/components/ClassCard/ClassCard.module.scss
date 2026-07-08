@@ -396,3 +396,20 @@
     height: 4px;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .cardAccent {
+      height: 4px;
+    }
+
+    .cardBody {
+      padding: $space-3;
+    }
+
+    .cardTop {
+      gap: $space-2;
+      margin-bottom: $space-2;
+    }
+  }
+}

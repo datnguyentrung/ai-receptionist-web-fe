@@ -371,3 +371,39 @@
     }
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .page {
+      min-height: 100dvh;
+      padding-bottom: 0;
+    }
+
+    .grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: $space-4;
+    }
+
+    .sidebar {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .main {
+      gap: $space-4;
+      padding-bottom: calc(
+        72px + var(--attendance-bottom-nav-offset) +
+          env(safe-area-inset-bottom, 0px)
+      );
+    }
+
+    .studentList {
+      grid-template-columns: 1fr;
+      gap: $space-3;
+      overflow-y: visible;
+      padding-bottom: $space-8;
+    }
+  }
+}

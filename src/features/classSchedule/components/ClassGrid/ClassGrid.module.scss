@@ -162,3 +162,38 @@
     gap: $space-3;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .classGroups {
+      gap: $space-3;
+    }
+
+    .classSchedulesFilterBar {
+      gap: $space-1;
+      margin-inline: -$space-1;
+      padding: 0 $space-1 $space-1;
+    }
+
+    .classSchedulesFilterBtn {
+      min-width: 38px;
+      min-height: 36px;
+      padding: $space-1 $space-2;
+    }
+
+    .branchGroup {
+      gap: $space-2;
+      padding: $space-2;
+      border-radius: $radius-md;
+    }
+
+    .branchGroupHeader {
+      align-items: center;
+    }
+
+    .cardsGrid {
+      grid-template-columns: 1fr;
+      gap: $space-2;
+    }
+  }
+}

@@ -1,14 +1,15 @@
 import { ModalLayout } from "@/components/ui/modal-layout";
 import { studentAPI } from "@/features/student/api/studentAPI";
-import { useGetQuery } from "@/hooks/useCrud";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
+import { useGetQuery } from "@/hooks/useCrud";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Pagination } from "../../components/Pagination";
+import { isPWA } from "../../config/appMode";
 import type { Belt, StudentStatus } from "../../config/constants";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAuthStore } from "../../store/authStore";
 import type { StudentOverview } from "../../types";
-import { isPWA } from "../../config/appMode";
 import styles from "./StudentManagement.module.scss";
 import { AttendanceTableModal } from "./components/AttendanceTableModal/AttendanceTableModal";
 import { StudentCreateModal } from "./components/StudentCreateModal";
@@ -46,6 +47,7 @@ function StudentManagementSkeleton() {
 }
 
 export function StudentManagement() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | StudentStatus>(
     "all",
@@ -64,18 +66,32 @@ export function StudentManagement() {
   const debouncedSearch = useDebounce(search, 500);
 
   const { data, isFetching: isStudentsFetching } = useGetQuery(
-    ["students", { search: debouncedSearch, status: statusFilter, belts: beltFilter, scheduleIds: userInfo?.userInfo?.assignedClasses?.map((c) => c?.classSchedule?.scheduleId)?.filter((id): id is string => Boolean(id)) ?? [], page: page - 1, size: 10 }],
-    () => studentAPI.getStudents({
-      search: debouncedSearch,
-      status: statusFilter === "all" ? undefined : statusFilter,
-      scheduleIds:
-        userInfo?.userInfo?.assignedClasses
-          ?.map((c) => c?.classSchedule?.scheduleId)
-          ?.filter((id): id is string => Boolean(id)) ?? [],
-      belts: beltFilter.length > 0 ? beltFilter : undefined,
-      page: page - 1,
-      size: 10,
-    }),
+    [
+      "students",
+      {
+        search: debouncedSearch,
+        status: statusFilter,
+        belts: beltFilter,
+        scheduleIds:
+          userInfo?.userInfo?.assignedClasses
+            ?.map((c) => c?.classSchedule?.scheduleId)
+            ?.filter((id): id is string => Boolean(id)) ?? [],
+        page: page - 1,
+        size: 10,
+      },
+    ],
+    () =>
+      studentAPI.getStudents({
+        search: debouncedSearch,
+        status: statusFilter === "all" ? undefined : statusFilter,
+        scheduleIds:
+          userInfo?.userInfo?.assignedClasses
+            ?.map((c) => c?.classSchedule?.scheduleId)
+            ?.filter((id): id is string => Boolean(id)) ?? [],
+        belts: beltFilter.length > 0 ? beltFilter : undefined,
+        page: page - 1,
+        size: 10,
+      }),
     { enabled: !!userInfo },
   );
 
@@ -118,7 +134,13 @@ export function StudentManagement() {
       setStudentForClassAssignment(student);
       setIsClassAssignmentOpen(true);
     } else if (action === "view-info") {
-      window.open(`/${student.studentCode}`, "_blank");
+      const detailPath = `/${student.studentCode}`;
+
+      if (isPWA) {
+        navigate(detailPath);
+      } else {
+        window.open(detailPath, "_blank", "noopener,noreferrer");
+      }
     } else if (action === "view-history") {
       setStudentForHistory(student);
       setIsAttendanceHistoryOpen(true);
@@ -143,9 +165,7 @@ export function StudentManagement() {
   };
 
   return (
-    <div
-      className={`${styles.page} ${isPWA ? styles["page--pwa"] : ""}`}
-    >
+    <div className={`${styles.page} ${isPWA ? styles["page--pwa"] : ""}`}>
       {/* 1. Header */}
       <StudentHeader
         totalStudents={totalStudents}

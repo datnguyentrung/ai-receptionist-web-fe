@@ -191,3 +191,11 @@
     transform: translateX(100%);
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .coachGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

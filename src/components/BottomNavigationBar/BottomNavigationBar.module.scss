@@ -225,3 +225,11 @@
     }
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .bottomNav {
+      display: block;
+    }
+  }
+}

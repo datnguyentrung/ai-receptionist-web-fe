@@ -441,3 +441,27 @@
     display: block;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .bottomBar {
+      position: fixed;
+      bottom: var(--attendance-bottom-nav-offset, 0px);
+      left: 0;
+      right: 0;
+      padding: 0 $space-3;
+      background: linear-gradient(
+        to top,
+        rgba(248, 250, 252, 0.98) 0%,
+        rgba(248, 250, 252, 0.94) 72%,
+        rgba(248, 250, 252, 0) 100%
+      );
+      backdrop-filter: blur(14px);
+      @include safe-bottom($space-3);
+    }
+
+    .mobileDock {
+      display: block;
+    }
+  }
+}

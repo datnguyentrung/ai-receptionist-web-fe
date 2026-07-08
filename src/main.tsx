@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { APP_MODE } from "./config/appMode";
 import { isMaintenanceMode } from "./config/env";
 import "./index.css";
 import { queryClient } from "./lib/react-query";
@@ -17,6 +18,9 @@ if (!isMaintenanceMode) {
     })
     .catch(() => {});
 }
+
+document.body.dataset.appMode = APP_MODE;
+document.documentElement.dataset.appMode = APP_MODE;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

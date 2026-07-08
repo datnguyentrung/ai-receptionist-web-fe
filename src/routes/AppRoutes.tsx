@@ -1,7 +1,16 @@
 import { RequireRole } from "@/config/RequireRole";
+import { isPWA } from "@/config/appMode";
+import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
 import ComingSoonView from "../components/ComingSoonView";
 import { ClassSchedulesRoute } from "../pages/ClassSchedules/ClassSchedulesRoute";
@@ -127,6 +136,51 @@ function RouteLoadingFallback({ pathname = "/" }: { pathname?: string }) {
   );
 }
 
+function getProfileStackTitle(pathname: string) {
+  const normalizedPath = pathname.replace(/\/$/, "") || "/";
+  const segment = normalizedPath.split("/").filter(Boolean).at(-1);
+
+  switch (segment) {
+    case "classes":
+      return "Lớp hành chính";
+    case "progress":
+      return "Tiến trình học tập";
+    case "tuition":
+      return "Học phí";
+    case "score":
+      return "Điểm rèn luyện";
+    case "timesheet":
+      return "Thời khóa biểu";
+    default:
+      return "Thông tin học viên";
+  }
+}
+
+function ProfileRouteLayout() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  if (!isPWA) {
+    return <MainLayout />;
+  }
+
+  return (
+    <PwaStackScreenLayout
+      title={getProfileStackTitle(pathname)}
+      onBack={() => {
+        if (window.history.length > 1) {
+          navigate(-1);
+          return;
+        }
+
+        navigate("/", { replace: true });
+      }}
+    >
+      <Outlet />
+    </PwaStackScreenLayout>
+  );
+}
+
 export default function AppRoutes() {
   const { pathname } = useLocation();
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
@@ -173,7 +227,7 @@ export default function AppRoutes() {
         </Route>
 
         {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/" element={<ProfileRouteLayout />}>
           <Route path="/:userCode" element={<PersonalPage />}>
             {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
             <Route index element={<PersonalInfoTab />} />

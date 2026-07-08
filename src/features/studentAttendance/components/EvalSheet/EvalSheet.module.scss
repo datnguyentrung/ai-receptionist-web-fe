@@ -328,3 +328,36 @@
     opacity: 0.9;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .sheet {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+      width: 100%;
+      max-height: 90vh;
+      border-radius: $radius-2xl $radius-2xl 0 0;
+      transform: none;
+      @include safe-bottom($space-1);
+    }
+
+    .sheetHandle {
+      display: flex;
+    }
+
+    .sheetHeader {
+      padding: $space-3 $space-4;
+    }
+
+    .sheetBody {
+      padding: $space-4 $space-4;
+    }
+
+    .sheetFooter {
+      padding: $space-4 $space-4;
+      @include safe-bottom($space-2);
+    }
+  }
+}

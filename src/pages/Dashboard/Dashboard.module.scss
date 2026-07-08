@@ -364,3 +364,22 @@
   border-radius: 9999px;
   flex-shrink: 0;
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .bannerAction {
+      display: none;
+    }
+
+    .statsGrid,
+    .chartsGrid,
+    .bottomGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .chartCardWide,
+    .recentCard {
+      grid-column: auto;
+    }
+  }
+}

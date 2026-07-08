@@ -114,3 +114,28 @@
     grid-column: 1 / -1;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .weekView {
+      gap: $space-2;
+    }
+
+    .classSchedulesFilterBar {
+      gap: $space-1;
+      margin-inline: -$space-1;
+      padding: 0 $space-1 $space-1;
+    }
+
+    .classSchedulesFilterBtn {
+      min-height: 36px;
+      padding: $space-1 $space-2;
+    }
+
+    .classList {
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+  }
+}

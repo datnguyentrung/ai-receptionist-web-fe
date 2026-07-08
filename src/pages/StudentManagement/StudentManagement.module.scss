@@ -1206,3 +1206,21 @@
     transform: translateX(100%);
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .table {
+      min-width: 0;
+    }
+
+    .classAssignmentDialogPwa {
+      width: 100%;
+      border-radius: 0;
+    }
+
+    .classAssignmentDialogPwa .modalContainer {
+      max-width: none;
+      max-height: 100dvh;
+    }
+  }
+}

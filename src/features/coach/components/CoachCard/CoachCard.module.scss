@@ -212,3 +212,11 @@
     max-width: 130px;
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .assignmentsList {
+      grid-template-columns: 1fr;
+    }
+  }
+}

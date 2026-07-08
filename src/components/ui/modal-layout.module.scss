@@ -154,6 +154,37 @@
   }
 }
 
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .overlay {
+      align-items: flex-end;
+      justify-content: stretch;
+      padding: 0;
+    }
+
+    .dialog {
+      width: 100%;
+      max-height: 90vh;
+      border-radius: $radius-2xl $radius-2xl 0 0;
+      animation: sheetIn 220ms cubic-bezier(0.32, 0.72, 0, 1);
+      @include safe-bottom($space-1);
+    }
+
+    .handle {
+      display: flex;
+    }
+
+    .header {
+      padding: $space-3 $space-4 $space-3;
+    }
+
+    .footer {
+      padding: $space-3 $space-4;
+      @include safe-bottom($space-1);
+    }
+  }
+}
+
 // ── Animations ──────────────────────────────────────────────
 
 @keyframes fadeIn {

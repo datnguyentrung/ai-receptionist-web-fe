@@ -1,4 +1,5 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { APP_MODE } from "@/config/appMode";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import BottomNavigationBar from "../../components/BottomNavigationBar";
@@ -27,6 +28,7 @@ export function MainLayout() {
       className={`${styles.layout} ${
         isFullscreenRoute ? styles.layoutFullscreen : ""
       }`}
+      data-app-mode={APP_MODE}
     >
       {/* ── Mobile overlay ── */}
       {sidebarOpen && !isFullscreenRoute && (

@@ -1,0 +1,184 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: $bg-base;
+  color: $text-primary;
+  isolation: isolate;
+}
+
+.header {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: end;
+  // min-height: calc(132px + env(safe-area-inset-top, 0px));
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) $space-4 $space-6;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 12% 20%,
+      rgba(255, 255, 255, 0.24),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(255, 255, 255, 0.18),
+      transparent 24%
+    ),
+    linear-gradient(
+      135deg,
+      $brand-red-900 0%,
+      $brand-red 48%,
+      $brand-red-500 100%
+    );
+  color: $white;
+  box-shadow: 0 12px 28px rgba($brand-red-900, 0.18);
+}
+
+.headerArt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.36;
+  background:
+    radial-gradient(
+      circle at 8% 88%,
+      rgba(255, 255, 255, 0.3) 0 1px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 92% 70%,
+      rgba(255, 255, 255, 0.28) 0 1px,
+      transparent 2px
+    ),
+    repeating-conic-gradient(
+      from 18deg at 92% 18%,
+      rgba(255, 255, 255, 0.28) 0deg 3deg,
+      transparent 3deg 14deg
+    );
+  mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+}
+
+.backButton,
+.headerSpacer {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: $radius-full;
+  background: rgba(255, 255, 255, 0.12);
+  color: $white;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.84);
+    outline-offset: 2px;
+  }
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  align-self: center;
+  color: $white;
+  font-size: clamp(1.45rem, 1.22rem + 0.9vw, 2rem);
+  font-weight: $font-extrabold;
+  line-height: $leading-tight;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding: $space-5 $space-4 calc($space-6 + env(safe-area-inset-bottom, 0px));
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.86),
+      rgba(244, 246, 250, 0.92)
+    ),
+    $bg-base;
+}
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .screen {
+      width: 100vw;
+      height: 100dvh;
+    }
+  }
+}
+
+@media (orientation: landscape) {
+  .header {
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    min-height: calc(88px + env(safe-area-inset-top, 0px));
+    padding: calc(env(safe-area-inset-top, 0px) + 10px) $space-4 $space-3;
+  }
+
+  .title {
+    font-size: clamp(1.25rem, 1rem + 0.65vw, 1.55rem);
+  }
+
+  .content {
+    padding: $space-4 $space-4 calc($space-5 + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (min-width: 768px) {
+  :global(body[data-app-mode="pwa"]) {
+    .screen {
+      max-width: none;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    .content {
+      padding-inline: max($space-4, env(safe-area-inset-left, 0px))
+        max($space-4, env(safe-area-inset-right, 0px));
+    }
+  }
+
+  :global(body:not([data-app-mode="pwa"])) {
+    .screen {
+      position: relative;
+      z-index: auto;
+      width: 100%;
+      min-height: 100%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backButton {
+    transition: none;
+  }
+}

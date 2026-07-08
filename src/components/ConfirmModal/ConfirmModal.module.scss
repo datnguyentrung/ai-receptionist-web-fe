@@ -180,3 +180,12 @@
     transform: rotate(360deg);
   }
 }
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .modal {
+      border-radius: $radius-2xl $radius-2xl 0 0;
+      transform-origin: center bottom;
+    }
+  }
+}
