@@ -4,7 +4,9 @@
   z-index: $z-modal;
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
@@ -15,11 +17,10 @@
 
 .header {
   position: relative;
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 48px;
-  align-items: end;
-  // min-height: calc(132px + env(safe-area-inset-top, 0px));
-  padding: calc(env(safe-area-inset-top, 0px) + 24px) $space-4 $space-6;
+  inset-block-start: 0;
+  flex: 0 0 auto;
+  min-height: calc(120px + env(safe-area-inset-top, 0px));
+  padding: 0;
   overflow: hidden;
   background:
     radial-gradient(
@@ -40,6 +41,16 @@
     );
   color: $white;
   box-shadow: 0 12px 28px rgba($brand-red-900, 0.18);
+}
+
+.headerInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  min-height: calc(120px + env(safe-area-inset-top, 0px));
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) $space-4 $space-6;
 }
 
 .headerArt {
@@ -68,8 +79,6 @@
 
 .backButton,
 .headerSpacer {
-  position: relative;
-  z-index: 1;
   width: 48px;
   height: 48px;
 }
@@ -99,10 +108,7 @@
 }
 
 .title {
-  position: relative;
-  z-index: 1;
   margin: 0;
-  align-self: center;
   color: $white;
   font-size: clamp(1.45rem, 1.22rem + 0.9vw, 2rem);
   font-weight: $font-extrabold;
@@ -131,7 +137,8 @@
 @media (min-width: 0) {
   :global(body[data-app-mode="pwa"]) {
     .screen {
-      width: 100vw;
+      width: 100%;
+      min-height: 100dvh;
       height: 100dvh;
     }
   }
@@ -139,7 +146,10 @@
 
 @media (orientation: landscape) {
   .header {
-    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    min-height: calc(88px + env(safe-area-inset-top, 0px));
+  }
+
+  .headerInner {
     min-height: calc(88px + env(safe-area-inset-top, 0px));
     padding: calc(env(safe-area-inset-top, 0px) + 10px) $space-4 $space-3;
   }
@@ -173,6 +183,7 @@
       z-index: auto;
       width: 100%;
       min-height: 100%;
+      height: auto;
     }
   }
 }

@@ -41,16 +41,18 @@ export function PwaStackScreenLayout({
     >
       <header className={styles.header}>
         <div className={styles.headerArt} aria-hidden="true" />
-        <button
-          type="button"
-          className={styles.backButton}
-          aria-label="Quay lại"
-          onClick={handleBack}
-        >
-          <ChevronLeft size={28} strokeWidth={2.4} />
-        </button>
-        <h1 className={styles.title}>{title}</h1>
-        <div className={styles.headerSpacer} aria-hidden="true" />
+        <div className={styles.headerInner}>
+          <button
+            type="button"
+            className={styles.backButton}
+            aria-label="Quay lại"
+            onClick={handleBack}
+          >
+            <ChevronLeft size={28} strokeWidth={2.4} />
+          </button>
+          <h1 className={styles.title}>{title}</h1>
+          <div className={styles.headerSpacer} aria-hidden="true" />
+        </div>
       </header>
 
       <main className={`${styles.content} ${contentClassName}`}>

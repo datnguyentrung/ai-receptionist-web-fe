@@ -18,6 +18,7 @@
   body,
   #root {
     height: 100%;
+    min-height: 100%;
     width: 100%;
   }
 
@@ -41,6 +42,16 @@
     color: #111827;
     min-width: 320px;
     -webkit-font-smoothing: antialiased;
+  }
+
+  html[data-app-mode="pwa"],
+  html[data-app-mode="pwa"] body,
+  html[data-app-mode="pwa"] #root {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   /* Typography reset */

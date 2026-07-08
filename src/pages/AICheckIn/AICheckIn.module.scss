@@ -1446,23 +1446,27 @@
   }
 }
 
-@media (display-mode: standalone) and (max-width: 767px) {
-  .mobileScanHeader {
-    padding-top: calc(10px + env(safe-area-inset-top));
-  }
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  @media (max-width: 767px) {
+    .mobileScanHeader {
+      padding-top: calc(10px + env(safe-area-inset-top));
+    }
 
-  .mobileFeedbackPanel {
-    bottom: calc(82px + env(safe-area-inset-bottom));
+    .mobileFeedbackPanel {
+      bottom: calc(82px + env(safe-area-inset-bottom));
+    }
   }
 }
 
-@media (display-mode: standalone) and (max-width: 767px) {
-  .mobileScanHeader {
-    padding-top: calc(10px + env(safe-area-inset-top));
-  }
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  @media (max-width: 767px) {
+    .mobileScanHeader {
+      padding-top: calc(10px + env(safe-area-inset-top));
+    }
 
-  .mobileFeedbackPanel {
-    bottom: calc(82px + env(safe-area-inset-bottom));
+    .mobileFeedbackPanel {
+      bottom: calc(82px + env(safe-area-inset-bottom));
+    }
   }
 }
 
@@ -1731,9 +1735,7 @@
 
   .mobileFeedbackPanel_success {
     border-color: #86efac;
-    background:
-      linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%),
-      #f0fdf4;
+    background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%), #f0fdf4;
     box-shadow:
       0 24px 62px rgba(15, 23, 42, 0.26),
       0 0 0 1px rgba(255, 255, 255, 0.72),
@@ -2071,24 +2073,26 @@
   }
 }
 
-@media (display-mode: standalone) and (max-width: 767px) {
-  .mobileModeSwitch {
-    top: calc(5px + env(safe-area-inset-top));
-  }
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  @media (max-width: 767px) {
+    .mobileModeSwitch {
+      top: calc(5px + env(safe-area-inset-top));
+    }
 
-  .mobileScanHeader {
-    min-height: calc(82px + env(safe-area-inset-top));
-    max-height: calc(88px + env(safe-area-inset-top));
-    padding-top: calc(36px + env(safe-area-inset-top));
-    padding-bottom: 7px;
-  }
+    .mobileScanHeader {
+      min-height: calc(82px + env(safe-area-inset-top));
+      max-height: calc(88px + env(safe-area-inset-top));
+      padding-top: calc(36px + env(safe-area-inset-top));
+      padding-bottom: 7px;
+    }
 
-  .mobileScannerFrame {
-    top: calc(88px + env(safe-area-inset-top));
-  }
+    .mobileScannerFrame {
+      top: calc(88px + env(safe-area-inset-top));
+    }
 
-  .mobileFeedbackPanel {
-    bottom: calc(24px + env(safe-area-inset-bottom));
+    .mobileFeedbackPanel {
+      bottom: calc(24px + env(safe-area-inset-bottom));
+    }
   }
 }
 

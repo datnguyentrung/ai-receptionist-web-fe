@@ -1,6 +1,9 @@
 // ── Root wrapper ────────────────────────────────────────────
 .layout {
   display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   height: 100vh;
   height: 100dvh; // dynamic viewport height — handles mobile browser chrome
   overflow: hidden;
@@ -8,10 +11,12 @@
 
   // Prevent any child from causing horizontal scroll
   overflow-x: hidden;
-  width: 100%;
 }
 
 .layoutFullscreen {
+  width: 100%;
+  min-height: 100dvh;
+  height: 100dvh;
   background: transparent;
 }
 
@@ -44,13 +49,17 @@
   display: flex;
   flex-direction: column;
   min-width: 0; // prevent flex child from overflowing
+  min-height: 0;
   overflow: hidden;
   width: 100%;
+  height: 100%;
 }
 
 // ── Page content ─────────────────────────────────────────────
 .content {
   flex: 1;
+  min-height: 0;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -72,12 +81,22 @@
 }
 
 .contentFullscreen {
+  width: 100%;
+  min-height: 0;
+  height: 100%;
   padding: 0;
   @include safe-bottom(0);
 }
 
 @media (min-width: 0) {
   :global(body[data-app-mode="pwa"]) {
+    .layout,
+    .main {
+      width: 100%;
+      min-height: 100dvh;
+      height: 100dvh;
+    }
+
     .overlay {
       display: none;
     }
