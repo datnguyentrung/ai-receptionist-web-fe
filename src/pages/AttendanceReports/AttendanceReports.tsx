@@ -449,14 +449,7 @@ export function AttendanceReports() {
           Đang cập nhật dữ liệu mới...
         </div>
       ) : null}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "12px",
-        }}
-      >
+      <div className={styles.filterActionRow}>
         <AttendanceFilters
           search={search}
           onSearchChange={(v) => {
@@ -504,30 +497,11 @@ export function AttendanceReports() {
           type="button"
           onClick={openDeleteConfirmForMany}
           disabled={selectedAttendanceIdsOnPage.length === 0 || isDeleting}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px",
-            height: "36px",
-            padding: "0 12px",
-            borderRadius: "8px",
-            border: "1px solid #FCA5A5",
-            background: "#FEF2F2",
-            color: "#B91C1C",
-            cursor:
-              selectedAttendanceIdsOnPage.length === 0 || isDeleting
-                ? "not-allowed"
-                : "pointer",
-            opacity:
-              selectedAttendanceIdsOnPage.length === 0 || isDeleting ? 0.6 : 1,
-          }}
+          className={styles.deleteSelectedButton}
           title="Xóa các bản ghi đã chọn"
         >
           <Trash2 size={15} />
-          <span style={{ fontSize: "12px", fontWeight: 600 }}>
-            Xóa ({selectedAttendanceIdsOnPage.length})
-          </span>
+          <span>Xóa ({selectedAttendanceIdsOnPage.length})</span>
         </button>
       </div>
       {isInitialLoading ? (

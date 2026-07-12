@@ -11,6 +11,10 @@
   overflow: hidden;
 }
 
+.cardGrid {
+  display: none;
+}
+
 // ── Scrollable Wrapper ─────────────────────────────────────
 // Critical: overflow-x only here. Parent page must NOT clip.
 
@@ -266,4 +270,933 @@
   margin: $space-1 0 !important;
   height: 1px !important;
   background: $gray-200 !important;
+}
+
+// Mobile card view
+@media (max-width: 767px) {
+  .tableCard {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .tableWrap {
+    display: none;
+  }
+
+  .cardGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .attendanceCard {
+    --card-neon: #22c55e;
+    --card-neon-strong: #00f58a;
+    --card-neon-rgb: 34, 197, 94;
+    --card-ink: #052e1a;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 10px $space-3;
+    border: 1px solid rgba(var(--card-neon-rgb), 0.28);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 86% 8%, rgba(var(--card-neon-rgb), 0.34), transparent 36%),
+      linear-gradient(135deg, rgba(var(--card-neon-rgb), 0.16), rgba($white, 0.94) 48%, rgba(var(--card-neon-rgb), 0.09)),
+      $bg-white;
+    box-shadow:
+      0 16px 34px rgba(var(--card-neon-rgb), 0.16),
+      0 7px 18px rgba(15, 23, 42, 0.08);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 32%;
+      min-width: 92px;
+      border-radius: 999px 0 0 999px;
+      background:
+        linear-gradient(140deg, rgba($white, 0.2), transparent 38%),
+        rgba(var(--card-neon-rgb), 0.2);
+      transform: translateX(24%) scale(1.2);
+      pointer-events: none;
+      z-index: -1;
+    }
+  }
+
+  .attendanceCardChanged {
+    box-shadow:
+      0 0 0 1px rgba(250, 204, 21, 0.44),
+      0 16px 34px rgba(var(--card-neon-rgb), 0.18),
+      0 7px 18px rgba(15, 23, 42, 0.08);
+  }
+
+  .attendancePresent {
+    --card-neon: #22c55e;
+    --card-neon-strong: #00ff99;
+    --card-neon-rgb: 34, 197, 94;
+    --card-ink: #064e3b;
+  }
+
+  .attendanceLate {
+    --card-neon: #facc15;
+    --card-neon-strong: #fff200;
+    --card-neon-rgb: 250, 204, 21;
+    --card-ink: #713f12;
+  }
+
+  .attendanceAbsent {
+    --card-neon: #fb3f5f;
+    --card-neon-strong: #ff174f;
+    --card-neon-rgb: 251, 63, 95;
+    --card-ink: #7f1d1d;
+  }
+
+  .attendanceMakeup {
+    --card-neon: #38bdf8;
+    --card-neon-strong: #00d5ff;
+    --card-neon-rgb: 56, 189, 248;
+    --card-ink: #075985;
+  }
+
+  .attendanceExcused {
+    --card-neon: #a855f7;
+    --card-neon-strong: #d946ef;
+    --card-neon-rgb: 168, 85, 247;
+    --card-ink: #581c87;
+  }
+
+  .cardTopBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 26px;
+    gap: $space-2;
+  }
+
+  .cardSelect {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: $space-2;
+    color: $text-muted;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+
+    input {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      accent-color: $brand-red;
+    }
+  }
+
+  .cardMain {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: $space-2;
+    min-width: 0;
+  }
+
+  .cardAvatarWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-full;
+    background: rgba($white, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba($white, 0.76),
+      0 0 0 3px rgba(var(--card-neon-rgb), 0.14);
+  }
+
+  .cardContent {
+    min-width: 0;
+  }
+
+  .cardIdentity {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .cardTitleBlock {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .cardStudentName {
+    width: 100%;
+    margin: 0;
+    color: $text-primary;
+    font-size: 14px;
+    font-weight: $font-extrabold;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cardDate {
+    width: 100%;
+    margin: 2px 0 0;
+    color: rgba($gray-700, 0.78);
+    font-size: $text-xs;
+    font-weight: $font-semibold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cardStatusRail {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 88px;
+    padding-left: $space-1;
+  }
+
+  .cardStatusPill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    max-width: 84px;
+    min-height: 30px;
+    padding: $space-1 $space-2;
+    border: 1px solid rgba(var(--card-neon-rgb), 0.46);
+    border-radius: $radius-full;
+    background:
+      linear-gradient(135deg, rgba($white, 0.72), rgba(var(--card-neon-rgb), 0.18)),
+      rgba($white, 0.54);
+    color: var(--card-ink);
+    font-size: 11px;
+    font-weight: $font-extrabold;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow:
+      inset 0 1px 0 rgba($white, 0.8),
+      0 0 16px rgba(var(--card-neon-rgb), 0.28);
+  }
+
+  .cardMetaGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 7px 0 0;
+
+    div {
+      min-width: 0;
+      padding: 4px 6px;
+      border: 1px solid rgba(var(--card-neon-rgb), 0.16);
+      border-radius: $radius-sm;
+      background: rgba($white, 0.56);
+    }
+
+    dt {
+      margin: 0 0 2px;
+      color: rgba($gray-600, 0.86);
+      font-size: 10px;
+      font-weight: $font-bold;
+      line-height: 1.2;
+    }
+
+    dd {
+      min-width: 0;
+      margin: 0;
+      color: $text-primary;
+      font-size: $text-xs;
+      font-weight: $font-extrabold;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .evaluationBadge {
+    display: inline-flex;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    align-items: center;
+    min-height: 30px;
+    padding: 4px 7px;
+    border-radius: $radius-full;
+    font-size: 10px;
+    font-weight: $font-bold;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .evaluationPending {
+    background: $gray-100;
+    color: $gray-600;
+  }
+
+  .evaluationGood {
+    background: $success-100;
+    color: $success-800;
+  }
+
+  .evaluationAverage {
+    background: $warning-100;
+    color: $warning-800;
+  }
+
+  .evaluationWeak {
+    background: $error-100;
+    color: $error-800;
+  }
+
+  .cardMuted {
+    color: $text-subtle;
+    font-size: $text-xs;
+    font-weight: $font-semibold;
+  }
+
+  .cardNoteBlock {
+    min-width: 0;
+  }
+
+  .cardFooter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-2;
+    min-width: 0;
+    margin-top: 7px;
+  }
+
+  .cardFooterWithNote {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, 0.42fr);
+    align-items: stretch;
+  }
+
+  .cardEvaluationBlock {
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+
+    .dropdownTrigger {
+      width: 100%;
+    }
+  }
+
+  .cardEvaluationBlock .cardMuted {
+    display: inline-flex;
+    width: 100%;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--card-neon-rgb), 0.16);
+    border-radius: $radius-full;
+    background: rgba($white, 0.54);
+  }
+
+  .cardNoteLabel {
+    display: none;
+    color: $text-subtle;
+    font-size: 10px;
+    font-weight: $font-bold;
+  }
+
+  .cardNoteText,
+  .cardNoteInput {
+    width: 100%;
+    min-width: 0;
+    border-radius: $radius-sm;
+    font-size: $text-xs;
+  }
+
+  .cardNoteText {
+    display: block;
+    min-height: 30px;
+    padding: 6px $space-2;
+    border: 1px dashed rgba(var(--card-neon-rgb), 0.26);
+    background: rgba($white, 0.58);
+    color: $text-secondary;
+    text-align: left;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  .cardNoteEmpty {
+    color: $text-subtle;
+  }
+
+  .cardNoteInput {
+    min-height: 38px;
+    padding: $space-2;
+    border: 1px solid $border-default;
+    outline: none;
+    background: $bg-white;
+    color: $text-secondary;
+
+    &:focus {
+      border-color: var(--card-neon);
+      box-shadow: 0 0 0 2px rgba(var(--card-neon-rgb), 0.16);
+    }
+  }
+
+  .cardUndoButton {
+    @include touch-target(40px);
+    @include press-effect(0.97);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    width: 100%;
+    margin-top: $space-3;
+    border: 1px solid $warning-300;
+    border-radius: $radius-sm;
+    background: $warning-50;
+    color: $warning-800;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+  }
+
+  .emptyState {
+    border: 1px solid $border-subtle;
+    border-radius: $radius-lg;
+    background: $bg-white;
+  }
+}
+
+@media (min-width: 430px) and (max-width: 767px) {
+  .cardGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  :global(body[data-app-mode="pwa"]) {
+    .tableCard {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .tableWrap {
+      display: none;
+    }
+
+    .cardGrid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: $space-3;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .attendanceCard {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 254px;
+      padding: 10px $space-3;
+      border: 1px solid rgba($gray-200, 0.9);
+      border-radius: $radius-lg;
+      background:
+        linear-gradient(180deg, rgba($white, 0.98), rgba($gray-50, 0.88)),
+        $bg-white;
+      box-shadow: 0 10px 26px rgba(17, 24, 39, 0.06);
+    }
+
+    .attendanceCardChanged {
+      border-color: $warning-300;
+      background:
+        linear-gradient(180deg, rgba($warning-50, 0.95), rgba($white, 0.96)),
+        $bg-white;
+    }
+
+    .cardTopBar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 32px;
+      gap: $space-2;
+    }
+
+    .cardSelect {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      gap: $space-2;
+      color: $text-muted;
+      font-size: $text-xs;
+      font-weight: $font-bold;
+
+      input {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+        accent-color: $brand-red;
+      }
+    }
+
+    .cardIdentity {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      padding: $space-1 0 $space-2;
+      text-align: center;
+    }
+
+    .cardStudentName,
+    .cardDate {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cardStudentName {
+      margin: $space-2 0 0;
+      color: $text-primary;
+      font-size: $text-sm;
+      font-weight: $font-extrabold;
+      line-height: 1.25;
+    }
+
+    .cardDate {
+      margin: $space-1 0 0;
+      color: $text-muted;
+      font-size: $text-xs;
+      font-weight: $font-semibold;
+    }
+
+    .cardStatusRow {
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+      overflow: hidden;
+      margin-bottom: $space-3;
+
+      :global([class*="statusBadge"]) {
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .cardMetaGrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: $space-2;
+      margin: 0;
+
+      div {
+        min-width: 0;
+        padding: $space-2;
+        border: 1px solid $border-subtle;
+        border-radius: $radius-sm;
+        background: rgba($white, 0.74);
+      }
+
+      dt {
+        margin: 0 0 2px;
+        color: $text-subtle;
+        font-size: 10px;
+        font-weight: $font-bold;
+        line-height: 1.2;
+      }
+
+      dd {
+        min-width: 0;
+        margin: 0;
+        color: $text-secondary;
+        font-size: $text-xs;
+        font-weight: $font-extrabold;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .evaluationBadge {
+      display: inline-flex;
+      max-width: 100%;
+      align-items: center;
+      padding: 2px $space-2;
+      border-radius: $radius-full;
+      font-size: 10px;
+      font-weight: $font-bold;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .evaluationPending {
+      background: $gray-100;
+      color: $gray-600;
+    }
+
+    .evaluationGood {
+      background: $success-100;
+      color: $success-800;
+    }
+
+    .evaluationAverage {
+      background: $warning-100;
+      color: $warning-800;
+    }
+
+    .evaluationWeak {
+      background: $error-100;
+      color: $error-800;
+    }
+
+    .cardMuted {
+      color: $text-subtle;
+      font-size: $text-xs;
+      font-weight: $font-semibold;
+    }
+
+    .cardNoteBlock {
+      min-width: 0;
+      margin-top: $space-3;
+    }
+
+    .cardNoteLabel {
+      display: block;
+      margin-bottom: $space-1;
+      color: $text-subtle;
+      font-size: 10px;
+      font-weight: $font-bold;
+    }
+
+    .cardNoteText,
+    .cardNoteInput {
+      width: 100%;
+      min-width: 0;
+      border-radius: $radius-sm;
+      font-size: $text-xs;
+    }
+
+    .cardNoteText {
+      display: block;
+      min-height: 34px;
+      padding: $space-2;
+      border: 1px dashed $border-default;
+      background: rgba($white, 0.72);
+      color: $text-secondary;
+      text-align: left;
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &:disabled {
+        cursor: default;
+      }
+    }
+
+    .cardNoteEmpty {
+      color: $text-subtle;
+    }
+
+    .cardNoteInput {
+      min-height: 38px;
+      padding: $space-2;
+      border: 1px solid $border-default;
+      outline: none;
+      background: $bg-white;
+      color: $text-secondary;
+
+      &:focus {
+        border-color: $border-focus;
+        box-shadow: 0 0 0 2px rgba($brand-red, 0.1);
+      }
+    }
+
+    .cardUndoButton {
+      @include touch-target(40px);
+      @include press-effect(0.97);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: $space-2;
+      width: 100%;
+      margin-top: $space-3;
+      border: 1px solid $warning-300;
+      border-radius: $radius-sm;
+      background: $warning-50;
+      color: $warning-800;
+      font-size: $text-xs;
+      font-weight: $font-bold;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  :global(body[data-app-mode="pwa"]) {
+    .cardGrid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: $space-4;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .attendanceCard {
+      --card-neon: #22c55e;
+      --card-neon-strong: #00ff99;
+      --card-neon-rgb: 34, 197, 94;
+      --card-ink: #064e3b;
+      isolation: isolate;
+      overflow: hidden;
+      min-height: auto;
+      padding: $space-3;
+      border: 1px solid rgba(var(--card-neon-rgb), 0.28);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 86% 8%, rgba(var(--card-neon-rgb), 0.34), transparent 36%),
+        linear-gradient(135deg, rgba(var(--card-neon-rgb), 0.16), rgba($white, 0.94) 48%, rgba(var(--card-neon-rgb), 0.09)),
+        $bg-white;
+      box-shadow:
+        0 16px 34px rgba(var(--card-neon-rgb), 0.16),
+        0 7px 18px rgba(15, 23, 42, 0.08);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 0 auto;
+        width: 32%;
+        min-width: 92px;
+        border-radius: 999px 0 0 999px;
+        background:
+          linear-gradient(140deg, rgba($white, 0.2), transparent 38%),
+          rgba(var(--card-neon-rgb), 0.2);
+        transform: translateX(24%) scale(1.2);
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+
+    .attendanceCardChanged {
+      box-shadow:
+        0 0 0 1px rgba(250, 204, 21, 0.44),
+        0 16px 34px rgba(var(--card-neon-rgb), 0.18),
+        0 7px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .attendancePresent {
+      --card-neon: #22c55e;
+      --card-neon-strong: #00ff99;
+      --card-neon-rgb: 34, 197, 94;
+      --card-ink: #064e3b;
+    }
+
+    .attendanceLate {
+      --card-neon: #facc15;
+      --card-neon-strong: #fff200;
+      --card-neon-rgb: 250, 204, 21;
+      --card-ink: #713f12;
+    }
+
+    .attendanceAbsent {
+      --card-neon: #fb3f5f;
+      --card-neon-strong: #ff174f;
+      --card-neon-rgb: 251, 63, 95;
+      --card-ink: #7f1d1d;
+    }
+
+    .attendanceMakeup {
+      --card-neon: #38bdf8;
+      --card-neon-strong: #00d5ff;
+      --card-neon-rgb: 56, 189, 248;
+      --card-ink: #075985;
+    }
+
+    .attendanceExcused {
+      --card-neon: #a855f7;
+      --card-neon-strong: #d946ef;
+      --card-neon-rgb: 168, 85, 247;
+      --card-ink: #581c87;
+    }
+
+    .cardMain {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: $space-2;
+      min-width: 0;
+    }
+
+    .cardAvatarWrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: $radius-full;
+      background: rgba($white, 0.58);
+      box-shadow:
+        inset 0 0 0 1px rgba($white, 0.76),
+        0 0 0 3px rgba(var(--card-neon-rgb), 0.14);
+    }
+
+    .cardContent {
+      min-width: 0;
+    }
+
+    .cardIdentity {
+      display: flex;
+      gap: $space-2;
+      align-items: center;
+      padding: 0;
+      text-align: left;
+    }
+
+    .cardTitleBlock {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .cardStudentName {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .cardDate {
+      margin: 2px 0 0;
+      color: rgba($gray-700, 0.78);
+    }
+
+    .cardStatusRail {
+      display: flex;
+      align-self: stretch;
+      align-items: center;
+      justify-content: center;
+      max-width: 88px;
+      padding-left: $space-1;
+    }
+
+    .cardStatusPill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      max-width: 84px;
+      min-height: 30px;
+      padding: $space-1 $space-2;
+      border: 1px solid rgba(var(--card-neon-rgb), 0.46);
+      border-radius: $radius-full;
+      background:
+        linear-gradient(135deg, rgba($white, 0.72), rgba(var(--card-neon-rgb), 0.18)),
+        rgba($white, 0.54);
+      color: var(--card-ink);
+      font-size: 11px;
+      font-weight: $font-extrabold;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow:
+        inset 0 1px 0 rgba($white, 0.8),
+        0 0 16px rgba(var(--card-neon-rgb), 0.28);
+    }
+
+    .cardMetaGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 7px 0 0;
+
+      div {
+        padding: 4px 6px;
+        border-color: rgba(var(--card-neon-rgb), 0.16);
+        background: rgba($white, 0.56);
+      }
+
+      dt {
+        color: rgba($gray-600, 0.86);
+      }
+
+      dd {
+        color: $text-primary;
+      }
+    }
+
+    .cardNoteBlock {
+      margin-top: 0;
+    }
+
+    .cardFooter {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: $space-2;
+      min-width: 0;
+      margin-top: 7px;
+    }
+
+    .cardFooterWithNote {
+      grid-template-columns: minmax(0, 1fr) minmax(78px, 0.42fr);
+      align-items: stretch;
+    }
+
+    .cardEvaluationBlock {
+      min-width: 0;
+      display: flex;
+      align-items: stretch;
+
+      .dropdownTrigger {
+        width: 100%;
+      }
+    }
+
+    .cardEvaluationBlock .cardMuted {
+      display: inline-flex;
+      width: 100%;
+      min-height: 30px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(var(--card-neon-rgb), 0.16);
+      border-radius: $radius-full;
+      background: rgba($white, 0.54);
+    }
+
+    .cardNoteLabel {
+      display: none;
+    }
+
+    .cardNoteText {
+      min-height: 30px;
+      padding: 6px $space-2;
+      border-color: rgba(var(--card-neon-rgb), 0.26);
+      background: rgba($white, 0.58);
+    }
+
+    .cardNoteInput:focus {
+      border-color: var(--card-neon);
+      box-shadow: 0 0 0 2px rgba(var(--card-neon-rgb), 0.16);
+    }
+  }
 }

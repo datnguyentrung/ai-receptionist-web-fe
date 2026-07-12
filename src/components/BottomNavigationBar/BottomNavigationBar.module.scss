@@ -1,11 +1,12 @@
 .bottomNav {
+  --bottom-nav-safe-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: $z-sticky;
   display: block;
-  padding: 0 $space-3 calc(env(safe-area-inset-bottom, 0px) + 12px);
+  padding: 0 $space-3 var(--bottom-nav-safe-bottom);
   pointer-events: none;
 
   @include respond-to("md") {

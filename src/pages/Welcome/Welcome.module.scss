@@ -1,28 +1,47 @@
 @use "sass:color"; // Thêm dòng này ở ĐẦU FILE
 // ── Welcome Page ────────────────────────────────────────────
-// Mobile-first: single column, fluid cards
 .homeContainer {
+  min-height: 100svh;
   min-height: 100vh;
   min-height: 100dvh;
-  background: linear-gradient(to bottom right, $gray-50, $gray-100);
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(224, 32, 32, 0.12), transparent 28%),
+    linear-gradient(145deg, #fff8f8 0%, $gray-50 46%, #eef2f7 100%);
+  background-color: $gray-50;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: $space-3;
-  @include safe-bottom($space-3);
+  padding: max($space-4, env(safe-area-inset-top)) $space-3
+    calc(#{$space-4} + env(safe-area-inset-bottom));
+
+  @include respond-to("sm") {
+    align-items: center;
+    padding: $space-8 $space-6;
+  }
 }
 
 .card {
   max-width: 50rem;
   width: 100%;
-  background-color: white;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-lg;
-  padding: $space-6 $space-4;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92)),
+    white;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: $radius-lg;
+  box-shadow:
+    0 22px 52px rgba(17, 24, 39, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  padding: $space-5 $space-4;
   text-align: center;
 
   @include respond-to("sm") {
     padding: $space-8 $space-6;
+    border-radius: $radius-xl;
   }
 }
 
@@ -34,7 +53,8 @@
   height: 68px;
   border-radius: $radius-full;
   background: linear-gradient(to bottom right, $brand-red, $brand-red-dark);
-  margin-bottom: $space-4;
+  margin-bottom: $space-3;
+  box-shadow: 0 14px 30px rgba(224, 32, 32, 0.26);
 
   svg {
     width: 36px;
@@ -48,7 +68,8 @@
   font-weight: $font-bold;
   color: $text-primary;
   margin-bottom: $space-1;
-  line-height: $leading-tight;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 .subtitle {
@@ -62,8 +83,9 @@
   color: $text-secondary;
   font-size: $text-base;
   max-width: 38rem;
-  margin: 0 auto $space-6;
+  margin: 0 auto $space-5;
   line-height: $leading-relaxed;
+  text-wrap: pretty;
 }
 
 // ── Feature grid — mobile-first ────────────────────────────
@@ -79,7 +101,7 @@
 }
 
 .featureCard {
-  padding: $space-5;
+  padding: $space-4;
   border-radius: $radius-md;
   border: 1px solid;
   cursor: pointer;
@@ -102,7 +124,7 @@
   }
 
   &.red {
-    background: linear-gradient(to bottom right, $error-light, white);
+    background: linear-gradient(135deg, $error-light, white);
     border-color: $error-200;
 
     @include hover-only {
@@ -111,7 +133,7 @@
   }
 
   &.blue {
-    background: linear-gradient(to bottom right, $info-light, white);
+    background: linear-gradient(135deg, $info-light, white);
     border-color: $info-200;
 
     @include hover-only {
@@ -120,7 +142,7 @@
   }
 
   &.yellow {
-    background: linear-gradient(to bottom right, $warning-light, white);
+    background: linear-gradient(135deg, $warning-light, white);
     border-color: $warning-200;
 
     @include hover-only {
@@ -129,7 +151,7 @@
   }
 
   &.green {
-    background: linear-gradient(to bottom right, $success-light, white);
+    background: linear-gradient(135deg, $success-light, white);
     border-color: $success-200;
 
     @include hover-only {
@@ -161,7 +183,7 @@
 
 .featureIcon {
   font-size: $text-2xl;
-  margin-bottom: $space-2;
+  margin-bottom: $space-1;
 }
 
 .featureTitle {
@@ -179,10 +201,15 @@
 
 // ── Action buttons — 48px touch target ─────────────────────
 .actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: $space-3;
-  justify-content: center;
-  flex-wrap: wrap;
+
+  @include respond-to("sm") {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 .buttonPrimary {
@@ -200,7 +227,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   @include touch-target(48px);
+
+  @include respond-to("sm") {
+    width: auto;
+  }
 
   @include hover-only {
     background: linear-gradient(to right, #b91c1c, #991b1b);
@@ -220,7 +252,12 @@
   border: 2px solid $border-default;
   transition: all $transition-slow;
   cursor: pointer;
+  width: 100%;
   @include touch-target(48px);
+
+  @include respond-to("sm") {
+    width: auto;
+  }
 
   @include hover-only {
     border-color: $border-strong;

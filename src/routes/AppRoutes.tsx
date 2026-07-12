@@ -1,5 +1,6 @@
 import { RequireRole } from "@/config/RequireRole";
 import { isPWA } from "@/config/appMode";
+import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/config/constants/path";
 import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
@@ -12,6 +13,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
+import BottomNavigationBar from "../components/BottomNavigationBar";
 import ComingSoonView from "../components/ComingSoonView";
 import { ClassSchedulesRoute } from "../pages/ClassSchedules/ClassSchedulesRoute";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
@@ -69,21 +71,35 @@ const ExaminationManagement = lazy(
   () => import("@/pages/ExaminationManagement/ExaminationManagement"),
 );
 
-function RouteLoadingFallback({ pathname = "/" }: { pathname?: string }) {
+const PROFILE_RESERVED_PATHS = new Set([
+  "/coaches",
+  "/students",
+  "/schedules",
+  "/history",
+  "/utilities",
+  "/check-in",
+  "/notifications",
+  "/welcome",
+  "/login",
+]);
+
+function isProfileRoutePath(pathname: string) {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
-  const isProfileRoute =
+  return (
     /^\/[^/]+/.test(normalizedPath) &&
-    ![
-      "/coaches",
-      "/students",
-      "/schedules",
-      "/history",
-      "/utilities",
-      "/check-in",
-      "/notifications",
-      "/welcome",
-      "/login",
-    ].includes(normalizedPath);
+    !PROFILE_RESERVED_PATHS.has(normalizedPath)
+  );
+}
+
+function RouteLoadingFallback({
+  pathname = "/",
+  showBottomDock = true,
+}: {
+  pathname?: string;
+  showBottomDock?: boolean;
+}) {
+  const normalizedPath = pathname.replace(/\/$/, "") || "/";
+  const isProfileRoute = isProfileRoutePath(pathname);
   const rowCount = normalizedPath.includes("history") ? 7 : 5;
 
   return (
@@ -131,7 +147,7 @@ function RouteLoadingFallback({ pathname = "/" }: { pathname?: string }) {
           </div>
         )}
       </div>
-      <div className={fallbackStyles.bottomDock} />
+      {showBottomDock ? <div className={fallbackStyles.bottomDock} /> : null}
     </div>
   );
 }
@@ -156,9 +172,96 @@ function getProfileStackTitle(pathname: string) {
   }
 }
 
-function ProfileRouteLayout() {
+const normalizeUserCode = (value?: string | null) =>
+  value?.trim().toLowerCase() ?? "";
+
+const normalizePath = (value?: string | null) => {
+  const path = value?.trim() || "/";
+  return path.replace(/\/+$/, "") || "/";
+};
+
+function getStackRouteTitle(pathname: string, currentUserCode?: string) {
+  const normalizedPath = normalizePath(pathname);
+  const userId = currentUserCode?.trim();
+  const bottomNavTitle = userId
+    ? BOTTOM_NAV_ITEMS({ userId }).find(
+        (item) => item.to && normalizePath(item.to) === normalizedPath,
+      )?.label
+    : undefined;
+
+  if (bottomNavTitle) {
+    return bottomNavTitle;
+  }
+
+  if (normalizedPath.startsWith("/schedules/")) {
+    return "Điểm danh";
+  }
+
+  if (isProfileRoutePath(normalizedPath)) {
+    return getProfileStackTitle(normalizedPath);
+  }
+
+  return (
+    NAV_ITEMS({ studentCode: userId }).find(
+      (item) => item.to && normalizePath(item.to) === normalizedPath,
+    )?.label ?? "Dashboard"
+  );
+}
+
+function getBackFallbackPath(pathname: string, currentUserCode?: string) {
+  const normalizedPath = normalizePath(pathname);
+  const normalizedCurrentUserCode = normalizeUserCode(currentUserCode);
+  const segments = normalizedPath.split("/").filter(Boolean);
+
+  if (normalizedPath.startsWith("/schedules/")) {
+    return "/schedules";
+  }
+
+  if (segments.length > 1) {
+    return `/${segments[0]}`;
+  }
+
+  if (
+    segments.length === 1 &&
+    normalizedCurrentUserCode &&
+    normalizeUserCode(segments[0]) !== normalizedCurrentUserCode
+  ) {
+    return currentUserCode ? `/${currentUserCode}` : "/";
+  }
+
+  return "/";
+}
+
+function StackRouteLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const currentUserCode = useAuthStore(
+    (state) => state.activeProfile?.userInfo?.userCode,
+  );
+
+  const normalizedPathname = normalizePath(pathname);
+  const normalizedCurrentUserCode = normalizeUserCode(currentUserCode);
+  const isWaitingForCurrentUser =
+    hasHydrated && isAuthenticated && !normalizedCurrentUserCode;
+  const mainTabPaths = currentUserCode
+    ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
+        .map((item) => item.to)
+        .filter((to): to is string => Boolean(to))
+        .map(normalizePath)
+    : [];
+  const isMainScreen = mainTabPaths.includes(normalizedPathname);
+  const shouldShowBottomNavigation = isMainScreen;
+
+  if (!hasHydrated || isWaitingForCurrentUser) {
+    return (
+      <RouteLoadingFallback
+        pathname={pathname}
+        showBottomDock={shouldShowBottomNavigation}
+      />
+    );
+  }
 
   if (!isPWA) {
     return <MainLayout />;
@@ -166,23 +269,29 @@ function ProfileRouteLayout() {
 
   return (
     <PwaStackScreenLayout
-      title={getProfileStackTitle(pathname)}
+      title={getStackRouteTitle(pathname, currentUserCode)}
+      showBackButton={!isMainScreen}
+      withBottomNavigation={shouldShowBottomNavigation}
       onBack={() => {
         if (window.history.length > 1) {
           navigate(-1);
           return;
         }
 
-        navigate("/", { replace: true });
+        navigate(getBackFallbackPath(pathname, currentUserCode), {
+          replace: true,
+        });
       }}
     >
       <Outlet />
+      {shouldShowBottomNavigation ? <BottomNavigationBar /> : null}
     </PwaStackScreenLayout>
   );
 }
 
 export default function AppRoutes() {
   const { pathname } = useLocation();
+  const isProfileRoute = isProfileRoutePath(pathname);
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
@@ -196,13 +305,35 @@ export default function AppRoutes() {
   const personalPageRoute = user?.userInfo?.userCode
     ? `/${user.userInfo.userCode}`
     : "/welcome";
+  const currentUserCode = user?.userInfo?.userCode;
+  const fallbackMainTabPaths = currentUserCode
+    ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
+        .map((item) => item.to)
+        .filter((to): to is string => Boolean(to))
+        .map(normalizePath)
+    : [];
+  const shouldShowFallbackBottomDock = isPWA
+    ? fallbackMainTabPaths.includes(normalizePath(pathname))
+    : !isProfileRoute;
 
   if (!hasHydrated) {
-    return <RouteLoadingFallback pathname={pathname} />;
+    return (
+      <RouteLoadingFallback
+        pathname={pathname}
+        showBottomDock={shouldShowFallbackBottomDock}
+      />
+    );
   }
 
   return (
-    <Suspense fallback={<RouteLoadingFallback pathname={pathname} />}>
+    <Suspense
+      fallback={
+        <RouteLoadingFallback
+          pathname={pathname}
+          showBottomDock={shouldShowFallbackBottomDock}
+        />
+      }
+    >
       <Routes>
         {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
@@ -227,7 +358,7 @@ export default function AppRoutes() {
         </Route>
 
         {/* NHÓM 3: CÁC ROLE KHÁC (VD: ASSISTANT, STUDENT) ĐƯỢC XEM TRANG NÀY */}
-        <Route path="/" element={<ProfileRouteLayout />}>
+        <Route path="/" element={<StackRouteLayout />}>
           <Route path="/:userCode" element={<PersonalPage />}>
             {/* Route mặc định: nếu chỉ vào /students/123 thì tự động redirect sang tab info */}
             <Route index element={<PersonalInfoTab />} />
@@ -248,13 +379,18 @@ export default function AppRoutes() {
           path="/"
           element={
             isAuthenticated ? (
-              <MainLayout />
+              isPWA ? (
+                <Outlet />
+              ) : (
+                <MainLayout />
+              )
             ) : (
               <Navigate to="/welcome" replace />
             )
           }
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+          <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
           <Route path="utilities" element={<UtilitiesPage />} />
           <Route
             path="notifications"
@@ -265,6 +401,7 @@ export default function AppRoutes() {
               />
             }
           />
+          </Route>
           <Route
             element={
               <RequireRole
@@ -274,8 +411,12 @@ export default function AppRoutes() {
               />
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="coaches" element={<CoachManagement />} />
+            <Route element={isPWA ? <MainLayout /> : <Outlet />}>
+              <Route index element={<Dashboard />} />
+            </Route>
+            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+              <Route path="coaches" element={<CoachManagement />} />
+            </Route>
           </Route>
 
           {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
@@ -288,13 +429,15 @@ export default function AppRoutes() {
               />
             }
           >
-            <Route path="students" element={<StudentManagement />} />
-            <Route path="schedules" element={<ClassSchedulesRoute />} />
-            <Route
-              path="schedules/:scheduleId"
-              element={<AttendanceCheckin />}
-            />
-            <Route path="history" element={<AttendanceReports />} />
+            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+              <Route path="students" element={<StudentManagement />} />
+              <Route path="schedules" element={<ClassSchedulesRoute />} />
+              <Route
+                path="schedules/:scheduleId"
+                element={<AttendanceCheckin />}
+              />
+              <Route path="history" element={<AttendanceReports />} />
+            </Route>
           </Route>
 
           <Route
@@ -305,7 +448,9 @@ export default function AppRoutes() {
               />
             }
           >
-            <Route path="check-in" element={<AICheckIn />} />
+            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+              <Route path="check-in" element={<AICheckIn />} />
+            </Route>
           </Route>
         </Route>
 

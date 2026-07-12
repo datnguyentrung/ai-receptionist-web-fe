@@ -9,6 +9,8 @@ type PwaStackScreenLayoutProps = {
   onBack?: () => void;
   className?: string;
   contentClassName?: string;
+  withBottomNavigation?: boolean;
+  showBackButton?: boolean;
 };
 
 export function PwaStackScreenLayout({
@@ -17,6 +19,8 @@ export function PwaStackScreenLayout({
   onBack,
   className = "",
   contentClassName = "",
+  withBottomNavigation = false,
+  showBackButton = true,
 }: PwaStackScreenLayoutProps) {
   const navigate = useNavigate();
 
@@ -42,6 +46,7 @@ export function PwaStackScreenLayout({
       <header className={styles.header}>
         <div className={styles.headerArt} aria-hidden="true" />
         <div className={styles.headerInner}>
+          {showBackButton ? (
           <button
             type="button"
             className={styles.backButton}
@@ -50,12 +55,19 @@ export function PwaStackScreenLayout({
           >
             <ChevronLeft size={28} strokeWidth={2.4} />
           </button>
+          ) : (
+            <div className={styles.headerSpacer} aria-hidden="true" />
+          )}
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.headerSpacer} aria-hidden="true" />
         </div>
       </header>
 
-      <main className={`${styles.content} ${contentClassName}`}>
+      <main
+        className={`${styles.content} ${
+          withBottomNavigation ? styles.contentWithBottomNavigation : ""
+        } ${contentClassName}`}
+      >
         {children}
       </main>
     </section>

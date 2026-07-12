@@ -109,7 +109,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      cleanupFcm().catch(() => {});
+      cleanupFcm().catch(() => { });
       logout();
       queryClient.clear();
       navigate("/login");
