@@ -29,6 +29,39 @@
   min-width: 0;
 }
 
+.coachSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+}
+
+.coachSummaryCard {
+  min-width: 0;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(180deg, rgba($white, 0.98), rgba($gray-50, 0.92)),
+    $bg-white;
+  box-shadow: $shadow-xs;
+
+  span {
+    display: block;
+    margin-bottom: $space-2;
+    color: $text-muted;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+  }
+
+  strong {
+    display: block;
+    color: $text-primary;
+    font-size: $text-2xl;
+    font-weight: $font-extrabold;
+    line-height: 1;
+  }
+}
+
 .deleteSelectedButton {
   @include touch-target(44px);
   @include press-effect(0.97);
@@ -235,6 +268,16 @@
     gap: $space-3;
   }
 
+  .coachSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-2;
+  }
+
+  .coachSummaryCard {
+    padding: $space-3;
+    border-radius: $radius-md;
+  }
+
   .deleteSelectedButton {
     width: 100%;
   }
@@ -297,6 +340,11 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: $space-3;
+    }
+
+    .coachSummaryGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: $space-2;
     }
 
     .deleteSelectedButton {

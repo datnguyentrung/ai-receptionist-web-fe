@@ -42,6 +42,13 @@ export type CoachTimesheetStatus =
   | "APPROVED" // Đã duyệt
   | "REJECTED"; // Bị từ chối
 
+export const CoachTimesheetStatusLabel: Record<CoachTimesheetStatus, string> =
+  {
+    PENDING: "Chờ duyệt",
+    APPROVED: "Đã duyệt",
+    REJECTED: "Từ chối",
+  };
+
 // ---------------------------------------------------------------------------
 // EvaluationStatus
 // ---------------------------------------------------------------------------

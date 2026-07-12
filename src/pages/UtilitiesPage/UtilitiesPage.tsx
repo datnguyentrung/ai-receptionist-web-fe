@@ -2,18 +2,21 @@ import {
   NAV_ITEMS,
   type NavigationItem,
 } from "@/config/constants/path";
+import { isPWA } from "@/config/appMode";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { prefetchClassSchedules } from "@/pages/ClassSchedules/classSchedulesQueries";
 import { useAuthStore } from "@/store/authStore";
-import { useUserLevel } from "@/utils/roleUtils";
+import { useRoleStudent, useUserLevel } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Check,
+  GraduationCap,
   LockKeyhole,
   Pin,
   PinOff,
   Search,
   Sparkles,
+  UserRoundCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -188,8 +191,10 @@ export function UtilitiesPage() {
   const queryClient = useQueryClient();
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const { level, isAuthenticated } = useUserLevel();
+  const { canViewCoach } = useRoleStudent();
   const [searchValue, setSearchValue] = useState("");
   const [navigatingItemId, setNavigatingItemId] = useState<string | null>(null);
+  const [isHistoryModePickerOpen, setIsHistoryModePickerOpen] = useState(false);
 
   const studentCode = activeProfile?.userInfo?.userCode;
   const currentLevel = isAuthenticated ? level : ROLE_LEVELS.GUEST;
@@ -263,6 +268,13 @@ export function UtilitiesPage() {
 
   const handleNavigate = (item: UtilityItem) => {
     if (item.isDisabled || !item.to) return;
+
+    if (item.id === "history" && isPWA && canViewCoach) {
+      setNavigatingItemId(null);
+      setIsHistoryModePickerOpen(true);
+      return;
+    }
+
     const targetRoute = item.to;
     setNavigatingItemId(item.id);
 
@@ -280,6 +292,15 @@ export function UtilitiesPage() {
   const handleToggleQuick = (item: UtilityItem) => {
     if (item.isDisabled) return;
     toggleQuickItem(item.id);
+  };
+
+  const navigateToHistoryMode = (mode: "student" | "coach") => {
+    setIsHistoryModePickerOpen(false);
+    setNavigatingItemId("history");
+
+    window.requestAnimationFrame(() => {
+      navigate(`/history/${mode}`);
+    });
   };
 
   return (
@@ -363,6 +384,47 @@ export function UtilitiesPage() {
           ))}
         </div>
       </section>
+
+      {isHistoryModePickerOpen ? (
+        <div
+          className={styles.historyModeOverlay}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setIsHistoryModePickerOpen(false);
+            }
+          }}
+        >
+          <div
+            className={styles.historyModePanel}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Chọn loại lịch sử điểm danh"
+          >
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("student")}
+            >
+              <span>
+                <UserRoundCheck size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Học viên</strong>
+              <small>Lịch sử điểm danh lớp</small>
+            </button>
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("coach")}
+            >
+              <span>
+                <GraduationCap size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Coach</strong>
+              <small>Lịch sử chấm công</small>
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

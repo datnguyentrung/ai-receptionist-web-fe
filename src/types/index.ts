@@ -6,6 +6,7 @@ export * from "./Core/StudentTypes";
 // Operation
 export * from "./Operation/ClassSessionTypes";
 export * from "./Operation/CoachAssignmentTypes";
+export * from "./Operation/CoachTimesheetTypes";
 export * from "./Operation/StudentAttendanceTypes";
 export * from "./Operation/StudentEnrollmentTypes";
 export * from "./Operation/TuitionPaymentDetailTypes";

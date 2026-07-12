@@ -76,6 +76,8 @@ const PROFILE_RESERVED_PATHS = new Set([
   "/students",
   "/schedules",
   "/history",
+  "/history/student",
+  "/history/coach",
   "/utilities",
   "/check-in",
   "/notifications",
@@ -85,6 +87,10 @@ const PROFILE_RESERVED_PATHS = new Set([
 
 function isProfileRoutePath(pathname: string) {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
+  if (normalizedPath === "/history" || normalizedPath.startsWith("/history/")) {
+    return false;
+  }
+
   return (
     /^\/[^/]+/.test(normalizedPath) &&
     !PROFILE_RESERVED_PATHS.has(normalizedPath)
@@ -195,6 +201,10 @@ function getStackRouteTitle(pathname: string, currentUserCode?: string) {
 
   if (normalizedPath.startsWith("/schedules/")) {
     return "Điểm danh";
+  }
+
+  if (normalizedPath === "/history" || normalizedPath.startsWith("/history/")) {
+    return "Nhật ký điểm danh";
   }
 
   if (isProfileRoutePath(normalizedPath)) {
@@ -437,6 +447,10 @@ export default function AppRoutes() {
                 element={<AttendanceCheckin />}
               />
               <Route path="history" element={<AttendanceReports />} />
+              <Route
+                path="history/:historyMode"
+                element={<AttendanceReports />}
+              />
             </Route>
           </Route>
 

@@ -108,6 +108,22 @@
   text-overflow: ellipsis;
 }
 
+.coachIdentityText {
+  min-width: 0;
+
+  span {
+    display: block;
+    margin-top: 2px;
+    color: $text-muted;
+    font-size: 11px;
+    font-weight: $font-semibold;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -143,6 +159,80 @@
   color: $text-muted;
   text-align: center;
   margin: 0;
+}
+
+.timesheetStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  max-width: 100%;
+  padding: 4px $space-2;
+  border-radius: $radius-full;
+  font-size: 11px;
+  font-weight: $font-extrabold;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timesheetApproved {
+  --card-neon: #22c55e;
+  --card-neon-strong: #00ff99;
+  --card-neon-rgb: 34, 197, 94;
+  --card-ink: #064e3b;
+}
+
+.timesheetPending {
+  --card-neon: #facc15;
+  --card-neon-strong: #fff200;
+  --card-neon-rgb: 250, 204, 21;
+  --card-ink: #713f12;
+}
+
+.timesheetRejected {
+  --card-neon: #fb3f5f;
+  --card-neon-strong: #ff174f;
+  --card-neon-rgb: 251, 63, 95;
+  --card-ink: #7f1d1d;
+}
+
+.timesheetApproved .timesheetStatusBadge,
+.timesheetPending .timesheetStatusBadge,
+.timesheetRejected .timesheetStatusBadge,
+.timesheetStatusBadge.timesheetApproved,
+.timesheetStatusBadge.timesheetPending,
+.timesheetStatusBadge.timesheetRejected {
+  border: 1px solid rgba(var(--card-neon-rgb), 0.36);
+  background: rgba(var(--card-neon-rgb), 0.12);
+  color: var(--card-ink);
+}
+
+.coachTimeRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-2;
+  min-width: 0;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    min-height: 30px;
+    padding: 5px $space-2;
+    border: 1px solid rgba(var(--card-neon-rgb), 0.16);
+    border-radius: $radius-full;
+    background: rgba($white, 0.54);
+    color: $text-secondary;
+    font-size: 11px;
+    font-weight: $font-bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 // ── Inline Note Editor ─────────────────────────────────────

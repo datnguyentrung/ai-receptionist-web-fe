@@ -87,7 +87,48 @@ export function SessionLayout({
   } | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateNote, setUpdateNote] = useState("");
-  const [localSessions, setLocalSessions] = useState<SessionResponse[]>([]);
+  const incomingSessions = useMemo(
+    () => sessions?.content ?? [],
+    [sessions?.content],
+  );
+  const incomingSessionsKey = useMemo(
+    () =>
+      incomingSessions
+        .map(
+          (session) =>
+            `${session.sessionId}:${session.status ?? ""}:${session.note ?? ""}:${session.sessionDate ?? ""}:${session.startTime ?? ""}:${session.endTime ?? ""}`,
+        )
+        .join("|"),
+    [incomingSessions],
+  );
+  const [localSessionState, setLocalSessionState] = useState<{
+    sourceKey: string;
+    items: SessionResponse[];
+  }>(() => ({
+    sourceKey: incomingSessionsKey,
+    items: incomingSessions,
+  }));
+
+  if (localSessionState.sourceKey !== incomingSessionsKey) {
+    setLocalSessionState({
+      sourceKey: incomingSessionsKey,
+      items: incomingSessions,
+    });
+  }
+
+  const localSessions =
+    localSessionState.sourceKey === incomingSessionsKey
+      ? localSessionState.items
+      : incomingSessions;
+  const setLocalSessions = useCallback(
+    (updater: (current: SessionResponse[]) => SessionResponse[]) => {
+      setLocalSessionState((current) => ({
+        sourceKey: incomingSessionsKey,
+        items: updater(current.items),
+      }));
+    },
+    [incomingSessionsKey],
+  );
 
   // Thêm 3 state mới này:
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -113,10 +154,6 @@ export function SessionLayout({
     () => new Set(localSessions.map((s) => s.sessionId)),
     [localSessions],
   );
-
-  useEffect(() => {
-    setLocalSessions(sessions?.content ?? []);
-  }, [sessions]);
 
   useEffect(() => {
     if (!highlightSessionId) return;
@@ -208,7 +245,14 @@ export function SessionLayout({
     } finally {
       setIsUpdating(false);
     }
-  }, [pendingUpdate, updateNote, isNoteRequired, closeModal, onSessionUpdated]);
+  }, [
+    pendingUpdate,
+    updateNote,
+    isNoteRequired,
+    closeModal,
+    onSessionUpdated,
+    setLocalSessions,
+  ]);
 
   const closeDeleteModal = useCallback(() => {
     if (isDeleting) return;
@@ -229,7 +273,7 @@ export function SessionLayout({
     } finally {
       setIsDeleting(false);
     }
-  }, [onSessionUpdated, pendingDelete]);
+  }, [onSessionUpdated, pendingDelete, setLocalSessions]);
 
   // 1. Mở ô input khi click đúp
   const handleDoubleClickNote = useCallback((session: SessionResponse) => {
@@ -276,7 +320,12 @@ export function SessionLayout({
         setIsSavingInline(false);
       }
     },
-    [inlineNoteValue, handleCancelInlineEdit, onSessionUpdated],
+    [
+      inlineNoteValue,
+      handleCancelInlineEdit,
+      onSessionUpdated,
+      setLocalSessions,
+    ],
   );
 
   if (isLoading) {
