@@ -1,4 +1,4 @@
-﻿import { APP_MODE } from "@/config/appMode";
+import { APP_MODE } from "@/config/appMode";
 import { AttendanceStatusLabel } from "@/config/constants";
 import type {
   CheckInResponse,
@@ -25,7 +25,6 @@ import {
   QrCode,
   RotateCcw,
   ShieldAlert,
-  SwitchCamera,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -405,10 +404,9 @@ export default function AICheckIn() {
         setMobileScanStatus("error");
         setMobileScanMessage(message);
         setCheckInResult({
-          audio_signal:
-            axios.isAxiosError(error) && error.response?.status === 409
-              ? "ALREADY_CHECKED_IN"
-              : "NO_VALID_SESSION",
+          audio_signal: axios.isAxiosError(error) && error.response?.status === 409
+            ? "ALREADY_CHECKED_IN"
+            : "NO_VALID_SESSION",
           status: false,
           user: null,
           attendance_record: null,
@@ -514,10 +512,7 @@ export default function AICheckIn() {
             </div>
           </div>
 
-          <div
-            className={styles.mobileModeSwitch}
-            aria-label="Chọn chế độ check-in"
-          >
+          <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
             <button
               type="button"
               className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
@@ -588,8 +583,7 @@ export default function AICheckIn() {
                       )
                     }
                   >
-                    <SwitchCamera size={14} aria-hidden="true" />
-                    <span>Đổi camera</span>
+                    Đổi camera
                   </button>
                 </div>
               </div>

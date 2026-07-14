@@ -42,9 +42,7 @@ function getStoredQuickIds(): string[] {
     const parsedValue: unknown = JSON.parse(rawValue);
     if (!Array.isArray(parsedValue)) return [];
 
-    return parsedValue.filter(
-      (value): value is string => typeof value === "string",
-    );
+    return parsedValue.filter((value): value is string => typeof value === "string");
   } catch {
     return [];
   }
@@ -97,33 +95,31 @@ function normalizeUtilityItems(
   items: NavigationItem[],
   currentLevel: number,
 ): UtilityItem[] {
-  return items
-    .filter((item) => item.display !== false)
-    .map((item, index) => {
-      const itemId = getItemId(item, index);
-      const hasAccess =
-        !item.minLevel ||
-        (!item.maxLevel && currentLevel >= item.minLevel) ||
-        (item.maxLevel !== undefined &&
-          currentLevel >= item.minLevel &&
-          currentLevel <= item.maxLevel);
-      const hasRoute = isRouteValid(item.to);
-      const isHiddenByConfig = item.display === false;
-      const isDisabled = !hasAccess || !hasRoute || isHiddenByConfig;
+  return items.map((item, index) => {
+    const itemId = getItemId(item, index);
+    const hasAccess =
+      !item.minLevel ||
+      (!item.maxLevel && currentLevel >= item.minLevel) ||
+      (item.maxLevel !== undefined &&
+        currentLevel >= item.minLevel &&
+        currentLevel <= item.maxLevel);
+    const hasRoute = isRouteValid(item.to);
+    const isHiddenByConfig = item.display === false;
+    const isDisabled = !hasAccess || !hasRoute || isHiddenByConfig;
 
-      return {
-        ...item,
-        id: itemId,
-        isDisabled,
-        disabledReason: !hasRoute
-          ? "Chưa có đường dẫn"
-          : isHiddenByConfig
-            ? "Đang ẩn"
-            : !hasAccess
-              ? "Chưa đủ quyền"
-              : undefined,
-      };
-    });
+    return {
+      ...item,
+      id: itemId,
+      isDisabled,
+      disabledReason: !hasRoute
+        ? "Chưa có đường dẫn"
+        : isHiddenByConfig
+          ? "Đang ẩn"
+          : !hasAccess
+            ? "Chưa đủ quyền"
+            : undefined,
+    };
+  });
 }
 
 function UtilityCard({
@@ -229,9 +225,7 @@ export function UtilitiesPage() {
     () =>
       quickIds
         .map((id) => utilityItems.find((item) => item.id === id))
-        .filter((item): item is UtilityItem =>
-          Boolean(item && !item.isDisabled),
-        ),
+        .filter((item): item is UtilityItem => Boolean(item && !item.isDisabled)),
     [quickIds, utilityItems],
   );
 
@@ -260,9 +254,10 @@ export function UtilitiesPage() {
     };
 
     if (idleWindow.requestIdleCallback) {
-      const idleId = idleWindow.requestIdleCallback(() => prefetchSchedules(), {
-        timeout: 1800,
-      });
+      const idleId = idleWindow.requestIdleCallback(
+        () => prefetchSchedules(),
+        { timeout: 1800 },
+      );
       return () => idleWindow.cancelIdleCallback?.(idleId);
     }
 
@@ -389,10 +384,7 @@ export function UtilitiesPage() {
         </label>
       </header>
 
-      <section
-        className={styles.section}
-        aria-labelledby="quick-utilities-title"
-      >
+      <section className={styles.section} aria-labelledby="quick-utilities-title">
         <div className={styles.sectionHead}>
           <div>
             <h2 id="quick-utilities-title">Truy cập nhanh</h2>
@@ -422,9 +414,7 @@ export function UtilitiesPage() {
             <PinOff size={22} />
             <div>
               <p>Chưa có mục ghim</p>
-              <span>
-                Chạm biểu tượng ghim trên tính năng để thêm vào truy cập nhanh.
-              </span>
+              <span>Chạm biểu tượng ghim trên tính năng để thêm vào truy cập nhanh.</span>
             </div>
           </div>
         )}

@@ -304,10 +304,6 @@
 }
 
 .mobileCameraSwitchButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   min-height: 38px;
   padding: 0 12px;
   border-radius: 999px;
@@ -2017,19 +2013,20 @@
     padding: 0;
     border-radius: 11px;
     font-size: 0;
-    color: #ffffff;
+    color: transparent;
     position: relative;
 
-    svg {
-      width: 16px;
-      height: 16px;
-      flex: 0 0 auto;
-      color: currentColor;
-      stroke: currentColor;
-    }
-
-    span {
-      display: none;
+    &::before {
+      content: "";
+      width: 15px;
+      height: 15px;
+      display: block;
+      margin: 0 auto;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow:
+        0 -5px 0 -3px #ffffff,
+        0 5px 0 -3px #ffffff;
     }
   }
 

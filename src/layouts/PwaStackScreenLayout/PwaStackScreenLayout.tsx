@@ -1,29 +1,26 @@
 import { ChevronLeft, ScanFace } from "lucide-react";
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import BottomNavigationBar from "@/components/BottomNavigationBar";
 import styles from "./PwaStackScreenLayout.module.scss";
 
 type PwaStackScreenLayoutProps = {
   title: string;
   children: ReactNode;
   onBack?: () => void;
-  showBackButton?: boolean;
-  showBottomNavigation?: boolean;
   className?: string;
   contentClassName?: string;
   withBottomNavigation?: boolean;
+  showBackButton?: boolean;
 };
 
 export function PwaStackScreenLayout({
   title,
   children,
   onBack,
-  showBackButton = true,
-  showBottomNavigation = true,
   className = "",
   contentClassName = "",
   withBottomNavigation = false,
+  showBackButton = true,
 }: PwaStackScreenLayoutProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -86,7 +83,6 @@ export function PwaStackScreenLayout({
       >
         {children}
       </main>
-      {showBottomNavigation ? <BottomNavigationBar /> : null}
     </section>
   );
 }

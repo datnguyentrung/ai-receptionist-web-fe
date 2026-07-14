@@ -13,6 +13,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { AccessDeniedView } from "../components/AccessDeniedView";
+import BottomNavigationBar from "../components/BottomNavigationBar";
 import ComingSoonView from "../components/ComingSoonView";
 import { ClassSchedulesRoute } from "../pages/ClassSchedules/ClassSchedulesRoute";
 import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
@@ -280,7 +281,6 @@ function StackRouteLayout() {
     <PwaStackScreenLayout
       title={getStackRouteTitle(pathname, currentUserCode)}
       showBackButton={!isMainScreen}
-      showBottomNavigation={shouldShowBottomNavigation}
       withBottomNavigation={shouldShowBottomNavigation}
       onBack={() => {
         if (window.history.length > 1) {
@@ -294,6 +294,7 @@ function StackRouteLayout() {
       }}
     >
       <Outlet />
+      {shouldShowBottomNavigation ? <BottomNavigationBar /> : null}
     </PwaStackScreenLayout>
   );
 }
@@ -305,8 +306,12 @@ export default function AppRoutes() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const user = useAuthStore((state) => state.activeProfile);
+
+  // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
   const { canViewManagerSenior, canViewCoach, canUseCheckIn } =
     useRoleStudent();
+
+  // Xác định đường dẫn trang cá nhân của user hiện tại
   const personalPageRoute = user?.userInfo?.userCode
     ? `/${user.userInfo.userCode}`
     : "/welcome";
@@ -340,6 +345,7 @@ export default function AppRoutes() {
       }
     >
       <Routes>
+        {/* --- PUBLIC ROUTES --- */}
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/marketing" element={<MainLayout />}>
@@ -353,7 +359,10 @@ export default function AppRoutes() {
         </Route>
 
         <Route path="/rankings" element={<MainLayout />}>
+          {/* Thay đổi element của index thành Navigate để tự động chuyển hướng */}
           <Route index element={<Navigate to="fitness" replace />} />
+
+          {/* Bỏ dấu / ở trước path con */}
           <Route path="score" element={<Rankings />} />
           <Route path="fitness" element={<Rankings />} />
         </Route>
@@ -375,18 +384,23 @@ export default function AppRoutes() {
           </Route>
         </Route>
 
-          {/* --- PROTECTED ROUTES --- */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <MainLayout />
+        {/* --- PROTECTED ROUTES --- */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              isPWA ? (
+                <Outlet />
               ) : (
-                <Navigate to="/welcome" replace />
+                <MainLayout />
               )
-            }
-          >
-            {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+            ) : (
+              <Navigate to="/welcome" replace />
+            )
+          }
+        >
+          {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+          <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
             <Route path="utilities" element={<UtilitiesPage />} />
             <Route
               path="notifications"
@@ -397,29 +411,35 @@ export default function AppRoutes() {
                 />
               }
             />
-            <Route
-              element={
-                <RequireRole
-                  isAllowed={canViewManagerSenior}
-                  // Nếu không phải Manager, đẩy xuống kiểm tra xem có phải Coach không (vào schedules)
-                  fallbackPath="/schedules"
-                />
-              }
-            >
+          </Route>
+          <Route
+            element={
+              <RequireRole
+                isAllowed={canViewManagerSenior}
+                // Nếu không phải Manager, đẩy xuống kiểm tra xem có phải Coach không (vào schedules)
+                fallbackPath="/schedules"
+              />
+            }
+          >
+            <Route element={isPWA ? <MainLayout /> : <Outlet />}>
               <Route index element={<Dashboard />} />
+            </Route>
+            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
               <Route path="coaches" element={<CoachManagement />} />
             </Route>
+          </Route>
 
-            {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
-            <Route
-              element={
-                <RequireRole
-                  isAllowed={canViewCoach}
-                  // QUAN TRỌNG: Nếu không phải Coach (tức là Student), đẩy về trang cá nhân của họ
-                  fallbackPath={personalPageRoute}
-                />
-              }
-            >
+          {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
+          <Route
+            element={
+              <RequireRole
+                isAllowed={canViewCoach}
+                // QUAN TRỌNG: Nếu không phải Coach (tức là Student), đẩy về trang cá nhân của họ
+                fallbackPath={personalPageRoute}
+              />
+            }
+          >
+            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
               <Route path="students" element={<StudentManagement />} />
               <Route path="schedules" element={<ClassSchedulesRoute />} />
               <Route
@@ -427,25 +447,32 @@ export default function AppRoutes() {
                 element={<AttendanceCheckin />}
               />
               <Route path="history" element={<AttendanceReports />} />
-              <Route path="history/:historyMode" element={<AttendanceReports />} />
-            </Route>
-
-            <Route
-              element={
-                <RequireRole
-                  isAllowed={canUseCheckIn}
-                  fallbackPath="/403"
-                />
-              }
-            >
-              <Route path="check-in" element={<AICheckIn />} />
+              <Route
+                path="history/:historyMode"
+                element={<AttendanceReports />}
+              />
             </Route>
           </Route>
 
           <Route
-            path="*"
-            element={<Navigate to={isAuthenticated ? "/" : "/welcome"} replace />}
-          />
+            element={
+              <RequireRole
+                isAllowed={canUseCheckIn}
+                fallbackPath="/403"
+              />
+            }
+          >
+            <Route element={isPWA ? null : <Outlet />}>
+              <Route path="check-in" element={<AICheckIn />} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* --- CATCH ALL --- */}
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? "/" : "/welcome"} replace />}
+        />
       </Routes>
     </Suspense>
   );

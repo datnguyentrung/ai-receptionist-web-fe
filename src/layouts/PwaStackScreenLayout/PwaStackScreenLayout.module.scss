@@ -6,7 +6,7 @@
   --pwa-stack-content-bottom: calc(#{$space-5} + var(--pwa-stack-safe-bottom));
   --pwa-stack-nav-bottom: calc(86px + var(--pwa-stack-safe-bottom));
   position: fixed;
-  inset: 0 0 calc(env(safe-area-inset-bottom, 0px) * -1);
+  inset: 0;
   z-index: $z-modal;
   display: flex;
   flex-direction: column;
@@ -39,11 +39,11 @@
 
 .header {
   position: relative;
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 48px;
-  align-items: end;
-  // min-height: calc(132px + env(safe-area-inset-top, 0px));
-  padding: calc(env(safe-area-inset-top, 0px) + 24px) $space-4 $space-6;
+  z-index: 2;
+  inset-block-start: 0;
+  flex: 0 0 auto;
+  min-height: var(--pwa-stack-header-height);
+  padding: 0;
   overflow: hidden;
   border-radius: 0 0 var(--pwa-stack-overlap) var(--pwa-stack-overlap);
   background:
@@ -192,14 +192,13 @@
   padding-bottom: var(--pwa-stack-nav-bottom);
 }
 
-.contentWithBottomNav {
-  padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
-}
-
 @media (min-width: 0) {
   :global(body[data-app-mode="pwa"]) {
     .screen {
-      width: 100vw;
+      width: 100%;
+      min-height: 100svh;
+      min-height: 100dvh;
+      height: 100svh;
       height: 100dvh;
     }
   }

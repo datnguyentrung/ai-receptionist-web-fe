@@ -6,7 +6,6 @@
    (Consolidated from base.scss + original index.css — no duplicates)
    ============================================================ */
 @layer base {
-
   *,
   *::before,
   *::after {
@@ -174,7 +173,6 @@ body.overlay-open {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-
   &::-webkit-scrollbar {
     display: none;
   }
@@ -185,15 +183,12 @@ body.overlay-open {
   .safe-top {
     padding-top: env(safe-area-inset-top);
   }
-
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
-
   .safe-left {
     padding-left: env(safe-area-inset-left);
   }
-
   .safe-right {
     padding-right: env(safe-area-inset-right);
   }
@@ -204,17 +199,18 @@ body.overlay-open {
   0% {
     background-position: 200% 0;
   }
-
   100% {
     background-position: -200% 0;
   }
 }
 
 .skeleton {
-  background: linear-gradient(90deg,
-      #e5e7eb 25%,
-      #f3f4f6 50%,
-      #e5e7eb 75%);
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 25%,
+    #f3f4f6 50%,
+    #e5e7eb 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
