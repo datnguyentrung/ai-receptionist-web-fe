@@ -1,18 +1,25 @@
-import { NAV_ITEMS, type NavigationItem } from "@/config/constants/path";
+import { isPWA } from "@/config/appMode";
+import {
+  NAV_ITEMS,
+  type NavigationItem,
+} from "@/config/constants/path";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { prefetchClassSchedules } from "@/pages/ClassSchedules/classSchedulesQueries";
 import { useAuthStore } from "@/store/authStore";
-import { useUserLevel } from "@/utils/roleUtils";
+import { useRoleStudent, useUserLevel } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Check,
+  GraduationCap,
   LockKeyhole,
   Pin,
   PinOff,
   Search,
   Sparkles,
+  UserRoundCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import styles from "./UtilitiesPage.module.scss";
 
@@ -139,11 +146,9 @@ function UtilityCard({
 
   return (
     <article
-      className={`${styles.utilityCard} ${
-        item.isDisabled ? styles.utilityCardDisabled : ""
-      } ${isQuick ? styles.utilityCardPinned : ""} ${
-        isNavigating ? styles.utilityCardNavigating : ""
-      }`}
+      className={`${styles.utilityCard} ${item.isDisabled ? styles.utilityCardDisabled : ""
+        } ${isQuick ? styles.utilityCardPinned : ""} ${isNavigating ? styles.utilityCardNavigating : ""
+        }`}
     >
       <button
         type="button"
@@ -189,8 +194,10 @@ export function UtilitiesPage() {
   const queryClient = useQueryClient();
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const { level, isAuthenticated } = useUserLevel();
+  const { canViewCoach } = useRoleStudent();
   const [searchValue, setSearchValue] = useState("");
   const [navigatingItemId, setNavigatingItemId] = useState<string | null>(null);
+  const [isHistoryModePickerOpen, setIsHistoryModePickerOpen] = useState(false);
 
   const studentCode = activeProfile?.userInfo?.userCode;
   const currentLevel = isAuthenticated ? level : ROLE_LEVELS.GUEST;
@@ -265,6 +272,13 @@ export function UtilitiesPage() {
 
   const handleNavigate = (item: UtilityItem) => {
     if (item.isDisabled || !item.to) return;
+
+    if (item.id === "history" && isPWA && canViewCoach) {
+      setNavigatingItemId(null);
+      setIsHistoryModePickerOpen(true);
+      return;
+    }
+
     const targetRoute = item.to;
     setNavigatingItemId(item.id);
 
@@ -283,6 +297,75 @@ export function UtilitiesPage() {
     if (item.isDisabled) return;
     toggleQuickItem(item.id);
   };
+
+  const navigateToHistoryMode = (mode: "student" | "coach") => {
+    setIsHistoryModePickerOpen(false);
+    setNavigatingItemId("history");
+
+    window.requestAnimationFrame(() => {
+      navigate(`/history/${mode}`);
+    });
+  };
+
+  useEffect(() => {
+    if (!isHistoryModePickerOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
+    };
+  }, [isHistoryModePickerOpen]);
+
+  const historyModePicker =
+    isHistoryModePickerOpen && typeof document !== "undefined"
+      ? createPortal(
+        <div
+          className={styles.historyModeOverlay}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setIsHistoryModePickerOpen(false);
+            }
+          }}
+        >
+          <div
+            className={styles.historyModePanel}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Chọn loại lịch sử điểm danh"
+          >
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("student")}
+            >
+              <span>
+                <UserRoundCheck size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Học viên</strong>
+              <small>Lịch sử điểm danh lớp</small>
+            </button>
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("coach")}
+            >
+              <span>
+                <GraduationCap size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Coach</strong>
+              <small>Lịch sử chấm công</small>
+            </button>
+          </div>
+        </div>,
+        document.body,
+      )
+      : null;
 
   return (
     <div className={styles.utilitiesPage}>
@@ -357,19 +440,22 @@ export function UtilitiesPage() {
         </div>
 
         <div className={styles.utilityGrid}>
-          {filteredItems.map((item) => (
-            <UtilityCard
-              key={item.id}
-              item={item}
-              isQuick={quickIds.includes(item.id)}
-              onNavigate={handleNavigate}
-              onPrefetch={handlePrefetch}
-              onToggleQuick={handleToggleQuick}
-              isNavigating={navigatingItemId === item.id}
-            />
-          ))}
+          {filteredItems.filter((item) => item.display !== false)
+            .map((item) => (
+              <UtilityCard
+                key={item.id}
+                item={item}
+                isQuick={quickIds.includes(item.id)}
+                onNavigate={handleNavigate}
+                onPrefetch={handlePrefetch}
+                onToggleQuick={handleToggleQuick}
+                isNavigating={navigatingItemId === item.id}
+              />
+            ))}
         </div>
       </section>
+
+      {historyModePicker}
     </div>
   );
 }

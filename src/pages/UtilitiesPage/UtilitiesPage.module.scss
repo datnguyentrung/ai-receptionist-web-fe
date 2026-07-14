@@ -5,9 +5,7 @@
   flex-direction: column;
   gap: $space-5;
   width: 100%;
-  padding-bottom: calc(
-    10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px)
-  );
+  padding-bottom: calc(10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
   content-visibility: auto;
   contain-intrinsic-size: 860px;
   animation: utilitiesPageIn 180ms ease-out both;
@@ -20,13 +18,11 @@
   padding: $space-4;
   border-radius: $radius-lg;
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       rgba($brand-red, 0.98) 0%,
-      rgba($brand-red-900, 0.96) 100%
-    ),
+      rgba($brand-red-900, 0.96) 100%),
     $brand-red;
-  box-shadow: $shadow-brand;
+  // box-shadow: $shadow-brand;
   color: $white;
 }
 
@@ -180,12 +176,10 @@
     bottom: $space-2;
     height: 3px;
     border-radius: $radius-full;
-    background: linear-gradient(
-      90deg,
-      rgba($brand-red, 0.2),
-      $brand-red,
-      rgba($brand-red, 0.2)
-    );
+    background: linear-gradient(90deg,
+        rgba($brand-red, 0.2),
+        $brand-red,
+        rgba($brand-red, 0.2));
     animation: utilityNavigateSweep 760ms ease-in-out infinite;
   }
 
@@ -341,6 +335,105 @@
   }
 }
 
+.historyModeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: $z-toast;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  padding: $space-5;
+  padding-bottom: calc($space-5 + env(safe-area-inset-bottom, 0px));
+  background: rgba(3, 7, 18, 0.62);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-sizing: border-box;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  animation: historyModeOverlayIn 160ms ease-out both;
+}
+
+.historyModePanel {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  width: min(100%, 380px);
+  padding: $space-3;
+  border: 1px solid rgba($white, 0.18);
+  border-radius: $radius-lg;
+  background: rgba($white, 0.96);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  animation: historyModePanelIn 180ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+}
+
+.historyModeButton {
+  @include touch-target(104px);
+  @include press-effect(0.97);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  min-width: 0;
+  padding: $space-4 $space-2;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  background: linear-gradient(180deg, $white 0%, $gray-50 100%);
+  color: $text-primary;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+
+  span {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-md;
+    background: rgba($brand-red, 0.08);
+    color: $brand-red;
+  }
+
+  strong,
+  small {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    font-size: $text-sm;
+    font-weight: $font-extrabold;
+  }
+
+  small {
+    color: $text-muted;
+    font-size: 11px;
+    font-weight: $font-semibold;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.8);
+    outline-offset: 3px;
+  }
+
+  @include hover-only {
+    border-color: rgba($brand-red, 0.3);
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+}
+
 @include respond-to("sm") {
   .utilitiesPage {
     gap: $space-6;
@@ -396,6 +489,7 @@
 }
 
 @keyframes utilityNavigateSweep {
+
   0%,
   100% {
     opacity: 0.45;
@@ -408,9 +502,34 @@
   }
 }
 
+@keyframes historyModeOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes historyModePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+
   .utilitiesPage,
-  .utilityCardNavigating::after {
+  .utilityCardNavigating::after,
+  .historyModeOverlay,
+  .historyModePanel {
     animation: none;
   }
 }
