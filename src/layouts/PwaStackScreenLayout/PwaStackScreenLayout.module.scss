@@ -1,4 +1,7 @@
 .screen {
+  --pwa-stack-header-height: calc(92px + env(safe-area-inset-top, 0px));
+  --pwa-stack-radius: 36px;
+  --pwa-stack-overlap: 20px;
   --pwa-stack-safe-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
   --pwa-stack-content-bottom: calc(#{$space-5} + var(--pwa-stack-safe-bottom));
   --pwa-stack-nav-bottom: calc(86px + var(--pwa-stack-safe-bottom));
@@ -18,16 +21,31 @@
   background: $bg-base;
   color: $text-primary;
   isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    height: calc(var(--pwa-stack-header-height) + var(--pwa-stack-overlap));
+    pointer-events: none;
+    background:
+      linear-gradient(135deg,
+        $brand-red-900 0%,
+        $brand-red-800 58%,
+        $brand-red 100%);
+  }
 }
 
 .header {
   position: relative;
-  border-radius: 0 0 30% 30% / 0 0 8% 8%;
+  z-index: 2;
   inset-block-start: 0;
   flex: 0 0 auto;
-  min-height: calc(92px + env(safe-area-inset-top, 0px));
+  min-height: var(--pwa-stack-header-height);
   padding: 0;
   overflow: hidden;
+  border-radius: 0 0 var(--pwa-stack-overlap) var(--pwa-stack-overlap);
   background:
     radial-gradient(circle at 12% 20%,
       rgba(255, 255, 255, 0.24),
@@ -40,7 +58,24 @@
       $brand-red 48%,
       $brand-red-500 100%);
   color: $white;
-  box-shadow: 0 12px 28px rgba($brand-red-900, 0.18);
+  // box-shadow:
+  //   0 16px 30px rgba($brand-red-900, 0.2),
+  //   inset 0 -1px 0 rgba($white, 0.16);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 18px;
+    background:
+      linear-gradient(180deg,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.08)),
+      linear-gradient(90deg,
+        rgba($brand-red-900, 0.08),
+        rgba($brand-red-500, 0.1));
+    pointer-events: none;
+  }
 }
 
 .headerInner {
@@ -49,7 +84,7 @@
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 48px;
   align-items: center;
-  min-height: calc(92px + env(safe-area-inset-top, 0px));
+  min-height: var(--pwa-stack-header-height);
   padding: calc(env(safe-area-inset-top, 0px) + 14px) $space-4 $space-4;
 }
 
@@ -104,7 +139,7 @@
 .title {
   margin: 0;
   color: $white;
-  font-size: clamp(1.18rem, 1.05rem + 0.55vw, 1.55rem);
+  // font-size: clamp(1.18rem, 1.05rem + 0.55vw, 1.55rem);
   font-weight: $font-extrabold;
   line-height: $leading-tight;
   text-align: center;
@@ -112,18 +147,24 @@
 }
 
 .content {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
+  margin-top: calc(var(--pwa-stack-overlap) * -1);
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  padding: $space-4 $space-4 var(--pwa-stack-content-bottom);
+  padding: calc($space-4 + var(--pwa-stack-overlap)) $space-4 var(--pwa-stack-content-bottom);
+  // border-radius: var(--pwa-stack-radius) var(--pwa-stack-radius) 0 0;
   background:
     linear-gradient(180deg,
-      rgba(255, 255, 255, 0.86),
-      rgba(244, 246, 250, 0.92)),
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(244, 246, 250, 0.96) 48%,
+      rgba(244, 246, 250, 0.98) 100%),
     $bg-base;
+  box-shadow: 0 -6px 18px rgba($brand-red-900, 0.06);
 }
 
 .contentWithBottomNavigation {
@@ -143,12 +184,18 @@
 }
 
 @media (orientation: landscape) {
+  .screen {
+    --pwa-stack-header-height: calc(72px + env(safe-area-inset-top, 0px));
+    --pwa-stack-radius: 28px;
+    --pwa-stack-overlap: 14px;
+  }
+
   .header {
-    min-height: calc(72px + env(safe-area-inset-top, 0px));
+    min-height: var(--pwa-stack-header-height);
   }
 
   .headerInner {
-    min-height: calc(72px + env(safe-area-inset-top, 0px));
+    min-height: var(--pwa-stack-header-height);
     padding: calc(env(safe-area-inset-top, 0px) + 8px) $space-4 $space-2;
   }
 
@@ -157,7 +204,7 @@
   }
 
   .content {
-    padding: $space-3 $space-4 var(--pwa-stack-content-bottom);
+    padding: calc($space-3 + var(--pwa-stack-overlap)) $space-4 var(--pwa-stack-content-bottom);
   }
 
   .contentWithBottomNavigation {

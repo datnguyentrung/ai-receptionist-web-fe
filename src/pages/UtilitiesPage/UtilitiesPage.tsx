@@ -1,8 +1,8 @@
+import { isPWA } from "@/config/appMode";
 import {
   NAV_ITEMS,
   type NavigationItem,
 } from "@/config/constants/path";
-import { isPWA } from "@/config/appMode";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { prefetchClassSchedules } from "@/pages/ClassSchedules/classSchedulesQueries";
 import { useAuthStore } from "@/store/authStore";
@@ -19,6 +19,7 @@ import {
   UserRoundCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import styles from "./UtilitiesPage.module.scss";
 
@@ -141,11 +142,9 @@ function UtilityCard({
 
   return (
     <article
-      className={`${styles.utilityCard} ${
-        item.isDisabled ? styles.utilityCardDisabled : ""
-      } ${isQuick ? styles.utilityCardPinned : ""} ${
-        isNavigating ? styles.utilityCardNavigating : ""
-      }`}
+      className={`${styles.utilityCard} ${item.isDisabled ? styles.utilityCardDisabled : ""
+        } ${isQuick ? styles.utilityCardPinned : ""} ${isNavigating ? styles.utilityCardNavigating : ""
+        }`}
     >
       <button
         type="button"
@@ -303,6 +302,66 @@ export function UtilitiesPage() {
     });
   };
 
+  useEffect(() => {
+    if (!isHistoryModePickerOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
+    };
+  }, [isHistoryModePickerOpen]);
+
+  const historyModePicker =
+    isHistoryModePickerOpen && typeof document !== "undefined"
+      ? createPortal(
+        <div
+          className={styles.historyModeOverlay}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setIsHistoryModePickerOpen(false);
+            }
+          }}
+        >
+          <div
+            className={styles.historyModePanel}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Chọn loại lịch sử điểm danh"
+          >
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("student")}
+            >
+              <span>
+                <UserRoundCheck size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Học viên</strong>
+              <small>Lịch sử điểm danh lớp</small>
+            </button>
+            <button
+              type="button"
+              className={styles.historyModeButton}
+              onClick={() => navigateToHistoryMode("coach")}
+            >
+              <span>
+                <GraduationCap size={20} strokeWidth={2.1} />
+              </span>
+              <strong>Coach</strong>
+              <small>Lịch sử chấm công</small>
+            </button>
+          </div>
+        </div>,
+        document.body,
+      )
+      : null;
+
   return (
     <div className={styles.utilitiesPage}>
       <header className={styles.pageHeader}>
@@ -311,7 +370,7 @@ export function UtilitiesPage() {
             <Sparkles size={14} />
             Trung tâm tiện ích
           </span>
-          <h1>Tiện ích</h1>
+          {/* <h1>Tiện ích</h1> */}
           <p>Truy cập nhanh các tính năng của hệ thống</p>
         </div>
 
@@ -385,46 +444,7 @@ export function UtilitiesPage() {
         </div>
       </section>
 
-      {isHistoryModePickerOpen ? (
-        <div
-          className={styles.historyModeOverlay}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setIsHistoryModePickerOpen(false);
-            }
-          }}
-        >
-          <div
-            className={styles.historyModePanel}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Chọn loại lịch sử điểm danh"
-          >
-            <button
-              type="button"
-              className={styles.historyModeButton}
-              onClick={() => navigateToHistoryMode("student")}
-            >
-              <span>
-                <UserRoundCheck size={20} strokeWidth={2.1} />
-              </span>
-              <strong>Học viên</strong>
-              <small>Lịch sử điểm danh lớp</small>
-            </button>
-            <button
-              type="button"
-              className={styles.historyModeButton}
-              onClick={() => navigateToHistoryMode("coach")}
-            >
-              <span>
-                <GraduationCap size={20} strokeWidth={2.1} />
-              </span>
-              <strong>Coach</strong>
-              <small>Lịch sử chấm công</small>
-            </button>
-          </div>
-        </div>
-      ) : null}
+      {historyModePicker}
     </div>
   );
 }
