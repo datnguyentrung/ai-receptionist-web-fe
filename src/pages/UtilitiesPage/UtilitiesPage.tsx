@@ -430,17 +430,18 @@ export function UtilitiesPage() {
         </div>
 
         <div className={styles.utilityGrid}>
-          {filteredItems.map((item) => (
-            <UtilityCard
-              key={item.id}
-              item={item}
-              isQuick={quickIds.includes(item.id)}
-              onNavigate={handleNavigate}
-              onPrefetch={handlePrefetch}
-              onToggleQuick={handleToggleQuick}
-              isNavigating={navigatingItemId === item.id}
-            />
-          ))}
+          {filteredItems.filter((item) => item.display !== false)
+            .map((item) => (
+              <UtilityCard
+                key={item.id}
+                item={item}
+                isQuick={quickIds.includes(item.id)}
+                onNavigate={handleNavigate}
+                onPrefetch={handlePrefetch}
+                onToggleQuick={handleToggleQuick}
+                isNavigating={navigatingItemId === item.id}
+              />
+            ))}
         </div>
       </section>
 

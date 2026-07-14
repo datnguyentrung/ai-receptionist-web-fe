@@ -1,6 +1,6 @@
-import { RequireRole } from "@/config/RequireRole";
 import { isPWA } from "@/config/appMode";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/config/constants/path";
+import { RequireRole } from "@/config/RequireRole";
 import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
@@ -139,7 +139,7 @@ function RouteLoadingFallback({
         )}
         <div className={fallbackStyles.panel} />
         {normalizedPath.includes("students") ||
-        normalizedPath.includes("history") ? (
+          normalizedPath.includes("history") ? (
           <div className={fallbackStyles.table}>
             {Array.from({ length: rowCount }).map((_, index) => (
               <div key={index} className={fallbackStyles.row} />
@@ -191,8 +191,8 @@ function getStackRouteTitle(pathname: string, currentUserCode?: string) {
   const userId = currentUserCode?.trim();
   const bottomNavTitle = userId
     ? BOTTOM_NAV_ITEMS({ userId }).find(
-        (item) => item.to && normalizePath(item.to) === normalizedPath,
-      )?.label
+      (item) => item.to && normalizePath(item.to) === normalizedPath,
+    )?.label
     : undefined;
 
   if (bottomNavTitle) {
@@ -257,9 +257,9 @@ function StackRouteLayout() {
     hasHydrated && isAuthenticated && !normalizedCurrentUserCode;
   const mainTabPaths = currentUserCode
     ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
-        .map((item) => item.to)
-        .filter((to): to is string => Boolean(to))
-        .map(normalizePath)
+      .map((item) => item.to)
+      .filter((to): to is string => Boolean(to))
+      .map(normalizePath)
     : [];
   const isMainScreen = mainTabPaths.includes(normalizedPathname);
   const shouldShowBottomNavigation = isMainScreen;
@@ -318,9 +318,9 @@ export default function AppRoutes() {
   const currentUserCode = user?.userInfo?.userCode;
   const fallbackMainTabPaths = currentUserCode
     ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
-        .map((item) => item.to)
-        .filter((to): to is string => Boolean(to))
-        .map(normalizePath)
+      .map((item) => item.to)
+      .filter((to): to is string => Boolean(to))
+      .map(normalizePath)
     : [];
   const shouldShowFallbackBottomDock = isPWA
     ? fallbackMainTabPaths.includes(normalizePath(pathname))
@@ -401,16 +401,16 @@ export default function AppRoutes() {
         >
           {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
           <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
-          <Route path="utilities" element={<UtilitiesPage />} />
-          <Route
-            path="notifications"
-            element={
-              <ComingSoonView
-                featureName="Thông báo"
-                description="Bảng thông báo trung tâm đang được kết nối lại."
-              />
-            }
-          />
+            <Route path="utilities" element={<UtilitiesPage />} />
+            <Route
+              path="notifications"
+              element={
+                <ComingSoonView
+                  featureName="Thông báo"
+                  description="Bảng thông báo trung tâm đang được kết nối lại."
+                />
+              }
+            />
           </Route>
           <Route
             element={
@@ -462,7 +462,7 @@ export default function AppRoutes() {
               />
             }
           >
-            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+            <Route element={isPWA ? null : <Outlet />}>
               <Route path="check-in" element={<AICheckIn />} />
             </Route>
           </Route>

@@ -5,9 +5,7 @@
   flex-direction: column;
   gap: $space-5;
   width: 100%;
-  padding-bottom: calc(
-    10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px)
-  );
+  padding-bottom: calc(10% + var(--attendance-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
   content-visibility: auto;
   contain-intrinsic-size: 860px;
   animation: utilitiesPageIn 180ms ease-out both;
@@ -20,13 +18,11 @@
   padding: $space-4;
   border-radius: $radius-lg;
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       rgba($brand-red, 0.98) 0%,
-      rgba($brand-red-900, 0.96) 100%
-    ),
+      rgba($brand-red-900, 0.96) 100%),
     $brand-red;
-  box-shadow: $shadow-brand;
+  // box-shadow: $shadow-brand;
   color: $white;
 }
 
@@ -180,12 +176,10 @@
     bottom: $space-2;
     height: 3px;
     border-radius: $radius-full;
-    background: linear-gradient(
-      90deg,
-      rgba($brand-red, 0.2),
-      $brand-red,
-      rgba($brand-red, 0.2)
-    );
+    background: linear-gradient(90deg,
+        rgba($brand-red, 0.2),
+        $brand-red,
+        rgba($brand-red, 0.2));
     animation: utilityNavigateSweep 760ms ease-in-out infinite;
   }
 
@@ -495,6 +489,7 @@
 }
 
 @keyframes utilityNavigateSweep {
+
   0%,
   100% {
     opacity: 0.45;
@@ -530,6 +525,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .utilitiesPage,
   .utilityCardNavigating::after,
   .historyModeOverlay,

@@ -16,6 +16,7 @@ import {
 } from "@/utils/validateScannedCheckInCode";
 import { FaceScanner } from "@components/FaceScanner";
 import { Scanner, type IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import axios from "axios";
 import type { BarcodeFormat } from "barcode-detector";
 import {
   CheckCircle2,
@@ -27,7 +28,6 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AICheckIn.module.scss";
@@ -92,19 +92,26 @@ const getAxiosErrorMessage = (error: unknown) => {
   return null;
 };
 
-const getCheckInErrorMessage = (error: unknown) => {
+const getScannedSubjectLabel = (code?: string | null) =>
+  code?.trim().toUpperCase().startsWith("VQT") ? "Huấn luyện viên" : "Học viên";
+
+const getCheckInErrorMessage = (error: unknown, code?: string) => {
   const backendMessage = getAxiosErrorMessage(error);
   const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+  const noi = getScannedSubjectLabel(code);
+  const message = code?.trim().toUpperCase().startsWith("VQT")
+    ? backendMessage?.replace(/\bHọc viên\b/g, noi)
+    : backendMessage;
 
   switch (status) {
     case 400:
-      return backendMessage ?? "Học viên không hợp lệ hoặc chưa ở trạng thái hoạt động.";
+      return message ?? `${noi} không hợp lệ hoặc chưa ở trạng thái hoạt động.`;
     case 404:
-      return backendMessage ?? "Không tìm thấy ca học phù hợp cho học viên này.";
+      return message ?? "Không tìm thấy ca học phù hợp.";
     case 409:
-      return backendMessage ?? "Học viên đã được điểm danh trong ca học phù hợp.";
+      return message ?? `${noi} đã được điểm danh trong ca học phù hợp.`;
     default:
-      return backendMessage ?? "Không thể kết nối API. Vui lòng quét lại.";
+      return message ?? "Không thể kết nối API. Vui lòng quét lại.";
   }
 };
 
@@ -113,9 +120,9 @@ const mapAttendanceRecordToCheckInResult = (
 ): CheckInResponse => {
   const checkedInAt = attendanceRecord.checkInTime
     ? new Date(attendanceRecord.checkInTime).toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : null;
 
   const statusLabel = attendanceRecord.attendanceStatus
@@ -143,9 +150,9 @@ const mapCoachTimesheetToCheckInResult = (
 ): CheckInResponse => {
   const checkedInAt = timesheet.checkInTime
     ? new Date(timesheet.checkInTime).toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : null;
 
   return {
@@ -207,6 +214,15 @@ export default function AICheckIn() {
   );
   const [lastScannedCode, setLastScannedCode] = useState<string | null>(null);
   const [successfulScanCount, setSuccessfulScanCount] = useState(0);
+  const mobileScannerConstraints = useMemo<MediaTrackConstraints>(
+    () => ({
+      facingMode: { ideal: cameraFacingMode },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+      aspectRatio: { ideal: 16 / 9 },
+    }),
+    [cameraFacingMode],
+  );
   const lastScanRef = useRef({ code: "", time: 0 });
   const activeScanRequestRef = useRef(0);
   // Mirror state vào ref để beforeunload log giá trị mới mà không cần re-subscribe effect beforeunload
@@ -224,6 +240,7 @@ export default function AICheckIn() {
     mobileScanStatus === "scanning" && !checkInResult && !lastScannedCode;
   const isCodeScanMode = checkInMode === "CODE_SCAN";
   const isFaceScanMode = checkInMode === "FACE_SCAN";
+  const currentScanSubjectLabel = getScannedSubjectLabel(lastScannedCode);
 
   const mobileStatusLabel = useMemo(() => {
     switch (mobileScanStatus) {
@@ -383,7 +400,7 @@ export default function AICheckIn() {
         const message =
           error instanceof ScannedCheckInCodeError
             ? error.message
-            : getCheckInErrorMessage(error);
+            : getCheckInErrorMessage(error, trimmedCode);
         setMobileScanStatus("error");
         setMobileScanMessage(message);
         setCheckInResult({
@@ -481,9 +498,8 @@ export default function AICheckIn() {
           className={styles.leftPanel}
         >
           <div
-            className={`${styles.brandLogo} ${
-              isCodeScanMode ? styles.brandLogoHidden : ""
-            }`}
+            className={`${styles.brandLogo} ${isCodeScanMode ? styles.brandLogoHidden : ""
+              }`}
           >
             <img
               src={logo}
@@ -499,18 +515,16 @@ export default function AICheckIn() {
           <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
             <button
               type="button"
-              className={`${styles.mobileModeButton} ${
-                isCodeScanMode ? styles.mobileModeButtonActive : ""
-              }`}
+              className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
+                }`}
               onClick={() => handleChangeCheckInMode("CODE_SCAN")}
             >
               {getCheckInModeLabel("CODE_SCAN")}
             </button>
             <button
               type="button"
-              className={`${styles.mobileModeButton} ${
-                isFaceScanMode ? styles.mobileModeButtonActive : ""
-              }`}
+              className={`${styles.mobileModeButton} ${isFaceScanMode ? styles.mobileModeButtonActive : ""
+                }`}
               onClick={() => handleChangeCheckInMode("FACE_SCAN")}
             >
               {getCheckInModeLabel("FACE_SCAN")}
@@ -541,14 +555,15 @@ export default function AICheckIn() {
                   />
                   <div>
                     <p className={styles.mobileScanEyebrow}>PWA scanner</p>
-                    <h1 className={styles.mobileScanTitle}>Quét mã học viên</h1>
+                    <h1 className={styles.mobileScanTitle}>
+                      Quét mã {currentScanSubjectLabel.toLowerCase()}
+                    </h1>
                   </div>
                 </div>
                 <div className={styles.mobileScanHeaderActions}>
                   <div
-                    className={`${styles.mobileScanState} ${
-                      styles[`mobileScanState_${mobileScanStatus}`]
-                    }`}
+                    className={`${styles.mobileScanState} ${styles[`mobileScanState_${mobileScanStatus}`]
+                      }`}
                   >
                     {mobileScanStatus === "submitting" ? (
                       <Loader2 size={14} />
@@ -581,14 +596,13 @@ export default function AICheckIn() {
                   formats={CODE_SCANNER_FORMATS}
                   scanDelay={350}
                   sound={false}
-                  constraints={{ facingMode: cameraFacingMode }}
+                  constraints={mobileScannerConstraints}
                   components={{ finder: false, torch: true }}
                   classNames={{
-                    container: `${styles.mobileScanner} ${
-                      cameraFacingMode === "user"
-                        ? styles.mobileScanner_front
-                        : styles.mobileScanner_back
-                    }`,
+                    container: `${styles.mobileScanner} ${cameraFacingMode === "user"
+                      ? styles.mobileScanner_front
+                      : styles.mobileScanner_back
+                      }`,
                   }}
                 />
                 <div className={styles.mobileScannerMask} aria-hidden="true" />
@@ -596,78 +610,77 @@ export default function AICheckIn() {
               </div>
 
               <div
-                className={`${styles.mobileFeedbackPanel} ${
-                  styles[`mobileFeedbackPanel_${mobileScanStatus}`]
-                }`}
+                className={`${styles.mobileFeedbackPanel} ${styles[`mobileFeedbackPanel_${mobileScanStatus}`]
+                  }`}
               >
                 {mobileScanStatus === "success" &&
-                (scanAttendanceResult || scanCoachTimesheetResult) ? (
+                  (scanAttendanceResult || scanCoachTimesheetResult) ? (
                   scanAttendanceResult ? (
-                  <div className={styles.mobileAttendanceDetails}>
-                    <div className={styles.mobileAttendanceSummary}>
-                      <span className={styles.mobileAttendanceStatusDot} />
-                      <div>
-                        <p className={styles.mobileFeedbackLabel}>
-                          Điểm danh thành công
-                        </p>
-                        <h2 className={styles.mobileAttendanceStudentName}>
-                          {scanAttendanceResult.studentName}
-                        </h2>
+                    <div className={styles.mobileAttendanceDetails}>
+                      <div className={styles.mobileAttendanceSummary}>
+                        <span className={styles.mobileAttendanceStatusDot} />
+                        <div>
+                          <p className={styles.mobileFeedbackLabel}>
+                            Điểm danh thành công
+                          </p>
+                          <h2 className={styles.mobileAttendanceStudentName}>
+                            {scanAttendanceResult.studentName}
+                          </h2>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className={styles.mobileAttendanceDetailList}>
-                      <div>
-                        <span>Lớp</span>
-                        <strong>
-                          {scanAttendanceResult.classScheduleId ??
-                            "Chưa có dữ liệu"}
-                        </strong>
-                      </div>
-                      <div>
-                        <span>Ngày học</span>
-                        <strong>
-                          {formatScanDate(scanAttendanceResult.sessionDate)}
-                        </strong>
-                      </div>
-                      <div>
-                        <span>Giờ điểm danh</span>
-                        <strong>
-                          {formatScanTime(scanAttendanceResult.checkInTime)}
-                        </strong>
-                      </div>
-                      <div>
-                        <span>Trạng thái</span>
-                        <strong>
-                          {scanAttendanceResult.attendanceStatus
-                            ? (AttendanceStatusLabel[
+                      <div className={styles.mobileAttendanceDetailList}>
+                        <div>
+                          <span>Lớp</span>
+                          <strong>
+                            {scanAttendanceResult.classScheduleId ??
+                              "Chưa có dữ liệu"}
+                          </strong>
+                        </div>
+                        <div>
+                          <span>Ngày học</span>
+                          <strong>
+                            {formatScanDate(scanAttendanceResult.sessionDate)}
+                          </strong>
+                        </div>
+                        <div>
+                          <span>Giờ điểm danh</span>
+                          <strong>
+                            {formatScanTime(scanAttendanceResult.checkInTime)}
+                          </strong>
+                        </div>
+                        <div>
+                          <span>Trạng thái</span>
+                          <strong>
+                            {scanAttendanceResult.attendanceStatus
+                              ? (AttendanceStatusLabel[
                                 scanAttendanceResult.attendanceStatus
                               ] ?? scanAttendanceResult.attendanceStatus)
-                            : "Chưa có dữ liệu"}
-                        </strong>
-                      </div>
-                      {scanAttendanceResult.note && (
-                        <div className={styles.mobileAttendanceNote}>
-                          <span>Ghi chú</span>
-                          <strong>{scanAttendanceResult.note}</strong>
+                              : "Chưa có dữ liệu"}
+                          </strong>
                         </div>
+                        {scanAttendanceResult.note && (
+                          <div className={styles.mobileAttendanceNote}>
+                            <span>Ghi chú</span>
+                            <strong>{scanAttendanceResult.note}</strong>
+                          </div>
+                        )}
+                      </div>
+
+                      {successfulScanCount > 0 && (
+                        <p className={styles.mobileSuccessCount}>
+                          Đã điểm danh {successfulScanCount} người trong phiên này.
+                        </p>
                       )}
+
+                      <button
+                        type="button"
+                        className={styles.mobileAttendanceOkButton}
+                        onClick={handleScanResultOk}
+                      >
+                        OK
+                      </button>
                     </div>
-
-                    {successfulScanCount > 0 && (
-                      <p className={styles.mobileSuccessCount}>
-                        Đã điểm danh {successfulScanCount} người trong phiên này.
-                      </p>
-                    )}
-
-                    <button
-                      type="button"
-                      className={styles.mobileAttendanceOkButton}
-                      onClick={handleScanResultOk}
-                    >
-                      OK
-                    </button>
-                  </div>
                   ) : scanCoachTimesheetResult ? (
                     <div className={styles.mobileAttendanceDetails}>
                       <div className={styles.mobileAttendanceSummary}>
@@ -737,19 +750,19 @@ export default function AICheckIn() {
                 ) : (
                   <>
                     <p className={styles.mobileFeedbackLabel}>{mobileStatusLabel}</p>
-                <p className={styles.mobileFeedbackMessage}>
-                  {mobileScanMessage}
-                </p>
-                {lastScannedCode && (
-                  <p className={styles.mobileScannedCode}>
-                    Mã vừa quét: <span>{lastScannedCode}</span>
-                  </p>
-                )}
-                {successfulScanCount > 0 && (
-                  <p className={styles.mobileSuccessCount}>
-                    Đã điểm danh {successfulScanCount} người trong phiên này.
-                  </p>
-                )}
+                    <p className={styles.mobileFeedbackMessage}>
+                      {mobileScanMessage}
+                    </p>
+                    {lastScannedCode && (
+                      <p className={styles.mobileScannedCode}>
+                        Mã vừa quét: <span>{lastScannedCode}</span>
+                      </p>
+                    )}
+                    {successfulScanCount > 0 && (
+                      <p className={styles.mobileSuccessCount}>
+                        Đã điểm danh {successfulScanCount} người trong phiên này.
+                      </p>
+                    )}
                   </>
                 )}
               </div>
@@ -768,15 +781,15 @@ export default function AICheckIn() {
 
                 {(mobileScanStatus === "error" ||
                   mobileScanStatus === "canceled") && (
-                  <button
-                    type="button"
-                    className={styles.mobilePrimaryButton}
-                    onClick={handleCloseCard}
-                  >
-                    <RotateCcw size={18} />
-                    Quét tiếp
-                  </button>
-                )}
+                    <button
+                      type="button"
+                      className={styles.mobilePrimaryButton}
+                      onClick={handleCloseCard}
+                    >
+                      <RotateCcw size={18} />
+                      Quét tiếp
+                    </button>
+                  )}
               </div>
             </div>
           )}

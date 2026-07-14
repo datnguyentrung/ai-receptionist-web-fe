@@ -2150,12 +2150,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #050507;
       padding: calc(86px + env(safe-area-inset-top)) 0
         calc(108px + env(safe-area-inset-bottom));
+    }
+
+    .mobileScanner {
+      background: #050507;
+
+      video {
+        object-fit: contain !important;
+        object-position: center center;
+      }
     }
 
     .mobileFeedbackPanel {
       bottom: calc(24px + env(safe-area-inset-bottom));
     }
+  }
+}
+
+.mobileScanner {
+  video {
+    object-fit: contain !important;
+    object-position: center center;
+    image-rendering: auto;
   }
 }
