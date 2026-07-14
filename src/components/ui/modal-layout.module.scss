@@ -71,9 +71,16 @@
   justify-content: center;
   padding: $space-3 0 $space-1;
   flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 
   @include respond-to(md) {
     display: none;
+  }
+
+  &:active {
+    cursor: grabbing;
   }
 }
 

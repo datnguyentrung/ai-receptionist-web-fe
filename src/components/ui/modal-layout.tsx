@@ -1,8 +1,11 @@
 import { X } from "lucide-react";
 import {
   useEffect,
+  useRef,
+  useState,
   type CSSProperties,
   type MouseEvent,
+  type PointerEvent,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -27,6 +30,7 @@ type ModalLayoutProps = {
   surfaceClassName?: string;
   bodyClassName?: string;
   showMobileHandle?: boolean;
+  closeOnDragDown?: boolean;
 };
 
 function toCssMaxWidth(value: number | string | undefined): string | undefined {
@@ -54,7 +58,13 @@ export function ModalLayout({
   surfaceClassName,
   bodyClassName,
   showMobileHandle = true,
+  closeOnDragDown = false,
 }: ModalLayoutProps) {
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragStartYRef = useRef<number | null>(null);
+  const dragPointerIdRef = useRef<number | null>(null);
+  const dragOffsetRef = useRef(0);
+
   useEffect(() => {
     if (!open) {
       return;
@@ -93,6 +103,62 @@ export function ModalLayout({
 
   const dialogStyle: CSSProperties = {
     maxWidth: toCssMaxWidth(maxWidth),
+    transform: dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined,
+    transition: dragOffset > 0 ? "none" : undefined,
+  };
+
+  const resetDrag = () => {
+    dragStartYRef.current = null;
+    dragPointerIdRef.current = null;
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+  };
+
+  const handleDialogPointerDown = (event: PointerEvent<HTMLElement>) => {
+    if (!closeOnDragDown) {
+      return;
+    }
+
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest("[data-modal-drag-handle='true']")) {
+      return;
+    }
+
+    dragStartYRef.current = event.clientY;
+    dragPointerIdRef.current = event.pointerId;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleDialogPointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (
+      !closeOnDragDown ||
+      dragStartYRef.current === null ||
+      dragPointerIdRef.current !== event.pointerId
+    ) {
+      return;
+    }
+
+    const nextOffset = Math.max(0, event.clientY - dragStartYRef.current);
+    dragOffsetRef.current = nextOffset;
+    setDragOffset(nextOffset);
+  };
+
+  const handleDialogPointerEnd = (event: PointerEvent<HTMLElement>) => {
+    if (
+      !closeOnDragDown ||
+      dragStartYRef.current === null ||
+      dragPointerIdRef.current !== event.pointerId
+    ) {
+      return;
+    }
+
+    if (dragOffsetRef.current >= 80) {
+      resetDrag();
+      onClose();
+      return;
+    }
+
+    resetDrag();
   };
 
   const handleBackdropMouseDown = (event: MouseEvent<HTMLDivElement>) => {
@@ -116,10 +182,18 @@ export function ModalLayout({
         style={dialogStyle}
         role="dialog"
         aria-modal="true"
+        onPointerDown={handleDialogPointerDown}
+        onPointerMove={handleDialogPointerMove}
+        onPointerUp={handleDialogPointerEnd}
+        onPointerCancel={handleDialogPointerEnd}
       >
         {/* Drag handle — visible on mobile, hidden on desktop */}
         {showMobileHandle ? (
-          <div className={styles.handle} aria-hidden="true">
+          <div
+            className={styles.handle}
+            aria-hidden="true"
+            data-modal-drag-handle="true"
+          >
             <div className={styles.handleBar} />
           </div>
         ) : null}

@@ -65,6 +65,7 @@ export function UpcomingSessionsModal({
         showCloseButton={false}
         closeOnBackdrop={true}
         closeOnEscape={true}
+        closeOnDragDown={true}
         maxWidth={1160}
       >
         <div className={styles.splitWrapper}>
