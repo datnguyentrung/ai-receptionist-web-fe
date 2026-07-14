@@ -79,6 +79,8 @@ export function CreateSessionModal({
   );
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!open) {
       wasOpenRef.current = false;
       return;
@@ -94,11 +96,19 @@ export function CreateSessionModal({
       ? (classSchedules.find((s) => s.scheduleId === initialTrimmed) ?? null)
       : null;
 
-    setSessionDate(
-      getNearestDateIsoForBackendWeekday(initialSchedule?.weekday),
-    );
-    setStatus("SCHEDULED");
-    setScheduleId(initialTrimmed || "");
+    window.queueMicrotask(() => {
+      if (cancelled) return;
+
+      setSessionDate(
+        getNearestDateIsoForBackendWeekday(initialSchedule?.weekday),
+      );
+      setStatus("SCHEDULED");
+      setScheduleId(initialTrimmed || "");
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     open,
     initialScheduleId,
@@ -107,22 +117,40 @@ export function CreateSessionModal({
   ]);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!open) return;
 
     const next = initialScheduleId?.trim();
     if (!next) return;
 
-    setScheduleId((current) => (current.trim() ? current : next));
+    window.queueMicrotask(() => {
+      if (cancelled) return;
+      setScheduleId((current) => (current.trim() ? current : next));
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [initialScheduleId, open]);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!open) return;
     if (!selectedSchedule) return;
     if (sessionDateDirty) return;
 
-    setSessionDate(
-      getNearestDateIsoForBackendWeekday(selectedSchedule.weekday),
-    );
+    window.queueMicrotask(() => {
+      if (cancelled) return;
+      setSessionDate(
+        getNearestDateIsoForBackendWeekday(selectedSchedule.weekday),
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     getNearestDateIsoForBackendWeekday,
     open,
@@ -131,14 +159,24 @@ export function CreateSessionModal({
   ]);
 
   useEffect(() => {
-    if (!selectedSchedule) {
-      setStartTime("");
-      setEndTime("");
-      return;
-    }
+    let cancelled = false;
 
-    setStartTime(selectedSchedule.startTime);
-    setEndTime(selectedSchedule.endTime);
+    window.queueMicrotask(() => {
+      if (cancelled) return;
+
+      if (!selectedSchedule) {
+        setStartTime("");
+        setEndTime("");
+        return;
+      }
+
+      setStartTime(selectedSchedule.startTime);
+      setEndTime(selectedSchedule.endTime);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedSchedule]);
 
   const scheduleOptions = useMemo(

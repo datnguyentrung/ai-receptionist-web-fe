@@ -10,7 +10,7 @@ import type {
   CoachAssignmentSimpleResponse,
   CoachDetail,
 } from "@/types";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import CoachAssignmentList from "./CoachAssignmentList";
 
 import "./CoachUpdateModal.scss";
@@ -45,16 +45,32 @@ export default function CoachUpdateModal({
   coach,
   onClose,
 }: CoachUpdateModalProps) {
-  const initialAssignment = useMemo(
-    () => createInitialAssignment(coach?.userId ?? ""),
-    [coach?.userId],
-  );
-  const [assignmentRequest, setAssignmentRequest] =
-    useState<CoachAssignmentCreateRequest>(initialAssignment);
+  const coachId = coach?.userId ?? "";
+  const [assignmentState, setAssignmentState] = useState<{
+    coachId: string;
+    request: CoachAssignmentCreateRequest;
+  }>(() => ({
+    coachId,
+    request: createInitialAssignment(coachId),
+  }));
 
-  useEffect(() => {
-    setAssignmentRequest(initialAssignment);
-  }, [initialAssignment]);
+  if (assignmentState.coachId !== coachId) {
+    setAssignmentState({
+      coachId,
+      request: createInitialAssignment(coachId),
+    });
+  }
+
+  const assignmentRequest =
+    assignmentState.coachId === coachId
+      ? assignmentState.request
+      : createInitialAssignment(coachId);
+  const setAssignmentRequest = (request: CoachAssignmentCreateRequest) => {
+    setAssignmentState({
+      coachId,
+      request,
+    });
+  };
 
   const [deletingAssignmentIds, setDeletingAssignmentIds] = useState<
     Set<string>
