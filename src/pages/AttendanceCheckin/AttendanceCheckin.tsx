@@ -11,11 +11,14 @@ import type {
 import { BeltLabel } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import { EvalSheet } from "@/features/studentAttendance";
+import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
+import { useQueryClient } from "@tanstack/react-query";
 import type {
+  AttendanceListResponse,
   AttendanceUpdateEvaluationRequest,
   AttendanceUpdateStatusRequest,
   ClassScheduleSummary,
@@ -83,6 +86,32 @@ function nowTime() {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function shouldSetCheckInTime(status: AttendanceStatus | null) {
+  return status === "PRESENT" || status === "LATE";
+}
+
+function mergeAttendanceIntoList(
+  old: AttendanceListResponse | undefined,
+  updatedAttendance: StudentAttendanceResponse,
+) {
+  if (!old) {
+    return old;
+  }
+
+  return {
+    ...old,
+    attendances: {
+      ...old.attendances,
+      content: old.attendances.content.map((student) =>
+        student.studentId === updatedAttendance.studentId ||
+        student.attendanceId === updatedAttendance.attendanceId
+          ? { ...student, ...updatedAttendance }
+          : student,
+      ),
+    },
+  };
 }
 
 function StudentListSkeleton({ count = 8 }: { count?: number }) {
@@ -153,6 +182,7 @@ export function AttendanceCheckin() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitPending, setIsSubmitPending] = useState(false);
   const submitTimeoutRef = useRef<number | null>(null);
+  const queryClient = useQueryClient();
 
   const { canViewManagerSenior } = useRoleStudent();
 
@@ -193,6 +223,10 @@ export function AttendanceCheckin() {
   );
 
   const currentDate = getAttendanceSessionDate();
+  const attendanceQueryKey = useMemo(
+    () => attendanceRecordsQueryKey(currentDate, selectedScheduleId),
+    [currentDate, selectedScheduleId],
+  );
 
   const {
     data,
@@ -201,7 +235,7 @@ export function AttendanceCheckin() {
     isError: attendanceError,
     refetch: refetchAttendance,
   } = useGetQuery(
-    attendanceRecordsQueryKey(currentDate, selectedScheduleId),
+    attendanceQueryKey,
     () =>
       studentAttendanceAPI.filter({
         sessionDate: currentDate,
@@ -318,11 +352,12 @@ export function AttendanceCheckin() {
     presentCount,
     absentCount,
     excusedCount,
-    makeupCount,
     unmarkedCount,
     totalCount,
     markedCount,
     evalCount,
+    evaluableCount,
+    evaluationPendingCount,
     progress,
     filtered,
   } = useMemo(() => {
@@ -341,32 +376,32 @@ export function AttendanceCheckin() {
     const excused = students.filter(
       (s) => s.attendanceStatus === "EXCUSED",
     ).length;
-    const unmarked = students.filter(
-      (s) =>
-        s.evaluationStatus === null &&
-        (s.attendanceStatus === "PRESENT" ||
-          s.attendanceStatus === "LATE" ||
-          s.attendanceStatus === "MAKEUP"),
+    const attendanceMarked = present + absent + late + makeup + excused;
+    const attendancePending = students.filter((s) => !s.attendanceStatus).length;
+    const evaluableStudents = students.filter((s) =>
+      canEvaluateAttendance(s.attendanceStatus),
+    );
+    const evaluated = evaluableStudents.filter(
+      (s) => s.evaluationStatus !== null && s.evaluationStatus !== "PENDING",
     ).length;
+    const evaluationPending = evaluableStudents.length - evaluated;
     const total = students.length;
-    const marked = total - unmarked;
-    const evaluated = students.filter(
-      (s) => s.evaluationStatus !== null,
-    ).length;
 
     return {
       presentCount: present,
       absentCount: absent,
       excusedCount: excused,
-      unmarkedCount: unmarked,
+      unmarkedCount: attendancePending,
       totalCount: total,
-      markedCount: marked,
+      markedCount: attendanceMarked,
       evalCount: evaluated,
+      evaluableCount: evaluableStudents.length,
+      evaluationPendingCount: evaluationPending,
       lateCount: late,
       makeupCount: makeup,
       progress:
         total > 0
-          ? Math.round(((present + absent + excused) / total) * 100)
+          ? Math.round((attendanceMarked / total) * 100)
           : 0,
       filtered: students
         .filter((s) => filter === "all" || s.attendanceStatus === filter)
@@ -391,16 +426,26 @@ export function AttendanceCheckin() {
   const updateStatus = useCallback(
     (id: string, status: AttendanceStatus | null) => {
       const prevMutation = mutationsRef.current[id];
+      const shouldClearEvaluation = !canEvaluateAttendance(status);
 
-      setMutations((prev) => ({
-        ...prev,
-        [id]: {
+      setMutations((prev) => {
+        const nextMutation: Partial<StudentAttendanceResponse> = {
           ...prev[id],
           attendanceStatus: status,
-          checkInTime:
-            status === "PRESENT" || status === "LATE" ? new Date() : null,
-        },
-      }));
+          checkInTime: shouldSetCheckInTime(status) ? new Date() : null,
+        };
+
+        if (shouldClearEvaluation) {
+          nextMutation.evaluationStatus = null;
+          nextMutation.evaluatedByCoachName = null;
+          nextMutation.note = null;
+        }
+
+        return {
+          ...prev,
+          [id]: nextMutation,
+        };
+      });
 
       if (!status) return;
 
@@ -413,7 +458,18 @@ export function AttendanceCheckin() {
         { attendanceId, data: { attendanceStatus: status } },
         {
           // Nếu thành công (Tùy chọn: có thể để trống vì UI đã update rồi)
-          onSuccess: () => {
+          onSuccess: (updatedAttendance) => {
+            setMutations((prev) => ({
+              ...prev,
+              [id]: {
+                ...prev[id],
+                ...updatedAttendance,
+              },
+            }));
+            queryClient.setQueryData<AttendanceListResponse>(
+              attendanceQueryKey,
+              (old) => mergeAttendanceIntoList(old, updatedAttendance),
+            );
             // console.log(`Đã cập nhật trạng thái cho ${id}`);
           },
           // Nếu lỗi -> Thực hiện Rollback (Quay xe)
@@ -424,7 +480,7 @@ export function AttendanceCheckin() {
         },
       );
     },
-    [updateAttendance],
+    [attendanceQueryKey, queryClient, updateAttendance],
   );
 
   const updateEval = useCallback(
@@ -605,8 +661,8 @@ export function AttendanceCheckin() {
           {/* Submit Bar */}
           <RenderProfiler id="AttendanceCheckin:BottomBar" thresholdMs={4}>
             <BottomBar
-              unmarkedCount={unmarkedCount}
-              evalCount={presentCount + absentCount + makeupCount}
+              unmarkedCount={evaluationPendingCount}
+              evalCount={evaluableCount}
             />
           </RenderProfiler>
         </main>

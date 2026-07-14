@@ -88,7 +88,7 @@ export default function EvalQuick({
         aria-live="polite"
       >
         <AlertTriangle size={14} />
-        <span>Hãy điểm danh trước khi đánh giá võ sinh.</span>
+        <span>Chỉ đánh giá khi võ sinh có mặt, đi muộn hoặc học bù.</span>
       </div>
       <div className={styles.options}>
         {EVAL_OPTIONS.map((opt) => {

@@ -54,6 +54,7 @@ interface AttendanceHeaderProps {
 function AttendanceHeaderInner({
   session,
   totalCount,
+  markedCount,
   progress,
   presentCount,
   absentCount,
@@ -134,7 +135,7 @@ function AttendanceHeaderInner({
         <div className={styles.progressHeader}>
           <p className={styles.progressLabel}>Tiến độ điểm danh</p>
           <p className={styles.progressCount}>
-            {presentCount + absentCount + excusedCount}/{totalCount}
+            {markedCount}/{totalCount}
           </p>
         </div>
         <div className={styles.progressTrack}>

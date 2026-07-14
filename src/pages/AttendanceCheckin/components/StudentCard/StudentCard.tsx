@@ -5,6 +5,7 @@ import type {
 } from "@/config/constants";
 import { BeltLabel } from "@/config/constants";
 import { AttendancePill, EvalQuick } from "@/features/studentAttendance";
+import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
@@ -42,6 +43,10 @@ export function StudentCardInner({
 }: StudentCardProps) {
   const [expanded, setExpanded] = useState(false);
   const hasAttendanceRecord = Boolean(student.attendanceId);
+  const canEvaluate =
+    hasAttendanceRecord && canEvaluateAttendance(student.attendanceStatus);
+  const visibleEvaluationStatus = canEvaluate ? student.evaluationStatus : null;
+  const visibleNote = canEvaluate ? student.note : null;
 
   return (
     <motion.div
@@ -96,9 +101,11 @@ export function StudentCardInner({
         {/* Evaluation moved to the top/main row */}
         <div className={styles.evalInlineWrap}>
           <EvalQuick
-            value={student.evaluationStatus}
-            canEvaluate={hasAttendanceRecord}
+            value={visibleEvaluationStatus}
+            canEvaluate={canEvaluate}
             onChange={(v) => {
+              if (!canEvaluate) return;
+
               if (v !== student.evaluationStatus) {
                 onUpdateEval(student.studentId, v);
               }
@@ -163,22 +170,26 @@ export function StudentCardInner({
               </div> */}
 
               {/* Notes preview */}
-              {student.note && (
+              {visibleNote && (
                 <div className={styles.notesPreview}>
-                  <p className={styles.notesText}>"{student.note}"</p>
+                  <p className={styles.notesText}>"{visibleNote}"</p>
                 </div>
               )}
 
               {/* Full evaluation entry remains available from expanded panel */}
               <button
                 type="button"
-                onClick={() => onOpenEval(student)}
+                disabled={!canEvaluate}
+                onClick={() => {
+                  if (!canEvaluate) return;
+                  onOpenEval(student);
+                }}
                 className={`${styles.evalBtn} ${
-                  student.evaluationStatus ? styles.evaluated : ""
-                }`}
+                  visibleEvaluationStatus ? styles.evaluated : ""
+                } ${!canEvaluate ? styles.evalBtnDisabled : ""}`}
               >
                 <Zap size={14} />
-                {student.note ? `Sửa chi tiết` : "Nhận xét nhanh"}
+                {visibleNote ? `Sửa chi tiết` : "Nhận xét nhanh"}
               </button>
             </div>
           </motion.div>
@@ -196,6 +207,7 @@ export const StudentCard = memo(StudentCardInner, (prev, next) => {
     prev.student.attendanceId === next.student.attendanceId &&
     prev.student.attendanceStatus === next.student.attendanceStatus &&
     prev.student.evaluationStatus === next.student.evaluationStatus &&
+    prev.student.evaluatedByCoachName === next.student.evaluatedByCoachName &&
     prev.student.checkInTime === next.student.checkInTime &&
     prev.student.note === next.student.note &&
     prev.onUpdateStatus === next.onUpdateStatus &&

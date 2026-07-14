@@ -30,8 +30,12 @@ export const studentAttendanceAPI = {
   updateStatus: async (
     attendanceId: string,
     data: AttendanceUpdateStatusRequest,
-  ): Promise<void> => {
-    await javaApi.patch(`/student-attendances/${attendanceId}/status`, data);
+  ): Promise<StudentAttendanceResponse> => {
+    const response = await javaApi.patch(
+      `/student-attendances/${attendanceId}/status`,
+      data,
+    );
+    return response.data;
   },
 
   /** PATCH /{attendanceId}/evaluation — Cập nhật đánh giá */

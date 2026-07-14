@@ -385,6 +385,23 @@
   }
 }
 
+.evalBtnDisabled,
+.evalBtn:disabled {
+  cursor: not-allowed;
+  border-color: $border-default;
+  background: $gray-100;
+  color: $text-subtle;
+  opacity: 0.72;
+
+  @include hover-only {
+    opacity: 0.72;
+  }
+
+  &:active {
+    opacity: 0.72;
+  }
+}
+
 // ── Evaluation Label Styles ───────────────────────────────
 
 .evalLabel {
