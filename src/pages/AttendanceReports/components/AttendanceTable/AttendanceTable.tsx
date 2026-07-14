@@ -15,6 +15,7 @@ import type {
 import { formatDateDMY } from "@/utils/format";
 import { Info, StickyNote, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { AttendanceCardGrid } from "./AttendanceCardGrid";
 import styles from "./AttendanceTable.module.scss";
 
 const TABLE_HEADERS = [
@@ -420,6 +421,21 @@ export function AttendanceTable({
           </tbody>
         </table>
       </div>
+      {rows.length > 0 ? (
+        <AttendanceCardGrid
+          rows={rows}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          selectedAttendanceIds={selectedAttendanceIds}
+          editedRows={editedRows}
+          onToggleSelect={onToggleSelect}
+          onAttendanceChange={onAttendanceChange}
+          onEvaluationChange={onEvaluationChange}
+          onNoteChange={onNoteChange}
+          onUndoRow={onUndoRow}
+          onDeleteRow={onDeleteRow}
+        />
+      ) : null}
       {rows.length === 0 && (
         <div className={styles.emptyState}>
           <ClipboardList

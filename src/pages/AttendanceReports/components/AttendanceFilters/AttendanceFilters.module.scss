@@ -6,6 +6,8 @@
   display: flex;
   flex-direction: column;
   gap: $space-3;
+  width: 100%;
+  min-width: 0;
 }
 
 .barTopRow {
@@ -20,6 +22,7 @@
   display: flex;
   align-items: center;
   gap: $space-3;
+  min-width: 0;
 }
 
 // ── Filter Toggle Button ───────────────────────────────────
@@ -105,6 +108,7 @@
   color: $white;
   font-size: $text-xs;
   font-weight: $font-semibold;
+  max-width: 100%;
 }
 
 .tagRemove {
@@ -124,5 +128,59 @@
 
   @include hover-only {
     opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .barTopRow {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .barLeft {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: $space-2;
+  }
+
+  .filterToggleBtn,
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .clearAllBtn {
+    justify-self: end;
+  }
+
+  .tagList {
+    max-width: 100%;
+  }
+
+  .tag {
+    min-width: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  :global(body[data-app-mode="pwa"]) {
+    .barTopRow {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+
+    .barLeft {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: $space-2;
+    }
+
+    .filterToggleBtn,
+    .saveButton {
+      width: 100%;
+      justify-content: center;
+    }
   }
 }

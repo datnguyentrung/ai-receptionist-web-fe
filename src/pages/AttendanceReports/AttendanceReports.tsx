@@ -6,14 +6,18 @@ import {
 import type { Belt, ScheduleLevel } from "@/config/constants/CoreEnums";
 import type {
   AttendanceStatus,
+  CoachTimesheetStatus,
   EvaluationStatus,
 } from "@/config/constants/OperationEnums";
+import { coachTimesheetAPI } from "@/features/coach/api/coachTimesheetAPI";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
 import { AttendanceTable } from "@/pages/AttendanceReports/components/AttendanceTable";
+import { CoachTimesheetFilters } from "@/pages/AttendanceReports/components/CoachTimesheetFilters/CoachTimesheetFilters";
+import { CoachTimesheetTable } from "@/pages/AttendanceReports/components/CoachTimesheetTable/CoachTimesheetTable";
 import { SaveAttendanceConfirmContent } from "@/pages/AttendanceReports/components/SaveAttendanceConfirmContent/SaveAttendanceConfirmContent";
 import { useAuthStore } from "@/store/authStore";
 import type {
@@ -24,6 +28,7 @@ import type {
 import { formatDateDMY } from "@/utils/format";
 import { Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import styles from "./AttendanceReports.module.scss";
 
 const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;
@@ -63,6 +68,157 @@ function AttendanceReportsSkeleton() {
 }
 
 export function AttendanceReports() {
+  const { historyMode } = useParams<{ historyMode?: string }>();
+  const normalizedHistoryMode = historyMode?.trim().toLowerCase();
+  const reportMode = normalizedHistoryMode === "coach" ? "coach" : "student";
+
+  if (reportMode === "coach") {
+    return <CoachTimesheetReportsContent />;
+  }
+
+  return <StudentAttendanceReportsContent />;
+}
+
+function parseOptionalNumber(
+  value: string,
+  options: { min?: number; max?: number } = {},
+) {
+  if (!value.trim()) return undefined;
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) return undefined;
+  if (options.min !== undefined && parsed < options.min) return undefined;
+  if (options.max !== undefined && parsed > options.max) return undefined;
+
+  return parsed;
+}
+
+function CoachTimesheetReportsContent() {
+  const [search, setSearch] = useState("");
+  const [workDate, setWorkDate] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [branchId, setBranchId] = useState("");
+  const [status, setStatus] = useState<CoachTimesheetStatus | "">("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const resetPage = <T,>(setter: (value: T) => void) => (value: T) => {
+    setter(value);
+    setCurrentPage(1);
+  };
+
+  const filterParams = useMemo(
+    () => ({
+      search: search.trim() || undefined,
+      workDate: workDate || undefined,
+      fromDate: fromDate || undefined,
+      toDate: toDate || undefined,
+      month: parseOptionalNumber(month, { min: 1, max: 12 }),
+      year: parseOptionalNumber(year, { min: 1900 }),
+      branchId: parseOptionalNumber(branchId, { min: 1 }),
+      status: status || undefined,
+      page: currentPage - 1,
+      size: PAGE_SIZE,
+      sortBy: "workingDate",
+      sortDir: "desc" as const,
+    }),
+    [
+      branchId,
+      currentPage,
+      fromDate,
+      month,
+      search,
+      status,
+      toDate,
+      workDate,
+      year,
+    ],
+  );
+
+  const { data, isFetching } = useGetQuery(
+    ["coach-timesheets", filterParams],
+    () => coachTimesheetAPI.getTimesheetsByFilter(filterParams),
+    {
+      staleTime: 5 * 60 * 1000,
+    },
+  );
+
+  const isInitialLoading = !data && isFetching;
+  const isRefreshing = Boolean(data) && isFetching;
+
+  const handleClearAll = () => {
+    setSearch("");
+    setWorkDate("");
+    setFromDate("");
+    setToDate("");
+    setMonth("");
+    setYear("");
+    setBranchId("");
+    setStatus("");
+    setCurrentPage(1);
+  };
+
+  return (
+    <div className={styles.page}>
+      <AttendancePageHeader totalRecords={data?.summary.totalRecords ?? 0} />
+
+      <div className={styles.coachSummaryGrid}>
+        <div className={styles.coachSummaryCard}>
+          <span>Tổng bản ghi</span>
+          <strong>{data?.summary.totalRecords ?? 0}</strong>
+        </div>
+        <div className={styles.coachSummaryCard}>
+          <span>Tổng buổi dạy</span>
+          <strong>{data?.summary.totalTeachingSessions ?? 0}</strong>
+        </div>
+      </div>
+
+      {isRefreshing ? (
+        <div className={styles.refreshNotice} role="status">
+          Đang cập nhật dữ liệu chấm công...
+        </div>
+      ) : null}
+
+      <div className={styles.filterActionRow}>
+        <CoachTimesheetFilters
+          search={search}
+          onSearchChange={resetPage(setSearch)}
+          workDate={workDate}
+          onWorkDateChange={resetPage(setWorkDate)}
+          fromDate={fromDate}
+          onFromDateChange={resetPage(setFromDate)}
+          toDate={toDate}
+          onToDateChange={resetPage(setToDate)}
+          month={month}
+          onMonthChange={resetPage(setMonth)}
+          year={year}
+          onYearChange={resetPage(setYear)}
+          branchId={branchId}
+          onBranchIdChange={resetPage(setBranchId)}
+          status={status}
+          onStatusChange={resetPage(setStatus)}
+          resultCount={data?.timesheets.totalElements ?? 0}
+          onClearAll={handleClearAll}
+        />
+      </div>
+
+      {isInitialLoading ? (
+        <AttendanceReportsSkeleton />
+      ) : (
+        <CoachTimesheetTable
+          data={data}
+          currentPage={currentPage}
+          pageSize={data?.timesheets.size || PAGE_SIZE}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
+    </div>
+  );
+}
+
+function StudentAttendanceReportsContent() {
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [attendanceStatuses, setAttendanceStatuses] = useState<
@@ -449,14 +605,7 @@ export function AttendanceReports() {
           Đang cập nhật dữ liệu mới...
         </div>
       ) : null}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "12px",
-        }}
-      >
+      <div className={styles.filterActionRow}>
         <AttendanceFilters
           search={search}
           onSearchChange={(v) => {
@@ -504,30 +653,11 @@ export function AttendanceReports() {
           type="button"
           onClick={openDeleteConfirmForMany}
           disabled={selectedAttendanceIdsOnPage.length === 0 || isDeleting}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px",
-            height: "36px",
-            padding: "0 12px",
-            borderRadius: "8px",
-            border: "1px solid #FCA5A5",
-            background: "#FEF2F2",
-            color: "#B91C1C",
-            cursor:
-              selectedAttendanceIdsOnPage.length === 0 || isDeleting
-                ? "not-allowed"
-                : "pointer",
-            opacity:
-              selectedAttendanceIdsOnPage.length === 0 || isDeleting ? 0.6 : 1,
-          }}
+          className={styles.deleteSelectedButton}
           title="Xóa các bản ghi đã chọn"
         >
           <Trash2 size={15} />
-          <span style={{ fontSize: "12px", fontWeight: 600 }}>
-            Xóa ({selectedAttendanceIdsOnPage.length})
-          </span>
+          <span>Xóa ({selectedAttendanceIdsOnPage.length})</span>
         </button>
       </div>
       {isInitialLoading ? (

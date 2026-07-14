@@ -21,6 +21,76 @@
   font-weight: $font-semibold;
 }
 
+.filterActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  min-width: 0;
+}
+
+.coachSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+}
+
+.coachSummaryCard {
+  min-width: 0;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(180deg, rgba($white, 0.98), rgba($gray-50, 0.92)),
+    $bg-white;
+  box-shadow: $shadow-xs;
+
+  span {
+    display: block;
+    margin-bottom: $space-2;
+    color: $text-muted;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+  }
+
+  strong {
+    display: block;
+    color: $text-primary;
+    font-size: $text-2xl;
+    font-weight: $font-extrabold;
+    line-height: 1;
+  }
+}
+
+.deleteSelectedButton {
+  @include touch-target(44px);
+  @include press-effect(0.97);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: $space-2;
+  padding: 0 $space-3;
+  border: 1px solid $error-300;
+  border-radius: $radius-sm;
+  background: $error-50;
+  color: $error-700;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  span {
+    font-size: $text-xs;
+    font-weight: $font-semibold;
+    white-space: nowrap;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+  }
+}
+
 .skeletonTable {
   display: grid;
   gap: $space-2;
@@ -187,14 +257,139 @@
 }
 
 @media (max-width: 767px) {
-  .skeletonRow {
-    grid-template-columns: 24px 1fr 72px;
-    min-height: 76px;
+  .page {
+    gap: $space-4;
+    overflow-x: hidden;
   }
 
-  .skeletonRow .skeletonCell:nth-of-type(n + 2),
-  .skeletonRow .skeletonPill:last-child {
+  .filterActionRow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-3;
+  }
+
+  .coachSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-2;
+  }
+
+  .coachSummaryCard {
+    padding: $space-3;
+    border-radius: $radius-md;
+  }
+
+  .deleteSelectedButton {
+    width: 100%;
+  }
+
+  .skeletonTable {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .skeletonRow {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 210px;
+    gap: $space-3;
+    padding: $space-3;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-lg;
+    background: $bg-white;
+  }
+
+  .skeletonCheck,
+  .skeletonRow .skeletonCell:nth-of-type(n + 3),
+  .skeletonRow .skeletonPill {
     display: none;
+  }
+
+  .skeletonStudent {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .skeletonAvatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .skeletonName {
+    width: 86%;
+  }
+}
+
+@media (min-width: 430px) and (max-width: 767px) {
+  .skeletonTable {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  :global(body[data-app-mode="pwa"]) {
+    .page {
+      gap: $space-4;
+      overflow-x: hidden;
+    }
+
+    .filterActionRow {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: $space-3;
+    }
+
+    .coachSummaryGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: $space-2;
+    }
+
+    .deleteSelectedButton {
+      width: 100%;
+    }
+
+    .skeletonTable {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: $space-3;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .skeletonRow {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+      min-width: 0;
+      min-height: 210px;
+      gap: $space-3;
+      padding: $space-3;
+      border: 1px solid $border-subtle;
+      border-radius: $radius-lg;
+      background: $bg-white;
+    }
+
+    .skeletonCheck,
+    .skeletonRow .skeletonCell:nth-of-type(n + 3),
+    .skeletonRow .skeletonPill {
+      display: none;
+    }
+
+    .skeletonStudent {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .skeletonAvatar {
+      width: 52px;
+      height: 52px;
+    }
+
+    .skeletonName {
+      width: 86%;
+    }
   }
 }
 
