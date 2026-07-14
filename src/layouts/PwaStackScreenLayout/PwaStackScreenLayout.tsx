@@ -1,5 +1,7 @@
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { isPWA } from "@/config/appMode";
 import { ChevronLeft, ScanFace } from "lucide-react";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./PwaStackScreenLayout.module.scss";
 
@@ -23,6 +25,7 @@ export function PwaStackScreenLayout({
   showBackButton = true,
 }: PwaStackScreenLayoutProps) {
   const navigate = useNavigate();
+  const contentRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const normalizedPathname = pathname.replace(/\/$/, "");
   const showScanAction = /^\/schedules(?:\/|$)/.test(normalizedPathname);
@@ -78,10 +81,13 @@ export function PwaStackScreenLayout({
       </header>
 
       <main
+        ref={contentRef}
         className={`${styles.content} ${withBottomNavigation ? styles.contentWithBottomNavigation : ""
           } ${contentClassName}`}
       >
-        {children}
+        <PullToRefresh enabled={isPWA} scrollContainerRef={contentRef}>
+          {children}
+        </PullToRefresh>
       </main>
     </section>
   );

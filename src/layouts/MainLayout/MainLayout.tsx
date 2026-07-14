@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { APP_MODE } from "@/config/appMode";
-import { useEffect, useState } from "react";
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { APP_MODE, isPWA } from "@/config/appMode";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import BottomNavigationBar from "../../components/BottomNavigationBar";
 import Header from "../../components/Header/Header";
@@ -10,6 +11,7 @@ const FULLSCREEN_ROUTES = new Set(["/check-in"]);
 
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const contentRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const isFullscreenRoute = FULLSCREEN_ROUTES.has(pathname.replace(/\/$/, ""));
 
@@ -47,11 +49,17 @@ export function MainLayout() {
 
         {/* Page content */}
         <main
+          ref={contentRef}
           className={`${styles.content} ${
             isFullscreenRoute ? styles.contentFullscreen : ""
           }`}
         >
-          <Outlet />
+          <PullToRefresh
+            enabled={isPWA && !isFullscreenRoute}
+            scrollContainerRef={contentRef}
+          >
+            <Outlet />
+          </PullToRefresh>
         </main>
 
         {!isFullscreenRoute && <BottomNavigationBar />}

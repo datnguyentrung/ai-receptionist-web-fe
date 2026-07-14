@@ -1,4 +1,5 @@
 ﻿import ConfirmModal from "@/components/ConfirmModal";
+import { useRegisterPullToRefresh } from "@/components/PullToRefresh";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/features/classSchedule";
 import { UpcomingSessionsModal } from "@/features/classSession/components/UpcomingSessionsModal";
 import { RefreshCcw } from "lucide-react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import styles from "./ClassSchedules.module.scss";
 import { useClassSchedulesLogic } from "./hooks/useClassSchedulesLogic";
@@ -82,7 +84,12 @@ function ClassSchedulesError({ onRetry }: { onRetry: () => void }) {
 
 export function ClassSchedules() {
   const logic = useClassSchedulesLogic();
+  const { refetchClassSchedules } = logic;
   useClassSessionWebSocket(logic.queryClient);
+  const refreshClassSchedules = useCallback(async () => {
+    await refetchClassSchedules();
+  }, [refetchClassSchedules]);
+  useRegisterPullToRefresh(refreshClassSchedules);
 
   if (logic.sessionsError) {
     toast.error("Lỗi khi tải các buổi học sắp diễn ra");

@@ -1,4 +1,5 @@
 import ConfirmModal from "@/components/ConfirmModal";
+import { useRegisterPullToRefresh } from "@/components/PullToRefresh";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isPWA } from "@/config/appMode";
@@ -211,6 +212,17 @@ export function AttendanceCheckin() {
       refetchOnMount: "always",
       refetchOnWindowFocus: true,
     },
+  );
+
+  const refreshAttendanceCheckin = useCallback(async () => {
+    if (!hasScheduleAccess) {
+      return;
+    }
+
+    await Promise.all([refetchEnrollments(), refetchAttendance()]);
+  }, [hasScheduleAccess, refetchAttendance, refetchEnrollments]);
+  useRegisterPullToRefresh(
+    hasScheduleAccess ? refreshAttendanceCheckin : null,
   );
 
   const { mutate: updateAttendance } = usePlainMutation(

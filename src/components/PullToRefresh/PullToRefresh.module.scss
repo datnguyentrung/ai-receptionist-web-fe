@@ -1,0 +1,100 @@
+.indicator {
+  --pull-to-refresh-distance: 0px;
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  z-index: $z-sticky;
+  display: flex;
+  justify-content: center;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(
+    0,
+    calc(var(--pull-to-refresh-distance) - 60px),
+    0
+  );
+  transition:
+    opacity 140ms ease,
+    transform 220ms cubic-bezier(0.2, 0.85, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.indicatorVisible {
+  opacity: 1;
+}
+
+.surface {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  min-height: 42px;
+  max-width: calc(100vw - #{$space-8});
+  padding: $space-2 $space-3;
+  border: 1px solid rgba($brand-red, 0.14);
+  border-radius: $radius-full;
+  color: $text-primary;
+  background:
+    linear-gradient(180deg, rgba($white, 0.98), rgba($gray-50, 0.96)),
+    $bg-white;
+  box-shadow:
+    0 10px 24px rgba($brand-dark-900, 0.1),
+    inset 0 1px 0 rgba($white, 0.9);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-full;
+  color: $brand-red;
+  background: $brand-red-50;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    transform 180ms ease;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-tight;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.indicatorReady {
+  .icon {
+    color: $white;
+    background: $brand-red;
+    transform: rotate(180deg) scale(1.04);
+  }
+}
+
+.indicatorRefreshing {
+  .icon svg {
+    animation: pullToRefreshSpin 820ms linear infinite;
+  }
+}
+
+@keyframes pullToRefreshSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator,
+  .icon {
+    transition: none;
+  }
+
+  .indicatorRefreshing {
+    .icon svg {
+      animation: none;
+    }
+  }
+}
