@@ -1,11 +1,12 @@
 .bottomNav {
+  --bottom-nav-safe-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: $z-sticky;
   display: block;
-  padding: 0 $space-4 calc(env(safe-area-inset-bottom, 0px) + 12px);
+  padding: 0 $space-3 var(--bottom-nav-safe-bottom);
   pointer-events: none;
 
   @include respond-to("md") {
@@ -25,11 +26,9 @@
   border: 1px solid rgba($brand-red, 0.12);
   border-radius: 18px;
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(255, 255, 255, 0.98),
-      rgba(255, 247, 247, 0.96)
-    ),
+      rgba(255, 247, 247, 0.96)),
     $white;
   box-shadow:
     0 18px 40px rgba(17, 24, 39, 0.16),
@@ -143,17 +142,13 @@
     border: 3px solid $white;
     border-radius: $radius-full;
     background:
-      radial-gradient(
-        circle at 35% 25%,
+      radial-gradient(circle at 35% 25%,
         rgba(255, 255, 255, 0.36),
-        transparent 34%
-      ),
-      linear-gradient(
-        145deg,
+        transparent 34%),
+      linear-gradient(145deg,
         $brand-red-500 0%,
         $brand-red 52%,
-        $brand-red-800 100%
-      );
+        $brand-red-800 100%);
     color: $white;
     box-shadow:
       0 10px 18px rgba($brand-red, 0.28),
@@ -195,6 +190,7 @@
 }
 
 @keyframes navPendingPulse {
+
   0%,
   100% {
     opacity: 0.45;

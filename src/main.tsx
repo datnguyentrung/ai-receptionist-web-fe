@@ -19,8 +19,12 @@ if (!isMaintenanceMode) {
     .catch(() => {});
 }
 
-document.body.dataset.appMode = APP_MODE;
-document.documentElement.dataset.appMode = APP_MODE;
+function syncAppModeAttribute() {
+  document.body.dataset.appMode = APP_MODE;
+  document.documentElement.dataset.appMode = APP_MODE;
+}
+
+syncAppModeAttribute();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

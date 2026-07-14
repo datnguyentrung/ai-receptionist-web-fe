@@ -6,6 +6,7 @@
    (Consolidated from base.scss + original index.css — no duplicates)
    ============================================================ */
 @layer base {
+
   *,
   *::before,
   *::after {
@@ -18,6 +19,7 @@
   body,
   #root {
     height: 100%;
+    min-height: 100%;
     width: 100%;
   }
 
@@ -44,20 +46,11 @@
   }
 
   html[data-app-mode="pwa"],
-  body[data-app-mode="pwa"],
-  body[data-app-mode="pwa"] #root {
-    min-height: 100%;
+  html[data-app-mode="pwa"] body,
+  html[data-app-mode="pwa"] #root {
+    width: 100%;
+    min-height: 100vh;
     min-height: 100dvh;
-    background: #f4f6fa;
-  }
-
-  html[data-app-mode="pwa"] {
-    min-height: -webkit-fill-available;
-  }
-
-  body[data-app-mode="pwa"] {
-    min-height: -webkit-fill-available;
-    overflow: hidden;
   }
 
   /* Typography reset */
@@ -181,6 +174,7 @@ body.overlay-open {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -191,12 +185,15 @@ body.overlay-open {
   .safe-top {
     padding-top: env(safe-area-inset-top);
   }
+
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
   .safe-left {
     padding-left: env(safe-area-inset-left);
   }
+
   .safe-right {
     padding-right: env(safe-area-inset-right);
   }
@@ -207,18 +204,17 @@ body.overlay-open {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 25%,
-    #f3f4f6 50%,
-    #e5e7eb 75%
-  );
+  background: linear-gradient(90deg,
+      #e5e7eb 25%,
+      #f3f4f6 50%,
+      #e5e7eb 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
