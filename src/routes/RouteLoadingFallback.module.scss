@@ -56,6 +56,47 @@
     $brand-red;
 }
 
+.kind_utilities {
+  .hero {
+    height: 82px;
+    border-radius: 18px;
+    background: $bg-surface;
+    border: 1px solid $border-subtle;
+  }
+
+  .panel {
+    min-height: 52px;
+  }
+
+  .card {
+    min-height: 96px;
+  }
+}
+
+.kind_check-in {
+  .hero {
+    height: 46dvh;
+    min-height: 260px;
+    border-radius: 26px;
+    background: #111827;
+  }
+
+  .metric {
+    height: 44px;
+    border-radius: $radius-full;
+  }
+
+  .panel {
+    min-height: 78px;
+  }
+}
+
+.kind_dashboard {
+  .hero {
+    height: 108px;
+  }
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -185,5 +226,21 @@
 @keyframes skeletonSweep {
   100% {
     transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topBar,
+  .hero,
+  .panel,
+  .card,
+  .row,
+  .pill,
+  .avatar,
+  .line,
+  .metric {
+    &::after {
+      animation: none;
+    }
   }
 }

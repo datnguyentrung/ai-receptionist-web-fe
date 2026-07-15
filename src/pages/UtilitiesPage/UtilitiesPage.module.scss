@@ -214,6 +214,7 @@
   color: inherit;
   cursor: pointer;
   text-align: center;
+  touch-action: manipulation;
 
   &:disabled {
     cursor: not-allowed;
@@ -531,5 +532,12 @@
   .historyModeOverlay,
   .historyModePanel {
     animation: none;
+  }
+
+  .utilityCard,
+  .utilityMain,
+  .pinButton,
+  .historyModeButton {
+    transition: none;
   }
 }

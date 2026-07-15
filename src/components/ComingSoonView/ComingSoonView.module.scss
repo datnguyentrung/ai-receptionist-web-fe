@@ -113,9 +113,14 @@
   border: 2px solid #4f46e5;
   border-radius: $radius-md;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition:
+    background-color $transition-fast,
+    color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
   margin-top: $space-4;
   @include touch-target(48px);
+  touch-action: manipulation;
 
   @include hover-only {
     background-color: #4f46e5;
@@ -169,5 +174,17 @@
   }
   60% {
     transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content,
+  .iconWrapper,
+  .icon {
+    animation: none;
+  }
+
+  .backButton {
+    transition: none;
   }
 }

@@ -60,6 +60,64 @@ const STATUS_TRANSITIONS: Record<
   TERMINATED: [{ status: "SCHEDULED", label: "Lên lịch lại", icon: Clock }],
 };
 
+const SESSION_STATUS_ORDER: Record<SessionStatus, number> = {
+  ACTIVE: 0,
+  SCHEDULED: 1,
+  POSTPONED: 1,
+  COMPLETED: 2,
+  CANCELLED: 3,
+  TERMINATED: 3,
+};
+
+function getSessionStartMs(session: SessionResponse) {
+  if (!session.sessionDate) return Number.POSITIVE_INFINITY;
+
+  const date =
+    session.sessionDate instanceof Date
+      ? new Date(session.sessionDate)
+      : new Date(session.sessionDate);
+
+  if (Number.isNaN(date.getTime())) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const timeMatch = session.startTime?.match(/^(\d{1,2}):(\d{2})/);
+  if (timeMatch) {
+    date.setHours(Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
+  }
+
+  return date.getTime();
+}
+
+function sortSessionsByStatusAndNearest(
+  sessions: SessionResponse[],
+  nowMs = Date.now(),
+) {
+  return [...sessions].sort((left, right) => {
+    const leftStatusOrder = left.status
+      ? SESSION_STATUS_ORDER[left.status]
+      : Number.MAX_SAFE_INTEGER;
+    const rightStatusOrder = right.status
+      ? SESSION_STATUS_ORDER[right.status]
+      : Number.MAX_SAFE_INTEGER;
+
+    if (leftStatusOrder !== rightStatusOrder) {
+      return leftStatusOrder - rightStatusOrder;
+    }
+
+    const leftStartMs = getSessionStartMs(left);
+    const rightStartMs = getSessionStartMs(right);
+    const leftDistance = Math.abs(leftStartMs - nowMs);
+    const rightDistance = Math.abs(rightStartMs - nowMs);
+
+    if (leftDistance !== rightDistance) {
+      return leftDistance - rightDistance;
+    }
+
+    return left.sessionId.localeCompare(right.sessionId);
+  });
+}
+
 interface SessionLayoutProps {
   sessions?: PageResponse<SessionResponse>;
   isLoading?: boolean;
@@ -120,6 +178,10 @@ export function SessionLayout({
     localSessionState.sourceKey === incomingSessionsKey
       ? localSessionState.items
       : incomingSessions;
+  const sortedSessions = useMemo(
+    () => sortSessionsByStatusAndNearest(localSessions),
+    [localSessions],
+  );
   const setLocalSessions = useCallback(
     (updater: (current: SessionResponse[]) => SessionResponse[]) => {
       setLocalSessionState((current) => ({
@@ -151,8 +213,8 @@ export function SessionLayout({
   );
 
   const visibleSessionIds = useMemo(
-    () => new Set(localSessions.map((s) => s.sessionId)),
-    [localSessions],
+    () => new Set(sortedSessions.map((s) => s.sessionId)),
+    [sortedSessions],
   );
 
   useEffect(() => {
@@ -358,7 +420,7 @@ export function SessionLayout({
   return (
     <div className={styles.container}>
       <div className={styles.sessionList}>
-        {localSessions.map((session) => (
+        {sortedSessions.map((session) => (
           <div
             key={session.sessionId}
             ref={registerItemRef(session.sessionId)}

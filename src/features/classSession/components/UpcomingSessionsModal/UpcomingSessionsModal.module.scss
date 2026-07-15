@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: $space-4;
+  max-height: min(78dvh, calc(100dvh - 96px));
 
   @include respond-to(lg) {
     flex-direction: row;
@@ -13,6 +14,7 @@
 
 .leftPanel {
   min-width: 0;
+  max-height: inherit;
 
   @include respond-to(lg) {
     flex: 1 1 640px;
@@ -22,8 +24,185 @@
 .rightPanel {
   flex: 1 1 auto;
   min-width: 0;
+  max-height: inherit;
 
   @include respond-to(lg) {
     flex: 0 0 480px;
+  }
+}
+
+.mobileDialog {
+  height: min(84dvh, calc(100dvh - 32px));
+  max-height: min(84dvh, calc(100dvh - 32px));
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0 !important;
+}
+
+.mobileFlow {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid $border-default;
+  border-radius: inherit;
+  background: $bg-white;
+  box-shadow: $shadow-2xl;
+}
+
+.mobileView {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: mobileViewIn 160ms ease-out;
+}
+
+.mobileHeader {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 max($space-4, env(safe-area-inset-right, 0px))
+    $space-3 max($space-4, env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid $border-subtle;
+  background: linear-gradient(180deg, $bg-white, rgba($gray-50, 0.92));
+}
+
+.mobileTitleSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileTitle {
+  margin: 0;
+  font-size: $text-base;
+  font-weight: $font-bold;
+  line-height: $leading-snug;
+  color: $text-heading;
+}
+
+.mobileSubtitle {
+  margin: 3px 0 0;
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  color: $text-muted;
+}
+
+.mobileIconBtn {
+  @include touch-target(44px);
+  @include press-effect;
+
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  background: $bg-white;
+  color: $text-secondary;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @include hover-only {
+    border-color: $border-strong;
+    background: $gray-50;
+    color: $text-heading;
+  }
+}
+
+.mobileActionBar {
+  flex-shrink: 0;
+  padding: $space-3 max($space-4, env(safe-area-inset-right, 0px))
+    $space-3 max($space-4, env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid $border-subtle;
+  background: $bg-white;
+}
+
+.createSessionBtn {
+  @include touch-target(48px);
+  @include press-effect;
+
+  width: 100%;
+  border: 0;
+  border-radius: $radius-md;
+  background: $gradient-brand;
+  color: $text-on-brand;
+  box-shadow: $shadow-brand;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  cursor: pointer;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.mobileContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: $space-4 max($space-4, env(safe-area-inset-right, 0px))
+    max($space-4, env(safe-area-inset-bottom, 0px))
+    max($space-4, env(safe-area-inset-left, 0px));
+  scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+.mobileCreatePanel {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 420px) {
+  .mobileDialog {
+    height: min(86dvh, calc(100dvh - 24px));
+    max-height: min(86dvh, calc(100dvh - 24px));
+  }
+
+  .mobileHeader,
+  .mobileActionBar,
+  .mobileContent {
+    padding-right: max($space-3, env(safe-area-inset-right, 0px));
+    padding-left: max($space-3, env(safe-area-inset-left, 0px));
+  }
+}
+
+@media (min-width: 0) {
+  :global(body[data-app-mode="pwa"]) {
+    .mobileDialog {
+      height: min(84dvh, calc(100dvh - 32px));
+      max-height: min(84dvh, calc(100dvh - 32px));
+      padding-bottom: 0 !important;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileView {
+    animation-duration: 1ms;
+  }
+}
+
+@keyframes mobileViewIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

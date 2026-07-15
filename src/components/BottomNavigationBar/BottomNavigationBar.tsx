@@ -1,22 +1,77 @@
 import { BOTTOM_NAV_ITEMS } from "@/config/constants/path";
+import {
+  preloadBottomNavRoutes,
+  preloadRoute,
+  type RoutePreloadContext,
+} from "@/routes/routePreload";
 import { useAuthStore } from "@/store/authStore";
-import { useMemo, useState } from "react";
+import { useRoleStudent } from "@/utils/roleUtils";
+import { useQueryClient } from "@tanstack/react-query";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { isPWA } from "../../config/appMode";
 import styles from "./BottomNavigationBar.module.scss";
 
 export default function BottomNavigationBar() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { pathname } = useLocation();
   const [pendingItemId, setPendingItemId] = useState<string | null>(null);
+  const { canViewCoach } = useRoleStudent();
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const userId =
     activeProfile?.userInfo?.userCode ?? activeProfile?.userInfo?.idUser;
+  const scheduleIds = useMemo(
+    () =>
+      activeProfile?.userInfo?.assignedClasses
+        ?.map((c) => c?.classSchedule?.scheduleId)
+        ?.filter((id): id is string => Boolean(id)) ?? [],
+    [activeProfile],
+  );
   const normalizedPathname = pathname.replace(/\/$/, "") || "/";
   const navItems = useMemo(
     () => (userId ? BOTTOM_NAV_ITEMS({ userId }).filter((item) => item.to) : []),
     [userId],
   );
+  const preloadContext = useMemo<RoutePreloadContext>(
+    () => ({
+      queryClient,
+      userId,
+      scheduleIds,
+      canViewCoach,
+    }),
+    [canViewCoach, queryClient, scheduleIds, userId],
+  );
+
+  useEffect(() => {
+    setPendingItemId(null);
+  }, [normalizedPathname]);
+
+  useEffect(() => {
+    if (!isPWA || !userId) return;
+
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (
+        callback: () => void,
+        options?: { timeout: number },
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(
+        () => preloadBottomNavRoutes(preloadContext),
+        { timeout: 1600 },
+      );
+      return () => idleWindow.cancelIdleCallback?.(idleId);
+    }
+
+    const timeoutId = window.setTimeout(
+      () => preloadBottomNavRoutes(preloadContext),
+      650,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [preloadContext, userId]);
 
   if (!isPWA || !userId) {
     return null;
@@ -30,22 +85,35 @@ export default function BottomNavigationBar() {
           normalizedPathname.startsWith(`${normalizedTo}/`);
   };
 
+  const warmRoute = useCallback(
+    (to: string) => {
+      preloadRoute(to, preloadContext);
+    },
+    [preloadContext],
+  );
+
   const handleNavigate = (id: string, to: string) => {
     if (isItemActive(to)) {
       return;
     }
 
+    warmRoute(to);
     setPendingItemId(id);
-    window.requestAnimationFrame(() => {
+    startTransition(() => {
       navigate(to);
     });
     window.setTimeout(() => {
       setPendingItemId((currentId) => (currentId === id ? null : currentId));
-    }, 1200);
+    }, 1800);
   };
 
   return (
     <nav className={styles.bottomNav} aria-label="Dieu huong nhanh">
+      <span className={styles.pendingStatus} aria-live="polite">
+        {pendingItemId
+          ? `Dang mo ${navItems.find((item) => item.id === pendingItemId)?.label ?? "man hinh"}`
+          : ""}
+      </span>
       <div className={styles.navShell}>
         {navItems.map(({ id, label, icon: Icon, to }) => {
           const isCheckIn = id === "check-in";
@@ -68,6 +136,10 @@ export default function BottomNavigationBar() {
                 .filter(Boolean)
                 .join(" ")}
               onClick={() => handleNavigate(id ?? label, to as string)}
+              onFocus={() => warmRoute(to as string)}
+              onPointerEnter={() => warmRoute(to as string)}
+              onPointerDown={() => warmRoute(to as string)}
+              onTouchStart={() => warmRoute(to as string)}
             >
               <span className={styles.iconWrap} data-active={isActive}>
                 <Icon

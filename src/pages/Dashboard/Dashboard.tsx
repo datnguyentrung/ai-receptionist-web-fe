@@ -1,4 +1,4 @@
-import { tuitionPaymentAPI } from "@/features/tuitionPayment";
+import { useGetQuery } from "@/hooks/useCrud";
 import type { TuitionPaymentResponse } from "@/types/Operation/TuitionPaymentTypes";
 import {
   ArrowRight,
@@ -11,7 +11,6 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import React from "react";
 import {
   Area,
   AreaChart,
@@ -31,6 +30,10 @@ import {
   STATS,
 } from "../../data/mockData";
 import { formatDateDMYHM } from "../../utils/format";
+import {
+  dashboardTuitionPaymentsQueryKey,
+  getDashboardTuitionPayments,
+} from "./dashboardQueries";
 import styles from "./Dashboard.module.scss";
 
 // ── helpers ──────────────────────────────────────────────────
@@ -119,6 +122,41 @@ function StatCard({
   );
 }
 
+function TuitionPaymentsSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <tr key={index} className={styles.tr} aria-hidden="true">
+          <td className={styles.td}>
+            <div className={styles.skeletonAvatarCell}>
+              <span className={styles.skeletonAvatar} />
+              <span className={styles.skeletonLineGroup}>
+                <span className={styles.skeletonLineLong} />
+                <span className={styles.skeletonLineShort} />
+              </span>
+            </div>
+          </td>
+          <td className={styles.td}>
+            <span className={styles.skeletonLineMedium} />
+          </td>
+          <td className={styles.td}>
+            <span className={styles.skeletonLineMedium} />
+          </td>
+          <td className={styles.td}>
+            <span className={styles.skeletonLineShort} />
+          </td>
+          <td className={styles.td}>
+            <span className={styles.skeletonLineMedium} />
+          </td>
+          <td className={styles.td}>
+            <span className={styles.skeletonLineShort} />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
 // ── Custom Tooltip ────────────────────────────────────────────
 type TooltipPayloadEntry = { value: number | string; name: string };
 function CustomTooltip({
@@ -171,27 +209,15 @@ function getPrimaryScheduleId(details: TuitionPaymentResponse["details"]) {
 
 // ── Main Dashboard ────────────────────────────────────────────
 export function Dashboard() {
-  const [tuitionPaymentHistory, setTuitionPaymentHistory] = React.useState<
-    TuitionPaymentResponse[]
-  >([]);
-  const initedRef = React.useRef(false);
-
-  React.useEffect(() => {
-    // Chỉ gọi API lần đầu tiên (tránh double-invoke từ StrictMode)
-    if (initedRef.current) return;
-    initedRef.current = true;
-
-    async function fetchTuitionPayments() {
-      try {
-        console.log("Fetching tuition payments...");
-        const data = await tuitionPaymentAPI.getAllPaymentsForAdmin();
-        setTuitionPaymentHistory(data.content);
-      } catch (error) {
-        console.error("Failed to fetch tuition payments:", error);
-      }
-    }
-    void fetchTuitionPayments();
-  }, []);
+  const { data: tuitionPaymentData, isFetching: isTuitionPaymentsFetching } =
+    useGetQuery(
+      dashboardTuitionPaymentsQueryKey,
+      getDashboardTuitionPayments,
+    );
+  const tuitionPaymentHistory: TuitionPaymentResponse[] =
+    tuitionPaymentData?.content ?? [];
+  const isTuitionPaymentsInitialLoading =
+    !tuitionPaymentData && isTuitionPaymentsFetching;
 
   return (
     <div className={styles.dashboard}>
@@ -413,7 +439,10 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {tuitionPaymentHistory.map((e) => (
+                {isTuitionPaymentsInitialLoading ? (
+                  <TuitionPaymentsSkeleton />
+                ) : (
+                  tuitionPaymentHistory.map((e) => (
                   <tr key={e.paymentId} className={styles.tr}>
                     <td className={styles.td}>
                       <div className={styles.avatarCell}>
@@ -510,8 +539,9 @@ export function Dashboard() {
                         Đã thanh toán
                       </span>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

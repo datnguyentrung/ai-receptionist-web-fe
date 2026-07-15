@@ -54,7 +54,13 @@ function ClassCardInner({
 
   return (
     <div
-      className={styles.classCard}
+      className={`${styles.classCard} ${
+        cls.scheduleStatus === "ACTIVE"
+          ? styles.classCardActive
+          : cls.scheduleStatus === "INACTIVE"
+            ? styles.classCardInactive
+            : ""
+      }`}
       onMouseEnter={prefetchAttendance}
       onFocus={prefetchAttendance}
       onTouchStart={prefetchAttendance}

@@ -14,8 +14,7 @@ import {
 import {
   type ScannedCheckInCodeFormat,
 } from "@/utils/validateScannedCheckInCode";
-import { FaceScanner } from "@components/FaceScanner";
-import { Scanner, type IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import axios from "axios";
 import type { BarcodeFormat } from "barcode-detector";
 import {
@@ -28,7 +27,15 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AICheckIn.module.scss";
 import { CheckInCard } from "./components/CheckInCard";
@@ -37,6 +44,14 @@ import { VoiceWave } from "./components/VoiceWave";
 import logo from "/taekwondo.jpg";
 
 const SCAN_COOLDOWN_MS = 2500;
+const LazyFaceScanner = lazy(() =>
+  import("@components/FaceScanner").then((module) => ({
+    default: module.FaceScanner,
+  })),
+);
+const LazyMobileCodeScanner = lazy(
+  () => import("./components/MobileCodeScanner"),
+);
 const CODE_SCANNER_FORMATS: BarcodeFormat[] = [
   "qr_code",
   "code_128",
@@ -191,6 +206,15 @@ const formatScanTime = (value?: string | Date | null) => {
     minute: "2-digit",
   });
 };
+
+function ScannerLoadingFallback() {
+  return (
+    <div className={styles.mobileScannerLoading} role="status">
+      <Loader2 size={18} />
+      <span>Dang mo camera...</span>
+    </div>
+  );
+}
 
 export default function AICheckIn() {
   const navigate = useNavigate();
@@ -589,22 +613,19 @@ export default function AICheckIn() {
               </div>
 
               <div className={styles.mobileScannerFrame}>
-                <Scanner
-                  onScan={handleMobileScan}
-                  onError={handleMobileScannerError}
-                  paused={scannerPaused}
-                  formats={CODE_SCANNER_FORMATS}
-                  scanDelay={350}
-                  sound={false}
-                  constraints={mobileScannerConstraints}
-                  components={{ finder: false, torch: true }}
-                  classNames={{
-                    container: `${styles.mobileScanner} ${cameraFacingMode === "user"
+                <Suspense fallback={<ScannerLoadingFallback />}>
+                  <LazyMobileCodeScanner
+                    onScan={handleMobileScan}
+                    onError={handleMobileScannerError}
+                    paused={scannerPaused}
+                    formats={CODE_SCANNER_FORMATS}
+                    constraints={mobileScannerConstraints}
+                    containerClassName={`${styles.mobileScanner} ${cameraFacingMode === "user"
                       ? styles.mobileScanner_front
                       : styles.mobileScanner_back
-                      }`,
-                  }}
-                />
+                      }`}
+                  />
+                </Suspense>
                 <div className={styles.mobileScannerMask} aria-hidden="true" />
                 <div className={styles.mobileScannerLine} aria-hidden="true" />
               </div>
@@ -796,10 +817,12 @@ export default function AICheckIn() {
 
           {isFaceScanMode && (
             <div className={styles.cameraWrapper}>
-              <FaceScanner
-                checkInResult={checkInResult}
-                onCheckInResult={setCheckInResult}
-              />
+              <Suspense fallback={<ScannerLoadingFallback />}>
+                <LazyFaceScanner
+                  checkInResult={checkInResult}
+                  onCheckInResult={setCheckInResult}
+                />
+              </Suspense>
             </div>
           )}
         </motion.div>

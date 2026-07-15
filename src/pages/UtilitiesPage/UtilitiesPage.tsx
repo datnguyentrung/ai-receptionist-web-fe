@@ -4,7 +4,7 @@ import {
   type NavigationItem,
 } from "@/config/constants/path";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
-import { prefetchClassSchedules } from "@/pages/ClassSchedules/classSchedulesQueries";
+import { preloadRoute, type RoutePreloadContext } from "@/routes/routePreload";
 import { useAuthStore } from "@/store/authStore";
 import { useRoleStudent, useUserLevel } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -151,6 +151,9 @@ function UtilityCard({
         className={styles.utilityMain}
         disabled={item.isDisabled}
         onMouseEnter={() => onPrefetch(item)}
+        onFocus={() => onPrefetch(item)}
+        onPointerDown={() => onPrefetch(item)}
+        onTouchStart={() => onPrefetch(item)}
         onClick={() => onNavigate(item)}
         aria-busy={isNavigating}
       >
@@ -237,11 +240,21 @@ export function UtilitiesPage() {
     [activeProfile],
   );
 
-  const prefetchSchedules = useCallback(
-    (options?: { includeRoute?: boolean }) => {
-      prefetchClassSchedules(queryClient, scheduleIds, options);
+  const preloadContext = useMemo<RoutePreloadContext>(
+    () => ({
+      queryClient,
+      userId: studentCode,
+      scheduleIds,
+      canViewCoach,
+    }),
+    [canViewCoach, queryClient, scheduleIds, studentCode],
+  );
+
+  const preloadUtilityRoute = useCallback(
+    (to: string) => {
+      preloadRoute(to, preloadContext);
     },
-    [queryClient, scheduleIds],
+    [preloadContext],
   );
 
   useEffect(() => {
@@ -255,37 +268,50 @@ export function UtilitiesPage() {
 
     if (idleWindow.requestIdleCallback) {
       const idleId = idleWindow.requestIdleCallback(
-        () => prefetchSchedules(),
+        () => {
+          for (const item of utilityItems) {
+            if (!item.isDisabled && item.to) {
+              preloadRoute(item.to, preloadContext);
+            }
+          }
+        },
         { timeout: 1800 },
       );
       return () => idleWindow.cancelIdleCallback?.(idleId);
     }
 
-    const timeoutId = window.setTimeout(() => prefetchSchedules(), 700);
+    const timeoutId = window.setTimeout(() => {
+      for (const item of utilityItems) {
+        if (!item.isDisabled && item.to) {
+          preloadRoute(item.to, preloadContext);
+        }
+      }
+    }, 700);
     return () => window.clearTimeout(timeoutId);
-  }, [prefetchSchedules]);
+  }, [preloadContext, utilityItems]);
 
   const handleNavigate = (item: UtilityItem) => {
     if (item.isDisabled || !item.to) return;
 
     if (item.id === "history" && isPWA && canViewCoach) {
       setNavigatingItemId(null);
+      preloadUtilityRoute("/history/student");
+      preloadUtilityRoute("/history/coach");
       setIsHistoryModePickerOpen(true);
       return;
     }
 
     const targetRoute = item.to;
+    preloadUtilityRoute(targetRoute);
     setNavigatingItemId(item.id);
 
-    window.requestAnimationFrame(() => {
-      navigate(targetRoute);
-    });
+    navigate(targetRoute);
   };
 
   const handlePrefetch = (item: UtilityItem) => {
-    if (item.isDisabled || item.to !== "/schedules") return;
+    if (item.isDisabled || !item.to) return;
 
-    prefetchSchedules();
+    preloadUtilityRoute(item.to);
   };
 
   const handleToggleQuick = (item: UtilityItem) => {
@@ -296,10 +322,9 @@ export function UtilitiesPage() {
   const navigateToHistoryMode = (mode: "student" | "coach") => {
     setIsHistoryModePickerOpen(false);
     setNavigatingItemId("history");
+    preloadUtilityRoute(`/history/${mode}`);
 
-    window.requestAnimationFrame(() => {
-      navigate(`/history/${mode}`);
-    });
+    navigate(`/history/${mode}`);
   };
 
   useEffect(() => {

@@ -45,7 +45,13 @@ function ClassWeekItemInner({
 
   return (
     <div
-      className={styles.weekClassItem}
+      className={`${styles.weekClassItem} ${
+        cls.scheduleStatus === "ACTIVE"
+          ? styles.weekClassItemActive
+          : cls.scheduleStatus === "INACTIVE"
+            ? styles.weekClassItemInactive
+            : ""
+      }`}
       onMouseEnter={prefetchAttendance}
       onFocus={prefetchAttendance}
       onTouchStart={prefetchAttendance}

@@ -353,6 +353,27 @@
   }
 }
 
+.mobileScannerLoading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  min-height: 100%;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  font-weight: $font-semibold;
+  background:
+    radial-gradient(circle at center, rgba(224, 32, 32, 0.18), transparent 38%),
+    #111827;
+
+  svg {
+    animation: mobileSpin 0.9s linear infinite;
+  }
+}
+
 .mobileScannerMask {
   position: absolute;
   inset: 0;
@@ -2175,5 +2196,12 @@
     object-fit: contain !important;
     object-position: center center;
     image-rendering: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileScannerLine,
+  .mobileScannerLoading svg {
+    animation: none;
   }
 }

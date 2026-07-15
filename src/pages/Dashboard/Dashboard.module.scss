@@ -270,6 +270,64 @@
   gap: 10px;
 }
 
+.skeletonAvatarCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+}
+
+.skeletonLineGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.skeletonAvatar,
+.skeletonLineLong,
+.skeletonLineMedium,
+.skeletonLineShort {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #eef2f7;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.72),
+      transparent
+    );
+    animation: dashboardSkeletonSweep 1.15s ease-in-out infinite;
+  }
+}
+
+.skeletonAvatar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.skeletonLineLong {
+  width: 112px;
+  height: 12px;
+}
+
+.skeletonLineMedium {
+  width: 96px;
+  height: 12px;
+}
+
+.skeletonLineShort {
+  width: 64px;
+  height: 12px;
+}
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -380,6 +438,23 @@
     .chartCardWide,
     .recentCard {
       grid-column: auto;
+    }
+  }
+}
+
+@keyframes dashboardSkeletonSweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonAvatar,
+  .skeletonLineLong,
+  .skeletonLineMedium,
+  .skeletonLineShort {
+    &::after {
+      animation: none;
     }
   }
 }

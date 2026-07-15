@@ -11,12 +11,11 @@ import type {
 import { BeltLabel } from "@/config/constants";
 import { CLASS_SESSION } from "@/data/mockData";
 import { EvalSheet } from "@/features/studentAttendance";
-import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
-import { useQueryClient } from "@tanstack/react-query";
 import type {
   AttendanceListResponse,
   AttendanceUpdateEvaluationRequest,
@@ -26,6 +25,7 @@ import type {
 } from "@/types";
 import { mergeAttendanceData } from "@/utils/mergeAttendanceData";
 import { useRoleStudent } from "@/utils/roleUtils";
+import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCcw, Users } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -92,6 +92,12 @@ function shouldSetCheckInTime(status: AttendanceStatus | null) {
   return status === "PRESENT" || status === "LATE";
 }
 
+function getAttendanceSortGroup(status: AttendanceStatus | null) {
+  return status === "PRESENT" || status === "LATE" || status === "MAKEUP"
+    ? 0
+    : 1;
+}
+
 function mergeAttendanceIntoList(
   old: AttendanceListResponse | undefined,
   updatedAttendance: StudentAttendanceResponse,
@@ -106,7 +112,7 @@ function mergeAttendanceIntoList(
       ...old.attendances,
       content: old.attendances.content.map((student) =>
         student.studentId === updatedAttendance.studentId ||
-        student.attendanceId === updatedAttendance.attendanceId
+          student.attendanceId === updatedAttendance.attendanceId
           ? { ...student, ...updatedAttendance }
           : student,
       ),
@@ -413,6 +419,11 @@ export function AttendanceCheckin() {
               : s.belt === beltFilter,
         )
         .sort((a, b) => {
+          const attendanceCompare =
+            getAttendanceSortGroup(a.attendanceStatus) -
+            getAttendanceSortGroup(b.attendanceStatus);
+          if (attendanceCompare !== 0) return attendanceCompare;
+
           const beltCompare = getBeltRank(a.belt) - getBeltRank(b.belt);
           const orderedBeltCompare =
             beltSort === "asc" ? beltCompare : -beltCompare;

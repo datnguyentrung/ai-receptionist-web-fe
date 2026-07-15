@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { showErrorToast } from "@/components/ui/toast";
+import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import {
   SessionStatusLabel,
   type SessionStatus,
@@ -19,9 +19,12 @@ import type {
 } from "@/types";
 import { getLabelClassSchedule } from "@/utils/getInitials";
 import { addDays, format } from "date-fns";
-import { CalendarIcon, X } from "lucide-react";
+import { ArrowLeft, CalendarIcon, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./CreateSessionModal.module.scss";
+
+type CreateSessionVariant = "panel" | "embedded";
+type ConfirmationMode = "modal" | "inline";
 
 type Props = {
   open: boolean;
@@ -30,6 +33,11 @@ type Props = {
   initialScheduleId?: string;
   onRequestClose: () => void;
   onSessionCreated?: (session: SessionResponse) => void;
+  variant?: CreateSessionVariant;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  confirmationMode?: ConfirmationMode;
+  onBusyChange?: (busy: boolean) => void;
 };
 
 export function CreateSessionModal({
@@ -39,6 +47,11 @@ export function CreateSessionModal({
   initialScheduleId,
   onRequestClose,
   onSessionCreated,
+  variant = "panel",
+  showBackButton = false,
+  onBack,
+  confirmationMode = "modal",
+  onBusyChange,
 }: Props) {
   const todayIso = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
 
@@ -55,6 +68,18 @@ export function CreateSessionModal({
   const [isCreating, setIsCreating] = useState(false);
 
   const busy = isCreating;
+  const isEmbedded = variant === "embedded";
+  const usesInlineConfirmation = confirmationMode === "inline";
+
+  useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
+
+  useEffect(() => {
+    return () => {
+      onBusyChange?.(false);
+    };
+  }, [onBusyChange]);
 
   const selectedSchedule = useMemo(() => {
     const trimmed = scheduleId.trim();
@@ -67,7 +92,7 @@ export function CreateSessionModal({
       if (!backendWeekday) return todayIso;
 
       // Backend mapping in this project:
-      // Chủ nhật = 1, Thứ 2 = 2, ..., Thứ 7 = 7
+      // Sunday = 1, Monday = 2, ..., Saturday = 7
       const targetJsDay = backendWeekday === 1 ? 0 : backendWeekday - 1;
       const base = new Date();
       const baseJsDay = base.getDay();
@@ -83,6 +108,7 @@ export function CreateSessionModal({
 
     if (!open) {
       wasOpenRef.current = false;
+      setIsCreateConfirmOpen(false);
       return;
     }
 
@@ -255,23 +281,47 @@ export function CreateSessionModal({
     }
   }, [onSessionCreated, selectedSchedule, sessionDate, status]);
 
+  const handleInlineCreateSession = useCallback(async () => {
+    try {
+      await handleCreateSession();
+      showSuccessToast("Tạo buổi học thành công");
+    } catch {
+      showErrorToast("Không thể tạo buổi học");
+    }
+  }, [handleCreateSession]);
+
   const closePanel = useCallback(() => {
     if (busy) return;
     onRequestClose();
   }, [busy, onRequestClose]);
 
-  return (
-    <div
-      className={`${baseModalStyles.surface} ${styles.panel} ${className}`}
-      aria-label="Tạo buổi học mới"
-    >
-      <div className={baseModalStyles.header}>
+  const goBack = useCallback(() => {
+    if (busy) return;
+    onBack?.();
+  }, [busy, onBack]);
+
+  const content = (
+    <>
+      <div className={isEmbedded ? styles.embeddedHeader : baseModalStyles.header}>
+        {isEmbedded && showBackButton ? (
+          <button
+            type="button"
+            className={styles.embeddedIconBtn}
+            onClick={goBack}
+            disabled={busy}
+            aria-label="Quay lại danh sách buổi học"
+          >
+            <ArrowLeft size={18} />
+          </button>
+        ) : null}
+
         <div className={baseModalStyles.titleSection}>
           <h2 className={baseModalStyles.title}>Tạo Buổi Học Mới</h2>
           <p className={baseModalStyles.subtitle}>Tạo một buổi học mới</p>
         </div>
+
         <button
-          className={baseModalStyles.closeBtn}
+          className={isEmbedded ? styles.embeddedIconBtn : baseModalStyles.closeBtn}
           onClick={closePanel}
           disabled={busy}
           aria-label="Đóng modal"
@@ -281,13 +331,16 @@ export function CreateSessionModal({
         </button>
       </div>
 
-      <div className={baseModalStyles.content}>
+      <div className={isEmbedded ? styles.embeddedContent : baseModalStyles.content}>
         <form className={styles.createForm}>
           <label className={styles.field}>
             <span className={styles.label}>Mã lớp học</span>
             <input
               value={scheduleId}
-              onChange={(e) => setScheduleId(e.target.value)}
+              onChange={(event) => {
+                setScheduleId(event.target.value);
+                setIsCreateConfirmOpen(false);
+              }}
               list="schedule-id-options"
               placeholder="VD: P14C1"
               disabled={busy}
@@ -306,7 +359,6 @@ export function CreateSessionModal({
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    // Class này sẽ giả lập giao diện của thẻ input cũ
                     className={`${styles.dateInputBtn} ${!sessionDate ? styles.textMuted : ""}`}
                     disabled={busy}
                   >
@@ -319,7 +371,6 @@ export function CreateSessionModal({
                   </button>
                 </PopoverTrigger>
 
-                {/* Vùng hiển thị Lịch */}
                 <PopoverContent
                   align="start"
                   className={styles.calendarPopover}
@@ -330,7 +381,8 @@ export function CreateSessionModal({
                     onSelect={(date) => {
                       if (date) {
                         setSessionDateDirty(true);
-                        setSessionDate(format(date, "yyyy-MM-dd")); // Giữ nguyên format gốc cho backend
+                        setIsCreateConfirmOpen(false);
+                        setSessionDate(format(date, "yyyy-MM-dd"));
                       }
                     }}
                     initialFocus
@@ -343,6 +395,7 @@ export function CreateSessionModal({
                 className={styles.todayBtn}
                 onClick={() => {
                   setSessionDateDirty(true);
+                  setIsCreateConfirmOpen(false);
                   setSessionDate(todayIso);
                 }}
                 disabled={busy}
@@ -356,7 +409,10 @@ export function CreateSessionModal({
             <span className={styles.label}>Trạng thái</span>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as SessionStatus)}
+              onChange={(event) => {
+                setStatus(event.target.value as SessionStatus);
+                setIsCreateConfirmOpen(false);
+              }}
               disabled={busy}
             >
               {statusOptions.map((opt) => (
@@ -373,7 +429,11 @@ export function CreateSessionModal({
               <input
                 value={startTime}
                 type="time"
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(event) => {
+                  setStartTime(event.target.value);
+                  setIsCreateConfirmOpen(false);
+                }}
+                disabled={busy}
                 required
               />
             </label>
@@ -382,7 +442,11 @@ export function CreateSessionModal({
               <input
                 value={endTime}
                 type="time"
-                onChange={(e) => setEndTime(e.target.value)}
+                onChange={(event) => {
+                  setEndTime(event.target.value);
+                  setIsCreateConfirmOpen(false);
+                }}
+                disabled={busy}
                 required
               />
             </label>
@@ -390,33 +454,74 @@ export function CreateSessionModal({
         </form>
       </div>
 
-      <div className={baseModalStyles.footer}>
-        <button
-          type="button"
-          className={styles.saveBtn}
-          onClick={openCreateConfirm}
-          disabled={!canCreate || busy}
-        >
-          Lưu
-        </button>
+      <div className={isEmbedded ? styles.embeddedFooter : baseModalStyles.footer}>
+        {usesInlineConfirmation && isCreateConfirmOpen ? (
+          <div className={styles.inlineConfirm} aria-live="polite">
+            <p className={styles.inlineConfirmText}>
+              Tạo buổi học cho lớp {scheduleId.trim()} vào ngày {sessionDate}?
+            </p>
+            <div className={styles.inlineConfirmActions}>
+              <button
+                type="button"
+                className={styles.inlineCancelBtn}
+                onClick={() => setIsCreateConfirmOpen(false)}
+                disabled={busy}
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                className={styles.saveBtn}
+                onClick={handleInlineCreateSession}
+                disabled={busy}
+              >
+                {busy ? "Đang tạo..." : "Tạo"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={styles.saveBtn}
+            onClick={openCreateConfirm}
+            disabled={!canCreate || busy}
+          >
+            Lưu
+          </button>
+        )}
       </div>
+    </>
+  );
 
-      <ConfirmModal
-        open={isCreateConfirmOpen}
-        title="Xác nhận tạo buổi học"
-        description={`Tạo buổi học cho lớp ${scheduleId.trim()} vào ngày ${sessionDate}?`}
-        cancelText="Hủy"
-        confirmText="Tạo"
-        loadingText="Đang tạo..."
-        isLoading={isCreating}
-        onCancel={() => {
-          if (isCreating) return;
-          setIsCreateConfirmOpen(false);
-        }}
-        onConfirm={handleCreateSession}
-        successToastMessage="Tạo buổi học thành công"
-        errorToastMessage="Không thể tạo buổi học"
-      />
+  return (
+    <div
+      className={`${
+        isEmbedded
+          ? styles.embeddedPanel
+          : `${baseModalStyles.surface} ${styles.panel}`
+      } ${className}`}
+      aria-label="Tạo buổi học mới"
+    >
+      {content}
+
+      {!usesInlineConfirmation ? (
+        <ConfirmModal
+          open={isCreateConfirmOpen}
+          title="Xác nhận tạo buổi học"
+          description={`Tạo buổi học cho lớp ${scheduleId.trim()} vào ngày ${sessionDate}?`}
+          cancelText="Hủy"
+          confirmText="Tạo"
+          loadingText="Đang tạo..."
+          isLoading={isCreating}
+          onCancel={() => {
+            if (isCreating) return;
+            setIsCreateConfirmOpen(false);
+          }}
+          onConfirm={handleCreateSession}
+          successToastMessage="Tạo buổi học thành công"
+          errorToastMessage="Không thể tạo buổi học"
+        />
+      ) : null}
     </div>
   );
 }

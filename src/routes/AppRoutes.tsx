@@ -2,6 +2,7 @@ import { isPWA } from "@/config/appMode";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/config/constants/path";
 import { RequireRole } from "@/config/RequireRole";
 import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
+import { getRouteSkeletonKind } from "@/routes/routePreload";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import {
@@ -106,53 +107,62 @@ function RouteLoadingFallback({
 }) {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
   const isProfileRoute = isProfileRoutePath(pathname);
+  const skeletonKind = getRouteSkeletonKind(pathname);
   const rowCount = normalizedPath.includes("history") ? 7 : 5;
+  const skeletonContent = (
+    <div
+      className={`${fallbackStyles.appChrome} ${fallbackStyles[`kind_${skeletonKind}`] ?? ""}`}
+    >
+      <div className={fallbackStyles.topBar} />
+      {isProfileRoute ? (
+        <>
+          <div className={fallbackStyles.profileHeader}>
+            <div className={fallbackStyles.avatar} />
+            <div className={fallbackStyles.profileLines}>
+              <div className={fallbackStyles.line} />
+              <div className={fallbackStyles.line} />
+            </div>
+          </div>
+          <div className={fallbackStyles.tabRow}>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className={fallbackStyles.pill} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={fallbackStyles.hero} />
+          <div className={fallbackStyles.metrics}>
+            {Array.from({
+              length: skeletonKind === "utilities" || skeletonKind === "check-in" ? 2 : 4,
+            }).map((_, index) => (
+              <div key={index} className={fallbackStyles.metric} />
+            ))}
+          </div>
+        </>
+      )}
+      <div className={fallbackStyles.panel} />
+      {skeletonKind === "table" ? (
+        <div className={fallbackStyles.table}>
+          {Array.from({ length: rowCount }).map((_, index) => (
+            <div key={index} className={fallbackStyles.row} />
+          ))}
+        </div>
+      ) : (
+        <div className={fallbackStyles.contentGrid}>
+          {Array.from({
+            length: skeletonKind === "check-in" ? 2 : 6,
+          }).map((_, index) => (
+            <div key={index} className={fallbackStyles.card} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className={fallbackStyles.routeShell} aria-busy="true">
-      <div className={fallbackStyles.appChrome}>
-        <div className={fallbackStyles.topBar} />
-        {isProfileRoute ? (
-          <>
-            <div className={fallbackStyles.profileHeader}>
-              <div className={fallbackStyles.avatar} />
-              <div className={fallbackStyles.profileLines}>
-                <div className={fallbackStyles.line} />
-                <div className={fallbackStyles.line} />
-              </div>
-            </div>
-            <div className={fallbackStyles.tabRow}>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className={fallbackStyles.pill} />
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={fallbackStyles.hero} />
-            <div className={fallbackStyles.metrics}>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className={fallbackStyles.metric} />
-              ))}
-            </div>
-          </>
-        )}
-        <div className={fallbackStyles.panel} />
-        {normalizedPath.includes("students") ||
-          normalizedPath.includes("history") ? (
-          <div className={fallbackStyles.table}>
-            {Array.from({ length: rowCount }).map((_, index) => (
-              <div key={index} className={fallbackStyles.row} />
-            ))}
-          </div>
-        ) : (
-          <div className={fallbackStyles.contentGrid}>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className={fallbackStyles.card} />
-            ))}
-          </div>
-        )}
-      </div>
+      {skeletonContent}
       {showBottomDock ? <div className={fallbackStyles.bottomDock} /> : null}
     </div>
   );

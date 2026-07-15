@@ -30,10 +30,11 @@
     height: calc(var(--pwa-stack-header-height) + var(--pwa-stack-overlap));
     pointer-events: none;
     background:
-      linear-gradient(135deg,
-        $brand-red-900 0%,
-        $brand-red-800 58%,
-        $brand-red 100%);
+      linear-gradient(180deg,
+        rgba($brand-red-900, 0.98) 0%,
+        rgba($brand-red-800, 0.9) 46%,
+        rgba($brand-red, 0.5) 78%,
+        rgba($brand-red, 0) 100%);
   }
 }
 
@@ -47,40 +48,61 @@
   overflow: hidden;
   border-radius: 0 0 var(--pwa-stack-overlap) var(--pwa-stack-overlap);
   background:
-    radial-gradient(circle at 12% 20%,
-      rgba(255, 255, 255, 0.24),
-      transparent 22%),
-    radial-gradient(circle at 88% 18%,
-      rgba(255, 255, 255, 0.18),
-      transparent 24%),
+    linear-gradient(180deg,
+      rgba($brand-red-900, 0.98) 0%,
+      rgba($brand-red-800, 0.94) 42%,
+      rgba($brand-red, 0.78) 70%,
+      rgba($brand-red-500, 0.12) 100%),
     linear-gradient(135deg,
       $brand-red-900 0%,
-      $brand-red 48%,
+      $brand-red 52%,
       $brand-red-500 100%);
   color: $white;
   // box-shadow:
   //   0 16px 30px rgba($brand-red-900, 0.2),
   //   inset 0 -1px 0 rgba($white, 0.16);
 
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 18% 18%,
+        rgba($white, 0.22),
+        transparent 28%),
+      radial-gradient(circle at 88% 4%,
+        rgba($brand-red-50, 0.18),
+        transparent 34%),
+      linear-gradient(180deg,
+        rgba($white, 0.08) 0%,
+        rgba($white, 0.02) 54%,
+        rgba($bg-base, 0.18) 100%);
+    mix-blend-mode: screen;
+  }
+
   &::after {
     content: "";
     position: absolute;
     inset: auto 0 0;
-    height: 18px;
+    z-index: 0;
+    height: calc(var(--pwa-stack-overlap) + 12px);
     background:
       linear-gradient(180deg,
         rgba(255, 255, 255, 0),
-        rgba(255, 255, 255, 0.08)),
+        rgba($bg-base, 0.2) 58%,
+        rgba($bg-base, 0.72)),
       linear-gradient(90deg,
         rgba($brand-red-900, 0.08),
-        rgba($brand-red-500, 0.1));
+        rgba($brand-red-500, 0.06));
     pointer-events: none;
   }
 }
 
 .headerInner {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 48px;
   align-items: center;
@@ -91,8 +113,9 @@
 .headerArt {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
-  opacity: 0.36;
+  opacity: 0.42;
   background:
     radial-gradient(circle at 8% 88%,
       rgba(255, 255, 255, 0.3) 0 1px,
@@ -104,6 +127,30 @@
       rgba(255, 255, 255, 0.28) 0deg 3deg,
       transparent 3deg 14deg);
   mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: clamp(-25px, -3vw, 8px);
+    bottom: clamp(-46px, -11vw, -24px);
+    width: clamp(148px, 42vw, 198px);
+    aspect-ratio: 1;
+    background:
+      radial-gradient(circle at 50% 52%,
+        rgba($white, 0.3) 0%,
+        rgba($brand-red-50, 0.2) 38%,
+        transparent 68%),
+      url("/taekwondo-removebg-preview.png") center / contain no-repeat;
+    background-blend-mode: screen, normal;
+    opacity: 1;
+    filter:
+      brightness(1.12) saturate(1.18) contrast(1.12) drop-shadow(0 0 18px rgba($white, 0.16)) drop-shadow(0 16px 24px rgba($brand-red-900, 0.24));
+    mix-blend-mode: normal;
+    transform: rotate(7deg) translate3d(0, 0, 0);
+    mask-image: linear-gradient(135deg, transparent 0%, #000 8%, #000 86%, transparent 100%);
+    -webkit-mask-image: linear-gradient(135deg, transparent 0%, #000 8%, #000 86%, transparent 100%);
+  }
 }
 
 .backButton,
@@ -159,12 +206,13 @@
   color: $white;
   min-width: 0;
   overflow: hidden;
-  font-size: clamp(1.18rem, 1.05rem + 0.55vw, 1.55rem);
+  // font-size: clamp(1.18rem, 1.05rem + 0.55vw, 1.55rem);
   font-weight: $font-extrabold;
   line-height: $leading-tight;
   text-align: center;
   text-overflow: ellipsis;
   text-wrap: balance;
+  text-shadow: 0 1px 16px rgba($brand-red-900, 0.34);
 }
 
 .content {
@@ -225,6 +273,13 @@
     font-size: clamp(1.25rem, 1rem + 0.65vw, 1.55rem);
   }
 
+  .headerArt::after {
+    left: clamp(-4px, -1vw, 10px);
+    bottom: -40px;
+    width: clamp(112px, 24vw, 142px);
+    opacity: 1;
+  }
+
   .content {
     padding: calc($space-3 + var(--pwa-stack-overlap)) $space-4 var(--pwa-stack-content-bottom);
   }
@@ -258,8 +313,19 @@
   }
 }
 
+@media (max-width: 360px) {
+  .headerArt::after {
+    left: -12px;
+    bottom: -34px;
+    width: 132px;
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .backButton {
+
+  .backButton,
+  .headerActionButton {
     transition: none;
   }
 }
