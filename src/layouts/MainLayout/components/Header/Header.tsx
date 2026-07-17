@@ -1,5 +1,5 @@
 import { WeekdayCodeToLabel } from "@/config/constants";
-import { useNavItems } from "@/hooks/useNavItems";
+import { useNavItems } from "@/app/navigation/useNavItems";
 import { Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";

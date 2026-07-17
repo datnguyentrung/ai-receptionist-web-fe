@@ -2,7 +2,7 @@ import { isPWA } from "@/config/appMode";
 import {
   NAV_ITEMS,
   type NavigationItem,
-} from "@/config/constants/path";
+} from "@/app/navigation/path";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { preloadRoute, type RoutePreloadContext } from "@/app/router/routePreload";
 import { useAuthStore } from "@/store/authStore";

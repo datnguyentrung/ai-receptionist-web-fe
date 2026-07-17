@@ -1,4 +1,4 @@
-import { useLeaderboardActionDropDownItems } from "@/config/constants/ListActionDropDown";
+import { useLeaderboardActionDropDownItems } from "@/app/navigation/listActionDropdown";
 import { Trophy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";

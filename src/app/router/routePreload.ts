@@ -1,7 +1,7 @@
 import { coachAPI } from "@/features/coach/api/coachAPI";
 import { coachTimesheetAPI } from "@/features/coach/api/coachTimesheetAPI";
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
-import { leaderboardAPI } from "@/features/report/apis/LeaderboardAPI";
+import { leaderboardAPI } from "@/features/report/api/LeaderboardAPI";
 import { studentAPI } from "@/features/student/api/studentAPI";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { classSchedulesQueryKey } from "@/features/classSchedule/queries/classSchedulesQueries";

@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "./TabViews.scss";
 
-import type { NavigationItem } from "@/config/constants/path";
-import { COACH_TABS, STUDENT_TABS } from "@/config/constants/path";
+import type { NavigationItem } from "@/app/navigation/path";
+import { COACH_TABS, STUDENT_TABS } from "@/app/navigation/path";
 import type { CoachDetail, StudentDetail } from "@/types";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 

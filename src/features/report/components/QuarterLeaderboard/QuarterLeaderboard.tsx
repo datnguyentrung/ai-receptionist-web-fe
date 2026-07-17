@@ -14,7 +14,7 @@ import {
   type SkillLevel,
 } from "@/config/constants/SkillEnums";
 import FitnessStandards from "@/features/fitness/components/FitnessStandards";
-import { leaderboardAPI } from "@/features/report/apis/LeaderboardAPI";
+import { leaderboardAPI } from "@/features/report/api/LeaderboardAPI";
 import { useGetQuery } from "@/hooks/useCrud";
 import type { LeaderboardResponse } from "@/types/Report/LeaderboardTypes";
 import type { QuarterSummary } from "@/types/Report/YearlySummaryTypes";

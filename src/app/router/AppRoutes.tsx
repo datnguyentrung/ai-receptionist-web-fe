@@ -1,5 +1,5 @@
 import { isPWA } from "@/config/appMode";
-import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/config/constants/path";
+import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/app/navigation/path";
 import { RequireRole } from "@/app/guards/RequireRole";
 import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
 import { getRouteSkeletonKind } from "@/app/router/routePreload";

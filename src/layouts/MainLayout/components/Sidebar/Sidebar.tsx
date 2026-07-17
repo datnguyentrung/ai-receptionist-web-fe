@@ -1,5 +1,5 @@
-import { useSettingsMenu } from "@/config/constants/ListActionDropDown";
-import { useNavItems } from "@/hooks/useNavItems";
+import { useSettingsMenu } from "@/app/navigation/listActionDropdown";
+import { useNavItems } from "@/app/navigation/useNavItems";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bot, ListIndentDecrease, ListIndentIncrease, X } from "lucide-react";

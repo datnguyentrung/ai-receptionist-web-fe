@@ -364,7 +364,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `3280498`
 
 Risks/manual checks remaining:
 
@@ -373,3 +373,49 @@ Risks/manual checks remaining:
 - FCM foreground notification listener.
 - FCM token sync and cleanup on logout.
 - Existing public Firebase service worker registration path.
+
+## Phase I - Navigation, Naming, Aliases, And Docs
+
+Status: Completed
+
+Moved/renamed files/folders:
+
+- `src/config/constants/path.ts` -> `src/app/navigation/path.ts`
+- `src/config/constants/ListActionDropDown.ts` -> `src/app/navigation/listActionDropdown.ts`
+- `src/hooks/useNavItems.ts` -> `src/app/navigation/useNavItems.ts`
+- `src/hooks/useNavigation.ts` -> `src/app/navigation/useNavigation.ts`
+- `src/features/fitness/apis/` -> `src/features/fitness/api/`
+- `src/features/report/apis/` -> `src/features/report/api/`
+- `src/docs/modal-scroll-lag-fix-guide.md` -> `docs/modal-scroll-lag-fix-guide.md`
+- `src/features/README.md` -> `docs/features.md`
+
+Edited files:
+
+- App router, layout navigation, rankings, utilities, profile tabs, schedule cards/items, attendance header.
+- `vite.config.ts`
+- `tsconfig.app.json`
+- `src/types/Operation/StudentAttendanceTypes.ts`
+
+Circular dependencies addressed:
+
+- `StudentAttendanceTypes` no longer imports `PageResponse` and `UserResponse` through `types/index.ts`.
+- Navigation config/hook files no longer live under generic constants/hooks.
+- API folder naming is now consistent for fitness/report features.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Desktop sidebar/header active navigation.
+- PWA bottom navigation.
+- Utilities route cards.
+- Personal profile tabs.
+- Rankings category tabs and report preload.
+- Fitness standards modal data.

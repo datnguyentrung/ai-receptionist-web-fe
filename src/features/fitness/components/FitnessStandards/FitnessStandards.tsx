@@ -2,7 +2,7 @@ import {
   SKILL_LEVEL_LABELS,
   type SkillLevel,
 } from "@/config/constants/SkillEnums";
-import { fitnessAPI } from "@/features/fitness/apis/FitnessAPI";
+import { fitnessAPI } from "@/features/fitness/api/FitnessAPI";
 import { useGetQuery } from "@/hooks/useCrud";
 import type { Fitness } from "@/types/Core/FitnessTypes";
 import { Skeleton } from "boneyard-js/react";

@@ -1,7 +1,7 @@
 import { useUserLevel } from "@/utils/roleUtils";
-import { NAV_ITEMS } from "../config/constants/path";
-import { ROLE_LEVELS } from "../config/constants/roleLevels";
-import { useAuthStore } from "../store/authStore";
+import { NAV_ITEMS } from "@/app/navigation/path";
+import { ROLE_LEVELS } from "@/config/constants/roleLevels";
+import { useAuthStore } from "@/store/authStore";
 
 export const useNavItems = () => {
   const { level, isAuthenticated } = useUserLevel();

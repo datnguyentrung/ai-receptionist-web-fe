@@ -1,4 +1,4 @@
-import { BOTTOM_NAV_ITEMS } from "@/config/constants/path";
+import { BOTTOM_NAV_ITEMS } from "@/app/navigation/path";
 import {
   preloadBottomNavRoutes,
   preloadRoute,

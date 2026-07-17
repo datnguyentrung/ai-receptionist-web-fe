@@ -1,4 +1,4 @@
-import type { ListActionDropDownItem } from "@/config/constants/ListActionDropDown";
+import type { ListActionDropDownItem } from "@/app/navigation/listActionDropdown";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type FC } from "react";
 import "./CategoryTabs.scss";

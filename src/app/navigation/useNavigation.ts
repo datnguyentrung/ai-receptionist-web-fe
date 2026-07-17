@@ -1,4 +1,4 @@
-// File: src/hooks/useNavigation.ts
+// File: src/app/navigation/useNavigation.ts
 import type { ClassScheduleSummary } from "@/types";
 import { useNavigate } from "react-router-dom";
 
@@ -23,4 +23,4 @@ export const useNavigateStudentListByClassScheduleId = () => {
 export const useNavigateBack = () => {
   const navigate = useNavigate();
   return () => navigate(-1);
-}
+};

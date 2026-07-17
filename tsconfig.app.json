@@ -21,7 +21,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
-      "@services/*": ["./src/services/*"],
       "@utils/*": ["./src/utils/*"],
       "@assets/*": ["./public/assets/*"],
       "@store/*": ["./src/store/*"],
@@ -37,5 +36,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "path.ts", "hooks"]
+  "include": ["src"]
 }

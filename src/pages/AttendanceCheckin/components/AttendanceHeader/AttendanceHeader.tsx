@@ -6,7 +6,7 @@ import {
   ScheduleShiftLabel,
   WeekdayCodeToLabel,
 } from "@/config/constants";
-import { useNavigateBack } from "@/hooks/useNavigation";
+import { useNavigateBack } from "@/app/navigation/useNavigation";
 import type { ClassScheduleSummary } from "@/types";
 import { formatDateDMY } from "@/utils/format";
 import {

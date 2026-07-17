@@ -5,7 +5,8 @@ import type {
   EvaluationStatus,
   ScheduleLevel,
 } from "../../config/constants";
-import type { PageResponse, UserResponse } from "../index";
+import type { PageResponse } from "../pagination";
+import type { UserResponse } from "../Security/authTypes";
 
 export interface AttendanceListResponse {
   stats: AttendanceStats;

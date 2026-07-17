@@ -3,7 +3,7 @@ import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
-import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
+import { useNavigateStudentListByClassScheduleId } from "@/app/navigation/useNavigation";
 import { prefetchAttendanceCheckin } from "@/features/studentAttendance/queries/attendanceCheckinQueries";
 import type { ClassScheduleDetail } from "@/types";
 import { getDurationInMinutes } from "@/utils/format";
