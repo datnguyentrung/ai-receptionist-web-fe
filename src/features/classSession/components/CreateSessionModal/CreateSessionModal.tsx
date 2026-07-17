@@ -108,7 +108,11 @@ export function CreateSessionModal({
 
     if (!open) {
       wasOpenRef.current = false;
-      setIsCreateConfirmOpen(false);
+      window.queueMicrotask(() => {
+        if (!cancelled) {
+          setIsCreateConfirmOpen(false);
+        }
+      });
       return;
     }
 

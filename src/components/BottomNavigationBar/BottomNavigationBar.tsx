@@ -16,7 +16,10 @@ export default function BottomNavigationBar() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
-  const [pendingItemId, setPendingItemId] = useState<string | null>(null);
+  const [pendingItem, setPendingItem] = useState<{
+    id: string;
+    to: string;
+  } | null>(null);
   const { canViewCoach } = useRoleStudent();
   const activeProfile = useAuthStore((state) => state.activeProfile);
   const userId =
@@ -44,10 +47,6 @@ export default function BottomNavigationBar() {
   );
 
   useEffect(() => {
-    setPendingItemId(null);
-  }, [normalizedPathname]);
-
-  useEffect(() => {
     if (!isPWA || !userId) return;
 
     const idleWindow = window as Window & {
@@ -73,17 +72,13 @@ export default function BottomNavigationBar() {
     return () => window.clearTimeout(timeoutId);
   }, [preloadContext, userId]);
 
-  if (!isPWA || !userId) {
-    return null;
-  }
-
-  const isItemActive = (to: string) => {
+  const isItemActive = useCallback((to: string) => {
     const normalizedTo = to.replace(/\/$/, "") || "/";
     return normalizedTo === "/"
       ? normalizedPathname === "/"
       : normalizedPathname === normalizedTo ||
           normalizedPathname.startsWith(`${normalizedTo}/`);
-  };
+  }, [normalizedPathname]);
 
   const warmRoute = useCallback(
     (to: string) => {
@@ -92,20 +87,27 @@ export default function BottomNavigationBar() {
     [preloadContext],
   );
 
-  const handleNavigate = (id: string, to: string) => {
+  const handleNavigate = useCallback((id: string, to: string) => {
     if (isItemActive(to)) {
       return;
     }
 
     warmRoute(to);
-    setPendingItemId(id);
+    setPendingItem({ id, to });
     startTransition(() => {
       navigate(to);
     });
     window.setTimeout(() => {
-      setPendingItemId((currentId) => (currentId === id ? null : currentId));
+      setPendingItem((current) => (current?.id === id ? null : current));
     }, 1800);
-  };
+  }, [isItemActive, navigate, warmRoute]);
+
+  const pendingItemId =
+    pendingItem && !isItemActive(pendingItem.to) ? pendingItem.id : null;
+
+  if (!isPWA || !userId) {
+    return null;
+  }
 
   return (
     <nav className={styles.bottomNav} aria-label="Dieu huong nhanh">
