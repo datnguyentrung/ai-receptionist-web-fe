@@ -1,6 +1,6 @@
 import { ModalLayout } from "@/components/ui/modal-layout";
-import rubricRaw from "@/store/mau_kiem_tra.json?raw";
-import type { CalculatedEntranceExamResult } from "@/utils/calculateUtils";
+import rubricRaw from "../../data/mau_kiem_tra.json?raw";
+import type { CalculatedEntranceExamResult } from "../../utils/calculateUtils";
 import "./ModalDetailExam.scss";
 
 type ModalDetailExamProps = {

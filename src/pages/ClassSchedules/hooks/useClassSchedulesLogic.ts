@@ -5,7 +5,7 @@ import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import { classSchedulesQueryKey } from "../classSchedulesQueries";
+import { classSchedulesQueryKey } from "@/features/classSchedule/queries/classSchedulesQueries";
 
 export function useClassSchedulesLogic() {
   const [view, setView] = useState<"grid" | "week">("week");

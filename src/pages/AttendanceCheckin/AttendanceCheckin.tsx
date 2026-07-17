@@ -9,7 +9,7 @@ import type {
   EvaluationStatus,
 } from "@/config/constants";
 import { BeltLabel } from "@/config/constants";
-import { CLASS_SESSION } from "@/data/mockData";
+import { CLASS_SESSION } from "@/pages/AttendanceCheckin/data/attendanceCheckinMockData";
 import { EvalSheet } from "@/features/studentAttendance";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
@@ -35,7 +35,7 @@ import {
   attendanceRecordsQueryKey,
   attendanceStudentsQueryKey,
   getAttendanceSessionDate,
-} from "./attendanceCheckinQueries";
+} from "@/features/studentAttendance/queries/attendanceCheckinQueries";
 import { AttendanceHeader } from "./components/AttendanceHeader";
 import { BottomBar } from "./components/BottomBar";
 import { StudentCard } from "./components/StudentCard";

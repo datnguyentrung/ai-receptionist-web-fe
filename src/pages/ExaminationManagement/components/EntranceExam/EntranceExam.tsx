@@ -1,8 +1,8 @@
-import historyExamCsvRaw from "@/store/history_exam.csv?raw";
+import historyExamCsvRaw from "../../data/history_exam.csv?raw";
 import {
   getCalculatedEntranceExamResults,
   type CalculatedEntranceExamResult,
-} from "@/utils/calculateUtils";
+} from "../../utils/calculateUtils";
 import { useMemo, useState } from "react";
 import DataFilters from "../DataFilters/DataFilters";
 import ModalDetailExam from "../ModalDetailExam/ModalDetailExam";

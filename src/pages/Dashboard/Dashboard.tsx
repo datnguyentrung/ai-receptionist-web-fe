@@ -28,7 +28,7 @@ import {
   CLASSES,
   MONTHLY_ENROLLMENT,
   STATS,
-} from "../../data/mockData";
+} from "./data/dashboardMockData";
 import { formatDateDMYHM } from "../../utils/format";
 import {
   dashboardTuitionPaymentsQueryKey,

@@ -4,7 +4,7 @@ import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.t
 import type { ScheduleStatus } from "@/config/constants";
 import { ScheduleLocationLabel, ScheduleShiftLabel } from "@/config/constants";
 import { useNavigateStudentListByClassScheduleId } from "@/hooks/useNavigation";
-import { prefetchAttendanceCheckin } from "@/pages/AttendanceCheckin/attendanceCheckinQueries";
+import { prefetchAttendanceCheckin } from "@/features/studentAttendance/queries/attendanceCheckinQueries";
 import type { ClassScheduleDetail } from "@/types";
 import { getDurationInMinutes } from "@/utils/format";
 import { useRoleStudent } from "@/utils/roleUtils";

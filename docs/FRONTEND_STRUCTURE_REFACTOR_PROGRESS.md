@@ -276,7 +276,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `85cc551`
 
 Risks/manual checks remaining:
 
@@ -284,3 +284,56 @@ Risks/manual checks remaining:
 - Student attendance history modal.
 - Personal profile attendance and score tabs.
 - Rankings score/fitness tabs, podium, expanded details, and category URL changes.
+
+## Phase G - Queries And Static Data Ownership
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/pages/AttendanceCheckin/attendanceCheckinQueries.ts` -> `src/features/studentAttendance/queries/attendanceCheckinQueries.ts`
+- `src/pages/ClassSchedules/classSchedulesQueries.ts` -> `src/features/classSchedule/queries/classSchedulesQueries.ts`
+- `src/store/history_exam.csv` -> `src/pages/ExaminationManagement/data/history_exam.csv`
+- `src/store/mau_kiem_tra.json` -> `src/pages/ExaminationManagement/data/mau_kiem_tra.json`
+- `src/utils/calculateUtils.ts` -> `src/pages/ExaminationManagement/utils/calculateUtils.ts`
+
+Created files/folders:
+
+- `src/pages/Dashboard/data/dashboardMockData.ts`
+- `src/pages/AttendanceCheckin/data/attendanceCheckinMockData.ts`
+
+Deleted files:
+
+- `src/data/mockData.ts` after splitting the only runtime-used exports into page-local data files.
+
+Edited files:
+
+- `src/app/router/routePreload.ts`
+- `src/features/classSchedule/components/ClassCard/ClassCard.tsx`
+- `src/features/classSchedule/components/ClassWeekItem/ClassWeekItem.tsx`
+- `src/pages/AttendanceCheckin/AttendanceCheckin.tsx`
+- `src/pages/ClassSchedules/hooks/useClassSchedulesLogic.ts`
+- `src/pages/Dashboard/Dashboard.tsx`
+- `src/pages/ExaminationManagement/components/EntranceExam/EntranceExam.tsx`
+- `src/pages/ExaminationManagement/components/ModalDetailExam/ModalDetailExam.tsx`
+
+Circular dependencies addressed:
+
+- Class schedule query keys are now owned by the classSchedule feature rather than a route page.
+- Attendance check-in prefetch/query keys are now owned by studentAttendance rather than a route page.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Class schedule route preload cache key behavior.
+- Attendance check-in prefetch and pull-to-refresh data behavior.
+- Dashboard charts and metric cards using split mock data.
+- ExaminationManagement raw CSV/JSON parsing and detail modal.
