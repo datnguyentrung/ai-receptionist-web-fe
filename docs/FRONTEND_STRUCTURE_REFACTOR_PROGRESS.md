@@ -229,7 +229,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `1b5e325`
 
 Risks/manual checks remaining:
 
@@ -237,3 +237,50 @@ Risks/manual checks remaining:
 - Class schedule day selector and create schedule ID generation.
 - Coach filter hover disabled state.
 - Student/coach assignment modal hero and schedule section visuals.
+
+## Phase F - Cross-Page Component Dependencies
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/pages/AttendanceReports/components/AttendanceTable/` -> `src/features/studentAttendance/components/AttendanceTable/`
+- `src/pages/PersonalPage/components/ScoreTab/QuarterSummaryDetail/` -> `src/features/report/components/QuarterSummaryDetail/`
+- `src/pages/Rankings/Components/ParticipantList/` -> `src/features/report/components/ParticipantList/`
+- `src/pages/Rankings/Components/PodiumSection/` -> `src/features/report/components/PodiumSection/`
+- `src/pages/Rankings/Components/PodiumStep/` -> `src/features/report/components/PodiumStep/`
+- `src/pages/Rankings/Components/QuarterLeaderboard/` -> `src/features/report/components/QuarterLeaderboard/`
+- `src/pages/Rankings/Components/CategoryTabs/` -> `src/pages/Rankings/components/CategoryTabs/`
+
+Edited files:
+
+- `src/pages/AttendanceReports/AttendanceReports.tsx`
+- `src/pages/AttendanceReports/components/CoachTimesheetTable/CoachTimesheetTable.tsx`
+- `src/pages/PersonalPage/components/AttendanceTab/AttendanceTab.tsx`
+- `src/pages/PersonalPage/components/ScoreTab/ScoreTab.tsx`
+- `src/pages/Rankings/Rankings.tsx`
+- `src/pages/StudentManagement/components/AttendanceTableModal/AttendanceTableModal.tsx`
+- moved report and attendance components after path depth changed.
+
+Circular dependencies addressed:
+
+- `AttendanceTable` no longer belongs to `AttendanceReports` while being consumed by PersonalPage and StudentManagement.
+- `QuarterSummaryDetail` no longer belongs to PersonalPage while being consumed by Rankings.
+- Ranking podium/list/leaderboard components now live under the report feature instead of a route folder.
+- `AttendanceTable` no longer imports `AttendanceBadge` and `ClipboardList` through the `studentAttendance` feature barrel.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Attendance reports table and coach timesheet table visual parity.
+- Student attendance history modal.
+- Personal profile attendance and score tabs.
+- Rankings score/fitness tabs, podium, expanded details, and category URL changes.

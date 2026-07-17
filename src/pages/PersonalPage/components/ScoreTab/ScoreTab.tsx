@@ -8,7 +8,7 @@ import { Skeleton } from "boneyard-js/react";
 import { useOutletContext } from "react-router-dom";
 import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
-import QuarterSummaryDetail from "./QuarterSummaryDetail/QuarterSummaryDetail";
+import QuarterSummaryDetail from "@/features/report/components/QuarterSummaryDetail/QuarterSummaryDetail";
 import styles from "./ScoreTab.module.scss";
 
 export default function ScoreTab() {

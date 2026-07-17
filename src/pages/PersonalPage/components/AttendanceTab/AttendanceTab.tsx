@@ -4,7 +4,7 @@ import { useGetQuery } from "@/hooks/useCrud";
 import { Skeleton } from "boneyard-js/react";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { AttendanceTable } from "../../../AttendanceReports/components/AttendanceTable";
+import { AttendanceTable } from "@/features/studentAttendance/components/AttendanceTable";
 import PersonalPageSkeleton from "../../PersonalPageSkeleton/PersonalPageSkeleton";
 import type { OutletContextType } from "../TabViews/TabViews";
 import "./AttendanceTab.scss";

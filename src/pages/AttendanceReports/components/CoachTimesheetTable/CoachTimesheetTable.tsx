@@ -10,7 +10,7 @@ import {
 import type { CoachTimesheetListResponse, CoachTimesheetResponse } from "@/types";
 import { formatDateDMY, formatTimeHM } from "@/utils/format";
 import { ClipboardList, Clock3, TimerReset } from "lucide-react";
-import styles from "../AttendanceTable/AttendanceTable.module.scss";
+import styles from "@/features/studentAttendance/components/AttendanceTable/AttendanceTable.module.scss";
 
 interface CoachTimesheetTableProps {
   data: CoachTimesheetListResponse | undefined;

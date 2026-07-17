@@ -15,7 +15,7 @@ import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
-import { AttendanceTable } from "@/pages/AttendanceReports/components/AttendanceTable";
+import { AttendanceTable } from "@/features/studentAttendance/components/AttendanceTable";
 import { CoachTimesheetFilters } from "@/pages/AttendanceReports/components/CoachTimesheetFilters/CoachTimesheetFilters";
 import { CoachTimesheetTable } from "@/pages/AttendanceReports/components/CoachTimesheetTable/CoachTimesheetTable";
 import { SaveAttendanceConfirmContent } from "@/pages/AttendanceReports/components/SaveAttendanceConfirmContent/SaveAttendanceConfirmContent";

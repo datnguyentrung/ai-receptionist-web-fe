@@ -2,7 +2,7 @@ import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAt
 import { useGetQuery } from "@/hooks/useCrud";
 import type { StudentOverview } from "@/types";
 import { useState } from "react";
-import { AttendanceTable } from "../../../AttendanceReports/components/AttendanceTable";
+import { AttendanceTable } from "@/features/studentAttendance/components/AttendanceTable";
 import "./AttendanceTableModal.scss";
 
 const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE) || 30;

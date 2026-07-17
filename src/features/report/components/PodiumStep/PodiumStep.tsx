@@ -2,8 +2,8 @@ import type { RankItem } from "@/types/Report/LeaderboardTypes";
 import { Trophy } from "lucide-react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import Avatar from "../../../../components/common/Avatar";
-import { useRoleStudent } from "../../../../utils/roleUtils";
+import Avatar from "@/components/common/Avatar";
+import { useRoleStudent } from "@/utils/roleUtils";
 import "./PodiumStep.scss";
 
 interface PodiumStepProps<T> {

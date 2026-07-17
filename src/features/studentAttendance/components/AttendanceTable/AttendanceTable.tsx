@@ -7,7 +7,8 @@ import {
   AttendanceStatusLabel,
   EvaluationStatusLabel,
 } from "@/config/constants";
-import { AttendanceBadge, ClipboardList } from "@/features/studentAttendance";
+import { AttendanceBadge } from "@/features/studentAttendance/components/AttendanceBadge/AttendanceBadge";
+import { ClipboardList } from "@/features/studentAttendance/components/ClipboardList";
 import type {
   AttendanceListResponse,
   StudentAttendanceSimpleResponse,

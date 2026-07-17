@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { CategoryTabs } from "./Components/CategoryTabs/CategoryTabs";
-import QuarterLeaderboard from "./Components/QuarterLeaderboard/QuarterLeaderboard";
+import QuarterLeaderboard from "@/features/report/components/QuarterLeaderboard/QuarterLeaderboard";
+import { CategoryTabs } from "./components/CategoryTabs/CategoryTabs";
 import styles from "./Rankings.module.scss";
 
 const RANKINGS_ROUTE_MAP = {
