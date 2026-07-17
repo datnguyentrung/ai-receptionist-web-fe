@@ -1,4 +1,4 @@
-import { type Belt, BeltLabel } from "../config/constants";
+import { type Belt, BeltLabel } from "@/config/constants";
 import S from "./BeltBadge.module.scss";
 
 const BELT_MAP: Record<

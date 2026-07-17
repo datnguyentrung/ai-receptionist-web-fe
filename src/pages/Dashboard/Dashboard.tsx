@@ -22,7 +22,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import Avatar from "../../components/Avatar";
+import Avatar from "../../components/common/Avatar";
 import {
   ATTENDANCE_RATE,
   CLASSES,

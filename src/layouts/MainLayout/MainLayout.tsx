@@ -1,4 +1,4 @@
-import { PullToRefresh } from "@/components/PullToRefresh";
+import { PullToRefresh } from "@/app/providers/pull-to-refresh";
 import { APP_MODE, isPWA } from "@/config/appMode";
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router";

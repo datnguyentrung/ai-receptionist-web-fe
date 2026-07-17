@@ -1,4 +1,4 @@
-import ComingSoonView from "@/components/ComingSoonView/ComingSoonView";
+import ComingSoonView from "@/components/common/ComingSoonView/ComingSoonView";
 import "./TuitionTab.scss";
 
 export default function TuitionTab() {

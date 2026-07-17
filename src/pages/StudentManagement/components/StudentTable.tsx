@@ -1,5 +1,5 @@
 import { MoreHorizontal, Users } from "lucide-react";
-import Avatar from "../../../components/Avatar";
+import Avatar from "../../../components/common/Avatar";
 import { MiniActionPopover } from "../../../components/ui/mini-action-popover";
 import { BELT_COLORS, StatusBadge } from "../../../features/student";
 import type { StudentOverview } from "../../../types";

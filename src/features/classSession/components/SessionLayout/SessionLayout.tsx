@@ -1,4 +1,4 @@
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { CountdownBadge } from "@/components/CountdownBadge/CountdownBadge";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { Skeleton } from "@/components/ui/skeleton";

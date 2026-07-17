@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { ModalLayout } from "../ui/modal-layout";
-import { showErrorToast, showSuccessToast } from "../ui/toast";
+import { ModalLayout } from "@/components/ui/modal-layout";
+import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import styles from "./ConfirmModal.module.scss";
 
 function getErrorMessage(error: unknown, fallbackMessage: string) {

@@ -1,4 +1,4 @@
-import Avatar from "@/components/Avatar";
+import Avatar from "@/components/common/Avatar";
 import type { EvaluationStatus } from "@/config/constants";
 import type { StudentAttendanceResponse } from "@/types";
 import { Check, X } from "lucide-react";

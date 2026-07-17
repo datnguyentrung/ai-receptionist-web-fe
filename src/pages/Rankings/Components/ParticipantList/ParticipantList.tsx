@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { ChevronDown, Search, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import Avatar from "../../../../components/Avatar";
+import Avatar from "../../../../components/common/Avatar";
 import { BeltLabel } from "../../../../config/constants";
 import styles from "./ParticipantList.module.scss";
 

@@ -1,4 +1,4 @@
-import Avatar from "@/components/Avatar";
+import Avatar from "@/components/common/Avatar";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { showComingSoonActionToast } from "@/components/ui/mini-action-popover.toast";
 import {

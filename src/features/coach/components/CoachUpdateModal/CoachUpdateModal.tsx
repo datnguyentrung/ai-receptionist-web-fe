@@ -1,5 +1,5 @@
 import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { showErrorToast, showInfoToast } from "@/components/ui/toast";
 import { coachAssignmentAPI } from "@/features/coach/api/coachAssignmentAPI";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";

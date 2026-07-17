@@ -1,4 +1,4 @@
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { useLogin } from "@/features/auth";
 import { Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";

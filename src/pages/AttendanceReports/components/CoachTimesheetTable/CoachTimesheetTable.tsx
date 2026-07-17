@@ -1,5 +1,5 @@
-import Avatar from "@/components/Avatar";
-import { Pagination } from "@/components/Pagination";
+import Avatar from "@/components/common/Avatar";
+import { Pagination } from "@/components/common/Pagination";
 import {
   CoachTimesheetStatusLabel,
   ScheduleLevelLabel,

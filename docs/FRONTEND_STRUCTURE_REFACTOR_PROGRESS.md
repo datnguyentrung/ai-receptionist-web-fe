@@ -102,10 +102,50 @@ Validation:
 
 Commit:
 
-- Pending.
+- `3530024`
 
 Risks/manual checks remaining:
 
 - Desktop sidebar/header visual behavior.
 - PWA bottom navigation and fallback dock behavior.
 - Login page left panel layout.
+
+## Phase C - App Providers And Common Components
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/components/PullToRefresh/` -> `src/app/providers/pull-to-refresh/`
+- `src/components/AppErrorBoundary.tsx` -> `src/app/errors/AppErrorBoundary.tsx`
+- `src/components/AccessDeniedView/` -> `src/app/errors/AccessDeniedView/`
+- `src/components/Avatar/` -> `src/components/common/Avatar/`
+- `src/components/BeltBadge.*` -> `src/components/common/BeltBadge/`
+- `src/components/ConfirmModal/` -> `src/components/common/ConfirmModal/`
+- `src/components/Pagination/` -> `src/components/common/Pagination/`
+- `src/components/ComingSoonView/` -> `src/components/common/ComingSoonView/`
+
+Edited files:
+
+- Imports across app, layouts, pages, and features for moved providers/errors/common components.
+- Internal imports in `ConfirmModal` and `BeltBadge` after folder depth changed.
+
+Circular dependencies addressed:
+
+- None in this phase.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Confirm modal focus/keyboard behavior.
+- Pull-to-refresh provider and page registration behavior.
+- `/403` route rendering.
+- Avatar/BeltBadge visuals in tables/profile/rankings.

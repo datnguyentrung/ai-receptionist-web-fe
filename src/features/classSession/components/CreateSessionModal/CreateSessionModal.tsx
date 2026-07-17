@@ -1,4 +1,4 @@
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,

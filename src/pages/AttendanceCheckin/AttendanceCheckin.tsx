@@ -1,5 +1,5 @@
-import ConfirmModal from "@/components/ConfirmModal";
-import { useRegisterPullToRefresh } from "@/components/PullToRefresh";
+import ConfirmModal from "@/components/common/ConfirmModal";
+import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isPWA } from "@/config/appMode";

@@ -1,5 +1,5 @@
-﻿import ConfirmModal from "@/components/ConfirmModal";
-import { useRegisterPullToRefresh } from "@/components/PullToRefresh";
+import ConfirmModal from "@/components/common/ConfirmModal";
+import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -73,10 +73,10 @@ function ClassSchedulesSkeleton({ view }: { view: "grid" | "week" }) {
 function ClassSchedulesError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className={styles.errorState}>
-      <p>Không thể tải lịch học.</p>
+      <p>Kh�ng th? t?i l?ch h?c.</p>
       <button type="button" onClick={onRetry} className={styles.retryButton}>
         <RefreshCcw size={14} />
-        Thử lại
+        Th? l?i
       </button>
     </div>
   );
@@ -92,7 +92,7 @@ export function ClassSchedules() {
   useRegisterPullToRefresh(refreshClassSchedules);
 
   if (logic.sessionsError) {
-    toast.error("Lỗi khi tải các buổi học sắp diễn ra");
+    toast.error("L?i khi t?i c�c bu?i h?c s?p di?n ra");
   }
   const totalClasses = logic.classSchedules?.length || 0;
   const activeClasses =
@@ -111,7 +111,7 @@ export function ClassSchedules() {
       <div className={styles.page}>
         {isRefreshing && (
           <div className={styles.refreshNotice} role="status">
-            Đang cập nhật lịch học mới...
+            �ang c?p nh?t l?ch h?c m?i...
           </div>
         )}
         <RenderProfiler id="ClassSchedules:Header" thresholdMs={4}>
@@ -153,14 +153,14 @@ export function ClassSchedules() {
         open={logic.isChangeStatusModalOpen}
         title={logic.confirmTitle}
         description={logic.confirmDescription}
-        cancelText="Hủy"
+        cancelText="H?y"
         confirmText={logic.confirmButtonText}
-        loadingText="Đang cập nhật..."
+        loadingText="�ang c?p nh?t..."
         isLoading={logic.isChangingStatus}
         onCancel={logic.closeChangeStatusModal}
         onConfirm={logic.confirmStatusChange}
-        successToastMessage="Cập nhật trạng thái lớp học thành công"
-        errorToastMessage="Không thể cập nhật trạng thái lớp học"
+        successToastMessage="C?p nh?t tr?ng th�i l?p h?c th�nh c�ng"
+        errorToastMessage="Kh�ng th? c?p nh?t tr?ng th�i l?p h?c"
       />
 
       <UpcomingSessionsModal

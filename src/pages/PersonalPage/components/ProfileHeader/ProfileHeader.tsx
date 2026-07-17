@@ -1,5 +1,5 @@
-import Avatar from "@/components/Avatar";
-import ConfirmModal from "@/components/ConfirmModal";
+import Avatar from "@/components/common/Avatar";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { isPWA } from "@/config/appMode";
 import type { CoachDetail, StudentDetail, UserResponse } from "@/types";
 import { useAuthStore } from "@/store/authStore";
@@ -16,7 +16,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useCallback, useState } from "react";
-import { BeltBadge } from "../../../../components/BeltBadge";
+import { BeltBadge } from "../../../../components/common/BeltBadge/BeltBadge";
 import { showComingSoonActionToast } from "../../../../components/ui/mini-action-popover.toast";
 import S from "./ProfileHeader.module.scss";
 import img from "/taekwondo.jpg";

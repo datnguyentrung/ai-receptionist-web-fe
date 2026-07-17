@@ -4,7 +4,7 @@ import { ClassAssignmentModal } from "@/features/studentEnrollment/components/Cl
 import { useGetQuery } from "@/hooks/useCrud";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pagination } from "../../components/Pagination";
+import { Pagination } from "../../components/common/Pagination";
 import { isPWA } from "../../config/appMode";
 import type { Belt, StudentStatus } from "../../config/constants";
 import { useDebounce } from "../../hooks/useDebounce";

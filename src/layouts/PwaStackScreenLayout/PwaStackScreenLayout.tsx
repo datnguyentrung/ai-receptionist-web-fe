@@ -1,4 +1,4 @@
-import { PullToRefresh } from "@/components/PullToRefresh";
+import { PullToRefresh } from "@/app/providers/pull-to-refresh";
 import { isPWA } from "@/config/appMode";
 import { ChevronLeft, ScanFace } from "lucide-react";
 import { useRef, type ReactNode } from "react";

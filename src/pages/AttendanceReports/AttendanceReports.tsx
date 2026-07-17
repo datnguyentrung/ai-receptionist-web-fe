@@ -1,4 +1,4 @@
-﻿import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import {
   AttendanceStatusLabel,
   EvaluationStatusLabel,
@@ -166,18 +166,18 @@ function CoachTimesheetReportsContent() {
 
       <div className={styles.coachSummaryGrid}>
         <div className={styles.coachSummaryCard}>
-          <span>Tổng bản ghi</span>
+          <span>T?ng b?n ghi</span>
           <strong>{data?.summary.totalRecords ?? 0}</strong>
         </div>
         <div className={styles.coachSummaryCard}>
-          <span>Tổng buổi dạy</span>
+          <span>T?ng bu?i d?y</span>
           <strong>{data?.summary.totalTeachingSessions ?? 0}</strong>
         </div>
       </div>
 
       {isRefreshing ? (
         <div className={styles.refreshNotice} role="status">
-          Đang cập nhật dữ liệu chấm công...
+          �ang c?p nh?t d? li?u ch?m c�ng...
         </div>
       ) : null}
 
@@ -454,9 +454,9 @@ function StudentAttendanceReportsContent() {
 
       return {
         attendanceId,
-        studentName: base?.studentName ?? "Học viên không xác định",
+        studentName: base?.studentName ?? "H?c vi�n kh�ng x�c d?nh",
         sessionDate: base?.sessionDate ?? null,
-        classScheduleId: base?.classScheduleId ?? "—",
+        classScheduleId: base?.classScheduleId ?? "�",
         attendanceStatus,
         evaluationStatus,
         note,
@@ -602,7 +602,7 @@ function StudentAttendanceReportsContent() {
       />
       {isRefreshing ? (
         <div className={styles.refreshNotice} role="status">
-          Đang cập nhật dữ liệu mới...
+          �ang c?p nh?t d? li?u m?i...
         </div>
       ) : null}
       <div className={styles.filterActionRow}>
@@ -645,7 +645,7 @@ function StudentAttendanceReportsContent() {
           resultCount={data?.attendances.totalElements || 0}
           onClearAll={handleClearAll}
           showSaveButton={changedRows.length > 0}
-          saveButtonLabel={`Lưu (${changedRows.length})`}
+          saveButtonLabel={`Luu (${changedRows.length})`}
           isSaving={isSaving}
           onSaveClick={() => setIsConfirmOpen(true)}
         />
@@ -654,10 +654,10 @@ function StudentAttendanceReportsContent() {
           onClick={openDeleteConfirmForMany}
           disabled={selectedAttendanceIdsOnPage.length === 0 || isDeleting}
           className={styles.deleteSelectedButton}
-          title="Xóa các bản ghi đã chọn"
+          title="X�a c�c b?n ghi d� ch?n"
         >
           <Trash2 size={15} />
-          <span>Xóa ({selectedAttendanceIdsOnPage.length})</span>
+          <span>X�a ({selectedAttendanceIdsOnPage.length})</span>
         </button>
       </div>
       {isInitialLoading ? (
@@ -682,13 +682,13 @@ function StudentAttendanceReportsContent() {
 
       <ConfirmModal
         open={isConfirmOpen}
-        title="Lưu thay đổi điểm danh"
-        description="Bạn sắp cập nhật trạng thái điểm danh và đánh giá cho các học viên đã chỉnh sửa."
-        confirmText="Lưu"
-        loadingText="Đang lưu..."
+        title="Luu thay d?i di?m danh"
+        description="B?n s?p c?p nh?t tr?ng th�i di?m danh v� d�nh gi� cho c�c h?c vi�n d� ch?nh s?a."
+        confirmText="Luu"
+        loadingText="�ang luu..."
         isLoading={isSaving}
-        successToastMessage="Lưu điểm danh thành công"
-        errorToastMessage="Lưu điểm danh thất bại"
+        successToastMessage="Luu di?m danh th�nh c�ng"
+        errorToastMessage="Luu di?m danh th?t b?i"
         onCancel={() => setIsConfirmOpen(false)}
         onConfirm={handleSave}
       >
@@ -702,18 +702,18 @@ function StudentAttendanceReportsContent() {
       <ConfirmModal
         open={isDeleteConfirmOpen}
         title={
-          deleteTargetIds.length > 1 ? "Xóa điểm danh đã chọn" : "Xóa điểm danh"
+          deleteTargetIds.length > 1 ? "X�a di?m danh d� ch?n" : "X�a di?m danh"
         }
         description={
           deleteTargetIds.length > 1
-            ? `Bạn sắp xóa ${deleteTargetIds.length} bản ghi điểm danh. Thao tác này không thể hoàn tác.`
-            : "Bạn sắp xóa bản ghi điểm danh này. Thao tác này không thể hoàn tác."
+            ? `B?n s?p x�a ${deleteTargetIds.length} b?n ghi di?m danh. Thao t�c n�y kh�ng th? ho�n t�c.`
+            : "B?n s?p x�a b?n ghi di?m danh n�y. Thao t�c n�y kh�ng th? ho�n t�c."
         }
-        confirmText="Xóa"
-        loadingText="Đang xóa..."
+        confirmText="X�a"
+        loadingText="�ang x�a..."
         isLoading={isDeleting}
-        successToastMessage="Xóa điểm danh thành công"
-        errorToastMessage="Xóa điểm danh thất bại"
+        successToastMessage="X�a di?m danh th�nh c�ng"
+        errorToastMessage="X�a di?m danh th?t b?i"
         onCancel={() => {
           if (isDeleting) {
             return;
@@ -725,12 +725,12 @@ function StudentAttendanceReportsContent() {
       >
         <div className={styles.deletePreviewWrap}>
           <p className={styles.deletePreviewTitle}>
-            Danh sách lịch sử điểm danh sắp bị xóa
+            Danh s�ch l?ch s? di?m danh s?p b? x�a
           </p>
 
           {deletePreviewItems.length === 0 ? (
             <p className={styles.deletePreviewEmpty}>
-              Không có dữ liệu để hiển thị.
+              Kh�ng c� d? li?u d? hi?n th?.
             </p>
           ) : (
             <ul className={styles.deletePreviewList}>
@@ -750,17 +750,17 @@ function StudentAttendanceReportsContent() {
 
                   <div className={styles.deletePreviewMeta}>
                     <span>
-                      Ngày học:{" "}
+                      Ng�y h?c:{" "}
                       {item.sessionDate ? formatDateDMY(item.sessionDate) : "-"}
                     </span>
                   </div>
 
                   <div className={styles.deletePreviewMeta}>
                     <span>
-                      Điểm danh: {AttendanceStatusLabel[item.attendanceStatus]}
+                      �i?m danh: {AttendanceStatusLabel[item.attendanceStatus]}
                     </span>
                     <span>
-                      Đánh giá:{" "}
+                      ��nh gi�:{" "}
                       {item.evaluationStatus
                         ? EvaluationStatusLabel[item.evaluationStatus]
                         : "-"}
@@ -768,7 +768,7 @@ function StudentAttendanceReportsContent() {
                   </div>
 
                   <p className={styles.deletePreviewNote}>
-                    Ghi chú: {item.note?.trim() ? item.note : "-"}
+                    Ghi ch�: {item.note?.trim() ? item.note : "-"}
                   </p>
                 </li>
               ))}
