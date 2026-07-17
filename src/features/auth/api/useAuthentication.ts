@@ -1,7 +1,10 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import { userAPI } from "@/features/user";
-import { cleanupFcm, requestNotificationPermission } from "@/services/fcm";
+import {
+  cleanupFcm,
+  requestNotificationPermission,
+} from "@/integrations/firebase/fcm";
 import { useAuthStore } from "@/store/authStore";
 import type { UserBase } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

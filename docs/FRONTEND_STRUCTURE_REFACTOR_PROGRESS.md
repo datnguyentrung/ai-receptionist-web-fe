@@ -329,7 +329,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `16ed232`
 
 Risks/manual checks remaining:
 
@@ -337,3 +337,39 @@ Risks/manual checks remaining:
 - Attendance check-in prefetch and pull-to-refresh data behavior.
 - Dashboard charts and metric cards using split mock data.
 - ExaminationManagement raw CSV/JSON parsing and detail modal.
+
+## Phase H - Firebase Integration Ownership
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/firebase.ts` -> `src/integrations/firebase/client.ts`
+- `src/services/fcm.ts` -> `src/integrations/firebase/fcm.ts`
+
+Edited files:
+
+- `src/app/main.tsx`
+- `src/features/auth/api/useAuthentication.ts`
+- `src/integrations/firebase/fcm.ts`
+
+Circular dependencies addressed:
+
+- Firebase client initialization and FCM browser integration are now grouped under `integrations/firebase` instead of root `firebase.ts` plus global `services`.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Firebase initialization with environment variables.
+- Notification permission request after login.
+- FCM foreground notification listener.
+- FCM token sync and cleanup on logout.
+- Existing public Firebase service worker registration path.

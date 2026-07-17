@@ -1,4 +1,4 @@
-import { messaging, vapidKey } from "@/firebase";
+import { messaging, vapidKey } from "@/integrations/firebase/client";
 import { javaApi } from "@/lib/axiosInstance";
 import {
   getToken,
