@@ -6,14 +6,14 @@ import type {
   StudentAttendanceResponse,
 } from "@/types";
 import { writeDebugStorage } from "@/utils/debugStorage";
-import { playSound } from "@/utils/playSound";
+import { playSound } from "@/features/checkIn/utils/playSound";
 import {
   ScannedCheckInCodeError,
   submitScannedCheckInCode,
-} from "@/utils/submitScannedCheckInCode";
+} from "@/features/checkIn/utils/submitScannedCheckInCode";
 import {
   type ScannedCheckInCodeFormat,
-} from "@/utils/validateScannedCheckInCode";
+} from "@/features/checkIn/utils/validateScannedCheckInCode";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import axios from "axios";
 import type { BarcodeFormat } from "barcode-detector";
@@ -45,7 +45,7 @@ import logo from "/taekwondo.jpg";
 
 const SCAN_COOLDOWN_MS = 2500;
 const LazyFaceScanner = lazy(() =>
-  import("@components/FaceScanner").then((module) => ({
+  import("@/features/checkIn/components/FaceScanner").then((module) => ({
     default: module.FaceScanner,
   })),
 );

@@ -1,7 +1,7 @@
 import React from "react";
 import { FaceScannerView } from "./FaceScannerView";
 import { useFaceScanner } from "./useFaceScanner";
-import type { CheckInResponse } from '../../types';
+import type { CheckInResponse } from "@/types";
 
 interface FaceScannerProps {
   checkInResult?: CheckInResponse | null;

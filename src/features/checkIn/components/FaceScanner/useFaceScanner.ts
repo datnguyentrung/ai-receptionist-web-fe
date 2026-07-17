@@ -1,6 +1,6 @@
 import type { Detection } from "@mediapipe/tasks-vision";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { CheckInResponse } from "../../types";
+import type { CheckInResponse } from "@/types";
 import { submitFaceCheckIn } from "./faceScannerCheckIn";
 import { createFaceDetector } from "./faceScannerDetector";
 

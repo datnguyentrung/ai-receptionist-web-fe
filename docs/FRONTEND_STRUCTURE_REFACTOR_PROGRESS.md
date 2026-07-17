@@ -141,7 +141,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `e76e853`
 
 Risks/manual checks remaining:
 
@@ -149,3 +149,46 @@ Risks/manual checks remaining:
 - Pull-to-refresh provider and page registration behavior.
 - `/403` route rendering.
 - Avatar/BeltBadge visuals in tables/profile/rankings.
+
+## Phase D - Auth And Check-In Ownership
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/components/LoginForm/` -> `src/features/auth/components/LoginForm/`
+- `src/components/FaceScanner/` -> `src/features/checkIn/components/FaceScanner/`
+- `src/utils/submitScannedCheckInCode.ts` -> `src/features/checkIn/utils/submitScannedCheckInCode.ts`
+- `src/utils/validateScannedCheckInCode.ts` -> `src/features/checkIn/utils/validateScannedCheckInCode.ts`
+- `src/utils/playSound.ts` -> `src/features/checkIn/utils/playSound.ts`
+- `src/utils/speakText.ts` -> `src/features/checkIn/utils/speakText.ts`
+- `src/features/tts/api/ttsAPI.ts` -> `src/features/checkIn/api/ttsApi.ts`
+
+Edited files:
+
+- `src/pages/LoginPage/LoginPage.tsx`
+- `src/pages/AICheckIn/AICheckIn.tsx`
+- `src/features/auth/components/LoginForm/LoginForm.tsx`
+- `src/features/auth/presentation/index.ts`
+- FaceScanner internal type imports.
+
+Circular dependencies addressed:
+
+- Removed `features/auth/presentation -> pages/LoginPage`.
+- `LoginForm` no longer imports `useLogin` through the auth feature barrel.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Login success/failure and support modal.
+- Desktop face scanner camera lifecycle.
+- PWA QR/barcode check-in.
+- Audio/TTS behavior.

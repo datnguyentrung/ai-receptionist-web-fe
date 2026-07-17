@@ -1,5 +1,5 @@
 import { studentAPI } from "@/features/student";
-import type { CheckInResponse } from "../../types";
+import type { CheckInResponse } from "@/types";
 import { playSound } from "../../utils/playSound";
 import { speakText } from "../../utils/speakText";
 

@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/features/auth/components/LoginForm";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import styles from "./LoginPage.module.scss";
 
