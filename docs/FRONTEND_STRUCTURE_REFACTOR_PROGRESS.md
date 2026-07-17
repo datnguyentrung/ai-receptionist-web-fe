@@ -409,7 +409,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `f447a88`
 
 Risks/manual checks remaining:
 
@@ -419,3 +419,40 @@ Risks/manual checks remaining:
 - Personal profile tabs.
 - Rankings category tabs and report preload.
 - Fitness standards modal data.
+
+## Phase J - Verified Cleanup And Final Report
+
+Status: Completed
+
+Deleted files/folders:
+
+- `src/pages/Facebook/`
+- `src/utils/facebookUtils.ts`
+- `src/hooks/useToggle.ts`
+- `src/services/masterDataApi.ts`
+- `src/services/uploadApi.ts`
+- `src/store/themeStore.ts`
+- `src/utils/storage.ts`
+
+Created files:
+
+- `docs/FRONTEND_STRUCTURE_REFACTOR_RESULT.md`
+
+Verification before delete:
+
+- `rg` found no source imports/usages for the deleted files.
+- `/marketing/facebook` was already routed to a placeholder, not `src/pages/Facebook`.
+- Empty directories such as `src/docs`, `src/routes`, `src/services`, `src/data`, and `src/features/tts` are no longer represented by tracked files.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- This commit.
+
+Risks/manual checks remaining:
+
+- Hidden/manual expectations around the old Facebook placeholder files, if any external process referenced them directly.
