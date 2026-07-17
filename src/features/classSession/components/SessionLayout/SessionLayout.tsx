@@ -1,5 +1,5 @@
 import ConfirmModal from "@/components/common/ConfirmModal";
-import { CountdownBadge } from "@/components/CountdownBadge/CountdownBadge";
+import { CountdownBadge } from "@/features/classSession/components/CountdownBadge/CountdownBadge";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

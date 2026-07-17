@@ -1,4 +1,4 @@
-import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
+import { AssignmentSubjectHero } from "@/features/studentEnrollment/components/AssignmentSubjectHero/AssignmentSubjectHero";
 import { cn } from "@/components/ui/utils";
 import type {
   ClassScheduleSummary,

@@ -1,4 +1,4 @@
-import StatusFilters from "@/components/StatusFilters";
+import StatusFilters from "@/features/coach/components/StatusFilters";
 import type { CoachStatus } from "@/config/constants";
 
 const FILTER_OPTIONS = [

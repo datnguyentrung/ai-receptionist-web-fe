@@ -1,5 +1,5 @@
-import { AssignmentSubjectHero } from "@/components/AssignmentSubjectHero/AssignmentSubjectHero";
-import { StudentScheduleSection } from "@/components/StudentScheduleSection/StudentScheduleSection";
+import { AssignmentSubjectHero } from "@/features/studentEnrollment/components/AssignmentSubjectHero/AssignmentSubjectHero";
+import { StudentScheduleSection } from "@/features/studentEnrollment/components/StudentScheduleSection/StudentScheduleSection";
 import { cn } from "@/components/ui/utils";
 import { memo } from "react";
 import type {

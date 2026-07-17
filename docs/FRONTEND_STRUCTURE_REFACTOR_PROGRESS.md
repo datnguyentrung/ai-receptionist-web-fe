@@ -184,7 +184,7 @@ Validation:
 
 Commit:
 
-- Pending.
+- `b7802ff`
 
 Risks/manual checks remaining:
 
@@ -192,3 +192,48 @@ Risks/manual checks remaining:
 - Desktop face scanner camera lifecycle.
 - PWA QR/barcode check-in.
 - Audio/TTS behavior.
+
+## Phase E - Feature-Owned Components
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/components/CountdownBadge/` -> `src/features/classSession/components/CountdownBadge/`
+- `src/components/DaySelector/` -> `src/features/classSchedule/components/DaySelector/`
+- `src/components/StatusFilters/` -> `src/features/coach/components/StatusFilters/`
+- `src/utils/scheduleUtils.ts` -> `src/features/classSchedule/utils/scheduleUtils.ts`
+- `src/components/AssignmentSubjectHero/` -> `src/features/studentEnrollment/components/AssignmentSubjectHero/`
+- `src/components/StudentScheduleSection/` -> `src/features/studentEnrollment/components/StudentScheduleSection/`
+
+Edited files:
+
+- `src/features/classSession/components/SessionLayout/SessionLayout.tsx`
+- `src/features/classSchedule/components/ClassWeekView/ClassWeekView.tsx`
+- `src/features/classSchedule/components/CreateClassScheduleModal/CreateClassScheduleModal.tsx`
+- `src/features/coach/components/CoachFilters/CoachFilters.tsx`
+- `src/features/coach/components/CoachUpdateModal/CoachUpdateModal.tsx`
+- `src/features/coach/components/StatusFilters/StatusFilters.tsx`
+- `src/features/studentEnrollment/components/ClassAssignmentModal/CoachAssignmentSection.tsx`
+- `src/features/studentEnrollment/components/StudentAssignmentSection/StudentAssignmentSection.tsx`
+
+Circular dependencies addressed:
+
+- Removed global shared-component placement for components that are only used by one business area or by assignment flows.
+- Replaced duplicate `StudentScheduleSection` feature wrapper with the runtime implementation.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Class session countdown badge timing text.
+- Class schedule day selector and create schedule ID generation.
+- Coach filter hover disabled state.
+- Student/coach assignment modal hero and schedule section visuals.

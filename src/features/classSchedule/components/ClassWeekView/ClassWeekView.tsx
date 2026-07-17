@@ -1,4 +1,4 @@
-import { DaySelector } from "@/components/DaySelector";
+import { DaySelector } from "@/features/classSchedule/components/DaySelector";
 import type { ScheduleShift, ScheduleStatus } from "@/config/constants";
 import {
   ScheduleShiftLabel,

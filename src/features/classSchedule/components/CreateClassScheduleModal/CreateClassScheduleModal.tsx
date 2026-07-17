@@ -18,7 +18,10 @@ import {
 import { classScheduleAPI } from "@/features/classSchedule/api/classScheduleAPI";
 import { useGenericMutation } from "@/hooks/useCrud";
 import type { ClassScheduleCreateRequest, ClassScheduleDetail } from "@/types";
-import { generateScheduleId, isScheduleIdReady } from "@/utils/scheduleUtils";
+import {
+  generateScheduleId,
+  isScheduleIdReady,
+} from "@/features/classSchedule/utils/scheduleUtils";
 
 import styles from "./CreateClassScheduleModal.module.scss";
 

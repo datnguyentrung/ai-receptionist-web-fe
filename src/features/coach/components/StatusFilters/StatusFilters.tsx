@@ -3,7 +3,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "../ui/hover-card";
+} from "@/components/ui/hover-card";
 import styles from "./StatusFilters.module.scss";
 
 export type FilterOption<T extends string> = {
