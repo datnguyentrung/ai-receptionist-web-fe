@@ -14,7 +14,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { AccessDeniedView } from "@/components/AccessDeniedView";
-import BottomNavigationBar from "@/components/BottomNavigationBar";
+import BottomNavigationBar from "@/layouts/MainLayout/components/BottomNavigationBar";
 import ComingSoonView from "@/components/ComingSoonView";
 import { ClassSchedulesRoute } from "@/pages/ClassSchedules/ClassSchedulesRoute";
 import AttendanceTab from "@/pages/PersonalPage/components/AttendanceTab";

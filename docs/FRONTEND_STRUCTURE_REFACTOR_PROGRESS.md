@@ -66,9 +66,46 @@ Validation:
 
 Commit:
 
-- Pending.
+- `dc6c24d`
 
 Risks/manual checks remaining:
 
 - Manual route smoke for desktop/PWA routes.
 - `src/routes` is empty after move and should be removed in Phase J cleanup.
+
+## Phase B - Layout Shell Components
+
+Status: Completed
+
+Moved files/folders:
+
+- `src/components/Header/` -> `src/layouts/MainLayout/components/Header/`
+- `src/components/Sidebar/` -> `src/layouts/MainLayout/components/Sidebar/`
+- `src/components/BottomNavigationBar/` -> `src/layouts/MainLayout/components/BottomNavigationBar/`
+- `src/components/LeftPanel/` -> `src/layouts/AuthLayout/components/LeftPanel/`
+
+Edited files:
+
+- `src/layouts/MainLayout/MainLayout.tsx`
+- `src/layouts/AuthLayout/AuthLayout.tsx`
+- `src/app/router/AppRoutes.tsx`
+- moved shell component imports after path depth changed.
+
+Circular dependencies addressed:
+
+- None in this phase.
+
+Validation:
+
+- `npm run lint`: passed.
+- `npm run build`: passed.
+
+Commit:
+
+- Pending.
+
+Risks/manual checks remaining:
+
+- Desktop sidebar/header visual behavior.
+- PWA bottom navigation and fallback dock behavior.
+- Login page left panel layout.

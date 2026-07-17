@@ -1,10 +1,10 @@
-import Sidebar from "@/components/Sidebar/Sidebar";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { APP_MODE, isPWA } from "@/config/appMode";
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router";
-import BottomNavigationBar from "../../components/BottomNavigationBar";
-import Header from "../../components/Header/Header";
+import BottomNavigationBar from "./components/BottomNavigationBar";
+import Header from "./components/Header/Header";
+import Sidebar from "./components/Sidebar/Sidebar";
 import styles from "./MainLayout.module.scss";
 
 const FULLSCREEN_ROUTES = new Set(["/check-in"]);

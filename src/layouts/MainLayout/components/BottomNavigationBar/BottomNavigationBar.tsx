@@ -9,7 +9,7 @@ import { useRoleStudent } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { isPWA } from "../../config/appMode";
+import { isPWA } from "@/config/appMode";
 import styles from "./BottomNavigationBar.module.scss";
 
 export default function BottomNavigationBar() {

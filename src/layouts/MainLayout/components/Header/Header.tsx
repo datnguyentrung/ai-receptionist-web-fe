@@ -3,7 +3,7 @@ import { useNavItems } from "@/hooks/useNavItems";
 import { Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
-import { isPWA } from "../../config/appMode";
+import { isPWA } from "@/config/appMode";
 import styles from "./Header.module.scss";
 
 export default function Header({

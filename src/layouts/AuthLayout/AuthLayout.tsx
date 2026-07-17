@@ -1,4 +1,4 @@
-import { LeftPanel } from "@/components/LeftPanel";
+import { LeftPanel } from "./components/LeftPanel";
 import styles from "./AuthLayout.module.scss";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
