@@ -1,8 +1,8 @@
 import { isPWA } from "@/config/appMode";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/config/constants/path";
-import { RequireRole } from "@/config/RequireRole";
+import { RequireRole } from "@/app/guards/RequireRole";
 import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
-import { getRouteSkeletonKind } from "@/routes/routePreload";
+import { getRouteSkeletonKind } from "@/app/router/routePreload";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { lazy, Suspense } from "react";
 import {
@@ -13,19 +13,19 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { AccessDeniedView } from "../components/AccessDeniedView";
-import BottomNavigationBar from "../components/BottomNavigationBar";
-import ComingSoonView from "../components/ComingSoonView";
-import { ClassSchedulesRoute } from "../pages/ClassSchedules/ClassSchedulesRoute";
-import AttendanceTab from "../pages/PersonalPage/components/AttendanceTab";
-import PersonalInfoTab from "../pages/PersonalPage/components/PersonalInfoTab";
-import ScheduleAssignments from "../pages/PersonalPage/components/ScheduleAssignments";
-import ScoreTab from "../pages/PersonalPage/components/ScoreTab/ScoreTab";
-import TimesheetTab from "../pages/PersonalPage/components/TimesheetTab";
-import TuitionTab from "../pages/PersonalPage/components/TuitionTab/TuitionTab";
-import PersonalPage from "../pages/PersonalPage/PersonalPage";
-import Rankings from "../pages/Rankings";
-import { useAuthStore } from "../store/authStore";
+import { AccessDeniedView } from "@/components/AccessDeniedView";
+import BottomNavigationBar from "@/components/BottomNavigationBar";
+import ComingSoonView from "@/components/ComingSoonView";
+import { ClassSchedulesRoute } from "@/pages/ClassSchedules/ClassSchedulesRoute";
+import AttendanceTab from "@/pages/PersonalPage/components/AttendanceTab";
+import PersonalInfoTab from "@/pages/PersonalPage/components/PersonalInfoTab";
+import ScheduleAssignments from "@/pages/PersonalPage/components/ScheduleAssignments";
+import ScoreTab from "@/pages/PersonalPage/components/ScoreTab/ScoreTab";
+import TimesheetTab from "@/pages/PersonalPage/components/TimesheetTab";
+import TuitionTab from "@/pages/PersonalPage/components/TuitionTab/TuitionTab";
+import PersonalPage from "@/pages/PersonalPage/PersonalPage";
+import Rankings from "@/pages/Rankings";
+import { useAuthStore } from "@/store/authStore";
 import fallbackStyles from "./RouteLoadingFallback.module.scss";
 
 const MainLayout = lazy(() =>
@@ -35,7 +35,7 @@ const MainLayout = lazy(() =>
 );
 const Welcome = lazy(() => import("@/pages/Welcome"));
 const LoginPage = lazy(() =>
-  import("@/features/auth").then((module) => ({ default: module.LoginPage })),
+  import("@/pages/LoginPage").then((module) => ({ default: module.LoginPage })),
 );
 const Dashboard = lazy(() =>
   import("@/pages/Dashboard").then((module) => ({

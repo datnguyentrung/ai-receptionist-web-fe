@@ -1,10 +1,10 @@
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
-import { AppErrorBoundary } from "./components/AppErrorBoundary";
-import { PullToRefreshProvider } from "./components/PullToRefresh";
-import { isMaintenanceMode } from "./config/env";
-import { MaintenancePage } from "./pages/MaintenancePage";
-import AppRoutes from "./routes/AppRoutes";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import { PullToRefreshProvider } from "@/components/PullToRefresh";
+import { isMaintenanceMode } from "@/config/env";
+import { MaintenancePage } from "@/pages/MaintenancePage";
+import AppRoutes from "@/app/router/AppRoutes";
 
 export default function App() {
   if (isMaintenanceMode) {

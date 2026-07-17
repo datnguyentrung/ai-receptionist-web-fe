@@ -3,7 +3,7 @@ import {
   preloadBottomNavRoutes,
   preloadRoute,
   type RoutePreloadContext,
-} from "@/routes/routePreload";
+} from "@/app/router/routePreload";
 import { useAuthStore } from "@/store/authStore";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";

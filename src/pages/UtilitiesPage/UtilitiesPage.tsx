@@ -4,7 +4,7 @@ import {
   type NavigationItem,
 } from "@/config/constants/path";
 import { ROLE_LEVELS } from "@/config/constants/roleLevels";
-import { preloadRoute, type RoutePreloadContext } from "@/routes/routePreload";
+import { preloadRoute, type RoutePreloadContext } from "@/app/router/routePreload";
 import { useAuthStore } from "@/store/authStore";
 import { useRoleStudent, useUserLevel } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
