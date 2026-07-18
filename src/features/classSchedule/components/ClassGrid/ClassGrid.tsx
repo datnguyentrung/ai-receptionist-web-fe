@@ -11,6 +11,7 @@ interface Props {
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onRequestUpdate: (classSchedule: ClassScheduleDetail) => void;
   onOpenSessionsModal: (scheduleId?: string) => void;
 }
 
@@ -25,6 +26,7 @@ const BRANCH_FILTERS = [1, 2, 3, 4, 5, 6] as const;
 function ClassGridInner({
   classes,
   onRequestStatusChange,
+  onRequestUpdate,
   onOpenSessionsModal,
 }: Props) {
   const [selectedBranchNumber, setSelectedBranchNumber] = useState<
@@ -130,6 +132,7 @@ function ClassGridInner({
                 key={cls.scheduleId}
                 cls={cls}
                 onRequestStatusChange={onRequestStatusChange}
+                onRequestUpdate={onRequestUpdate}
                 onOpenSessionsModal={onOpenSessionsModal}
               />
             ))}

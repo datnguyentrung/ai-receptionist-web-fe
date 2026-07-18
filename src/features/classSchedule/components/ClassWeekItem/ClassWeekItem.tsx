@@ -16,6 +16,7 @@ import styles from "./ClassWeekItem.module.scss";
 function ClassWeekItemInner({
   cls,
   onRequestStatusChange,
+  onRequestUpdate,
   onOpenSessionsModal,
 }: {
   cls: ClassScheduleDetail;
@@ -23,6 +24,7 @@ function ClassWeekItemInner({
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onRequestUpdate: (classSchedule: ClassScheduleDetail) => void;
   onOpenSessionsModal: (scheduleId?: string) => void;
 }) {
   const navigateToStudentListByClassScheduleId =
@@ -108,6 +110,7 @@ function ClassWeekItemInner({
                     ? [{ id: "start", label: "Mở hoạt động lớp" }]
                     : []),
                 { id: "__separator__" as const },
+                { id: "update", label: "Cập nhật lớp" },
                 { id: "assign-coach", label: "Phân công HLV" },
                 { id: "session", label: "Thêm buổi học" },
               ]
@@ -122,6 +125,11 @@ function ClassWeekItemInner({
             case "start":
               if (canViewManagerSenior) {
                 onRequestStatusChange(cls.scheduleId, cls.scheduleStatus);
+              }
+              break;
+            case "update":
+              if (canViewManagerSenior) {
+                onRequestUpdate(cls);
               }
               break;
             case "assign-coach":

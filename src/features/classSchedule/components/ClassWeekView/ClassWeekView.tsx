@@ -19,12 +19,14 @@ interface Props {
     scheduleId: string,
     currentStatus: ScheduleStatus,
   ) => void;
+  onRequestUpdate: (classSchedule: ClassScheduleDetail) => void;
   onOpenSessionsModal: (scheduleId?: string) => void;
 }
 
 function ClassWeekViewInner({
   classes,
   onRequestStatusChange,
+  onRequestUpdate,
   onOpenSessionsModal,
 }: Props) {
   const [selectedDay, setSelectedDay] = useState<number>(getCurrentWeekday);
@@ -115,6 +117,7 @@ function ClassWeekViewInner({
               key={cls.scheduleId}
               cls={cls}
               onRequestStatusChange={onRequestStatusChange}
+              onRequestUpdate={onRequestUpdate}
               onOpenSessionsModal={onOpenSessionsModal}
             />
           ))

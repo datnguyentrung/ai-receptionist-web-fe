@@ -7,6 +7,7 @@ import {
   ClassHeader,
   ClassWeekView,
 } from "@/features/classSchedule";
+import { UpdateClassScheduleModal } from "@/features/classSchedule/components/UpdateClassScheduleModal";
 import { UpcomingSessionsModal } from "@/features/classSession/components/UpcomingSessionsModal";
 import { RefreshCcw } from "lucide-react";
 import { useCallback } from "react";
@@ -137,12 +138,14 @@ export function ClassSchedules() {
             <ClassGrid
               classes={logic.classSchedules || []}
               onRequestStatusChange={logic.openChangeStatusModal}
+              onRequestUpdate={logic.openUpdateModal}
               onOpenSessionsModal={logic.openSessionsModal}
             />
           ) : (
             <ClassWeekView
               classes={logic.classSchedules || []}
               onRequestStatusChange={logic.openChangeStatusModal}
+              onRequestUpdate={logic.openUpdateModal}
               onOpenSessionsModal={logic.openSessionsModal}
             />
           )}
@@ -173,6 +176,13 @@ export function ClassSchedules() {
         currentPage={logic.currentPage}
         onPageChange={logic.setCurrentPage}
         onSessionUpdated={logic.handleSessionUpdated}
+      />
+
+      <UpdateClassScheduleModal
+        open={logic.isUpdateModalOpen}
+        classSchedule={logic.selectedClassSchedule}
+        onClose={logic.closeUpdateModal}
+        onUpdated={logic.handleClassScheduleUpdated}
       />
     </>
   );

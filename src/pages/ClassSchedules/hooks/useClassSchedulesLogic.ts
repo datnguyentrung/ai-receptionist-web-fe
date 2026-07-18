@@ -6,12 +6,16 @@ import { useAuthStore } from "@/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { classSchedulesQueryKey } from "@/features/classSchedule/queries/classSchedulesQueries";
+import type { ClassScheduleDetail } from "@/types";
 
 export function useClassSchedulesLogic() {
   const [view, setView] = useState<"grid" | "week">("week");
   const [currentPage, setCurrentPage] = useState(1);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [classSessionModalOpen, setClassSessionModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedClassSchedule, setSelectedClassSchedule] =
+    useState<ClassScheduleDetail | null>(null);
   const [createSessionPrefillScheduleId, setCreateSessionPrefillScheduleId] =
     useState<string | null>(null);
   const [pendingStatusChange, setPendingStatusChange] = useState<{
@@ -122,6 +126,20 @@ export function useClassSchedulesLogic() {
     refetchSessions();
   }, [refetchSessions]);
 
+  const openUpdateModal = useCallback((classSchedule: ClassScheduleDetail) => {
+    setSelectedClassSchedule(classSchedule);
+    setIsUpdateModalOpen(true);
+  }, []);
+
+  const closeUpdateModal = useCallback(() => {
+    setIsUpdateModalOpen(false);
+    setSelectedClassSchedule(null);
+  }, []);
+
+  const handleClassScheduleUpdated = useCallback(() => {
+    refetchClassSchedules();
+  }, [refetchClassSchedules]);
+
   const isCurrentStatusActive = pendingStatusChange?.currentStatus === "ACTIVE";
   const confirmTitle = isCurrentStatusActive
     ? "Dừng hoạt động lớp?"
@@ -145,6 +163,8 @@ export function useClassSchedulesLogic() {
     currentPage,
     setCurrentPage,
     isChangeStatusModalOpen,
+    isUpdateModalOpen,
+    selectedClassSchedule,
     classSessionModalOpen,
     createSessionPrefillScheduleId,
     pendingStatusChange,
@@ -169,6 +189,9 @@ export function useClassSchedulesLogic() {
     closeChangeStatusModal,
     confirmStatusChange,
     isChangingStatus,
+    openUpdateModal,
+    closeUpdateModal,
+    handleClassScheduleUpdated,
     openSessionsModal: (scheduleId?: string) => {
       setCreateSessionPrefillScheduleId(scheduleId?.trim() || null);
       setClassSessionModalOpen(true);
