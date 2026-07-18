@@ -133,19 +133,19 @@ export const STUDENT_TABS = ({
 }): NavigationItem[] => [
   {
     id: "profile",
-    label: "Hồ sơ cá nhân",
+    label: "Hồ sơ",
     icon: Info,
     to: `/${studentCode}`,
   },
   {
     id: "classes",
-    label: "Lớp học & Lịch sử",
+    label: "Lớp học",
     icon: BookOpen,
     to: `/${studentCode}/classes`,
   },
   {
     id: "progress",
-    label: "Tiến trình & Điểm danh",
+    label: "Tiến trình",
     icon: Activity,
     to: `/${studentCode}/progress`,
   },
@@ -170,7 +170,7 @@ export const COACH_TABS = ({
 }): NavigationItem[] => [
   {
     id: "profile",
-    label: "Hồ sơ cá nhân",
+    label: "Hồ sơ",
     icon: Info,
     to: `/${coachCode}`,
   },
@@ -182,7 +182,7 @@ export const COACH_TABS = ({
   },
   {
     id: "timesheet",
-    label: "Bảng chấm công",
+    label: "Chấm công",
     icon: CalendarRange,
     to: `/${coachCode}/timesheet`,
   },
@@ -191,7 +191,7 @@ export const COACH_TABS = ({
 export const BOTTOM_NAV_ITEMS = ({
   userId,
 }: {
-  userId: string;
+  userId?: string | null;
 }): NavigationItem[] => [
   {
     id: "overview",
@@ -222,6 +222,6 @@ export const BOTTOM_NAV_ITEMS = ({
     id: "profile",
     label: "Hồ sơ cá nhân",
     icon: Info,
-    to: `/${userId}`,
+    to: userId ? `/${userId}` : undefined,
   },
 ];

@@ -1,10 +1,10 @@
-import { isPWA } from "@/config/appMode";
 import {
   NAV_ITEMS,
   type NavigationItem,
 } from "@/app/navigation/path";
-import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { preloadRoute, type RoutePreloadContext } from "@/app/router/routePreload";
+import { isPWA } from "@/config/appMode";
+import { ROLE_LEVELS } from "@/config/constants/roleLevels";
 import { useAuthStore } from "@/store/authStore";
 import { useRoleStudent, useUserLevel } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -95,31 +95,33 @@ function normalizeUtilityItems(
   items: NavigationItem[],
   currentLevel: number,
 ): UtilityItem[] {
-  return items.map((item, index) => {
-    const itemId = getItemId(item, index);
-    const hasAccess =
-      !item.minLevel ||
-      (!item.maxLevel && currentLevel >= item.minLevel) ||
-      (item.maxLevel !== undefined &&
-        currentLevel >= item.minLevel &&
-        currentLevel <= item.maxLevel);
-    const hasRoute = isRouteValid(item.to);
-    const isHiddenByConfig = item.display === false;
-    const isDisabled = !hasAccess || !hasRoute || isHiddenByConfig;
+  return items
+    .filter((item) => item.display !== false)
+    .map((item, index) => {
+      const itemId = getItemId(item, index);
+      const hasAccess =
+        !item.minLevel ||
+        (!item.maxLevel && currentLevel >= item.minLevel) ||
+        (item.maxLevel !== undefined &&
+          currentLevel >= item.minLevel &&
+          currentLevel <= item.maxLevel);
+      const hasRoute = isRouteValid(item.to);
+      const isHiddenByConfig = item.display === false;
+      const isDisabled = !hasAccess || !hasRoute || isHiddenByConfig;
 
-    return {
-      ...item,
-      id: itemId,
-      isDisabled,
-      disabledReason: !hasRoute
-        ? "Chưa có đường dẫn"
-        : isHiddenByConfig
-          ? "Đang ẩn"
-          : !hasAccess
-            ? "Chưa đủ quyền"
-            : undefined,
-    };
-  });
+      return {
+        ...item,
+        id: itemId,
+        isDisabled,
+        disabledReason: !hasRoute
+          ? "Chưa có đường dẫn"
+          : isHiddenByConfig
+            ? "Đang ẩn"
+            : !hasAccess
+              ? "Chưa đủ quyền"
+              : undefined,
+      };
+    });
 }
 
 function UtilityCard({

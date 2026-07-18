@@ -1,54 +1,23 @@
 // File: src/features/auth/hooks/useAuthHooks.ts
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import { userAPI } from "@/features/user";
+import { normalizeAuthError } from "@/features/auth/utils/authErrors";
+import { clearAuthCompatibilityStorage } from "@/features/auth/utils/authStorage";
+import { routeAfterAuthResponse } from "@/features/auth/utils/authRouting";
 import {
   cleanupFcm,
   requestNotificationPermission,
 } from "@/integrations/firebase/fcm";
 import { useAuthStore } from "@/store/authStore";
-import type { UserBase } from "@/types";
+import type { LoginRequest, SwitchContextRequest } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { authApi } from "./authApi";
 
-const getLoginErrorMessage = (error: unknown) => {
-  if (!error) {
-    return "Đăng nhập thất bại. Vui lòng thử lại.";
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  if (typeof error === "object") {
-    const maybeError = error as {
-      message?: unknown;
-      response?: {
-        data?: {
-          message?: unknown;
-          error?: unknown;
-        };
-      };
-    };
-
-    const responseMessage = maybeError.response?.data?.message;
-    if (typeof responseMessage === "string" && responseMessage.trim()) {
-      return responseMessage;
-    }
-
-    const responseError = maybeError.response?.data?.error;
-    if (typeof responseError === "string" && responseError.trim()) {
-      return responseError;
-    }
-
-    if (typeof maybeError.message === "string" && maybeError.message.trim()) {
-      return maybeError.message;
-    }
-  }
-
-  return "Đăng nhập thất bại. Vui lòng thử lại.";
-};
+const getPrimaryUserCode = (
+  profiles: Awaited<ReturnType<typeof userAPI.getUserInfo>>,
+) => profiles[0]?.userInfo?.userCode ?? null;
 
 // 1. Hook lấy thông tin tài khoản (Dùng useQuery vì là GET)
 export const useGetAccount = () => {
@@ -62,26 +31,29 @@ export const useGetAccount = () => {
 // 2. Hook xử lý Đăng nhập (Dùng useMutation vì là POST)
 export const useLogin = () => {
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
+  const setAuthFromResponse = useAuthStore((state) => state.setAuthFromResponse);
+  const initProfile = useAuthStore((state) => state.initProfile);
   return useMutation({
-    mutationFn: (data: UserBase) => authApi.login(data),
+    mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: async (data) => {
       try {
-        // 1. Lưu token mới vào store TRƯỚC để các Axios Interceptor kịp cập nhật
-        useAuthStore.setState({ accessToken: data.accessToken });
+        clearAuthCompatibilityStorage();
+        setAuthFromResponse(data);
+        let userCode: string | null = data.activeContext?.userCode ?? null;
 
-        localStorage.setItem("access_token", data.accessToken);
-        localStorage.setItem("refresh_token", data.refreshToken);
-
-        // 2. getUserInfo trả về UserResponse[] (multi-profile)
-        const profiles = await userAPI.getUserInfo(data.accessToken);
-
-        // 3. Set toàn bộ data — login() tự resolve activeProfile từ localStorage
-        login(data.accessToken, profiles);
+        if (!data.requiresContextSelection) {
+          try {
+            const profiles = await userAPI.getUserInfo(data.accessToken);
+            initProfile(profiles);
+            userCode = getPrimaryUserCode(profiles);
+          } catch {
+            // Legacy profile loading should not invalidate the auth session.
+          }
+        }
 
         showSuccessToast("Đăng nhập thành công");
         window.requestAnimationFrame(() => {
-          navigate("/", { replace: true });
+          navigate(routeAfterAuthResponse(data, { userCode }), { replace: true });
         });
 
         window.setTimeout(() => {
@@ -94,12 +66,12 @@ export const useLogin = () => {
         }, 0);
       } catch (error) {
         showErrorToast(
-          "Lỗi khi lấy thông tin user: " + getLoginErrorMessage(error),
+          "Lỗi khi xử lý đăng nhập: " + normalizeAuthError(error),
         );
       }
     },
     onError: (error) => {
-      showErrorToast(getLoginErrorMessage(error));
+      showErrorToast(normalizeAuthError(error));
     },
   });
 };
@@ -107,15 +79,69 @@ export const useLogin = () => {
 // 3. Hook xử lý Đăng xuất (Dùng useMutation)
 export const useLogout = () => {
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.logout,
-    onSuccess: () => {
+    onSettled: () => {
       cleanupFcm().catch(() => { });
-      logout();
+      clearAuth();
       queryClient.clear();
-      navigate("/login");
+      navigate("/login", { replace: true });
+    },
+  });
+};
+
+export const useLogoutAll = () => {
+  const navigate = useNavigate();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authApi.logoutAll,
+    onSuccess: () => {
+      showSuccessToast("Đã đăng xuất khỏi tất cả thiết bị");
+    },
+    onSettled: () => {
+      cleanupFcm().catch(() => { });
+      clearAuth();
+      queryClient.clear();
+      navigate("/login", { replace: true });
+    },
+  });
+};
+
+export const useSwitchContext = () => {
+  const navigate = useNavigate();
+  const setAuthFromResponse = useAuthStore((state) => state.setAuthFromResponse);
+  const initProfile = useAuthStore((state) => state.initProfile);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: SwitchContextRequest) => authApi.switchContext(data),
+    onSuccess: async (data) => {
+      setAuthFromResponse(data);
+      queryClient.clear();
+      let userCode: string | null = data.activeContext?.userCode ?? null;
+
+      if (!data.requiresContextSelection) {
+        try {
+          const profiles = await userAPI.getUserInfo(data.accessToken);
+          initProfile(profiles);
+          userCode = getPrimaryUserCode(profiles);
+        } catch {
+          // Legacy profile loading should not block context switch.
+        }
+      }
+
+      window.setTimeout(() => {
+        void requestNotificationPermission().catch(() => { });
+      }, 0);
+
+      navigate(routeAfterAuthResponse(data, { userCode }), { replace: true });
+    },
+    onError: (error) => {
+      showErrorToast(normalizeAuthError(error));
     },
   });
 };

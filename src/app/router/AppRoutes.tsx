@@ -1,21 +1,14 @@
-import { isPWA } from "@/config/appMode";
-import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/app/navigation/path";
-import { RequireRole } from "@/app/guards/RequireRole";
-import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
-import { getRouteSkeletonKind } from "@/app/router/routePreload";
-import { useRoleStudent } from "@/utils/roleUtils";
-import { lazy, Suspense } from "react";
-import {
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
 import { AccessDeniedView } from "@/app/errors/AccessDeniedView";
-import BottomNavigationBar from "@/layouts/MainLayout/components/BottomNavigationBar";
+import { RequireAuth } from "@/app/guards/RequireAuth";
+import { RequireContext } from "@/app/guards/RequireContext";
+import { RequireRole } from "@/app/guards/RequireRole";
+import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/app/navigation/path";
+import { getRouteSkeletonKind } from "@/app/router/routePreload";
 import ComingSoonView from "@/components/common/ComingSoonView";
+import { isPWA } from "@/config/appMode";
+import { AUTH_SESSION_INVALID_EVENT } from "@/features/auth/utils/authEvents";
+import BottomNavigationBar from "@/layouts/MainLayout/components/BottomNavigationBar";
+import { PwaStackScreenLayout } from "@/layouts/PwaStackScreenLayout";
 import { ClassSchedulesRoute } from "@/pages/ClassSchedules/ClassSchedulesRoute";
 import AttendanceTab from "@/pages/PersonalPage/components/AttendanceTab";
 import PersonalInfoTab from "@/pages/PersonalPage/components/PersonalInfoTab";
@@ -26,6 +19,16 @@ import TuitionTab from "@/pages/PersonalPage/components/TuitionTab/TuitionTab";
 import PersonalPage from "@/pages/PersonalPage/PersonalPage";
 import Rankings from "@/pages/Rankings";
 import { useAuthStore } from "@/store/authStore";
+import { useRoleStudent } from "@/utils/roleUtils";
+import { lazy, Suspense, useEffect } from "react";
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import fallbackStyles from "./RouteLoadingFallback.module.scss";
 
 const MainLayout = lazy(() =>
@@ -37,6 +40,7 @@ const Welcome = lazy(() => import("@/pages/Welcome"));
 const LoginPage = lazy(() =>
   import("@/pages/LoginPage").then((module) => ({ default: module.LoginPage })),
 );
+const ContextSelectionPage = lazy(() => import("@/pages/ContextSelectionPage"));
 const Dashboard = lazy(() =>
   import("@/pages/Dashboard").then((module) => ({
     default: module.Dashboard,
@@ -168,6 +172,21 @@ function RouteLoadingFallback({
   );
 }
 
+function isAnonymousAllowedPath(pathname: string) {
+  const normalizedPath = pathname.replace(/\/$/, "") || "/";
+  return (
+    normalizedPath === "/welcome" ||
+    normalizedPath === "/login" ||
+    normalizedPath === "/403" ||
+    normalizedPath === "/rankings" ||
+    normalizedPath.startsWith("/rankings/") ||
+    normalizedPath === "/public" ||
+    normalizedPath.startsWith("/public/") ||
+    normalizedPath === "/marketing" ||
+    normalizedPath.startsWith("/marketing/")
+  );
+}
+
 function getProfileStackTitle(pathname: string) {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
   const segment = normalizedPath.split("/").filter(Boolean).at(-1);
@@ -196,14 +215,38 @@ const normalizePath = (value?: string | null) => {
   return path.replace(/\/+$/, "") || "/";
 };
 
+function isCurrentUserProfilePath(
+  pathname: string,
+  currentUserCode?: string | null,
+) {
+  const normalizedCurrentUserCode = normalizeUserCode(currentUserCode);
+
+  if (!normalizedCurrentUserCode) {
+    return false;
+  }
+
+  const segments = normalizePath(pathname)
+    .split("/")
+    .filter(Boolean);
+
+  const routeUserCode = segments[0];
+
+  return normalizeUserCode(routeUserCode) === normalizedCurrentUserCode;
+}
+
+const getBottomNavPaths = (userId?: string | null) =>
+  BOTTOM_NAV_ITEMS({ userId })
+    .map((item) => item.to)
+    .filter((to): to is string => Boolean(to))
+    .map(normalizePath);
+
 function getStackRouteTitle(pathname: string, currentUserCode?: string) {
   const normalizedPath = normalizePath(pathname);
   const userId = currentUserCode?.trim();
-  const bottomNavTitle = userId
-    ? BOTTOM_NAV_ITEMS({ userId }).find(
+  const bottomNavTitle =
+    BOTTOM_NAV_ITEMS({ userId }).find(
       (item) => item.to && normalizePath(item.to) === normalizedPath,
-    )?.label
-    : undefined;
+    )?.label;
 
   if (bottomNavTitle) {
     return bottomNavTitle;
@@ -258,21 +301,30 @@ function StackRouteLayout() {
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const currentUserCode = useAuthStore(
-    (state) => state.activeProfile?.userInfo?.userCode,
+    (state) =>
+      state.activeProfile?.userInfo?.userCode ??
+      state.activeContext?.userCode ??
+      undefined,
   );
 
   const normalizedPathname = normalizePath(pathname);
   const normalizedCurrentUserCode = normalizeUserCode(currentUserCode);
   const isWaitingForCurrentUser =
-    hasHydrated && isAuthenticated && !normalizedCurrentUserCode;
-  const mainTabPaths = currentUserCode
-    ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
-      .map((item) => item.to)
-      .filter((to): to is string => Boolean(to))
-      .map(normalizePath)
-    : [];
+    hasHydrated &&
+    isAuthenticated &&
+    isProfileRoutePath(pathname) &&
+    !normalizedCurrentUserCode;
+  const mainTabPaths = getBottomNavPaths(currentUserCode);
+
   const isMainScreen = mainTabPaths.includes(normalizedPathname);
-  const shouldShowBottomNavigation = isMainScreen;
+
+  const isCurrentUserProfileScreen = isCurrentUserProfilePath(
+    normalizedPathname,
+    currentUserCode,
+  );
+
+  const shouldShowBottomNavigation =
+    isMainScreen || isCurrentUserProfileScreen;
 
   if (!hasHydrated || isWaitingForCurrentUser) {
     return (
@@ -311,38 +363,76 @@ function StackRouteLayout() {
 
 export default function AppRoutes() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isProfileRoute = isProfileRoutePath(pathname);
   // Lấy thêm 'user' từ store để biết userCode của người đang đăng nhập
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authStatus = useAuthStore((state) => state.authStatus);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const user = useAuthStore((state) => state.activeProfile);
+  const activeContextUserCode = useAuthStore(
+    (state) => state.activeContext?.userCode,
+  );
 
   // Lưu sẵn các cờ quyền hạn để code JSX gọn hơn
   const { canViewManagerSenior, canViewCoach, canUseCheckIn } =
     useRoleStudent();
 
   // Xác định đường dẫn trang cá nhân của user hiện tại
-  const personalPageRoute = user?.userInfo?.userCode
-    ? `/${user.userInfo.userCode}`
-    : "/welcome";
-  const currentUserCode = user?.userInfo?.userCode;
-  const fallbackMainTabPaths = currentUserCode
-    ? BOTTOM_NAV_ITEMS({ userId: currentUserCode })
-      .map((item) => item.to)
-      .filter((to): to is string => Boolean(to))
-      .map(normalizePath)
-    : [];
+  const currentUserCode = user?.userInfo?.userCode ?? activeContextUserCode;
+  const personalPageRoute = currentUserCode
+    ? `/${currentUserCode}`
+    : "/utilities";
+  const fallbackMainTabPaths = getBottomNavPaths(currentUserCode);
+
+  const isCurrentUserProfileFallback = isCurrentUserProfilePath(
+    pathname,
+    currentUserCode,
+  );
+
   const shouldShowFallbackBottomDock = isPWA
-    ? fallbackMainTabPaths.includes(normalizePath(pathname))
+    ? fallbackMainTabPaths.includes(normalizePath(pathname)) ||
+    isCurrentUserProfileFallback
     : !isProfileRoute;
 
-  if (!hasHydrated) {
+  useEffect(() => {
+    const handleSessionInvalid = () => {
+      navigate("/welcome", { replace: true });
+    };
+
+    window.addEventListener(AUTH_SESSION_INVALID_EVENT, handleSessionInvalid);
+    return () => {
+      window.removeEventListener(
+        AUTH_SESSION_INVALID_EVENT,
+        handleSessionInvalid,
+      );
+    };
+  }, [navigate]);
+
+  useEffect(() => {
+    if (
+      hasHydrated &&
+      authStatus === "anonymous" &&
+      !isAnonymousAllowedPath(pathname)
+    ) {
+      navigate("/welcome", { replace: true });
+    }
+  }, [authStatus, hasHydrated, navigate, pathname]);
+
+  if (
+    (!hasHydrated || authStatus === "initializing") &&
+    !isAnonymousAllowedPath(pathname)
+  ) {
     return (
       <RouteLoadingFallback
         pathname={pathname}
         showBottomDock={shouldShowFallbackBottomDock}
       />
     );
+  }
+
+  if (authStatus === "anonymous" && !isAnonymousAllowedPath(pathname)) {
+    return <Navigate to="/welcome" replace />;
   }
 
   return (
@@ -394,86 +484,84 @@ export default function AppRoutes() {
           </Route>
         </Route>
 
+        <Route element={<RequireAuth />}>
+          <Route path="/context-selection" element={<ContextSelectionPage />} />
+        </Route>
+
         {/* --- PROTECTED ROUTES --- */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              isPWA ? (
-                <Outlet />
-              ) : (
-                <MainLayout />
-              )
-            ) : (
-              <Navigate to="/welcome" replace />
-            )
-          }
-        >
-          {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
-          <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
-            <Route path="utilities" element={<UtilitiesPage />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<RequireContext />}>
             <Route
-              path="notifications"
-              element={
-                <ComingSoonView
-                  featureName="Thông báo"
-                  description="Bảng thông báo trung tâm đang được kết nối lại."
+              path="/"
+              element={isPWA ? <Outlet /> : <MainLayout />}
+            >
+              {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
+              <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+                <Route path="utilities" element={<UtilitiesPage />} />
+                <Route
+                  path="notifications"
+                  element={
+                    <ComingSoonView
+                      featureName="Thông báo"
+                      description="Bảng thông báo trung tâm đang được kết nối lại."
+                    />
+                  }
                 />
-              }
-            />
-          </Route>
-          <Route
-            element={
-              <RequireRole
-                isAllowed={canViewManagerSenior}
-                // Nếu không phải Manager, đẩy xuống kiểm tra xem có phải Coach không (vào schedules)
-                fallbackPath="/schedules"
-              />
-            }
-          >
-            <Route element={isPWA ? <MainLayout /> : <Outlet />}>
-              <Route index element={<Dashboard />} />
-            </Route>
-            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
-              <Route path="coaches" element={<CoachManagement />} />
-            </Route>
-          </Route>
-
-          {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
-          <Route
-            element={
-              <RequireRole
-                isAllowed={canViewCoach}
-                // QUAN TRỌNG: Nếu không phải Coach (tức là Student), đẩy về trang cá nhân của họ
-                fallbackPath={personalPageRoute}
-              />
-            }
-          >
-            <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
-              <Route path="students" element={<StudentManagement />} />
-              <Route path="schedules" element={<ClassSchedulesRoute />} />
+              </Route>
               <Route
-                path="schedules/:scheduleId"
-                element={<AttendanceCheckin />}
-              />
-              <Route path="history" element={<AttendanceReports />} />
-              <Route
-                path="history/:historyMode"
-                element={<AttendanceReports />}
-              />
-            </Route>
-          </Route>
+                element={
+                  <RequireRole
+                    isAllowed={canViewManagerSenior}
+                    // Nếu không phải Manager, đẩy xuống kiểm tra xem có phải Coach không (vào schedules)
+                    fallbackPath="/schedules"
+                  />
+                }
+              >
+                <Route element={isPWA ? <MainLayout /> : <Outlet />}>
+                  <Route index element={<Dashboard />} />
+                </Route>
+                <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+                  <Route path="coaches" element={<CoachManagement />} />
+                </Route>
+              </Route>
 
-          <Route
-            element={
-              <RequireRole
-                isAllowed={canUseCheckIn}
-                fallbackPath="/403"
-              />
-            }
-          >
-            <Route element={isPWA ? null : <Outlet />}>
-              <Route path="check-in" element={<AICheckIn />} />
+              {/* NHÓM 2: COACH TRỞ LÊN ĐƯỢC XEM */}
+              <Route
+                element={
+                  <RequireRole
+                    isAllowed={canViewCoach}
+                    // QUAN TRỌNG: Nếu không phải Coach (tức là Student), đẩy về trang cá nhân của họ
+                    fallbackPath={personalPageRoute}
+                  />
+                }
+              >
+                <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
+                  <Route path="students" element={<StudentManagement />} />
+                  <Route path="schedules" element={<ClassSchedulesRoute />} />
+                  <Route
+                    path="schedules/:scheduleId"
+                    element={<AttendanceCheckin />}
+                  />
+                  <Route path="history" element={<AttendanceReports />} />
+                  <Route
+                    path="history/:historyMode"
+                    element={<AttendanceReports />}
+                  />
+                </Route>
+              </Route>
+
+              <Route
+                element={
+                  <RequireRole
+                    isAllowed={canUseCheckIn}
+                    fallbackPath="/403"
+                  />
+                }
+              >
+                <Route element={isPWA ? null : <Outlet />}>
+                  <Route path="check-in" element={<AICheckIn />} />
+                </Route>
+              </Route>
             </Route>
           </Route>
         </Route>

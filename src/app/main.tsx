@@ -8,6 +8,7 @@ import "@/index.css";
 import { queryClient } from "@/lib/react-query";
 import { initFcm, syncFcmToken } from "@/integrations/firebase/fcm";
 import { useAuthStore } from "@/store/authStore";
+import { AuthBootstrap } from "@/app/providers/AuthBootstrap";
 
 if (!isMaintenanceMode) {
   initFcm()
@@ -29,7 +30,9 @@ syncAppModeAttribute();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <AuthBootstrap>
+        <App />
+      </AuthBootstrap>
     </QueryClientProvider>
   </StrictMode>,
 );

@@ -8,7 +8,6 @@ export const userAPI = {
         ? { Authorization: `Bearer ${accessToken}` }
         : undefined,
     });
-    console.log("User info response:", response.data);
     return response.data;
   },
 

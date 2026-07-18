@@ -6,9 +6,13 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authStatus = useAuthStore((state) => state.authStatus);
 
-  if (!isAuthenticated) {
+  if (authStatus === "initializing") {
+    return null;
+  }
+
+  if (authStatus === "anonymous") {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,3 +1,4 @@
+﻿import { authApi } from "@/features/auth/api/authApi";
 import { messaging, vapidKey } from "@/integrations/firebase/client";
 import { javaApi } from "@/lib/axiosInstance";
 import {
@@ -43,18 +44,10 @@ const deleteTokenLocal = () => {
   }
 };
 
-const getRefreshTokenLocal = (): string | null => {
-  try {
-    return localStorage.getItem("refresh_token");
-  } catch {
-    return null;
-  }
-};
-
 const getSWRegistration =
   async (): Promise<ServiceWorkerRegistration | null> => {
     if (!("serviceWorker" in navigator)) {
-      console.warn("[FCM] Trình duyệt không hỗ trợ Service Worker.");
+      console.warn("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ Service Worker.");
       return null;
     }
 
@@ -75,23 +68,13 @@ const getSWRegistration =
     );
   };
 
+
 const sendTokenToServer = async (fcmToken: string) => {
   try {
-    const refreshToken = getRefreshTokenLocal();
-
-    if (!refreshToken) {
-      console.warn("[FCM] Không gửi token lên BE vì thiếu refresh_token.");
-      return;
-    }
-
-    await javaApi.post("/notifications/update-fcm", {
-      fcmToken,
-      refreshToken,
-    });
-
-    console.log("[FCM] Đã cập nhật FCM Token lên server thành công!");
+    await authApi.updateFcm(fcmToken);
+    console.log("[FCM] Da cap nhat FCM token cho session hien tai.");
   } catch (error) {
-    console.error("[FCM] Gửi FCM token lên server thất bại:", error);
+    console.error("[FCM] Gui FCM token len server that bai:", error);
   }
 };
 
@@ -102,7 +85,7 @@ const removeTokenFromServer = async () => {
   try {
     await javaApi.delete(`/notifications/fcm-token/${token}`);
   } catch {
-    /* no-op: token có thể đã hết hạn hoặc đã bị xóa */
+    /* no-op: token cÃ³ thá»ƒ Ä‘Ã£ háº¿t háº¡n hoáº·c Ä‘Ã£ bá»‹ xÃ³a */
   }
 
   deleteTokenLocal();
@@ -112,12 +95,12 @@ export const requestNotificationPermission = async (): Promise<
   string | null
 > => {
   if (!messaging || !vapidKey) {
-    console.warn("[FCM] Firebase Messaging hoặc VAPID key chưa được cấu hình.");
+    console.warn("[FCM] Firebase Messaging hoáº·c VAPID key chÆ°a Ä‘Æ°á»£c cáº¥u hÃ¬nh.");
     return null;
   }
 
   if (!("Notification" in window)) {
-    console.warn("[FCM] Trình duyệt không hỗ trợ Notification API.");
+    console.warn("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ Notification API.");
     return null;
   }
 
@@ -126,7 +109,7 @@ export const requestNotificationPermission = async (): Promise<
   console.log("[FCM] Notification permission:", permission);
 
   if (permission !== "granted") {
-    console.log("[FCM] Người dùng từ chối thông báo push.");
+    console.log("[FCM] NgÆ°á»i dÃ¹ng tá»« chá»‘i thÃ´ng bÃ¡o push.");
     return null;
   }
 
@@ -139,17 +122,12 @@ export const requestNotificationPermission = async (): Promise<
       serviceWorkerRegistration: registration,
     });
 
-    console.log("[FCM] Lấy FCM token thành công:", {
-      tokenLength: token.length,
-      tokenPreview: `${token.slice(0, 12)}...`,
-    });
-
     await sendTokenToServer(token);
     saveTokenLocal(token);
 
     return token;
   } catch (error) {
-    console.error("[FCM] Lấy FCM token thất bại:", error);
+    console.error("[FCM] Láº¥y FCM token tháº¥t báº¡i:", error);
     return null;
   }
 };
@@ -165,7 +143,7 @@ export const initFcmForegroundListener = () => {
     const title = payload.data?.title || payload.notification?.title;
 
     if (!title) {
-      console.warn("[FCM] Foreground message không có title:", payload);
+      console.warn("[FCM] Foreground message khÃ´ng cÃ³ title:", payload);
       return;
     }
 
@@ -191,19 +169,19 @@ export const initFcmForegroundListener = () => {
     try {
       if (!("serviceWorker" in navigator)) {
         console.warn(
-          "[FCM] Không hỗ trợ Service Worker nên không hiển thị notification.",
+          "[FCM] KhÃ´ng há»— trá»£ Service Worker nÃªn khÃ´ng hiá»ƒn thá»‹ notification.",
         );
         return;
       }
 
       if (!("Notification" in window)) {
-        console.warn("[FCM] Không hỗ trợ Notification API.");
+        console.warn("[FCM] KhÃ´ng há»— trá»£ Notification API.");
         return;
       }
 
       if (Notification.permission !== "granted") {
         console.warn(
-          "[FCM] Chưa được cấp quyền notification:",
+          "[FCM] ChÆ°a Ä‘Æ°á»£c cáº¥p quyá»n notification:",
           Notification.permission,
         );
         return;
@@ -214,10 +192,10 @@ export const initFcmForegroundListener = () => {
       await registration.showNotification(title, options);
 
       console.log(
-        "[FCM] Đã hiển thị foreground notification qua Service Worker.",
+        "[FCM] ÄÃ£ hiá»ƒn thá»‹ foreground notification qua Service Worker.",
       );
     } catch (error) {
-      console.error("[FCM] Không thể hiển thị foreground notification:", error);
+      console.error("[FCM] KhÃ´ng thá»ƒ hiá»ƒn thá»‹ foreground notification:", error);
     }
   });
 };
@@ -228,7 +206,7 @@ export const syncFcmToken = async () => {
   if (!("Notification" in window)) return;
 
   if (Notification.permission !== "granted") {
-    console.log("[FCM] Chưa được cấp quyền notification, bỏ qua sync token.");
+    console.log("[FCM] ChÆ°a Ä‘Æ°á»£c cáº¥p quyá»n notification, bá» qua sync token.");
     return;
   }
 
@@ -248,7 +226,7 @@ export const syncFcmToken = async () => {
       saveTokenLocal(currentToken);
     }
   } catch (error) {
-    console.error("[FCM] Sync FCM token thất bại:", error);
+    console.error("[FCM] Sync FCM token tháº¥t báº¡i:", error);
   }
 };
 
@@ -269,7 +247,7 @@ export const initFcm = async (): Promise<boolean> => {
   const supported = await isSupported();
 
   if (!supported) {
-    console.log("[FCM] Trình duyệt không hỗ trợ FCM.");
+    console.log("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ FCM.");
     return false;
   }
 

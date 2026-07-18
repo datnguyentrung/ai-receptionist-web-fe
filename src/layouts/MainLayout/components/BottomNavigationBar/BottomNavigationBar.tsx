@@ -22,8 +22,13 @@ export default function BottomNavigationBar() {
   } | null>(null);
   const { canViewCoach } = useRoleStudent();
   const activeProfile = useAuthStore((state) => state.activeProfile);
+  const activeContextUserCode = useAuthStore(
+    (state) => state.activeContext?.userCode,
+  );
   const userId =
-    activeProfile?.userInfo?.userCode ?? activeProfile?.userInfo?.idUser;
+    activeProfile?.userInfo?.userCode ??
+    activeContextUserCode ??
+    activeProfile?.userInfo?.idUser;
   const scheduleIds = useMemo(
     () =>
       activeProfile?.userInfo?.assignedClasses
@@ -33,7 +38,7 @@ export default function BottomNavigationBar() {
   );
   const normalizedPathname = pathname.replace(/\/$/, "") || "/";
   const navItems = useMemo(
-    () => (userId ? BOTTOM_NAV_ITEMS({ userId }).filter((item) => item.to) : []),
+    () => BOTTOM_NAV_ITEMS({ userId }).filter((item) => item.to),
     [userId],
   );
   const preloadContext = useMemo<RoutePreloadContext>(
@@ -47,7 +52,7 @@ export default function BottomNavigationBar() {
   );
 
   useEffect(() => {
-    if (!isPWA || !userId) return;
+    if (!isPWA) return;
 
     const idleWindow = window as Window & {
       requestIdleCallback?: (
@@ -70,7 +75,7 @@ export default function BottomNavigationBar() {
       650,
     );
     return () => window.clearTimeout(timeoutId);
-  }, [preloadContext, userId]);
+  }, [preloadContext]);
 
   const isItemActive = useCallback((to: string) => {
     const normalizedTo = to.replace(/\/$/, "") || "/";
@@ -105,7 +110,7 @@ export default function BottomNavigationBar() {
   const pendingItemId =
     pendingItem && !isItemActive(pendingItem.to) ? pendingItem.id : null;
 
-  if (!isPWA || !userId) {
+  if (!isPWA || navItems.length === 0) {
     return null;
   }
 

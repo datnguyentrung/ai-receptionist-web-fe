@@ -5,6 +5,8 @@ import type {
 } from "axios";
 import axios from "axios";
 import axiosRetry from "axios-retry";
+import type { AuthResponse } from "@/types";
+import { notifyAuthSessionInvalid } from "@/features/auth/utils/authEvents";
 import { useAuthStore } from "../store/authStore";
 import { writeDebugStorage } from "../utils/debugStorage";
 import { queryClient } from "./react-query";
@@ -20,7 +22,7 @@ console.log("🔧 PYTHON_API_URL:", PYTHON_API_URL);
 // --- CÁC BIẾN TOÀN CỤC CHO CƠ CHẾ REFRESH TOKEN ---
 let isRefreshing = false;
 let failedQueue: Array<{
-  resolve: (value?: unknown) => void;
+  resolve: (value: string | null) => void;
   reject: (reason?: unknown) => void;
 }> = [];
 
@@ -63,7 +65,11 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const token = useAuthStore.getState().accessToken;
-      if (token) {
+      const url = config.url ?? "";
+      const shouldSkipAuthHeader =
+        url.includes("/auth/login") || url.includes("/auth/refresh");
+
+      if (token && !shouldSkipAuthHeader) {
         config.headers.set("Authorization", `Bearer ${token}`);
       }
       return config;
@@ -84,13 +90,17 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
         _retry?: boolean;
       };
       const status = error.response?.status;
+      const requestUrl = originalRequest.url ?? "";
+      const isAuthRefreshRequest = requestUrl.includes("/auth/refresh");
+      const isAuthLoginRequest = requestUrl.includes("/auth/login");
 
       // === BẮT ĐẦU LUỒNG REFRESH TOKEN TỰ ĐỘNG ===
       // Bắt lỗi 401, chưa từng retry, và KHÔNG PHẢI LÀ ĐANG GỌI API REFRESH (tránh lặp vô hạn)
       if (
         status === 401 &&
         !originalRequest._retry &&
-        !originalRequest.url?.includes("/auth/refresh")
+        !isAuthRefreshRequest &&
+        !isAuthLoginRequest
       ) {
         // 1. Nếu đang có một request khác gọi refresh rồi, các request 401 tiếp theo phải xếp hàng
         if (isRefreshing) {
@@ -98,7 +108,9 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
             failedQueue.push({ resolve, reject });
           })
             .then((token) => {
-              originalRequest.headers.set("Authorization", `Bearer ${token}`);
+              if (token) {
+                originalRequest.headers.set("Authorization", `Bearer ${token}`);
+              }
               return instance(originalRequest);
             })
             .catch((err) => {
@@ -112,28 +124,38 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
 
         try {
           // 3. DÙNG AXIOS THƯỜNG ĐỂ GỌI API REFRESH (Tránh Circular Dependency với authApi)
-          const res = await axios.post(
-            "/auth/refresh", // Đảm bảo khớp với endpoint BE của bạn
-            {},
+          const res = await axios.post<AuthResponse>(
+            "/auth/refresh",
+            undefined,
             {
               baseURL: JAVA_API_URL,
-              withCredentials: true, // QUAN TRỌNG: Gửi kèm Cookie Refresh Token
+              withCredentials: true,
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
             },
           );
 
-          const newAccessToken = res.data.accessToken;
+          const newAccessToken = res.data.accessToken ?? null;
 
-          // 4. Lưu token mới vào Zustand nhưng giữ nguyên user profile hiện có
-          useAuthStore.getState().setAccessToken(newAccessToken);
+          // 4. Refresh response is the source of auth state, including context.
+          useAuthStore.getState().setAuthFromResponse(res.data);
+          if (res.data.requiresContextSelection) {
+            queryClient.clear();
+          }
 
           // 5. Thả cho các request đang xếp hàng chạy tiếp
           processQueue(null, newAccessToken);
 
           // 6. Chạy lại chính cái request vừa bị chết (401) lúc nãy
-          originalRequest.headers.set(
-            "Authorization",
-            `Bearer ${newAccessToken}`,
-          );
+          if (newAccessToken) {
+            originalRequest.headers.set(
+              "Authorization",
+              `Bearer ${newAccessToken}`,
+            );
+          }
           return instance(originalRequest);
         } catch (refreshError) {
           // TRƯỜNG HỢP XẤU NHẤT: Refresh Token cũng hết hạn hoặc bị lỗi
@@ -160,6 +182,7 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
           console.log("🔒 Refresh Token hết hạn, đá văng về Login!");
           queryClient.clear();
           useAuthStore.getState().clearAuth(); // Xóa sạch state
+          notifyAuthSessionInvalid();
 
           return Promise.reject(refreshError);
         } finally {
