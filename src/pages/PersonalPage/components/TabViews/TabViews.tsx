@@ -4,6 +4,7 @@ import "./TabViews.scss";
 import type { NavigationItem } from "@/app/navigation/path";
 import { COACH_TABS, STUDENT_TABS } from "@/app/navigation/path";
 import type { CoachDetail, StudentDetail } from "@/types";
+import { useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 type TabViewsProps =
@@ -18,6 +19,14 @@ export type OutletContextType = {
 
 type TabItem = NavigationItem & { id: string; to: string };
 
+function isActiveTab(pathname: string, tab: TabItem) {
+  if (tab.id === "profile") {
+    return pathname === tab.to;
+  }
+
+  return pathname === tab.to || pathname.startsWith(`${tab.to}/`);
+}
+
 export function TabViews({
   userInfo,
   userType,
@@ -26,50 +35,75 @@ export function TabViews({
 }: TabViewsProps & { canViewCoach: boolean; canViewManagerSenior: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const tabsListRef = useRef<HTMLDivElement | null>(null);
+  const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
   const tabs =
     userType === "student"
       ? (STUDENT_TABS({ studentCode: userInfo.studentCode }) as TabItem[])
       : (COACH_TABS({ coachCode: userInfo.staffCode }) as TabItem[]);
 
-  // 1. Xác định tab đang active dựa trên URL hiện tại
-  // Tìm tab có linkTo khớp hoàn toàn với URL. Nếu không tìm thấy, mặc định là tab đầu tiên.
   const activeTabId =
-    tabs.find((tab) => location.pathname === tab.to)?.id || tabs[0].id;
+    tabs.find((tab) => isActiveTab(location.pathname, tab))?.id || tabs[0].id;
 
-  // 2. Xử lý chuyển URL khi click vào TabTrigger
   const handleTabChange = (value: string) => {
     const selectedTab = tabs.find((tab) => tab.id === value);
     if (selectedTab?.to) {
-      navigate(selectedTab.to); // Cập nhật URL thay vì đổi state nội bộ
+      navigate(selectedTab.to);
     }
   };
+
+  useLayoutEffect(() => {
+    const tabsList = tabsListRef.current;
+    const activeTrigger = activeTriggerRef.current;
+
+    if (!tabsList || !activeTrigger) return;
+
+    if (activeTabId === "profile") {
+      tabsList.scrollLeft = 0;
+      const frameId = window.requestAnimationFrame(() => {
+        tabsList.scrollLeft = 0;
+      });
+
+      return () => window.cancelAnimationFrame(frameId);
+    }
+
+    activeTrigger.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [activeTabId]);
+
   return (
     <Tabs value={activeTabId} onValueChange={handleTabChange} className="views">
-      {/* --- GIỮ NGUYÊN 100% CẤU TRÚC CHUẨN CỦA BẠN --- */}
-      <TabsList className="views__tabs-list" style={{ width: "100%" }}>
+      <TabsList
+        ref={tabsListRef}
+        className="views__tabs-list"
+        aria-label={userType === "student" ? "Student profile views" : "Coach profile views"}
+        data-tab-count={tabs.length}
+        data-user-type={userType}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
+          const isActive = activeTabId === tab.id;
+
           return (
             <TabsTrigger
               key={tab.id}
+              ref={isActive ? activeTriggerRef : undefined}
               value={tab.id}
-              className={`views__tab-trigger ${location.pathname === tab.to ? "active" : "inactive"}`}
-              style={{ flex: "0 0 auto" }}
+              className={`views__tab-trigger ${isActive ? "active" : "inactive"}`}
+              title={tab.label}
             >
               <span className="views__tab-icon">
                 <Icon />
               </span>
-              <span>{tab.label}</span>
+              <span className="views__tab-label">{tab.label}</span>
             </TabsTrigger>
           );
         })}
       </TabsList>
 
-      {/* MẸO Ở ĐÂY:
-        Dùng đúng 1 thẻ TabsContent bọc lấy Outlet.
-        Gán value={activeTabId} để nó luôn hiển thị (vì khớp với value của Tabs cha).
-        Giữ nguyên className "views__tab-content" để ăn CSS cũ.
-      */}
       <TabsContent value={activeTabId} className="views__tab-content">
         <Outlet
           context={{

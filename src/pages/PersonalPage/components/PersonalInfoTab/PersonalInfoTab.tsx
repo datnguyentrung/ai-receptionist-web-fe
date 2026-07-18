@@ -100,7 +100,9 @@ export default function PersonalInfoTab() {
           </div>
           <div>
             <p className={S.statLabel}>Lần đăng nhập cuối</p>
-            <p className={S.statValue}>{formatDateDMY(user.lastLoginAt)}</p>
+            <p className={S.statValue}>
+              {user.lastLoginAt ? formatDateDMY(user.lastLoginAt) : "Chưa có"}
+            </p>
           </div>
         </div>
       </div>

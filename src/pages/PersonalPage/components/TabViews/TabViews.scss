@@ -3,7 +3,6 @@
 // BEM naming: .views__* — consumed across all PersonalPage tabs
 // ─────────────────────────────────────────────────────────────
 
-@use "sass:color";
 @use "../../../../styles/variables" as v;
 
 // ── Local mixin ─────────────────────────────────────────────
@@ -29,19 +28,35 @@
   &__tabs-list {
     display: flex;
     align-items: center;
+
+    // Quan trọng: không được căn giữa khi danh sách bị overflow
+    justify-content: flex-start !important;
+
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
     gap: $space-2;
-    border-bottom: 1px solid v.$border-default;
-    padding: 0 $space-2;
+    padding: $space-2;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-x: contain;
+    scroll-padding-inline: $space-2;
+    scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
+    border: 1px solid v.$border-default;
+    border-radius: $radius-md;
+    background: linear-gradient(180deg, #fffdfd 0%, #fff8f8 100%);
+    box-shadow: v.$shadow-xs;
     scrollbar-width: thin;
-    scrollbar-color: v.$brand-red transparent;
+    scrollbar-color: rgba(v.$brand-red, 0.5) transparent;
+
+    @include respond-to(md) {
+      border-radius: $radius-sm;
+      padding: $space-1;
+    }
 
     &::-webkit-scrollbar {
       height: 6px;
-      background: transparent;
     }
 
     &::-webkit-scrollbar-track {
@@ -49,48 +64,55 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: v.$brand-red;
-      border-radius: 9999px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: color.adjust(v.$brand-red, $lightness: -8%);
+      background-color: rgba(v.$brand-red, 0.5);
+      border-radius: $radius-full;
     }
   }
 
   &__tab-trigger {
     @include touch-target(48px);
-    padding-top: $space-4;
-    padding-bottom: $space-6;
-    padding-left: $space-4;
-    padding-right: $space-4;
+    min-width: 5.5rem;
+    width: max-content;
+    min-height: 48px;
+    height: auto;
+    box-sizing: border-box;
+    padding: $space-2 $space-3;
     font-size: v.$text-sm;
     font-weight: v.$font-semibold;
     transition: v.$transition-fast;
     position: relative;
-    background: none;
-    border: none;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-sm;
     cursor: pointer;
     white-space: nowrap;
     flex: 0 0 auto;
+    line-height: 1.2;
+    text-align: center;
+    color: v.$text-secondary;
 
     @include hover-only {
-      color: v.$text-secondary;
+      color: v.$brand-red;
+      background: rgba(v.$brand-red, 0.05);
+      border-color: rgba(v.$brand-red, 0.12);
     }
 
     &.active {
       color: v.$brand-red;
+      background: v.$bg-white;
+      border-color: rgba(v.$brand-red, 0.24);
+      box-shadow: 0 8px 18px rgba(v.$brand-red, 0.12);
 
       &::after {
         content: "";
         position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
+        right: $space-3;
+        bottom: 6px;
+        left: $space-3;
+        height: 3px;
         background-color: v.$brand-red;
-        border-radius: 9999px 9999px 0 0;
-        box-shadow: 0 -2px 8px rgba(v.$brand-red, 0.4);
+        border-radius: $radius-full;
+        box-shadow: 0 2px 8px rgba(v.$brand-red, 0.24);
       }
     }
 
@@ -102,12 +124,20 @@
   &__tab-icon {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     color: v.$brand-red;
+    flex: 0 0 auto;
 
-    @include respond-to(sm) {
+    svg {
       width: 1rem;
       height: 1rem;
+      stroke-width: 2;
     }
+  }
+
+  &__tab-label {
+    min-width: 0;
+    white-space: nowrap;
   }
 
   &__tab-content {
@@ -499,7 +529,7 @@
     p {
       margin: 0;
 
-      + p {
+      +p {
         margin-top: $space-1;
       }
     }
@@ -527,17 +557,18 @@
     margin-top: $space-3;
 
     &__tabs-list {
+      justify-content: flex-start !important;
+
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+
       gap: $space-2;
-      height: auto;
-      min-height: 56px;
-      align-items: center;
-      margin-right: -$space-3;
-      margin-left: -$space-3;
       padding: $space-2 $space-3;
-      border-bottom: 0;
-      overflow-y: visible;
+
+      overflow-x: auto;
+      overflow-y: hidden;
       scrollbar-width: none;
-      scroll-snap-type: x proximity;
 
       &::-webkit-scrollbar {
         display: none;
@@ -545,26 +576,15 @@
     }
 
     &__tab-trigger {
-      height: auto;
       min-height: 44px;
       padding: $space-2 $space-3;
-      border: 1px solid v.$border-default;
-      border-radius: $radius-full;
-      background: v.$bg-white;
-      box-shadow: v.$shadow-xs;
-      line-height: 1.2;
-      overflow: visible;
       scroll-snap-align: start;
 
       &.active {
         color: v.$brand-red;
         border-color: rgba(v.$brand-red, 0.28);
-        background: v.$brand-red-50;
+        background: v.$bg-white;
         box-shadow: 0 4px 12px rgba(v.$brand-red, 0.12);
-
-        &::after {
-          display: none;
-        }
       }
 
       &.inactive {
@@ -591,6 +611,7 @@
     }
 
     &__card-content {
+
       &--compact,
       &--split {
         padding: $space-3;
@@ -611,13 +632,13 @@
 @media (max-width: 420px) {
   .views {
     &__tabs-list {
-      margin-right: -$space-2;
-      margin-left: -$space-2;
-      padding-right: $space-2;
-      padding-left: $space-2;
+      gap: $space-1;
+      padding: $space-2;
     }
 
     &__tab-trigger {
+      min-height: 42px;
+      min-width: 5rem;
       padding-right: $space-2;
       padding-left: $space-2;
       font-size: v.$text-xs;
@@ -630,6 +651,7 @@
     opacity: 0;
     transform: translateY(0.5rem);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
