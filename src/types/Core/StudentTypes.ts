@@ -92,7 +92,7 @@ export interface StudentDetail extends UserDetail {
 
 /** Tóm tắt học viên dùng trong danh sách / dropdown */
 export interface StudentSummary {
-  userId: string;
+  personId: string;
   fullName: string;
   email: string;
   code: string;

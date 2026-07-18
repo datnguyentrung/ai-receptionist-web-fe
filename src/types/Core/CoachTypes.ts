@@ -45,7 +45,7 @@ export interface CoachDetail extends UserDetail {
 
 /** Tóm tắt HLV dùng trong danh sách / dropdown */
 export interface CoachSummary {
-  userId: string;
+  personId: string;
   fullName: string;
   staffCode: string;
   email: string;

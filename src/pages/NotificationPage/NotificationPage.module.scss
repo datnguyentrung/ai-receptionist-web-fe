@@ -1,0 +1,498 @@
+.notificationPage,
+.detailPage {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding-bottom: calc($space-8 + env(safe-area-inset-bottom, 0px));
+  animation: notificationPageIn 180ms ease-out both;
+}
+
+.summaryCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: $space-4;
+  align-items: center;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(135deg, rgba($brand-red, 0.98), rgba($brand-red-900, 0.96)),
+    $brand-red;
+  color: $white;
+}
+
+.summaryCopy {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+
+  span {
+    color: rgba($white, 0.78);
+    font-size: $text-xs;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: $white;
+    font-size: $text-2xl;
+    font-weight: $font-extrabold;
+    line-height: $leading-tight;
+  }
+
+  p {
+    margin: 0;
+    color: rgba($white, 0.78);
+    font-size: $text-sm;
+  }
+}
+
+.unreadBubble {
+  display: grid;
+  place-items: center;
+  min-width: 68px;
+  min-height: 68px;
+  padding: $space-2;
+  border-radius: $radius-lg;
+  background: rgba($white, 0.14);
+  color: $white;
+  box-shadow: inset 0 1px 0 rgba($white, 0.18);
+
+  strong,
+  small {
+    display: block;
+    text-align: center;
+  }
+
+  strong {
+    font-size: $text-2xl;
+    font-weight: $font-extrabold;
+    line-height: 1;
+  }
+
+  small {
+    margin-top: 2px;
+    color: rgba($white, 0.78);
+    font-size: 10px;
+    font-weight: $font-bold;
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-3;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: rgba($white, 0.94);
+  box-shadow: $shadow-xs;
+}
+
+.tabRow,
+.typeScroller {
+  display: flex;
+  gap: $space-2;
+  overflow-x: auto;
+  padding-bottom: 1px;
+  @include hide-scrollbar;
+}
+
+.tabButton,
+.typeChip,
+.loadMoreButton,
+.retryButton,
+.actionButton,
+.ghostButton {
+  @include touch-target(44px);
+  @include press-effect(0.97);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  border-radius: $radius-full;
+  font-weight: $font-bold;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.82);
+    outline-offset: 2px;
+  }
+}
+
+.tabButton {
+  flex: 1;
+  padding: 0 $space-4;
+  background: $gray-100;
+  color: $text-muted;
+}
+
+.tabButtonActive {
+  background: $brand-red;
+  color: $white;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-height: 48px;
+  padding: 0 $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $white;
+  color: $text-muted;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $text-primary;
+    font-size: $text-base;
+  }
+}
+
+.typeChip {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 $space-3;
+  border: 1px solid $border-default;
+  background: $white;
+  color: $text-muted;
+  font-size: $text-xs;
+}
+
+.typeChipActive {
+  border-color: rgba($brand-red, 0.34);
+  background: $brand-red-50;
+  color: $brand-red;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.notificationCard {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: $space-3;
+  width: 100%;
+  padding: $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $white;
+  color: inherit;
+  text-align: left;
+  box-shadow: $shadow-xs;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+
+  @include press-effect(0.99);
+
+  &:focus-visible {
+    outline: 2px solid rgba($brand-red, 0.82);
+    outline-offset: 2px;
+  }
+
+  @include hover-only {
+    border-color: rgba($brand-red, 0.22);
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+}
+
+.notificationCardUnread {
+  border-color: rgba($brand-red, 0.28);
+  background: linear-gradient(180deg, $white 0%, $brand-red-50 100%);
+}
+
+.iconWrap,
+.detailIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  background: rgba($brand-red, 0.08);
+  color: $brand-red;
+}
+
+.cardContent {
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-base;
+    font-weight: $font-extrabold;
+    line-height: $leading-tight;
+    @include line-clamp(2);
+  }
+
+  p {
+    margin: $space-1 0 0;
+    color: $text-muted;
+    font-size: $text-sm;
+    line-height: $leading-normal;
+    @include line-clamp(2);
+  }
+}
+
+.cardMeta,
+.detailMeta,
+.metaGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-top: $space-3;
+}
+
+.metaPill,
+.statusPill,
+.unreadDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 0 $space-2;
+  border-radius: $radius-full;
+  background: $gray-100;
+  color: $text-muted;
+  font-size: 11px;
+  font-weight: $font-bold;
+}
+
+.statusPill {
+  background: rgba($brand-red, 0.08);
+  color: $brand-red;
+}
+
+.unreadDot {
+  min-width: 9px;
+  width: 9px;
+  height: 9px;
+  min-height: 9px;
+  padding: 0;
+  background: $brand-red;
+}
+
+.cardArrow {
+  align-self: center;
+  color: $gray-400;
+}
+
+.loadMoreButton,
+.retryButton,
+.actionButton {
+  min-height: 48px;
+  padding: 0 $space-5;
+  background: $brand-red;
+  color: $white;
+}
+
+.ghostButton {
+  min-height: 48px;
+  padding: 0 $space-5;
+  border: 1px solid $border-default;
+  background: $white;
+  color: $text-primary;
+}
+
+.footerAction {
+  display: flex;
+  justify-content: center;
+  padding: $space-2 0;
+}
+
+.emptyState,
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  min-height: 220px;
+  padding: $space-6 $space-4;
+  border: 1px dashed rgba($brand-red, 0.26);
+  border-radius: $radius-lg;
+  background: rgba($white, 0.82);
+  color: $text-muted;
+  text-align: center;
+
+  h2,
+  h3 {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-lg;
+    font-weight: $font-extrabold;
+  }
+
+  p {
+    max-width: 34ch;
+    margin: 0;
+    font-size: $text-sm;
+    line-height: $leading-normal;
+  }
+}
+
+.skeletonCard {
+  min-height: 112px;
+  border-radius: $radius-lg;
+  background: linear-gradient(90deg, $gray-200 25%, $gray-100 50%, $gray-200 75%);
+  background-size: 200% 100%;
+  animation: notificationSkeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.detailHero,
+.detailBody,
+.referencePanel {
+  padding: $space-4;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $white;
+  box-shadow: $shadow-xs;
+}
+
+.detailHero {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.detailTitleRow {
+  display: flex;
+  gap: $space-3;
+  align-items: flex-start;
+}
+
+.detailTitle {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-2xl;
+    font-weight: $font-extrabold;
+    line-height: $leading-tight;
+  }
+}
+
+.detailBody {
+  color: $text-secondary;
+  font-size: $text-base;
+  line-height: $leading-relaxed;
+  white-space: pre-wrap;
+}
+
+.referencePanel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  h3 {
+    margin: 0;
+    color: $text-primary;
+    font-size: $text-base;
+    font-weight: $font-extrabold;
+  }
+}
+
+.referenceGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-2;
+}
+
+.referenceItem {
+  display: flex;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3;
+  border-radius: $radius-md;
+  background: $gray-50;
+
+  span {
+    color: $text-muted;
+    font-size: $text-xs;
+    font-weight: $font-bold;
+  }
+
+  strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: $text-primary;
+    font-size: $text-sm;
+  }
+}
+
+.detailActions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+@include respond-to("sm") {
+  .notificationPage,
+  .detailPage {
+    gap: $space-5;
+  }
+
+  .toolbar {
+    padding: $space-4;
+  }
+
+  .detailActions {
+    flex-direction: row;
+  }
+
+  .referenceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes notificationPageIn {
+  from {
+    opacity: 0.72;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notificationSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notificationPage,
+  .detailPage,
+  .skeletonCard,
+  .notificationCard,
+  .tabButton,
+  .typeChip,
+  .loadMoreButton,
+  .retryButton,
+  .actionButton,
+  .ghostButton {
+    animation: none;
+    transition: none;
+  }
+}

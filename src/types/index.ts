@@ -9,6 +9,7 @@ export * from "./Operation/CoachAssignmentTypes";
 export * from "./Operation/CoachTimesheetTypes";
 export * from "./Operation/StudentAttendanceTypes";
 export * from "./Operation/StudentEnrollmentTypes";
+export * from "./Operation/NotificationTypes";
 export * from "./Operation/TuitionPaymentDetailTypes";
 export * from "./Operation/TuitionPaymentTypes";
 

@@ -1,3 +1,8 @@
+import type {
+  NotificationRecipientStatus,
+  NotificationType,
+} from "@/types/Operation/NotificationTypes";
+
 export type AttendanceStatus =
   | "PRESENT"
   | "ABSENT"
@@ -146,4 +151,39 @@ export const AudioSignalLabel: Record<AudioSignal, string> = {
   ALREADY_CHECKED_IN: "Đã điểm danh",
   NO_VALID_SESSION: "Không có buổi học phù hợp",
   FACE_NOT_RECOGNIZED: "Khuôn mặt không nhận diện được",
+};
+
+export const NotificationTypeValues = [
+  "SYSTEM",
+  "ATTENDANCE",
+  "TUITION",
+  "CLASS_SCHEDULE",
+  "COACH_TIMESHEET",
+  "ANNOUNCEMENT",
+] as const satisfies readonly NotificationType[];
+
+export const NotificationTypeLabel: Record<NotificationType, string> = {
+  SYSTEM: "Hệ thống",
+  ATTENDANCE: "Điểm danh",
+  TUITION: "Học phí",
+  CLASS_SCHEDULE: "Lịch học",
+  COACH_TIMESHEET: "Chấm công",
+  ANNOUNCEMENT: "Thông báo chung",
+};
+
+export const NotificationRecipientStatusValues = [
+  "PENDING",
+  "SENT",
+  "FAILED",
+  "ARCHIVED",
+] as const satisfies readonly NotificationRecipientStatus[];
+
+export const NotificationRecipientStatusLabel: Record<
+  NotificationRecipientStatus,
+  string
+> = {
+  PENDING: "Chờ xử lý",
+  SENT: "Đã gửi",
+  FAILED: "Thất bại",
+  ARCHIVED: "Đã lưu trữ",
 };

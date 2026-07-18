@@ -5,6 +5,7 @@ import { leaderboardAPI } from "@/features/report/api/LeaderboardAPI";
 import { studentAPI } from "@/features/student/api/studentAPI";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { classSchedulesQueryKey } from "@/features/classSchedule/queries/classSchedulesQueries";
+import { prefetchNotifications } from "@/features/notification/queries/notificationQueries";
 import { prefetchDashboard } from "@/pages/Dashboard/dashboardQueries";
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -228,6 +229,13 @@ export function preloadRoute(to: string, context: RoutePreloadContext) {
   }
 
   if (pathname === "/notifications") {
+    void import("@/pages/NotificationPage");
+    prefetchNotifications(context.queryClient);
+    return;
+  }
+
+  if (pathname.startsWith("/notifications/")) {
+    void import("@/pages/NotificationPage");
     return;
   }
 

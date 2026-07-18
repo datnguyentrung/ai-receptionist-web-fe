@@ -4,7 +4,6 @@ import { RequireContext } from "@/app/guards/RequireContext";
 import { RequireRole } from "@/app/guards/RequireRole";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/app/navigation/path";
 import { getRouteSkeletonKind } from "@/app/router/routePreload";
-import ComingSoonView from "@/components/common/ComingSoonView";
 import { isPWA } from "@/config/appMode";
 import { AUTH_SESSION_INVALID_EVENT } from "@/features/auth/utils/authEvents";
 import BottomNavigationBar from "@/layouts/MainLayout/components/BottomNavigationBar";
@@ -71,6 +70,16 @@ const UtilitiesPage = lazy(() =>
     default: module.UtilitiesPage,
   })),
 );
+const NotificationPage = lazy(() =>
+  import("@/pages/NotificationPage").then((module) => ({
+    default: module.NotificationPage,
+  })),
+);
+const NotificationDetailPage = lazy(() =>
+  import("@/pages/NotificationPage").then((module) => ({
+    default: module.NotificationDetailPage,
+  })),
+);
 const AICheckIn = lazy(() => import("@/pages/AICheckIn"));
 const ExaminationManagement = lazy(
   () => import("@/pages/ExaminationManagement/ExaminationManagement"),
@@ -92,7 +101,11 @@ const PROFILE_RESERVED_PATHS = new Set([
 
 function isProfileRoutePath(pathname: string) {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
-  if (normalizedPath === "/history" || normalizedPath.startsWith("/history/")) {
+  if (
+    normalizedPath === "/history" ||
+    normalizedPath.startsWith("/history/") ||
+    normalizedPath.startsWith("/notifications/")
+  ) {
     return false;
   }
 
@@ -250,6 +263,10 @@ function getStackRouteTitle(pathname: string, currentUserCode?: string) {
 
   if (bottomNavTitle) {
     return bottomNavTitle;
+  }
+
+  if (normalizedPath.startsWith("/notifications/")) {
+    return "Chi tiết thông báo";
   }
 
   if (normalizedPath.startsWith("/schedules/")) {
@@ -498,14 +515,10 @@ export default function AppRoutes() {
               {/* NHÓM 1: CHỈ MANAGER_SENIOR VÀ HEAD_COACH ĐƯỢC XEM */}
               <Route element={isPWA ? <StackRouteLayout /> : <Outlet />}>
                 <Route path="utilities" element={<UtilitiesPage />} />
+                <Route path="notifications" element={<NotificationPage />} />
                 <Route
-                  path="notifications"
-                  element={
-                    <ComingSoonView
-                      featureName="Thông báo"
-                      description="Bảng thông báo trung tâm đang được kết nối lại."
-                    />
-                  }
+                  path="notifications/:notificationRecipientId"
+                  element={<NotificationDetailPage />}
                 />
               </Route>
               <Route
