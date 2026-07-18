@@ -154,9 +154,14 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
 
         {/* Contact */}
         <div className={styles.contactRow}>
-          <a href={`tel:${coach.phoneNumber}`} className={styles.contactLink}>
+          <a
+            href={coach.phoneNumber ? `tel:${coach.phoneNumber}` : undefined}
+            className={styles.contactLink}
+          >
             <Phone size={13} />
-            <span style={{ fontSize: "11px" }}>{coach.phoneNumber}</span>
+            <span style={{ fontSize: "11px" }}>
+              {coach.phoneNumber || "Chưa có SĐT"}
+            </span>
           </a>
           <a href={`mailto:${coach.email}`} className={styles.contactLinkRight}>
             <Mail size={13} />

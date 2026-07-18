@@ -3,7 +3,7 @@ import type { ClassScheduleSummary } from "../Core/ClassScheduleTypes";
 import type { StudentSummary } from "../Core/StudentTypes";
 
 export interface StudentEnrollmentCreateRequest {
-  studentId: string;
+  studentCode: string;
   scheduleIds: string[];
   /** Format: "yyyy-MM-dd" */
   joinDate: string;

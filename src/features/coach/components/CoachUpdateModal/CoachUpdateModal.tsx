@@ -206,7 +206,7 @@ export default function CoachUpdateModal({
           name={coach.fullName}
           codeLabel="Mã"
           codeValue={coach.staffCode}
-          secondaryText={coach.email || coach.phoneNumber}
+          secondaryText={coach.email || coach.phoneNumber || undefined}
         />
 
         <CoachAssignmentList

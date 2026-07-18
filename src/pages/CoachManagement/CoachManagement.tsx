@@ -80,8 +80,8 @@ export function CoachManagement() {
           </h2>
           <p style={{ fontSize: "13px", color: "#9CA3AF" }}>
             {filteredCoaches.length} huấn luyện viên ·{" "}
-            {filteredCoaches.filter((c) => c.status === "ACTIVE").length} đang
-            hoạt động
+            {filteredCoaches.filter((c) => c.coachStatus === "ACTIVE").length}{" "}
+            đang hoạt động
           </p>
         </div>
         <button

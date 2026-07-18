@@ -1,7 +1,8 @@
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { ModalLayout } from "@/components/ui/modal-layout";
 import { studentAPI } from "@/features/student/api/studentAPI";
 import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
-import { useGetQuery } from "@/hooks/useCrud";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "../../components/common/Pagination";
@@ -17,8 +18,24 @@ import { StudentFilters } from "./components/StudentFilters";
 import { StudentHeader } from "./components/StudentHeader";
 import { StudentStats } from "./components/StudentStats";
 import { StudentTable } from "./components/StudentTable";
+import { StudentUpdateModal } from "./components/StudentUpdateModal";
 
-type StudentMenuAction = "assign-class" | "view-info" | "view-history";
+type StudentMenuAction =
+  | "assign-class"
+  | "delete"
+  | "update"
+  | "view-info"
+  | "view-history";
+const deleteText = {
+  title: "Xóa học viên",
+  description: (fullName: string) =>
+    `Bạn chắc chắn muốn xóa học viên ${fullName}? Thao tác này không thể hoàn tác.`,
+  cancel: "Hủy",
+  confirm: "Xóa",
+  loading: "Đang xóa...",
+  success: "Xóa học viên thành công",
+  error: "Không thể xóa học viên",
+};
 
 const STUDENT_FILTER_OPTIONS = [
   { value: "all" as const, label: "Tất cả" },
@@ -60,6 +77,10 @@ export function StudentManagement() {
     useState<StudentOverview | null>(null);
   const [isAttendanceHistoryOpen, setIsAttendanceHistoryOpen] = useState(false);
   const [studentForHistory, setStudentForHistory] =
+    useState<StudentOverview | null>(null);
+  const [studentForUpdate, setStudentForUpdate] =
+    useState<StudentOverview | null>(null);
+  const [studentForDelete, setStudentForDelete] =
     useState<StudentOverview | null>(null);
   const userInfo = useAuthStore((state) => state.activeProfile);
 
@@ -103,6 +124,12 @@ export function StudentManagement() {
     (data?.reservedStudentCount ?? 0) +
     (data?.droppedStudentCount ?? 0);
 
+  const { mutateAsync: deleteStudent, isPending: isDeletingStudent } =
+    useGenericMutation<void, string>(
+      (studentCode) => studentAPI.permanentlyDeleteStudent(studentCode),
+      [["students"]],
+    );
+
   const statusFilterState = {
     all: {
       disabled: totalStudents === 0,
@@ -144,6 +171,10 @@ export function StudentManagement() {
     } else if (action === "view-history") {
       setStudentForHistory(student);
       setIsAttendanceHistoryOpen(true);
+    } else if (action === "update") {
+      setStudentForUpdate(student);
+    } else if (action === "delete") {
+      setStudentForDelete(student);
     }
   };
 
@@ -155,6 +186,27 @@ export function StudentManagement() {
   const handleCloseAttendanceHistory = () => {
     setIsAttendanceHistoryOpen(false);
     setStudentForHistory(null);
+  };
+
+  const handleCloseUpdate = () => {
+    setStudentForUpdate(null);
+  };
+
+  const handleCancelDelete = () => {
+    if (isDeletingStudent) {
+      return;
+    }
+
+    setStudentForDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!studentForDelete) {
+      return;
+    }
+
+    await deleteStudent(studentForDelete.studentCode);
+    setStudentForDelete(null);
   };
 
   const handleClearFilters = () => {
@@ -232,6 +284,29 @@ export function StudentManagement() {
         onClose={() => setIsCreateModalOpen(false)}
       />
 
+      <StudentUpdateModal
+        open={Boolean(studentForUpdate)}
+        student={studentForUpdate}
+        onClose={handleCloseUpdate}
+      />
+
+      <ConfirmModal
+        open={Boolean(studentForDelete)}
+        title={deleteText.title}
+        description={
+          studentForDelete
+            ? deleteText.description(studentForDelete.fullName)
+            : undefined
+        }
+        cancelText={deleteText.cancel}
+        confirmText={deleteText.confirm}
+        loadingText={deleteText.loading}
+        isLoading={isDeletingStudent}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        successToastMessage={deleteText.success}
+        errorToastMessage={deleteText.error}
+      />
       <ModalLayout
         open={isClassAssignmentOpen}
         onClose={handleCloseClassAssignment}

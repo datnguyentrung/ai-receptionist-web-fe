@@ -36,6 +36,7 @@ export interface CoachDetail extends UserDetail {
   email: string;
 
   staffCode: string;
+  nationalCode?: string | null;
   /** Trạng thái công việc */
   coachStatus: CoachStatus;
 

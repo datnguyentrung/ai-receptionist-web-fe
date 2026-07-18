@@ -7,13 +7,42 @@ import { formatDateDMY } from "../../../utils/format";
 import { useRoleStudent } from "../../../utils/roleUtils";
 import styles from "../StudentManagement.module.scss";
 
-type StudentMenuAction = "assign-class" | "view-info" | "view-history";
+type StudentMenuAction =
+  | "assign-class"
+  | "delete"
+  | "update"
+  | "view-info"
+  | "view-history";
+
+type StudentRowAction = {
+  id: StudentMenuAction;
+  label: string;
+};
 
 interface StudentTableProps {
   list: StudentOverview[];
   isFetching: boolean;
   onMenuAction?: (student: StudentOverview, action: StudentMenuAction) => void;
 }
+
+const tableHeaders = [
+  "Học viên",
+  "Liên hệ",
+  "Lớp học",
+  "Ngày sinh",
+  "Cấp đai",
+  "Chức vụ",
+  "Trạng thái",
+  "",
+];
+
+const actionLabels: Record<StudentMenuAction, string> = {
+  "assign-class": "Xếp lớp",
+  update: "Cập nhật",
+  "view-info": "Thông tin",
+  "view-history": "Lịch sử học",
+  delete: "Xóa vĩnh viễn ",
+};
 
 export function StudentTable({
   list,
@@ -30,63 +59,65 @@ export function StudentTable({
         >
           <thead>
             <tr className={styles.theadRow}>
-              {[
-                "Học viên",
-                "Liên hệ",
-                "Lớp học",
-                "Ngày sinh",
-                "Cấp đai",
-                "Chức vụ",
-                "Trạng thái",
-                "",
-              ].map((h) => (
-                <th key={h} className={styles.th} style={{ textAlign: "center" }}>
-                  {h}
+              {tableHeaders.map((header) => (
+                <th
+                  key={header}
+                  className={styles.th}
+                  style={{ textAlign: "center" }}
+                >
+                  {header}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {list.map((student: StudentOverview) => {
-              const rowActions = [
+              const rowActions: StudentRowAction[] = [
                 canViewManagerSenior &&
-                student.classSchedules.length !== 0 &&
-                student.studentStatus === "ACTIVE"
+                  student.studentStatus === "ACTIVE"
                   ? {
-                      id: "assign-class",
-                      label: "Xếp lớp",
-                    }
+                    id: "assign-class",
+                    label: actionLabels["assign-class"],
+                  }
+                  : null,
+                canViewManagerSenior
+                  ? {
+                    id: "update",
+                    label: actionLabels.update,
+                  }
                   : null,
                 {
                   id: "view-info",
-                  label: "Thông tin",
+                  label: actionLabels["view-info"],
                 },
                 {
                   id: "view-history",
-                  label: "Lịch sử học",
+                  label: actionLabels["view-history"],
                 },
-              ].filter(
-                (action): action is { id: string; label: string } =>
-                  action !== null,
-              );
+                canViewManagerSenior
+                  ? {
+                    id: "delete",
+                    label: actionLabels.delete,
+                  }
+                  : null,
+              ].filter((action): action is StudentRowAction => action !== null);
+
               const beltColor = BELT_COLORS[student.belt];
 
               return (
                 <tr
                   key={student.studentCode}
-                  className={`${styles.tr} ${
-                    student.studentStatus === "ACTIVE"
-                      ? styles["tr--active"]
-                      : ""
-                  } ${
-                    student.studentStatus === "RESERVED"
+                  className={`${styles.tr} ${student.studentStatus === "ACTIVE"
+                    ? styles["tr--active"]
+                    : ""
+                    } ${student.studentStatus === "RESERVED"
                       ? styles["tr--reserved"]
                       : ""
-                  }`}
+                    }`}
                 >
                   <td
                     className={`${styles.td} ${styles.studentCell}`}
-                    data-label="Học viên"
+                    data-label={tableHeaders[0]}
                   >
                     <div className={styles.avatarCell}>
                       <Avatar
@@ -97,9 +128,7 @@ export function StudentTable({
                         height="36px"
                       />
                       <div>
-                        <p className={styles.studentName}>
-                          {student.fullName}
-                        </p>
+                        <p className={styles.studentName}>{student.fullName}</p>
                         <p className={styles.studentCode}>
                           <span
                             className={styles.studentCodeBelt}
@@ -115,12 +144,10 @@ export function StudentTable({
                       </div>
                     </div>
                   </td>
-                  <td className={styles.td} data-label="Liên hệ">
-                    <p className={styles.cellText}>
-                      {student.phoneNumber}
-                    </p>
+                  <td className={styles.td} data-label={tableHeaders[1]}>
+                    <p className={styles.cellText}>{student.phoneNumber}</p>
                   </td>
-                  <td className={styles.td} data-label="Lớp học">
+                  <td className={styles.td} data-label={tableHeaders[2]}>
                     <p
                       className={`${styles.cellText} ${styles["cellText--truncated"]}`}
                     >
@@ -129,7 +156,7 @@ export function StudentTable({
                         .join(", ") || "-"}
                     </p>
                   </td>
-                  <td className={styles.td} data-label="Ngày sinh">
+                  <td className={styles.td} data-label={tableHeaders[3]}>
                     <p className={styles.cellText}>
                       {formatDateDMY(student.birthDate)}
                     </p>
@@ -137,7 +164,7 @@ export function StudentTable({
                   <td
                     className={`${styles.td} ${styles.beltCell}`}
                     style={{ textAlign: "center" }}
-                    data-label="Cấp đai"
+                    data-label={tableHeaders[4]}
                   >
                     <span
                       className={styles.beltBadge}
@@ -152,16 +179,14 @@ export function StudentTable({
                   <td
                     className={styles.td}
                     style={{ textAlign: "center" }}
-                    data-label="Chức vụ"
+                    data-label={tableHeaders[5]}
                   >
-                    <p className={styles.cellText}>
-                      {student.roleName}
-                    </p>
+                    <p className={styles.cellText}>{student.roleName}</p>
                   </td>
                   <td
                     className={`${styles.td} ${styles.statusCell}`}
                     style={{ textAlign: "center" }}
-                    data-label="Trạng thái"
+                    data-label={tableHeaders[6]}
                   >
                     <StatusBadge status={student.studentStatus} />
                   </td>
@@ -187,9 +212,7 @@ export function StudentTable({
       {list.length === 0 && (
         <div className={styles.emptyState}>
           <Users size={36} className={styles.emptyIcon} />
-          <p className={styles.emptyText}>
-            Chưa có học viên nào
-          </p>
+          <p className={styles.emptyText}>Chưa có học viên nào</p>
         </div>
       )}
     </>

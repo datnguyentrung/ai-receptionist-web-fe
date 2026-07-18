@@ -1,5 +1,6 @@
 // src/features/coach/hooks/useCoachesGroupedByRole.ts
 import {
+  COACH_ROLE_CODE_LABELS,
   COACH_ROLE_CODE_ORDER,
   type CoachRoleCode,
 } from "@/config/constants/RoleCodeEnums";
@@ -10,6 +11,30 @@ export interface CoachGroup {
   roleCode: CoachRoleCode;
   label: string;
   coaches: CoachDetail[];
+}
+
+const COACH_ROLE_CODE_SET = new Set<string>(COACH_ROLE_CODE_ORDER);
+
+function normalizeRoleCode(role?: string | null) {
+  return role?.replace(/^ROLE_/, "") ?? "";
+}
+
+function isCoachRoleCode(role?: string | null): role is CoachRoleCode {
+  return COACH_ROLE_CODE_SET.has(normalizeRoleCode(role));
+}
+
+function getPrimaryCoachRoleCode(coach: CoachDetail): CoachRoleCode | null {
+  const roles = coach.roles?.map(normalizeRoleCode) ?? [];
+  const primaryRole = COACH_ROLE_CODE_ORDER.find((roleCode) =>
+    roles.includes(roleCode),
+  );
+
+  if (primaryRole) {
+    return primaryRole;
+  }
+
+  const legacyRole = normalizeRoleCode(coach.role);
+  return isCoachRoleCode(legacyRole) ? legacyRole : null;
 }
 
 /**
@@ -25,18 +50,25 @@ export function useCoachesGroupedByRole(
 
     // Filter coaches
     const filtered = coaches.filter((c) => {
+      const normalizedSearch = search.trim().toLowerCase();
       const matchSearch =
-        c.fullName.toLowerCase().includes(search.toLowerCase()) ||
-        c.belt.toLowerCase().includes(search.toLowerCase());
+        !normalizedSearch ||
+        c.fullName.toLowerCase().includes(normalizedSearch) ||
+        c.staffCode.toLowerCase().includes(normalizedSearch) ||
+        c.email.toLowerCase().includes(normalizedSearch) ||
+        (c.phoneNumber ?? "").includes(normalizedSearch) ||
+        c.belt.toLowerCase().includes(normalizedSearch);
       const matchFilter = filter === "all" || c.coachStatus === filter;
       return matchSearch && matchFilter;
     });
 
-    // Group by roleCode (API returns roleName, so use that as roleCode)
     const grouped = new Map<CoachRoleCode, CoachDetail[]>();
     filtered.forEach((coach) => {
-      // Use roleName if roleCode is not provided (for API compatibility)
-      const roleCode = coach.role as CoachRoleCode;
+      const roleCode = getPrimaryCoachRoleCode(coach);
+      if (!roleCode) {
+        return;
+      }
+
       if (!grouped.has(roleCode)) {
         grouped.set(roleCode, []);
       }
@@ -64,14 +96,5 @@ export function useCoachesGroupedByRole(
  * Helper function để lấy label của roleCode
  */
 function getCoachRoleLabel(roleCode: CoachRoleCode): string {
-  const labels: Record<CoachRoleCode, string> = {
-    COACH_TRAINEE: "Huấn luyện viên Thực tập",
-    COACH_JUNIOR: "Huấn luyện viên Cấp trung",
-    COACH_SENIOR: "Huấn luyện viên Cấp cao",
-    MANAGER_TRAINEE: "Quản lý Thực tập",
-    MANAGER_MIDDLE: "Quản lý Cấp trung",
-    MANAGER_SENIOR: "Quản lý Cấp cao",
-    HEAD_COACH: "Huấn luyện viên Trưởng",
-  };
-  return labels[roleCode] || roleCode;
+  return COACH_ROLE_CODE_LABELS[roleCode] || roleCode;
 }

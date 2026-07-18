@@ -373,7 +373,7 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
 
     try {
       await createEnrollmentMutation.mutateAsync({
-        studentId: initialStudent.studentCode,
+        studentCode: initialStudent.studentCode,
         scheduleIds,
         joinDate,
       });

@@ -308,7 +308,7 @@ export function StudentCreateModal({ open, onClose }: StudentCreateModalProps) {
         birthDate: form.birthDate,
         belt: form.belt,
         enrollmentRequest: {
-          studentId: "",
+          studentCode: "",
           scheduleIds: Array.from(selectedScheduleIds),
           joinDate: form.startDate,
           note: form.note.trim() || undefined,

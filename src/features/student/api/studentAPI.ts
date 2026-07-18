@@ -63,15 +63,19 @@ export const studentAPI = {
   },
 
   updateStudent: async (
-    id: number,
+    id: string | number,
     studentData: StudentUpdateRequest,
   ): Promise<StudentDetail> => {
     const response = await javaApi.put(`/students/${id}`, studentData);
     return response.data;
   },
 
-  deleteStudent: async (id: number): Promise<void> => {
+  deleteStudent: async (id: string | number): Promise<void> => {
     await javaApi.delete(`/students/${id}`);
+  },
+
+  permanentlyDeleteStudent: async (id: string | number): Promise<void> => {
+    await javaApi.delete(`/students/${id}/permanent`);
   },
 
   getYearlySummary: async (

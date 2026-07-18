@@ -17,9 +17,7 @@ export function StudentHeader({
   return (
     <div className={styles.pageHead}>
       <div>
-        <h2 className={styles.pageTitle}>
-          Quản lý Học Viên
-        </h2>
+        <h2 className={styles.pageTitle}>Quản lý Học Viên</h2>
         <p className={styles.pageSubtitle}>
           {totalStudents} học viên · {activeCount} đang học
         </p>
