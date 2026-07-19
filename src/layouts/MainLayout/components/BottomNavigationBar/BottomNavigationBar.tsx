@@ -7,15 +7,32 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { useRoleStudent } from "@/utils/roleUtils";
 import { useQueryClient } from "@tanstack/react-query";
-import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router";
 import { isPWA } from "@/config/appMode";
 import styles from "./BottomNavigationBar.module.scss";
 
-export default function BottomNavigationBar() {
+type BottomNavigationBarProps = {
+  onBeforeNavigate?: () => void;
+};
+
+const ACTIVE_ITEM_DOUBLE_TAP_MS = 420;
+const SCROLL_TO_TOP_EVENT = "app:main-scroll-to-top";
+
+export default function BottomNavigationBar({
+  onBeforeNavigate,
+}: BottomNavigationBarProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
+  const lastActiveTapRef = useRef({ id: "", time: 0 });
   const [pendingItem, setPendingItem] = useState<{
     id: string;
     to: string;
@@ -92,20 +109,37 @@ export default function BottomNavigationBar() {
     [preloadContext],
   );
 
-  const handleNavigate = useCallback((id: string, to: string) => {
-    if (isItemActive(to)) {
-      return;
-    }
+  const handleNavigate = useCallback(
+    (id: string, to: string) => {
+      const isActive = isItemActive(to);
 
-    warmRoute(to);
-    setPendingItem({ id, to });
-    startTransition(() => {
-      navigate(to);
-    });
-    window.setTimeout(() => {
-      setPendingItem((current) => (current?.id === id ? null : current));
-    }, 1800);
-  }, [isItemActive, navigate, warmRoute]);
+      if (isActive) {
+        const now = window.performance.now();
+        const isDoubleTap =
+          lastActiveTapRef.current.id === id &&
+          now - lastActiveTapRef.current.time <= ACTIVE_ITEM_DOUBLE_TAP_MS;
+
+        lastActiveTapRef.current = { id, time: now };
+
+        if (isDoubleTap) {
+          window.dispatchEvent(new Event(SCROLL_TO_TOP_EVENT));
+        }
+        return;
+      }
+
+      lastActiveTapRef.current = { id: "", time: 0 };
+      onBeforeNavigate?.();
+      warmRoute(to);
+      setPendingItem({ id, to });
+      startTransition(() => {
+        navigate(to);
+      });
+      window.setTimeout(() => {
+        setPendingItem((current) => (current?.id === id ? null : current));
+      }, 1800);
+    },
+    [isItemActive, navigate, onBeforeNavigate, warmRoute],
+  );
 
   const pendingItemId =
     pendingItem && !isItemActive(pendingItem.to) ? pendingItem.id : null;

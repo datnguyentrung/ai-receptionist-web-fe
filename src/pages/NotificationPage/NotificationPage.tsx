@@ -33,6 +33,7 @@ const tabLabels: Record<NotificationTab, string> = {
   all: "Tất cả",
   unread: "Chưa đọc",
 };
+const SAVE_SCROLL_POSITION_EVENT = "app:main-save-scroll-position";
 
 function getTab(value: string | null): NotificationTab {
   return value === "unread" ? "unread" : "all";
@@ -221,6 +222,7 @@ export function NotificationPage() {
   };
 
   const handleOpenNotification = (notification: NotificationRecipientResponse) => {
+    window.dispatchEvent(new Event(SAVE_SCROLL_POSITION_EVENT));
     navigate(`/notifications/${notification.notificationRecipientId}`, {
       state: { fromNotificationsSearch: location.search },
     });

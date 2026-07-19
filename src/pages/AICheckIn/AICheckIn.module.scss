@@ -1720,7 +1720,7 @@
     position: absolute;
     left: 14px;
     right: 14px;
-    bottom: calc(30px + env(safe-area-inset-bottom));
+    bottom: calc(104px + env(safe-area-inset-bottom));
     z-index: 9;
     padding: 12px 14px;
     border-radius: 24px;
@@ -1860,14 +1860,12 @@
   }
 
   .mobilePrimaryButton {
-    z-index: 10000;
     background: #e02020;
     color: #ffffff;
     border: 1px solid #e02020;
   }
 
   .mobileCancelButton {
-    z-index: 10000;
     background: #ffffff;
     color: #111827;
     border: 1px solid #d1d5db;
@@ -2053,16 +2051,32 @@
 
   .mobileScannerFrame {
     inset: calc(92px + env(safe-area-inset-top)) 12px
-      calc(108px + env(safe-area-inset-bottom));
+      calc(154px + env(safe-area-inset-bottom));
     border-radius: 20px;
   }
 
   .mobileFeedbackPanel {
     left: 12px;
     right: 12px;
-    bottom: calc(24px + env(safe-area-inset-bottom));
+    bottom: calc(100px + env(safe-area-inset-bottom));
     padding: 10px 12px;
     border-radius: 18px;
+  }
+
+  .mobileScanActions {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    z-index: 11;
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    pointer-events: none;
+
+    > button {
+      pointer-events: auto;
+    }
   }
 }
 
@@ -2112,7 +2126,7 @@
     }
 
     .mobileFeedbackPanel {
-      bottom: calc(24px + env(safe-area-inset-bottom));
+      bottom: calc(100px + env(safe-area-inset-bottom));
     }
   }
 }
@@ -2173,7 +2187,7 @@
       justify-content: center;
       background: #050507;
       padding: calc(86px + env(safe-area-inset-top)) 0
-        calc(108px + env(safe-area-inset-bottom));
+        calc(154px + env(safe-area-inset-bottom));
     }
 
     .mobileScanner {
@@ -2186,7 +2200,7 @@
     }
 
     .mobileFeedbackPanel {
-      bottom: calc(24px + env(safe-area-inset-bottom));
+      bottom: calc(100px + env(safe-area-inset-bottom));
     }
   }
 }
