@@ -291,7 +291,7 @@ export function AttendanceCheckin() {
     if (!data || !enrollments) return [];
     const beltByStudentId = new Map<string, Belt | null>(
       enrollments.enrollments.map((enrollment) => [
-        enrollment.studentSummary.userId,
+        enrollment.studentSummary.personId,
         readBelt(enrollment.studentSummary),
       ]),
     );

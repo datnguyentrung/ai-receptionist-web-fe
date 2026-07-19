@@ -23,7 +23,7 @@ export function mergeAttendanceData(
 
   // 3. Duyệt qua danh sách enrollment, nếu ai chưa có thì thêm vào
   for (const enrollment of enrollments) {
-    const studentId = enrollment.studentSummary.userId;
+    const studentId = enrollment.studentSummary.personId;
 
     if (!existingStudentIds.has(studentId)) {
       // Tạo một record giả lập cấu trúc của StudentAttendanceResponse
