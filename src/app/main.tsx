@@ -6,18 +6,11 @@ import { APP_MODE } from "@/config/appMode";
 import { isMaintenanceMode } from "@/config/env";
 import "@/index.css";
 import { queryClient } from "@/lib/react-query";
-import { initFcm, syncFcmToken } from "@/integrations/firebase/fcm";
-import { useAuthStore } from "@/store/authStore";
+import { initFcm } from "@/integrations/firebase/fcm";
 import { AuthBootstrap } from "@/app/providers/AuthBootstrap";
 
 if (!isMaintenanceMode) {
-  initFcm()
-    .then((isSupported) => {
-      if (isSupported && useAuthStore.getState().isAuthenticated) {
-        syncFcmToken().catch(() => {});
-      }
-    })
-    .catch(() => {});
+  initFcm().catch(() => {});
 }
 
 function syncAppModeAttribute() {

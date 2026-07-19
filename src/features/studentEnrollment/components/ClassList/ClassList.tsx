@@ -7,14 +7,18 @@ import { Calendar, Check, Loader2, MapPin } from "lucide-react";
 import { memo } from "react";
 import styles from "./ClassList.module.scss";
 
+type ClassListItem = ClassScheduleSummary & {
+  actionId?: string;
+};
+
 interface ClassListProps {
   hasBranch: boolean;
   isLoading: boolean;
-  classList: ClassScheduleSummary[];
+  classList: ClassListItem[];
   selectedIds?: Set<string>;
   disabledIds?: Set<string>;
   onToggle?: (scheduleId: string) => void;
-  onAction?: (scheduleId: string) => void;
+  onAction?: (id: string) => void;
   actionLabel?: string;
   isCompact?: boolean;
   variant?: "stack" | "grid";
@@ -78,11 +82,12 @@ const ClassList = memo(function ClassList({
         >
           {classList.map((cls) => {
               const isSelected = selectedIds.has(cls.scheduleId);
-              const isDisabled = disabledIds.has(cls.scheduleId);
+              const actionId = cls.actionId ?? cls.scheduleId;
+              const isDisabled = disabledIds.has(actionId);
 
               return (
                 <div
-                  key={cls.scheduleId}
+                  key={`${cls.scheduleId}:${actionId}`}
                   className={cn(
                     styles.classItem,
                     variant === "grid" && styles.classItemGrid,
@@ -141,7 +146,7 @@ const ClassList = memo(function ClassList({
                         className={styles.btnDelete}
                         onClick={(event) => {
                           event.stopPropagation();
-                          onAction(cls.scheduleId);
+                          onAction(actionId);
                         }}
                       >
                         {actionLabel || "Hành động"}

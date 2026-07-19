@@ -1,5 +1,6 @@
 import ConfirmModal from "@/components/common/ConfirmModal";
 import { useLogin } from "@/features/auth/api/useAuthentication";
+import { requestFcmTokenForLogin } from "@/integrations/firebase/fcm";
 import { Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import styles from "./LoginForm.module.scss";
@@ -13,8 +14,10 @@ export default function LoginForm() {
   const [phoneError, setPhoneError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isPreparingLogin, setIsPreparingLogin] = useState(false);
 
   const { mutate: login, isPending } = useLogin();
+  const isSubmitting = isPending || isPreparingLogin;
 
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -50,10 +53,10 @@ export default function LoginForm() {
     return isValid;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isPending) {
+    if (isSubmitting) {
       return;
     }
 
@@ -61,10 +64,22 @@ export default function LoginForm() {
       return;
     }
 
+    setIsPreparingLogin(true);
+
+    const fcmToken = await requestFcmTokenForLogin().catch((error) => {
+      console.error("FCM init before login failed:", error);
+      return null;
+    });
+
     login({
       phoneNumber: phoneNumber.trim(),
       password,
       idDevice: navigator.userAgent,
+      fcmToken,
+    }, {
+      onSettled: () => {
+        setIsPreparingLogin(false);
+      },
     });
   };
 
@@ -179,9 +194,9 @@ export default function LoginForm() {
         <button
           type="submit"
           className={styles.loginButton}
-          disabled={isPending || !canSubmit}
+          disabled={isSubmitting || !canSubmit}
         >
-          {isPending ? (
+          {isSubmitting ? (
             <span className={styles.loadingContent}>
               <svg className={styles.spinner} viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle

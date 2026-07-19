@@ -7,6 +7,9 @@ import type {
   EnrollmentsByScheduleResponse,
 } from "@/types";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export const studentEnrollmentAPI = {
   createStudentEnrollment: async (
     data: StudentEnrollmentCreateRequest,
@@ -27,7 +30,13 @@ export const studentEnrollmentAPI = {
   },
 
   deleteStudentEnrollment: async (enrollmentId: string): Promise<void> => {
-    await javaApi.delete(`/student-enrollments/${enrollmentId}`);
+    if (!UUID_REGEX.test(enrollmentId)) {
+      throw new Error("Invalid student enrollment id.");
+    }
+
+    await javaApi.delete(
+      `/student-enrollments/${encodeURIComponent(enrollmentId)}`,
+    );
   },
 
   getStudentEnrollmentsByStudentCode: async (

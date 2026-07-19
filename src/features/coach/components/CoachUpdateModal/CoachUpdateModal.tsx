@@ -45,30 +45,33 @@ export default function CoachUpdateModal({
   coach,
   onClose,
 }: CoachUpdateModalProps) {
-  const coachId = coach?.userId ?? "";
+  const assignmentCoachId = coach?.staffCode ?? "";
   const [assignmentState, setAssignmentState] = useState<{
     coachId: string;
     request: CoachAssignmentCreateRequest;
   }>(() => ({
-    coachId,
-    request: createInitialAssignment(coachId),
+    coachId: assignmentCoachId,
+    request: createInitialAssignment(assignmentCoachId),
   }));
 
-  if (assignmentState.coachId !== coachId) {
+  if (assignmentState.coachId !== assignmentCoachId) {
     setAssignmentState({
-      coachId,
-      request: createInitialAssignment(coachId),
+      coachId: assignmentCoachId,
+      request: createInitialAssignment(assignmentCoachId),
     });
   }
 
   const assignmentRequest =
-    assignmentState.coachId === coachId
+    assignmentState.coachId === assignmentCoachId
       ? assignmentState.request
-      : createInitialAssignment(coachId);
+      : createInitialAssignment(assignmentCoachId);
   const setAssignmentRequest = (request: CoachAssignmentCreateRequest) => {
     setAssignmentState({
-      coachId,
-      request,
+      coachId: assignmentCoachId,
+      request: {
+        ...request,
+        coachId: assignmentCoachId,
+      },
     });
   };
 
@@ -177,7 +180,10 @@ export default function CoachUpdateModal({
       return;
     }
 
-    createCoachAssignment(assignmentRequest, {
+    createCoachAssignment({
+      ...assignmentRequest,
+      coachId: assignmentCoachId,
+    }, {
       onSuccess: (data: CoachAssignmentSimpleResponse[]) => {
         const text =
           "Đã phân công thêm cho HLV " +

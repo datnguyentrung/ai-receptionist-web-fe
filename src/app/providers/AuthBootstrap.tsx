@@ -2,6 +2,7 @@ import { authApi } from "@/features/auth/api/authApi";
 import { userAPI } from "@/features/user";
 import { notifyAuthSessionInvalid } from "@/features/auth/utils/authEvents";
 import { removeLegacyAuthStorage } from "@/features/auth/utils/authStorage";
+import { ensureFcmTokenSynced } from "@/integrations/firebase/fcm";
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 import { useEffect, useRef } from "react";
@@ -25,6 +26,14 @@ export function AuthBootstrap({ children }: { children: React.ReactNode }) {
     const bootstrap = async () => {
       removeLegacyAuthStorage();
 
+      const syncFcmAfterHydration = () => {
+        window.setTimeout(() => {
+          void ensureFcmTokenSynced().catch(() => {
+            console.error("[FCM] token sync failed after auth bootstrap.");
+          });
+        }, 0);
+      };
+
       try {
         const hydrateAuth = async (
           account: Awaited<ReturnType<typeof authApi.getAccount>>,
@@ -32,6 +41,7 @@ export function AuthBootstrap({ children }: { children: React.ReactNode }) {
           if (!isMounted) return;
 
           setAuthFromResponse(account);
+          syncFcmAfterHydration();
 
           if (account.requiresContextSelection) {
             return;

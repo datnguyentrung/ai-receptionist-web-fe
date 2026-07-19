@@ -1,19 +1,28 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  overflow-x: clip;
 }
 
 .sectionTitle {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--tkd-text, #1a1d23);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--tkd-red-lt, #e74c3c);
-  width: fit-content;
+  line-height: 1.25;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }

@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid #ececf2;
   border-radius: 14px;
   padding: 12px;
@@ -41,11 +44,18 @@
 
 .coach-assignment-list__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
+
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .coach-assignment-list__card {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid #e5e7ef;
   border-radius: 12px;
   padding: 10px;
@@ -60,6 +70,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .coach-assignment-list__schedule-id {
@@ -67,6 +78,8 @@
   font-size: 14px;
   font-weight: 700;
   color: #111827;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .coach-assignment-list__remove-btn {
@@ -81,6 +94,7 @@
   font-weight: 700;
   padding: 6px 10px;
   cursor: pointer;
+  flex: 0 0 auto;
 
   &:disabled {
     opacity: 0.55;
@@ -101,6 +115,8 @@
     color: #4b5563;
     font-size: 12px;
     font-weight: 500;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }
 

@@ -254,6 +254,9 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
       subtitle="Nhập thông tin cơ bản để tạo hồ sơ HLV"
       maxWidth={860}
       overlayClassName="coach-create-modal__overlay"
+      dialogClassName="coach-create-modal__dialog"
+      surfaceClassName="coach-create-modal__surface"
+      bodyClassName="coach-create-modal__body"
     >
       <form className="coach-create-modal" onSubmit={handleSubmit}>
         {isPending ? (

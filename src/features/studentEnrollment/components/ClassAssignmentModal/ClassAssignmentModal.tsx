@@ -414,9 +414,11 @@ export const ClassAssignmentModal = memo((props: ClassAssignmentModalProps) => {
 
     try {
       const enrollmentIds = Array.from(removalQueue);
-      for (const enrollmentId of enrollmentIds) {
-        await deleteEnrollmentMutation.mutateAsync(enrollmentId);
-      }
+      await Promise.all(
+        enrollmentIds.map((enrollmentId) =>
+          deleteEnrollmentMutation.mutateAsync(enrollmentId),
+        ),
+      );
 
       setRemovalQueue(new Set());
       showSuccessToast(`Đã xóa ${enrollmentIds.length} lớp khỏi học viên.`);

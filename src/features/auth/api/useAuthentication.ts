@@ -6,13 +6,13 @@ import { clearAuthCompatibilityStorage } from "@/features/auth/utils/authStorage
 import { routeAfterAuthResponse } from "@/features/auth/utils/authRouting";
 import {
   cleanupFcm,
-  requestNotificationPermission,
+  ensureFcmTokenSynced,
+  removeFcmTokenFromServer,
 } from "@/integrations/firebase/fcm";
 import { useAuthStore } from "@/store/authStore";
 import type { LoginRequest, SwitchContextRequest } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
 import { authApi } from "./authApi";
 
 const getPrimaryUserCode = (
@@ -57,11 +57,8 @@ export const useLogin = () => {
         });
 
         window.setTimeout(() => {
-          void requestNotificationPermission().catch((error) => {
-            console.error("FCM init sau login lỗi:", error);
-            toast.error(
-              "Không thể đăng ký nhận thông báo. Vui lòng kiểm tra cài đặt trình duyệt.",
-            );
+          void ensureFcmTokenSynced().catch(() => {
+            console.error("[FCM] token sync failed after login.");
           });
         }, 0);
       } catch (error) {
@@ -82,7 +79,10 @@ export const useLogout = () => {
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: authApi.logout,
+    mutationFn: async () => {
+      await removeFcmTokenFromServer();
+      await authApi.logout();
+    },
     onSettled: () => {
       cleanupFcm().catch(() => { });
       clearAuth();
@@ -98,7 +98,10 @@ export const useLogoutAll = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: authApi.logoutAll,
+    mutationFn: async () => {
+      await removeFcmTokenFromServer();
+      await authApi.logoutAll();
+    },
     onSuccess: () => {
       showSuccessToast("Đã đăng xuất khỏi tất cả thiết bị");
     },
@@ -135,7 +138,7 @@ export const useSwitchContext = () => {
       }
 
       window.setTimeout(() => {
-        void requestNotificationPermission().catch(() => { });
+        void ensureFcmTokenSynced().catch(() => { });
       }, 0);
 
       navigate(routeAfterAuthResponse(data, { userCode }), { replace: true });

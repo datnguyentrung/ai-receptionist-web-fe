@@ -130,9 +130,6 @@ export const CoachAssignmentSection = memo(function CoachAssignmentSection({
             disabled={disabled}
           />
         </div>
-
-        
-
         <div className={styles.field}>
           <label className={styles.fieldLabel}>Ngày kết thúc</label>
           <input
@@ -182,21 +179,23 @@ export const CoachAssignmentSection = memo(function CoachAssignmentSection({
             onToggle={onToggleSchedule}
             isCompact
             variant="grid"
-            gridColumns={3}
+            gridColumns="auto"
           />
         </div>
       </div>
 
-      <StudentScheduleSection
-        isLoading={false}
-        hasOwner
-        title="🥋 Lịch dạy đã chọn"
-        classList={selectedCoachClasses}
-        actionLabel="Bỏ chọn"
-        onDelete={onToggleSchedule}
-        variant="grid"
-        gridColumns={2}
-      />
+      <div className={styles.selectedCoachScheduleArea}>
+        <StudentScheduleSection
+          isLoading={false}
+          hasOwner
+          title="Lịch dạy đã chọn"
+          classList={selectedCoachClasses}
+          actionLabel="Bỏ chọn"
+          onDelete={onToggleSchedule}
+          variant="grid"
+          gridColumns="auto"
+        />
+      </div>
 
       <div className={styles.selectionSummaryBar}>
         <div>

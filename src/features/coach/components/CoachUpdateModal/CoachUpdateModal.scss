@@ -2,8 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 18px;
-  max-height: calc(100vh - 48px);
+  max-height: min(100dvh, 820px);
+  box-sizing: border-box;
   background: #fff;
   border-radius: 18px;
   border: 1px solid #f0f0f5;
@@ -13,7 +17,9 @@
 .coach-update-modal__content {
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -40,12 +46,17 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding-top: 8px;
+  padding-top: 12px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid #f3f4f6;
+  background: #fff;
+  box-shadow: 0 -10px 24px rgba(17, 24, 39, 0.06);
 }
 
 .btn {
   min-width: 130px;
+  max-width: 100%;
+  box-sizing: border-box;
   height: 38px;
   border-radius: 10px;
   border: none;
@@ -73,7 +84,9 @@
 @media (max-width: 720px) {
   .coach-update-modal {
     padding: 12px;
-    max-height: calc(100vh - 24px);
+    max-height: 80dvh;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 
   .coach-update-modal__content {

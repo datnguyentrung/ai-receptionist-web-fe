@@ -1,11 +1,8 @@
-﻿import { authApi } from "@/features/auth/api/authApi";
-import { messaging, vapidKey } from "@/integrations/firebase/client";
+import { authApi } from "@/features/auth/api/authApi";
+import { getFirebaseMessaging, vapidKey } from "@/integrations/firebase/client";
 import { javaApi } from "@/lib/axiosInstance";
-import {
-  getToken,
-  isSupported,
-  onMessage as onFcmMessage,
-} from "firebase/messaging";
+import { getAuthAccessToken } from "@/store/authStore";
+import { getToken, onMessage as onFcmMessage } from "firebase/messaging";
 
 const FCM_TOKEN_KEY = "fcm_token";
 
@@ -16,9 +13,15 @@ type ExtendedNotificationOptions = NotificationOptions & {
   requireInteraction?: boolean;
 };
 
+type FcmTokenRequestOptions = {
+  requestPermission: boolean;
+};
+
 const NOTIFICATION_ICON = `${window.location.origin}/logo/android/launchericon-192x192.png?v=2`;
 
 let unsubscribeForegroundListener: (() => void) | null = null;
+let isForegroundListenerInitializing = false;
+let fcmSyncPromise: Promise<void> | null = null;
 
 const saveTokenLocal = (token: string) => {
   try {
@@ -44,10 +47,29 @@ const deleteTokenLocal = () => {
   }
 };
 
+const getNotificationPermission = async ({
+  requestPermission,
+}: FcmTokenRequestOptions): Promise<NotificationPermission | null> => {
+  if (!("Notification" in window)) {
+    console.warn("[FCM] Browser does not support the Notification API.");
+    return null;
+  }
+
+  if (Notification.permission !== "default") {
+    return Notification.permission;
+  }
+
+  if (!requestPermission) {
+    return Notification.permission;
+  }
+
+  return Notification.requestPermission();
+};
+
 const getSWRegistration =
   async (): Promise<ServiceWorkerRegistration | null> => {
     if (!("serviceWorker" in navigator)) {
-      console.warn("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ Service Worker.");
+      console.warn("[FCM] Browser does not support Service Worker.");
       return null;
     }
 
@@ -68,190 +90,227 @@ const getSWRegistration =
     );
   };
 
-
-const sendTokenToServer = async (fcmToken: string) => {
-  try {
-    await authApi.updateFcm(fcmToken);
-    console.log("[FCM] Da cap nhat FCM token cho session hien tai.");
-  } catch (error) {
-    console.error("[FCM] Gui FCM token len server that bai:", error);
-  }
-};
-
-const removeTokenFromServer = async () => {
+export const removeFcmTokenFromServer = async () => {
   const token = getTokenLocal();
   if (!token) return;
 
   try {
     await javaApi.delete(`/notifications/fcm-token/${token}`);
   } catch {
-    /* no-op: token cÃ³ thá»ƒ Ä‘Ã£ háº¿t háº¡n hoáº·c Ä‘Ã£ bá»‹ xÃ³a */
+    /* no-op: token may already be expired or removed */
   }
-
-  deleteTokenLocal();
 };
 
-export const requestNotificationPermission = async (): Promise<
-  string | null
-> => {
-  if (!messaging || !vapidKey) {
-    console.warn("[FCM] Firebase Messaging hoáº·c VAPID key chÆ°a Ä‘Æ°á»£c cáº¥u hÃ¬nh.");
+const getCurrentFcmToken = async (
+  options: FcmTokenRequestOptions,
+): Promise<string | null> => {
+  if (!vapidKey) {
+    console.log("[FCM] token sync skipped: VAPID key is not configured.");
     return null;
   }
 
-  if (!("Notification" in window)) {
-    console.warn("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ Notification API.");
+  if (!("serviceWorker" in navigator)) {
+    console.log("[FCM] token sync skipped: Service Worker is not available.");
     return null;
   }
 
-  const permission = await Notification.requestPermission();
+  if (!("PushManager" in window)) {
+    console.log("[FCM] token sync skipped: Push API is not available.");
+    return null;
+  }
 
-  console.log("[FCM] Notification permission:", permission);
+  const permission = await getNotificationPermission(options);
 
   if (permission !== "granted") {
-    console.log("[FCM] NgÆ°á»i dÃ¹ng tá»« chá»‘i thÃ´ng bÃ¡o push.");
+    console.log("[FCM] token sync skipped: notification permission not granted.");
     return null;
   }
 
-  try {
-    const registration = await getSWRegistration();
-    if (!registration) return null;
-
-    const token = await getToken(messaging, {
-      vapidKey,
-      serviceWorkerRegistration: registration,
-    });
-
-    await sendTokenToServer(token);
-    saveTokenLocal(token);
-
-    return token;
-  } catch (error) {
-    console.error("[FCM] Láº¥y FCM token tháº¥t báº¡i:", error);
+  const fcmMessaging = await getFirebaseMessaging();
+  if (!fcmMessaging) {
+    console.log("[FCM] token sync skipped: Firebase Messaging is unavailable.");
     return null;
   }
+
+  const registration = await getSWRegistration();
+  if (!registration) return null;
+
+  const token = await getToken(fcmMessaging, {
+    vapidKey,
+    serviceWorkerRegistration: registration,
+  });
+
+  if (!token) {
+    console.log("[FCM] token sync skipped: no registration token.");
+    return null;
+  }
+
+  console.log("[FCM] token acquired.");
+
+  return token;
 };
 
-export const initFcmForegroundListener = () => {
-  if (!messaging) return;
-
-  if (unsubscribeForegroundListener) {
-    return;
+const runFcmTokenSync = (getTokenForSync: () => Promise<string | null>) => {
+  if (fcmSyncPromise) {
+    return fcmSyncPromise;
   }
 
-  unsubscribeForegroundListener = onFcmMessage(messaging, async (payload) => {
-    const title = payload.data?.title || payload.notification?.title;
-
-    if (!title) {
-      console.warn("[FCM] Foreground message khÃ´ng cÃ³ title:", payload);
+  fcmSyncPromise = (async () => {
+    if (!getAuthAccessToken()) {
+      console.log("[FCM] token sync skipped: unauthenticated.");
       return;
     }
 
-    const body = payload.data?.body || payload.notification?.body || "";
+    const currentToken = await getTokenForSync();
+    if (!currentToken) return;
 
-    const clickUrl = payload.data?.clickUrl || payload.data?.url || "/";
+    await authApi.updateFcm(currentToken);
+    saveTokenLocal(currentToken);
+    console.log("[FCM] token synced.");
+  })()
+    .catch((error) => {
+      console.error("[FCM] token sync failed.");
+      throw error;
+    })
+    .finally(() => {
+      fcmSyncPromise = null;
+    });
 
-    const options: ExtendedNotificationOptions = {
-      body,
-      icon:
-        payload.data?.icon || payload.notification?.icon || NOTIFICATION_ICON,
-      // badge: payload.data?.badge || "/logo/android/launchericon-96x96.png",
-      data: {
-        clickUrl,
-        ...payload.data,
-      },
-      tag: payload.data?.tag || "attendance-notification",
-      renotify: true,
-      requireInteraction: true,
-      silent: false,
-    };
-
-    try {
-      if (!("serviceWorker" in navigator)) {
-        console.warn(
-          "[FCM] KhÃ´ng há»— trá»£ Service Worker nÃªn khÃ´ng hiá»ƒn thá»‹ notification.",
-        );
-        return;
-      }
-
-      if (!("Notification" in window)) {
-        console.warn("[FCM] KhÃ´ng há»— trá»£ Notification API.");
-        return;
-      }
-
-      if (Notification.permission !== "granted") {
-        console.warn(
-          "[FCM] ChÆ°a Ä‘Æ°á»£c cáº¥p quyá»n notification:",
-          Notification.permission,
-        );
-        return;
-      }
-
-      const registration = await navigator.serviceWorker.ready;
-
-      await registration.showNotification(title, options);
-
-      console.log(
-        "[FCM] ÄÃ£ hiá»ƒn thá»‹ foreground notification qua Service Worker.",
-      );
-    } catch (error) {
-      console.error("[FCM] KhÃ´ng thá»ƒ hiá»ƒn thá»‹ foreground notification:", error);
-    }
-  });
+  return fcmSyncPromise;
 };
 
-export const syncFcmToken = async () => {
-  if (!messaging || !vapidKey) return;
+export const ensureFcmTokenSynced = async (): Promise<void> =>
+  runFcmTokenSync(() => getCurrentFcmToken({ requestPermission: false }));
 
-  if (!("Notification" in window)) return;
+export const requestFcmTokenForLogin = async (): Promise<string | null> => {
+  try {
+    return await getCurrentFcmToken({ requestPermission: true });
+  } catch {
+    console.error("[FCM] token sync failed.");
+    return null;
+  }
+};
 
-  if (Notification.permission !== "granted") {
-    console.log("[FCM] ChÆ°a Ä‘Æ°á»£c cáº¥p quyá»n notification, bá» qua sync token.");
+export const requestNotificationPermission = async (): Promise<string | null> => {
+  const token = await getCurrentFcmToken({ requestPermission: true });
+
+  if (!token) {
+    return null;
+  }
+
+  await runFcmTokenSync(async () => token);
+
+  return token;
+};
+
+export const initFcmForegroundListener = async () => {
+  if (unsubscribeForegroundListener || isForegroundListenerInitializing) {
     return;
   }
 
+  isForegroundListenerInitializing = true;
+
   try {
-    const registration = await getSWRegistration();
-    if (!registration) return;
-
-    const currentToken = await getToken(messaging, {
-      vapidKey,
-      serviceWorkerRegistration: registration,
-    });
-
-    const savedToken = getTokenLocal();
-
-    if (!savedToken || savedToken !== currentToken) {
-      await sendTokenToServer(currentToken);
-      saveTokenLocal(currentToken);
+    const fcmMessaging = await getFirebaseMessaging();
+    if (!fcmMessaging) {
+      return;
     }
-  } catch (error) {
-    console.error("[FCM] Sync FCM token tháº¥t báº¡i:", error);
+
+    if (unsubscribeForegroundListener) {
+      return;
+    }
+
+    unsubscribeForegroundListener = onFcmMessage(
+      fcmMessaging,
+      async (payload) => {
+        const title = payload.data?.title || payload.notification?.title;
+
+        if (!title) {
+          console.warn("[FCM] Foreground message has no title:", payload);
+          return;
+        }
+
+        const body = payload.data?.body || payload.notification?.body || "";
+        const clickUrl = payload.data?.clickUrl || payload.data?.url || "/";
+
+        const options: ExtendedNotificationOptions = {
+          body,
+          icon:
+            payload.data?.icon ||
+            payload.notification?.icon ||
+            NOTIFICATION_ICON,
+          // badge: payload.data?.badge || "/logo/android/launchericon-96x96.png",
+          data: {
+            clickUrl,
+            ...payload.data,
+          },
+          tag: payload.data?.tag || "attendance-notification",
+          renotify: true,
+          requireInteraction: true,
+          silent: false,
+        };
+
+        try {
+          if (!("serviceWorker" in navigator)) {
+            console.warn("[FCM] Service Worker is not available.");
+            return;
+          }
+
+          if (!("Notification" in window)) {
+            console.warn("[FCM] Notification API is not available.");
+            return;
+          }
+
+          if (Notification.permission !== "granted") {
+            console.warn(
+              "[FCM] Notification permission has not been granted:",
+              Notification.permission,
+            );
+            return;
+          }
+
+          const registration = await navigator.serviceWorker.ready;
+
+          await registration.showNotification(title, options);
+
+          console.log(
+            "[FCM] Foreground notification displayed via Service Worker.",
+          );
+        } catch (error) {
+          console.error("[FCM] Failed to display foreground notification:", error);
+        }
+      },
+    );
+  } finally {
+    isForegroundListenerInitializing = false;
   }
 };
 
+export const syncFcmToken = ensureFcmTokenSynced;
+
 export const cleanupFcm = async () => {
   try {
-    if (messaging) {
+    const fcmMessaging = await getFirebaseMessaging();
+    if (fcmMessaging) {
       const { deleteToken } = await import("firebase/messaging");
-      await deleteToken(messaging);
+      await deleteToken(fcmMessaging);
     }
   } catch {
     /* no-op */
   }
 
-  await removeTokenFromServer();
+  deleteTokenLocal();
 };
 
 export const initFcm = async (): Promise<boolean> => {
-  const supported = await isSupported();
+  const fcmMessaging = await getFirebaseMessaging();
 
-  if (!supported) {
-    console.log("[FCM] TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ FCM.");
+  if (!fcmMessaging) {
+    console.log("[FCM] Browser does not support FCM.");
     return false;
   }
 
-  initFcmForegroundListener();
+  await initFcmForegroundListener();
 
   return true;
 };

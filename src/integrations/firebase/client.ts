@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,8 +11,19 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+let messagingPromise: Promise<Messaging | null> | null = null;
 
 export const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
-export { messaging };
+export const getFirebaseMessaging = (): Promise<Messaging | null> => {
+  if (!messagingPromise) {
+    messagingPromise = isSupported()
+      .then((supported) => (supported ? getMessaging(app) : null))
+      .catch((error) => {
+        console.warn("[FCM] Firebase Messaging is not supported:", error);
+        return null;
+      });
+  }
+
+  return messagingPromise;
+};

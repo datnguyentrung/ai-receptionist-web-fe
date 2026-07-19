@@ -10,7 +10,7 @@
   border-radius: $radius-xl;
   width: 100%;
   max-width: 1000px;
-  max-height: min(90vh, 840px);
+  max-height: min(50vh, 840px);
   box-shadow: $shadow-xl, 0 0 0 1px rgba($brand-red, 0.08);
   position: relative;
   display: flex;
@@ -309,20 +309,122 @@
 .coachInlineSection {
   display: flex;
   flex-direction: column;
-  gap: $space-4;
+  gap: $space-3;
   border: 1px solid $border-default;
   border-radius: $radius-md;
   background: $surface-50;
-  padding: $space-4;
+  padding: $space-3;
 }
 
 .coachInlineGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: $space-3;
+  grid-template-columns: minmax(0, 1fr);
+  gap: $space-2;
 
   @include respond-to(sm) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+  }
+}
+
+.coachInlineGrid .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.coachInlineGrid .field:nth-child(-n + 3) {
+  padding: $space-2;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-surface;
+}
+
+.coachInlineGrid .field:nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+.coachInlineSection .fieldLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-1 $space-2;
+  min-width: 0;
+}
+
+.coachInlineSection .inlineTextButton {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  min-height: 28px;
+  padding: 0 $space-1;
+  font-size: $text-xs;
+}
+
+.coachInlineGrid .field:nth-child(-n + 3) .fieldLabel {
+  color: $text-subtle;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.coachInlineGrid .field:nth-child(-n + 3) .inputField {
+  min-height: 44px;
+  padding: 0 $space-3;
+  border-width: 1px;
+  border-radius: $radius-sm;
+  background: $surface-50;
+  font-size: $text-sm;
+  line-height: 1.2;
+}
+
+@include respond-to(sm) {
+  .coachInlineGrid .field:nth-child(-n + 3) {
+    padding: $space-2 $space-3;
+  }
+
+  .coachInlineGrid .field:nth-child(-n + 3) .inputField {
+    min-height: 40px;
+  }
+}
+
+:global(body[data-app-mode="pwa"]) {
+  .coachInlineGrid {
+    gap: $space-2;
+  }
+
+  .coachInlineGrid .field:nth-child(-n + 3) {
+    display: grid;
+    grid-template-columns: minmax(88px, 32%) minmax(0, 1fr);
+    align-items: center;
+    gap: $space-2;
+    padding: 6px $space-2;
+  }
+
+  .coachInlineGrid .field:nth-child(-n + 3) .fieldLabel,
+  .coachInlineGrid .field:nth-child(2) .fieldLabelRow {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .coachInlineGrid .field:nth-child(2) .fieldLabelRow {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .coachInlineSection .inlineTextButton {
+    min-height: 22px;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .coachInlineGrid .field:nth-child(-n + 3) .inputField {
+    min-height: 34px;
+    padding: 0 $space-2;
+    font-size: 13px;
   }
 }
 
@@ -330,6 +432,9 @@
 
 .textAreaField {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid $border-default;
   border-radius: $radius-md;
   background: $bg-surface;
@@ -338,7 +443,7 @@
   line-height: $leading-relaxed;
   padding: $space-2 $space-3;
   resize: vertical;
-  min-height: 74px;
+  min-height: 56px;
   transition: $transition-colors;
 
   &:focus {
@@ -402,6 +507,10 @@
 
 .inputField {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: block;
   background: $surface-50;
   border: 1.5px solid $border-default;
   border-radius: $radius-md;
@@ -422,8 +531,8 @@
 
 .classSelectionArea {
   grid-column: 1 / -1;
-  margin-top: $space-1;
-  padding-top: $space-4;
+  margin-top: 0;
+  padding-top: $space-3;
   border-top: 1px solid $border-default;
 }
 
@@ -432,14 +541,17 @@
   align-items: center;
   justify-content: space-between;
   gap: $space-3;
+  min-width: 0;
+  flex-wrap: wrap;
 
   @include below(sm) {
-    flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 }
 
 .selectionMeta {
+  flex: 0 0 auto;
+  max-width: 100%;
   font-size: $text-xs;
   color: $surface-subtle;
   background: rgba($black, 0.03);
@@ -449,11 +561,11 @@
 }
 
 .branchScheduleBox {
-  max-height: 360px;
+  max-height: 260px;
   overflow-y: auto;
   border: 1.5px solid $border-default;
   border-radius: $radius-md;
-  padding: $space-3;
+  padding: $space-2;
   background: $bg-surface;
   margin-top: $space-2;
   @include hide-scrollbar;
@@ -461,16 +573,24 @@
 }
 
 .studentModalShellPwa .branchScheduleBox {
-  max-height: clamp(180px, 30dvh, 280px);
+  max-height: clamp(150px, 24dvh, 220px);
   padding: $space-2;
   border-radius: 14px;
+}
+
+.selectedCoachScheduleArea {
+  margin-top: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid $border-subtle;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .selectionSummaryBar {
   display: flex;
   flex-wrap: wrap;
-  gap: $space-3;
-  padding: $space-4;
+  gap: $space-2;
+  padding: $space-3;
   border: 1px solid $border-default;
   border-radius: $radius-md;
   background: linear-gradient(180deg, rgba($surface-50, 0.92), $bg-surface);
@@ -595,11 +715,13 @@
   position: sticky;
   bottom: 0;
   z-index: 1;
-  margin: $space-4 (-$space-4) 0;
-  padding: $space-3 $space-4 calc($space-3 + env(safe-area-inset-bottom, 0px));
-  background:
-    linear-gradient(180deg, rgba($white, 0.88), $bg-surface 30%),
-    $bg-surface;
+  margin: $space-4 (
+    -$space-4) 0;
+  padding: $space-3 $space-4 calc($space-3 + env(safe-area-inset-bottom, 0px)
+  );
+background:
+  linear-gradient(180deg, rgba($white, 0.88), $bg-surface 30%),
+  $bg-surface;
 }
 
 .btn {

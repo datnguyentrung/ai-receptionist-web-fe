@@ -29,7 +29,7 @@ export const RemovalQueueSection: React.FC<RemovalQueueSectionProps> = ({
       </h3>
       <div className={styles.removalList}>
         {toDeleteObjects.map((cls) => (
-          <div key={cls.classSchedule.scheduleId} className={styles.classItem}>
+          <div key={cls.enrollmentId} className={styles.classItem}>
             <div className={styles.classContent}>
               <div className={styles.classLabel}>{cls.classSchedule.scheduleId}</div>
 
@@ -52,7 +52,7 @@ export const RemovalQueueSection: React.FC<RemovalQueueSectionProps> = ({
               )}
             </div>
             <button
-              onClick={() => onRemoveFromQueue(cls.classSchedule.scheduleId)}
+              onClick={() => onRemoveFromQueue(cls.enrollmentId)}
               className={styles.btnSmallSquare}
               title="Bỏ khỏi danh sách chờ xóa"
               disabled={isProcessing}

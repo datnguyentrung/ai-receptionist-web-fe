@@ -4,12 +4,16 @@ import type { ClassScheduleSummary, StudentEnrollmentResponse } from "@/types";
 import React from "react";
 import styles from "./StudentScheduleSection.module.scss";
 
+type ClassScheduleActionItem = ClassScheduleSummary & {
+  actionId?: string;
+};
+
 interface StudentScheduleSectionProps {
   isLoading: boolean;
   hasStudent?: boolean;
   hasOwner?: boolean;
   activeDisplayClasses?: StudentEnrollmentResponse[];
-  classList?: ClassScheduleSummary[];
+  classList?: ClassScheduleActionItem[];
   onDelete?: (id: string) => void;
   queuedRemovalIds?: Set<string>;
   title?: string;
@@ -32,8 +36,12 @@ export const StudentScheduleSection: React.FC<StudentScheduleSectionProps> = ({
   gridColumns = "auto",
 }) => {
   const resolvedHasOwner = hasOwner ?? hasStudent ?? false;
-  const resolvedClassList =
-    classList ?? activeDisplayClasses.map((cls) => cls.classSchedule);
+  const resolvedClassList: ClassScheduleActionItem[] =
+    classList ??
+    activeDisplayClasses.map((enrollment) => ({
+      ...enrollment.classSchedule,
+      actionId: enrollment.enrollmentId,
+    }));
 
   return (
     <div className={styles.root}>
