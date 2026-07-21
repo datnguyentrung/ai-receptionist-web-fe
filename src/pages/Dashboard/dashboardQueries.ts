@@ -14,8 +14,7 @@ export function getDashboardTuitionPayments() {
 
 export function prefetchDashboard(queryClient: QueryClient) {
   void import("@/pages/Dashboard");
-  void queryClient.prefetchQuery<PageResponse<TuitionPaymentResponse>>({
-    queryKey: dashboardTuitionPaymentsQueryKey,
-    queryFn: getDashboardTuitionPayments,
-  });
+  void queryClient.getQueryData<PageResponse<TuitionPaymentResponse>>(
+    dashboardTuitionPaymentsQueryKey,
+  );
 }

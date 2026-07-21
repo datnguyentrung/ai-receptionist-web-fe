@@ -88,7 +88,16 @@ export function UpdateClassScheduleModal({
 
   useEffect(() => {
     if (open && classSchedule) {
-      setForm(toForm(classSchedule));
+      let cancelled = false;
+      queueMicrotask(() => {
+        if (!cancelled) {
+          setForm(toForm(classSchedule));
+        }
+      });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [classSchedule, open]);
 

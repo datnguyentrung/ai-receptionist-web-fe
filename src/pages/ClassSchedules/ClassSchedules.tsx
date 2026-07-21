@@ -1,5 +1,5 @@
-import ConfirmModal from "@/components/common/ConfirmModal";
 import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -74,10 +74,10 @@ function ClassSchedulesSkeleton({ view }: { view: "grid" | "week" }) {
 function ClassSchedulesError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className={styles.errorState}>
-      <p>KhÙng th? t?i l?ch h?c.</p>
+      <p>Kh√¥ng th·ªÉ t·∫£i l·ªãch h·ªçc</p>
       <button type="button" onClick={onRetry} className={styles.retryButton}>
         <RefreshCcw size={14} />
-        Th? l?i
+        Th·ª≠ l·∫°i
       </button>
     </div>
   );
@@ -93,7 +93,7 @@ export function ClassSchedules() {
   useRegisterPullToRefresh(refreshClassSchedules);
 
   if (logic.sessionsError) {
-    toast.error("L?i khi t?i c·c bu?i h?c s?p di?n ra");
+    toast.error("L?i khi t?i cÔøΩc bu?i h?c s?p di?n ra");
   }
   const totalClasses = logic.classSchedules?.length || 0;
   const activeClasses =
@@ -112,7 +112,7 @@ export function ClassSchedules() {
       <div className={styles.page}>
         {isRefreshing && (
           <div className={styles.refreshNotice} role="status">
-            –ang c?p nh?t l?ch h?c m?i...
+            ÔøΩang c?p nh?t l?ch h?c m?i...
           </div>
         )}
         <RenderProfiler id="ClassSchedules:Header" thresholdMs={4}>
@@ -158,12 +158,12 @@ export function ClassSchedules() {
         description={logic.confirmDescription}
         cancelText="H?y"
         confirmText={logic.confirmButtonText}
-        loadingText="–ang c?p nh?t..."
+        loadingText="ÔøΩang c?p nh?t..."
         isLoading={logic.isChangingStatus}
         onCancel={logic.closeChangeStatusModal}
         onConfirm={logic.confirmStatusChange}
-        successToastMessage="C?p nh?t tr?ng th·i l?p h?c th‡nh cÙng"
-        errorToastMessage="KhÙng th? c?p nh?t tr?ng th·i l?p h?c"
+        successToastMessage="C?p nh?t tr?ng thÔøΩi l?p h?c thÔøΩnh cÔøΩng"
+        errorToastMessage="KhÔøΩng th? c?p nh?t tr?ng thÔøΩi l?p h?c"
       />
 
       <UpcomingSessionsModal

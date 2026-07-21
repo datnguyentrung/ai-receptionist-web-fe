@@ -1,4 +1,5 @@
 import ConfirmModal from "@/components/common/ConfirmModal";
+import { ModalLayout } from "@/components/ui/modal-layout";
 import { CountdownBadge } from "@/features/classSession/components/CountdownBadge/CountdownBadge";
 import { MiniActionPopover } from "@/components/ui/mini-action-popover";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,7 +7,7 @@ import {
   SessionStatusLabel,
   type SessionStatus,
 } from "@/config/constants/OperationEnums";
-import type { PageResponse, SessionResponse } from "@/types";
+import type { PageResponse, SessionResponse, SessionUpdateRequest } from "@/types";
 import { formatTimeStringHM } from "@/utils/format";
 import { getLabelClassSchedule } from "@/utils/getInitials";
 import { format } from "date-fns";
@@ -16,6 +17,7 @@ import {
   Clock,
   MapPin,
   Pause,
+  Pencil,
   Trash2,
   XCircle,
 } from "lucide-react";
@@ -68,6 +70,54 @@ const SESSION_STATUS_ORDER: Record<SessionStatus, number> = {
   CANCELLED: 3,
   TERMINATED: 3,
 };
+
+const SESSION_STATUS_OPTIONS: SessionStatus[] = [
+  "SCHEDULED",
+  "ACTIVE",
+  "COMPLETED",
+  "CANCELLED",
+  "POSTPONED",
+  "TERMINATED",
+];
+
+type SessionUpdateFormState = {
+  sessionDate: string;
+  status: SessionStatus;
+  isAttendanceClosed: boolean;
+  startTime: string;
+  endTime: string;
+  note: string;
+};
+
+function formatDateInput(value?: string | Date) {
+  if (!value) return "";
+  if (value instanceof Date) return format(value, "yyyy-MM-dd");
+  return value.slice(0, 10);
+}
+
+function createUpdateForm(session: SessionResponse): SessionUpdateFormState {
+  return {
+    sessionDate: formatDateInput(session.sessionDate),
+    status: (session.status ?? "SCHEDULED") as SessionStatus,
+    isAttendanceClosed: Boolean(session.isAttendanceClosed),
+    startTime: session.startTime?.slice(0, 5) ?? "",
+    endTime: session.endTime?.slice(0, 5) ?? "",
+    note: session.note ?? "",
+  };
+}
+
+function createUpdatePayload(
+  form: SessionUpdateFormState,
+): SessionUpdateRequest {
+  return {
+    sessionDate: form.sessionDate,
+    status: form.status,
+    isAttendanceClosed: form.isAttendanceClosed,
+    startTime: form.startTime,
+    endTime: form.endTime,
+    note: form.note.trim(),
+  };
+}
 
 function getSessionStartMs(session: SessionResponse) {
   if (!session.sessionDate) return Number.POSITIVE_INFINITY;
@@ -201,6 +251,15 @@ export function SessionLayout({
     null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingSession, setEditingSession] = useState<SessionResponse | null>(
+    null,
+  );
+  const [editForm, setEditForm] = useState<SessionUpdateFormState | null>(null);
+  const [pendingSessionUpdate, setPendingSessionUpdate] = useState<{
+    session: SessionResponse;
+    payload: SessionUpdateRequest;
+  } | null>(null);
+  const [isApplyingSessionUpdate, setIsApplyingSessionUpdate] = useState(false);
 
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [flashSessionId, setFlashSessionId] = useState<string | null>(null);
@@ -281,6 +340,71 @@ export function SessionLayout({
     },
     [],
   );
+
+  const openUpdateModal = useCallback((session: SessionResponse) => {
+    setEditingSession(session);
+    setEditForm(createUpdateForm(session));
+  }, []);
+
+  const closeUpdateModal = useCallback(() => {
+    if (isApplyingSessionUpdate) return;
+    setEditingSession(null);
+    setEditForm(null);
+    setPendingSessionUpdate(null);
+  }, [isApplyingSessionUpdate]);
+
+  const handleSessionMenuAction = useCallback(
+    (session: SessionResponse, actionId: string) => {
+      if (actionId === "update-session") {
+        openUpdateModal(session);
+        return;
+      }
+
+      if (actionId === "delete-session") {
+        setPendingDelete(session);
+      }
+    },
+    [openUpdateModal],
+  );
+
+  const openUpdateConfirm = useCallback(() => {
+    if (!editingSession || !editForm) return;
+    setPendingSessionUpdate({
+      session: editingSession,
+      payload: createUpdatePayload(editForm),
+    });
+  }, [editForm, editingSession]);
+
+  const closeUpdateConfirm = useCallback(() => {
+    if (isApplyingSessionUpdate) return;
+    setPendingSessionUpdate(null);
+  }, [isApplyingSessionUpdate]);
+
+  const confirmSessionUpdate = useCallback(async () => {
+    if (!pendingSessionUpdate) return;
+
+    setIsApplyingSessionUpdate(true);
+    try {
+      const updated = await classSessionAPI.updateSession(
+        pendingSessionUpdate.session.sessionId,
+        pendingSessionUpdate.payload,
+      );
+
+      setLocalSessions((prev) =>
+        prev.map((session) =>
+          session.sessionId === pendingSessionUpdate.session.sessionId
+            ? { ...session, ...pendingSessionUpdate.payload, ...updated }
+            : session,
+        ),
+      );
+      setPendingSessionUpdate(null);
+      setEditingSession(null);
+      setEditForm(null);
+      onSessionUpdated?.();
+    } finally {
+      setIsApplyingSessionUpdate(false);
+    }
+  }, [onSessionUpdated, pendingSessionUpdate, setLocalSessions]);
 
   const confirmStatusChange = useCallback(async () => {
     if (!pendingUpdate) return;
@@ -459,15 +583,28 @@ export function SessionLayout({
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  className={styles.deleteBtn}
-                  onClick={() => setPendingDelete(session)}
-                  aria-label="Xóa buổi học"
-                  title="Xóa buổi học"
-                >
-                  <Trash2 size={16} />
-                </button>
+                <MiniActionPopover
+                  actions={[
+                    {
+                      id: "update-session",
+                      label: "Cập nhật buổi học",
+                      icon: Pencil,
+                    },
+                    { id: "__separator__" },
+                    {
+                      id: "delete-session",
+                      label: "Xóa buổi học",
+                      icon: Trash2,
+                      isDanger: true,
+                    },
+                  ]}
+                  itemLabel={session.classSchedule?.scheduleId}
+                  onActionSelect={(actionId) =>
+                    handleSessionMenuAction(session, actionId)
+                  }
+                  triggerClassName={styles.sessionMenuBtn}
+                  title="Thao tác buổi học"
+                />
               </div>
             </div>
 
@@ -573,6 +710,154 @@ export function SessionLayout({
           </button>
         </div>
       )}
+
+      <ModalLayout
+        open={editingSession !== null}
+        onClose={closeUpdateModal}
+        title="Cập nhật buổi học"
+        subtitle={editingSession?.classSchedule?.scheduleId ?? undefined}
+        maxWidth={560}
+        closeOnBackdrop={!isApplyingSessionUpdate}
+        closeOnEscape={!isApplyingSessionUpdate}
+        footer={
+          <div className={styles.updateModalFooter}>
+            <button
+              type="button"
+              className={styles.updateCancelBtn}
+              onClick={closeUpdateModal}
+              disabled={isApplyingSessionUpdate}
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              className={styles.updateSaveBtn}
+              onClick={openUpdateConfirm}
+              disabled={
+                isApplyingSessionUpdate ||
+                !editForm?.sessionDate ||
+                !editForm.startTime ||
+                !editForm.endTime
+              }
+            >
+              Lưu thay đổi
+            </button>
+          </div>
+        }
+      >
+        {editForm ? (
+          <form className={styles.updateForm}>
+            <label className={styles.updateField}>
+              <span>Ngày học</span>
+              <input
+                type="date"
+                value={editForm.sessionDate}
+                disabled={isApplyingSessionUpdate}
+                onChange={(event) =>
+                  setEditForm((current) =>
+                    current
+                      ? { ...current, sessionDate: event.target.value }
+                      : current,
+                  )
+                }
+              />
+            </label>
+
+            <label className={styles.updateField}>
+              <span>Trạng thái</span>
+              <select
+                value={editForm.status}
+                disabled={isApplyingSessionUpdate}
+                onChange={(event) =>
+                  setEditForm((current) =>
+                    current
+                      ? {
+                          ...current,
+                          status: event.target.value as SessionStatus,
+                        }
+                      : current,
+                  )
+                }
+              >
+                {SESSION_STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {SessionStatusLabel[status]}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className={styles.updateTimeGrid}>
+              <label className={styles.updateField}>
+                <span>Giờ bắt đầu</span>
+                <input
+                  type="time"
+                  value={editForm.startTime}
+                  disabled={isApplyingSessionUpdate}
+                  onChange={(event) =>
+                    setEditForm((current) =>
+                      current
+                        ? { ...current, startTime: event.target.value }
+                        : current,
+                    )
+                  }
+                />
+              </label>
+
+              <label className={styles.updateField}>
+                <span>Giờ kết thúc</span>
+                <input
+                  type="time"
+                  value={editForm.endTime}
+                  disabled={isApplyingSessionUpdate}
+                  onChange={(event) =>
+                    setEditForm((current) =>
+                      current
+                        ? { ...current, endTime: event.target.value }
+                        : current,
+                    )
+                  }
+                />
+              </label>
+            </div>
+
+            <label className={styles.updateCheckField}>
+              <input
+                type="checkbox"
+                checked={editForm.isAttendanceClosed}
+                disabled={isApplyingSessionUpdate}
+                onChange={(event) =>
+                  setEditForm((current) =>
+                    current
+                      ? {
+                          ...current,
+                          isAttendanceClosed: event.target.checked,
+                        }
+                      : current,
+                  )
+                }
+              />
+              <span>Đóng điểm danh cho buổi học này</span>
+            </label>
+
+            <label className={styles.updateField}>
+              <span>Ghi chú</span>
+              <textarea
+                rows={4}
+                value={editForm.note}
+                disabled={isApplyingSessionUpdate}
+                placeholder="Nhập ghi chú cho buổi học..."
+                onChange={(event) =>
+                  setEditForm((current) =>
+                    current ? { ...current, note: event.target.value } : current,
+                  )
+                }
+              />
+            </label>
+          </form>
+        ) : null}
+      </ModalLayout>
+
       <ConfirmModal
         open={pendingUpdate !== null}
         title={
@@ -621,6 +906,20 @@ export function SessionLayout({
         onConfirm={confirmDelete}
         successToastMessage="Xóa buổi học thành công"
         errorToastMessage="Không thể xóa buổi học"
+      />
+
+      <ConfirmModal
+        open={pendingSessionUpdate !== null}
+        title="Xác nhận cập nhật buổi học"
+        description={`Bạn có chắc muốn cập nhật buổi học ${pendingSessionUpdate?.session.classSchedule?.scheduleId ?? ""}?`}
+        cancelText="Hủy"
+        confirmText="Cập nhật"
+        loadingText="Đang cập nhật..."
+        isLoading={isApplyingSessionUpdate}
+        onCancel={closeUpdateConfirm}
+        onConfirm={confirmSessionUpdate}
+        successToastMessage="Cập nhật buổi học thành công"
+        errorToastMessage="Không thể cập nhật buổi học"
       />
 
       {/* TODO: Thêm input Note vào nữa */}

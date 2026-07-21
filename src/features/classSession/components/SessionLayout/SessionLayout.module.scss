@@ -57,7 +57,8 @@
   flex-shrink: 0;
 }
 
-.deleteBtn {
+.deleteBtn,
+.sessionMenuBtn {
   @include touch-target(44px);
   border-radius: $radius-sm;
   border: 1px solid $border-default;
@@ -77,6 +78,14 @@
 
   &:active {
     transform: scale(0.98);
+  }
+}
+
+.sessionMenuBtn {
+  @include hover-only {
+    border-color: $border-strong;
+    color: $text-heading;
+    background: $gray-50;
   }
 }
 
@@ -455,4 +464,124 @@
 .noteError {
   font-size: $text-xs;
   color: $error-600;
+}
+
+// ── Update session modal ─────────────────────────────────────
+.updateForm {
+  display: grid;
+  gap: $space-4;
+}
+
+.updateField {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  span {
+    font-size: $text-sm;
+    font-weight: $font-semibold;
+    color: $text-heading;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid $border-default;
+    border-radius: $radius-sm;
+    background: $bg-white;
+    color: $text-heading;
+    font: inherit;
+    font-size: $text-sm;
+    transition: $transition-fast;
+
+    &:focus {
+      border-color: $brand-red;
+      box-shadow: 0 0 0 2px rgba($brand-red, 0.1);
+      outline: none;
+    }
+
+    &:disabled {
+      background: $gray-50;
+      color: $text-muted;
+      cursor: not-allowed;
+    }
+  }
+
+  input,
+  select {
+    min-height: 44px;
+    padding: 0 $space-3;
+  }
+
+  textarea {
+    min-height: 96px;
+    padding: $space-3;
+    resize: vertical;
+    line-height: $leading-normal;
+  }
+}
+
+.updateTimeGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-3;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.updateCheckField {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  background: $gray-50;
+  color: $text-heading;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: $brand-red;
+    flex: 0 0 18px;
+  }
+}
+
+.updateModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+}
+
+.updateCancelBtn,
+.updateSaveBtn {
+  @include touch-target(44px);
+  @include press-effect;
+  padding: 0 $space-4;
+  border-radius: $radius-sm;
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  transition: $transition-fast;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.updateCancelBtn {
+  border: 1px solid $border-default;
+  background: $bg-white;
+  color: $text-heading;
+}
+
+.updateSaveBtn {
+  border: 1px solid $brand-red;
+  background: $brand-red;
+  color: $white;
 }
