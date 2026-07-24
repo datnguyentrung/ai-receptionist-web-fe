@@ -27,11 +27,16 @@ import styles from "./StudentCard.module.scss";
 // }
 
 interface StudentCardProps {
-  student: StudentAttendanceResponse & { belt?: Belt | null };
+  student: StudentAttendanceResponse & {
+    belt?: Belt | null;
+    studentCode?: string;
+  };
   index: number;
   onUpdateStatus: (id: string, status: AttendanceStatus | null) => void;
   onUpdateEval: (id: string, status: EvaluationStatus) => void;
   onOpenEval: (student: StudentAttendanceResponse) => void;
+  onCheckIn: (studentCode: string) => void;
+  isCheckInPending: boolean;
 }
 
 export function StudentCardInner({
@@ -40,6 +45,8 @@ export function StudentCardInner({
   onUpdateStatus,
   onUpdateEval,
   onOpenEval,
+  onCheckIn,
+  isCheckInPending,
 }: StudentCardProps) {
   const [expanded, setExpanded] = useState(false);
   const hasAttendanceRecord = Boolean(student.attendanceId);
@@ -135,8 +142,11 @@ export function StudentCardInner({
       <div className={styles.attendanceBottomWrap}>
         <AttendancePill
           attendanceId={student.attendanceId ? student.attendanceId : undefined}
+          studentCode={student.studentCode}
           value={student.attendanceStatus}
           onChange={(v) => onUpdateStatus(student.studentId, v)}
+          onCheckIn={onCheckIn}
+          isCheckInPending={isCheckInPending}
         />
       </div>
 
@@ -210,8 +220,11 @@ export const StudentCard = memo(StudentCardInner, (prev, next) => {
     prev.student.evaluatedByCoachName === next.student.evaluatedByCoachName &&
     prev.student.checkInTime === next.student.checkInTime &&
     prev.student.note === next.student.note &&
+    prev.student.studentCode === next.student.studentCode &&
     prev.onUpdateStatus === next.onUpdateStatus &&
     prev.onUpdateEval === next.onUpdateEval &&
-    prev.onOpenEval === next.onOpenEval
+    prev.onOpenEval === next.onOpenEval &&
+    prev.onCheckIn === next.onCheckIn &&
+    prev.isCheckInPending === next.isCheckInPending
   );
 });

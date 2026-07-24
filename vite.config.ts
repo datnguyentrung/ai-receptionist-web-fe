@@ -2,19 +2,19 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 
-function fcmConfigPlugin(): Plugin {
+function fcmConfigPlugin(env: Record<string, string>): Plugin {
   return {
     name: "fcm-config",
     configResolved() {
       const config = {
-        apiKey: process.env.VITE_FIREBASE_API_KEY || "",
-        authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-        projectId: process.env.VITE_FIREBASE_PROJECT_ID || "",
-        storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-        messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-        appId: process.env.VITE_FIREBASE_APP_ID || "",
+        apiKey: env.VITE_FIREBASE_API_KEY || "",
+        authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || "",
+        projectId: env.VITE_FIREBASE_PROJECT_ID || "",
+        storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || "",
+        messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+        appId: env.VITE_FIREBASE_APP_ID || "",
       };
       const content = `self.__FCM_CONFIG__ = ${JSON.stringify(config)};\n`;
       fs.writeFileSync("public/fcm-config.js", content);
@@ -23,15 +23,18 @@ function fcmConfigPlugin(): Plugin {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [tailwindcss(), react(), fcmConfigPlugin()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+
+  const config = {
+    plugins: [tailwindcss(), react(), fcmConfigPlugin(env)],
   server: {
-    allowedHosts: true, // Thêm dòng này để cho phép tất cả các host
+    allowedHosts: true as const, // Thêm dòng này để cho phép tất cả các host
   },
   build: {
     rollupOptions: {
       output: {
-        manualChunks(id) {
+        manualChunks(id: string) {
           if (!id.includes("node_modules")) {
             return;
           }
@@ -102,4 +105,7 @@ export default defineConfig({
       },
     },
   },
+  };
+
+  return config;
 });

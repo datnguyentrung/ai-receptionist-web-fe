@@ -1,4 +1,5 @@
 import ConfirmModal from "@/components/common/ConfirmModal";
+import { showSuccessToast } from "@/components/ui/toast";
 import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
 import { RenderProfiler } from "@/components/dev/RenderProfiler";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +13,7 @@ import { BeltLabel } from "@/config/constants";
 import { CLASS_SESSION } from "@/pages/AttendanceCheckin/data/attendanceCheckinMockData";
 import { EvalSheet } from "@/features/studentAttendance";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { showCheckInErrorToast } from "@/features/studentAttendance/utils/checkInErrorToast";
 import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
@@ -46,6 +48,7 @@ type BeltOptionKey = Exclude<BeltFilter, "all">;
 type BeltSort = "asc" | "desc";
 type StudentAttendanceWithBelt = StudentAttendanceResponse & {
   belt?: Belt | null;
+  studentCode?: string;
 };
 
 const BELT_ORDER: Belt[] = [
@@ -79,6 +82,15 @@ function getBeltRank(belt: Belt | null | undefined) {
 function readBelt(source: unknown): Belt | null {
   const belt = (source as { belt?: unknown } | null)?.belt;
   return typeof belt === "string" && belt in BeltLabel ? (belt as Belt) : null;
+}
+
+function readStudentCode(source: unknown): string | undefined {
+  const student = source as
+    | { studentCode?: unknown; code?: unknown }
+    | null;
+  const value = student?.studentCode ?? student?.code;
+
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
 function nowTime() {
@@ -187,6 +199,9 @@ export function AttendanceCheckin() {
   const [beltSort, setBeltSort] = useState<BeltSort>("asc");
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitPending, setIsSubmitPending] = useState(false);
+  const [checkingInStudentCode, setCheckingInStudentCode] = useState<
+    string | null
+  >(null);
   const submitTimeoutRef = useRef<number | null>(null);
   const queryClient = useQueryClient();
 
@@ -283,6 +298,12 @@ export function AttendanceCheckin() {
       data: AttendanceUpdateEvaluationRequest;
     }) => studentAttendanceAPI.updateEvaluation(attendanceId, updateData),
   );
+  const { mutate: checkInByScan } = usePlainMutation(
+    (studentCode: string) => studentAttendanceAPI.checkInByScan({ studentCode }),
+    {
+      meta: { suppressGlobalErrorToast: true },
+    },
+  );
 
   // console.log("Attendance data:", data);
 
@@ -295,6 +316,15 @@ export function AttendanceCheckin() {
         readBelt(enrollment.studentSummary),
       ]),
     );
+    const studentCodeById = new Map<string, string>(
+      enrollments.enrollments.flatMap((enrollment) => {
+        const studentCode = readStudentCode(enrollment.studentSummary);
+
+        return studentCode
+          ? [[enrollment.studentSummary.personId, studentCode] as const]
+          : [];
+      }),
+    );
 
     return mergeAttendanceData(
       enrollments.enrollments,
@@ -303,6 +333,7 @@ export function AttendanceCheckin() {
     ).map((student) => ({
       ...student,
       belt: readBelt(student) ?? beltByStudentId.get(student.studentId) ?? null,
+      studentCode: studentCodeById.get(student.studentId),
     }));
   }, [data, enrollments]);
 
@@ -494,6 +525,47 @@ export function AttendanceCheckin() {
     [attendanceQueryKey, queryClient, updateAttendance],
   );
 
+  const handleCheckIn = useCallback(
+    (studentCode: string) => {
+      if (!studentCode.trim() || checkingInStudentCode) {
+        return;
+      }
+
+      setCheckingInStudentCode(studentCode);
+      checkInByScan(studentCode, {
+        onSuccess: (checkedInAttendance) => {
+          const studentId = checkedInAttendance.studentId;
+          setMutations((prev) => ({
+            ...prev,
+            [studentId]: {
+              ...prev[studentId],
+              ...checkedInAttendance,
+            },
+          }));
+          queryClient.setQueryData<AttendanceListResponse>(
+            attendanceQueryKey,
+            (old) => mergeAttendanceIntoList(old, checkedInAttendance),
+          );
+          void refetchAttendance();
+          showSuccessToast("Đã điểm danh học viên.");
+        },
+        onError: (error) => {
+          showCheckInErrorToast(error);
+        },
+        onSettled: () => {
+          setCheckingInStudentCode(null);
+        },
+      });
+    },
+    [
+      attendanceQueryKey,
+      checkInByScan,
+      checkingInStudentCode,
+      queryClient,
+      refetchAttendance,
+    ],
+  );
+
   const updateEval = useCallback(
     (id: string, evalStatus: EvaluationStatus, notes?: string) => {
       const prevMutation = mutationsRef.current[id];
@@ -662,6 +734,10 @@ export function AttendanceCheckin() {
                       onUpdateStatus={updateStatus}
                       onUpdateEval={updateEval}
                       onOpenEval={setEvalTarget}
+                      onCheckIn={handleCheckIn}
+                      isCheckInPending={
+                        checkingInStudentCode === student.studentCode
+                      }
                     />
                   ))}
                 </AnimatePresence>

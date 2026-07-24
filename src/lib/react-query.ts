@@ -50,7 +50,11 @@ export const queryClient = new QueryClient({
   // 3. BẮT LỖI TẬP TRUNG CHO TẤT CẢ useMutation (POST, PUT, PATCH, DELETE)
   // ==========================================
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _variables, _context, mutation) => {
+      if (mutation.options.meta?.suppressGlobalErrorToast) {
+        return;
+      }
+
       // Mọi thao tác Thêm/Sửa/Xóa bị lỗi sẽ tự động bắn Toast ở đây
       toast.error(`Thao tác thất bại: ${error.message || "Vui lòng thử lại"}`);
     },

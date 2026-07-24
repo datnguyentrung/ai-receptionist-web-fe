@@ -93,7 +93,7 @@ export function ClassSchedules() {
   useRegisterPullToRefresh(refreshClassSchedules);
 
   if (logic.sessionsError) {
-    toast.error("L?i khi t?i c�c bu?i h?c s?p di?n ra");
+    toast.error("Lỗi khi tải các buổi học sắp diễn ra");
   }
   const totalClasses = logic.classSchedules?.length || 0;
   const activeClasses =

@@ -1,8 +1,16 @@
 import type { AttendanceStatus } from "@/config/constants";
-import { AlertCircle, CheckCircle2, CircleDashed, XCircle } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  CircleDashed,
+  LoaderCircle,
+  XCircle,
+} from "lucide-react";
 import type { ComponentType, PointerEvent as ReactPointerEvent } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./AttendancePill.module.scss";
+
+type MenuSelection = AttendanceStatus | "CHECK_IN";
 
 const ATTENDANCE_OPTIONS: {
   value: AttendanceStatus;
@@ -10,30 +18,18 @@ const ATTENDANCE_OPTIONS: {
   short: string;
   icon: ComponentType<{ size: number }>;
 }[] = [
-  {
-    value: "PRESENT",
-    label: "Có mặt",
-    short: "✓",
-    icon: CheckCircle2,
-  },
-  {
-    value: "ABSENT",
-    label: "Vắng",
-    short: "✗",
-    icon: XCircle,
-  },
-  {
-    value: "LATE",
-    label: "Muộn",
-    short: "~",
-    icon: AlertCircle,
-  },
+  { value: "PRESENT", label: "Có mặt", short: "✓", icon: CheckCircle2 },
+  { value: "ABSENT", label: "Vắng", short: "✕", icon: XCircle },
+  { value: "LATE", label: "Muộn", short: "~", icon: AlertCircle },
 ];
 
 interface AttendancePillProps {
   attendanceId?: string;
+  studentCode?: string;
   value: AttendanceStatus | null;
   onChange: (v: AttendanceStatus | null) => void;
+  onCheckIn?: (studentCode: string) => void;
+  isCheckInPending?: boolean;
 }
 
 function isCoarsePointerDevice(): boolean {
@@ -65,41 +61,64 @@ function getToneClassName(value: AttendanceStatus): string {
 
 export function AttendancePill({
   attendanceId,
+  studentCode,
   value,
   onChange,
+  onCheckIn,
+  isCheckInPending = false,
 }: AttendancePillProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [highlightedOption, setHighlightedOption] =
-    useState<AttendanceStatus | null>(null);
+  const [highlightedSelection, setHighlightedSelection] =
+    useState<MenuSelection | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const activePointerIdRef = useRef<number | null>(null);
   const suppressNextClickRef = useRef(false);
+  const checkInTriggeredRef = useRef(false);
 
-  const disabled = !attendanceId;
   const currentOption = useMemo(
     () => ATTENDANCE_OPTIONS.find((opt) => opt.value === value) ?? null,
     [value],
   );
+  const hasTriggerLabel = !currentOption;
+  const statusSelectionDisabled = !hasTriggerLabel && !attendanceId;
+  const canCheckIn = Boolean(studentCode?.trim() && onCheckIn);
+  const checkInDisabled = !canCheckIn || isCheckInPending;
+  const checkInHighlighted =
+    highlightedSelection === "CHECK_IN" && !checkInDisabled;
+  const canOpenMenu = hasTriggerLabel || !statusSelectionDisabled;
   const TriggerIcon = currentOption?.icon ?? CircleDashed;
-  const triggerLabel = disabled
+  const triggerLabel = !attendanceId
     ? "Chưa có bản ghi"
     : (currentOption?.label ?? "Chưa điểm danh");
   const stateClass = currentOption
     ? getToneClassName(currentOption.value)
     : styles.unmarked;
 
+  useEffect(() => {
+    if (!isCheckInPending) {
+      checkInTriggeredRef.current = false;
+    }
+  }, [isCheckInPending]);
+
   const closeMenu = useCallback(() => {
     setIsOpen(false);
-    setHighlightedOption(null);
+    setHighlightedSelection(null);
     setIsDragging(false);
     activePointerIdRef.current = null;
   }, []);
 
   const getOptionFromPoint = useCallback(
-    (clientX: number, clientY: number): AttendanceStatus | null => {
+    (clientX: number, clientY: number): MenuSelection | null => {
       if (typeof document === "undefined") return null;
 
       const element = document.elementFromPoint(clientX, clientY);
+      const actionElement = element?.closest<HTMLElement>(
+        "[data-attendance-action]",
+      );
+      if (actionElement?.dataset.attendanceAction === "check-in") {
+        return "CHECK_IN";
+      }
+
       const optionElement = element?.closest<HTMLElement>(
         "[data-attendance-value]",
       );
@@ -112,14 +131,41 @@ export function AttendancePill({
 
   const selectOption = useCallback(
     (nextValue: AttendanceStatus) => {
-      if (disabled) return;
+      if (statusSelectionDisabled) return;
       onChange(nextValue);
     },
-    [disabled, onChange],
+    [onChange, statusSelectionDisabled],
+  );
+
+  const checkIn = useCallback(() => {
+    const normalizedStudentCode = studentCode?.trim();
+    if (
+      !normalizedStudentCode ||
+      !onCheckIn ||
+      isCheckInPending ||
+      checkInTriggeredRef.current
+    ) {
+      return;
+    }
+
+    checkInTriggeredRef.current = true;
+    onCheckIn(normalizedStudentCode);
+  }, [isCheckInPending, onCheckIn, studentCode]);
+
+  const selectMenuItem = useCallback(
+    (selection: MenuSelection) => {
+      if (selection === "CHECK_IN") {
+        checkIn();
+        return;
+      }
+
+      selectOption(selection);
+    },
+    [checkIn, selectOption],
   );
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (disabled) return;
+    if (!canOpenMenu) return;
 
     const isTouchFlow =
       event.pointerType === "touch" || isCoarsePointerDevice();
@@ -131,7 +177,7 @@ export function AttendancePill({
     suppressNextClickRef.current = true;
     setIsDragging(true);
     setIsOpen(true);
-    setHighlightedOption(null);
+    setHighlightedSelection(null);
     event.currentTarget.setPointerCapture?.(event.pointerId);
   };
 
@@ -139,7 +185,8 @@ export function AttendancePill({
     if (activePointerIdRef.current !== event.pointerId) return;
 
     event.preventDefault();
-    setHighlightedOption(getOptionFromPoint(event.clientX, event.clientY));
+    const nextSelection = getOptionFromPoint(event.clientX, event.clientY);
+    setHighlightedSelection(nextSelection);
   };
 
   const handlePointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
@@ -149,7 +196,7 @@ export function AttendancePill({
     const nextValue = getOptionFromPoint(event.clientX, event.clientY);
 
     if (nextValue) {
-      selectOption(nextValue);
+      selectMenuItem(nextValue);
     }
 
     event.currentTarget.releasePointerCapture?.(event.pointerId);
@@ -172,65 +219,103 @@ export function AttendancePill({
   };
 
   const handleMouseEnter = () => {
-    if (disabled || isCoarsePointerDevice()) return;
+    if (!canOpenMenu || isCoarsePointerDevice()) return;
     setIsOpen(true);
   };
 
   const handleMouseLeave = () => {
     if (isDragging) return;
     setIsOpen(false);
-    setHighlightedOption(null);
+    setHighlightedSelection(null);
   };
 
   return (
     <div
       className={`${styles.pillContainer} ${stateClass} ${
         isOpen ? styles.menuOpen : ""
-      } ${disabled ? styles.disabled : ""}`}
+      } ${statusSelectionDisabled ? styles.disabled : ""}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {isOpen && !disabled && (
+      {isOpen && canOpenMenu && (
         <div
           className={styles.floatingMenu}
           role="menu"
           aria-label="Chọn điểm danh"
         >
-          {ATTENDANCE_OPTIONS.map((opt) => {
-            const active = value === opt.value;
-            const highlighted = highlightedOption === opt.value;
-            const Icon = opt.icon;
+          {hasTriggerLabel ? (
+            <button
+              type="button"
+              role="menuitem"
+              data-attendance-action="check-in"
+              className={`${styles.menuOption} ${styles.present} ${
+                checkInHighlighted ? styles.highlighted : ""
+              }`}
+              disabled={checkInDisabled}
+              aria-busy={isCheckInPending}
+              title={
+                canCheckIn ? undefined : "Không có mã học viên để điểm danh."
+              }
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (suppressNextClickRef.current || isCoarsePointerDevice()) {
+                  return;
+                }
 
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                role="menuitemradio"
-                aria-checked={active}
-                data-attendance-value={opt.value}
-                className={`${styles.menuOption} ${getToneClassName(opt.value)} ${
-                  active ? styles.active : ""
-                } ${highlighted ? styles.highlighted : ""}`}
-                onClick={() => {
-                  if (suppressNextClickRef.current || isCoarsePointerDevice()) {
-                    return;
-                  }
+                checkIn();
+                closeMenu();
+              }}
+            >
+              {isCheckInPending ? (
+                <LoaderCircle className={styles.loadingIcon} size={14} />
+              ) : (
+                <CheckCircle2 size={14} />
+              )}
+              <span>Điểm danh</span>
+            </button>
+          ) : (
+            ATTENDANCE_OPTIONS.map((opt) => {
+              const active = value === opt.value;
+              const highlighted = highlightedSelection === opt.value;
+              const Icon = opt.icon;
 
-                  selectOption(opt.value);
-                  closeMenu();
-                }}
-              >
-                <Icon size={14} />
-                <span>{opt.label}</span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={active}
+                  data-attendance-value={opt.value}
+                  className={`${styles.menuOption} ${getToneClassName(opt.value)} ${
+                    active ? styles.active : ""
+                  } ${highlighted ? styles.highlighted : ""}`}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (
+                      suppressNextClickRef.current ||
+                      isCoarsePointerDevice()
+                    ) {
+                      return;
+                    }
+
+                    selectOption(opt.value);
+                    closeMenu();
+                  }}
+                >
+                  <Icon size={14} />
+                  <span>{opt.label}</span>
+                </button>
+              );
+            })
+          )}
         </div>
       )}
 
       <button
         type="button"
-        disabled={disabled}
+        disabled={statusSelectionDisabled}
         aria-haspopup="menu"
         aria-expanded={isOpen}
         className={styles.triggerBtn}
@@ -243,7 +328,7 @@ export function AttendancePill({
           <TriggerIcon size={16} />
         </span>
         <span className={styles.triggerText}>{triggerLabel}</span>
-        {!disabled && (
+        {canOpenMenu && (
           <span className={styles.triggerHint}>
             <span className={styles.desktopHint}>Hover để chọn</span>
             <span className={styles.touchHint}>Giữ và kéo để chọn</span>

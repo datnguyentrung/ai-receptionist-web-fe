@@ -92,7 +92,7 @@
   bottom: calc(100% + 8px);
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: $space-2;
   padding: $space-2;
   border-radius: 18px;
@@ -100,6 +100,7 @@
   border: 1px solid $border-subtle;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .floatingMenu::after {
@@ -124,6 +125,7 @@
   justify-content: center;
   gap: $space-1;
   min-width: 0;
+  grid-column: span 2;
   border-radius: 14px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -131,16 +133,55 @@
   font-weight: $font-bold;
   line-height: 1;
   white-space: nowrap;
-  transition:
-    background $transition-fast,
-    color $transition-fast,
-    border-color $transition-fast,
-    box-shadow $transition-fast,
-    transform $transition-fast;
+  // transition:
+  //   background-color 75ms ease-out,
+  //   color 75ms ease-out,
+  //   border-color 75ms ease-out,
+  //   box-shadow 75ms ease-out,
+  //   transform 75ms ease-out;
+  transform-origin: center;
+  will-change: transform;
 
-  @include hover-only {
-    box-shadow: $shadow-sm;
-    transform: translateY(-1px);
+  &:not(:disabled):hover {
+    z-index: 2;
+    box-shadow: $shadow-md;
+    transform: none;
+  }
+
+  &:not(:disabled):focus-visible {
+    z-index: 2;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    box-shadow: $shadow-md;
+    transform: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.64;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+// A six-column grid keeps full rows at three equal options. The last row
+// automatically expands to one full-width option or two half-width options.
+.menuOption:nth-last-child(1):nth-child(3n + 1) {
+  grid-column: span 6;
+}
+
+.menuOption:nth-last-child(2):nth-child(3n + 1),
+.menuOption:nth-last-child(1):nth-child(3n + 2) {
+  grid-column: span 3;
+}
+
+.loadingIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -159,10 +200,42 @@
   color: #d97706;
 }
 
+.menuOption.present:not(.active):not(.highlighted):hover {
+  background: #bbf7d0;
+  color: #15803d;
+}
+
+.menuOption.absent:not(.active):not(.highlighted):hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.menuOption.late:not(.active):not(.highlighted):hover {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.menuOption.present:not(.active):not(.highlighted):focus-visible {
+  background: #bbf7d0;
+  color: #15803d;
+}
+
+.menuOption.absent:not(.active):not(.highlighted):focus-visible {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.menuOption.late:not(.active):not(.highlighted):focus-visible {
+  background: #fef3c7;
+  color: #b45309;
+}
+
 .menuOption.active,
 .menuOption.highlighted {
+  z-index: 2;
   color: $white;
   box-shadow: $shadow-md;
+  transform: none;
 }
 
 .menuOption.present.active,
@@ -257,7 +330,7 @@
   }
 
   .floatingMenu {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 6px;
     padding: 6px;
   }
@@ -266,5 +339,16 @@
     flex-direction: column;
     gap: 3px;
     min-height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuOption {
+    transition-duration: 0.01ms;
+  }
+
+  .menuOption:not(:disabled):hover,
+  .menuOption:not(:disabled):focus-visible {
+    transform: none;
   }
 }
