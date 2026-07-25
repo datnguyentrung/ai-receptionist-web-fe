@@ -237,6 +237,11 @@
   box-shadow: 0 -6px 18px rgba($brand-red-900, 0.06);
 }
 
+:global(html[data-pwa-standalone]) .content {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
 .contentWithBottomNavigation {
   padding-bottom: var(--pwa-stack-nav-bottom);
 }

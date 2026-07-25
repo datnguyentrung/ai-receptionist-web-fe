@@ -81,6 +81,11 @@
   }
 }
 
+:global(html[data-pwa-standalone]) .content {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
 .contentFullscreen {
   width: 100%;
   min-height: 0;

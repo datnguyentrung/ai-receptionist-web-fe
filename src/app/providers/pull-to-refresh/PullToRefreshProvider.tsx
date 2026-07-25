@@ -32,7 +32,6 @@ export function PullToRefreshProvider({
     const handler = refreshHandlerRef.current;
 
     if (!handler) {
-      window.location.reload();
       return;
     }
 

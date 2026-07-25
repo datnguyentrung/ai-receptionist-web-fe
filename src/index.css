@@ -52,6 +52,14 @@
     min-height: 100dvh;
   }
 
+  /* Installed PWA only: keep overscroll inside the app, never the browser. */
+  html[data-pwa-standalone],
+  html[data-pwa-standalone] body,
+  html[data-pwa-standalone] #root {
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+  }
+
   /* Typography reset */
   h1,
   h2,
