@@ -1,431 +1,263 @@
-@use "sass:color";
-
 .wrapper {
-  position: relative;
-  z-index: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  gap: $space-4;
+  padding: $space-4;
+  border: 1px solid #e5e7eb;
+  border-radius: 28px;
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 18px 46px rgba(17, 24, 39, 0.08);
 }
 
-// ─── VIDEO CONTAINER ────────────────────────────────────────
-// Uses aspect-ratio for consistent sizing across all devices
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.brandBlock {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.brandLogo {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 12px 34px rgba(255, 23, 68, 0.18), 0 0 0 1px rgba(17, 24, 39, 0.08);
+}
+
+.backButton,
+.cameraSwitchButton {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(224, 32, 32, 0.35);
+    outline-offset: 2px;
+  }
+}
+
+.heading {
+  min-width: 0;
+
+  span {
+    display: block;
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: $font-bold;
+    letter-spacing: 0.12em;
+  }
+
+  h1 {
+    margin: 2px 0 0;
+    color: #111827;
+    font-size: 19px;
+    line-height: 1.2;
+  }
+}
+
 .videoContainer {
   position: relative;
   width: 100%;
-  // Fill available width, with a sensible max on large screens
-  max-width: 480px;
-  aspect-ratio: 4 / 3;
-  border-radius: $radius-xl;
+  min-height: 360px;
+  aspect-ratio: 1 / 1.16;
   overflow: hidden;
-  box-shadow:
-    0 0 0 2px rgba($brand-red, 0.55),
-    0 0 28px rgba($brand-red, 0.22),
-    0 0 64px rgba($brand-red, 0.08);
-  animation: containerGlow 3s ease-in-out infinite;
-
-  @include respond-to("sm") {
-    max-width: 520px;
-  }
-
-  @include respond-to("lg") {
-    max-width: 560px;
-    border-radius: 22px;
-  }
-}
-
-@keyframes containerGlow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 2px rgba($brand-red, 0.55),
-      0 0 28px rgba($brand-red, 0.22),
-      0 0 64px rgba($brand-red, 0.08);
-  }
-  50% {
-    box-shadow:
-      0 0 0 2px rgba($brand-red, 0.85),
-      0 0 48px rgba($brand-red, 0.38),
-      0 0 96px rgba($brand-red, 0.14);
-  }
+  border: 1px solid #e5e7eb;
+  border-radius: 28px;
+  background: #111827;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+  isolation: isolate;
 }
 
 .video {
-  display: block;
   width: 100%;
   height: 100%;
+  min-height: inherit;
+  display: block;
   object-fit: cover;
-  transform: scaleX(-1);
-  background: #0d0d1a;
+  background: #111827;
 }
 
-// ─── CORNER BRACKETS ─────────────────────────────────────────
+.videoMirrored {
+  transform: scaleX(-1);
+}
+
 .overlay {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
-  z-index: 2;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 55%,
-    rgba(0, 0, 0, 0.3) 100%
-  );
-  border-radius: $radius-xl;
-
-  @include respond-to("lg") {
-    border-radius: 22px;
-  }
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(0, 0, 0, 0.58) 100%);
 }
 
 .cornerBracket {
   position: absolute;
-  width: 32px;
-  height: 32px;
-  z-index: 3;
-  pointer-events: none;
-  filter: drop-shadow(0 0 5px rgba($brand-red, 0.75));
-
-  @include respond-to("sm") {
-    width: 38px;
-    height: 38px;
-  }
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-color: #ff4766;
+  border-style: solid;
+  border-width: 0;
 }
 
-.cornerTL {
-  top: $space-4;
-  left: $space-4;
-  border-top: 3px solid $brand-red;
-  border-left: 3px solid $brand-red;
-  border-top-left-radius: 7px;
-}
+.cornerTL { top: 14%; left: 12%; border-top-width: 3px; border-left-width: 3px; border-radius: 10px 0 0; }
+.cornerTR { top: 14%; right: 12%; border-top-width: 3px; border-right-width: 3px; border-radius: 0 10px 0 0; }
+.cornerBL { bottom: 14%; left: 12%; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 10px; }
+.cornerBR { right: 12%; bottom: 14%; border-right-width: 3px; border-bottom-width: 3px; border-radius: 0 0 10px; }
 
-.cornerTR {
-  top: $space-4;
-  right: $space-4;
-  border-top: 3px solid $brand-red;
-  border-right: 3px solid $brand-red;
-  border-top-right-radius: 7px;
-}
-
-.cornerBL {
-  bottom: $space-4;
-  left: $space-4;
-  border-bottom: 3px solid $brand-red;
-  border-left: 3px solid $brand-red;
-  border-bottom-left-radius: 7px;
-}
-
-.cornerBR {
-  bottom: $space-4;
-  right: $space-4;
-  border-bottom: 3px solid $brand-red;
-  border-right: 3px solid $brand-red;
-  border-bottom-right-radius: 7px;
-}
-
-// ─── SCAN LINE ──────────────────────────────────────────────
 .scanLine {
   position: absolute;
-  left: $space-6;
-  right: $space-6;
+  z-index: 2;
+  top: 18%;
+  left: 14%;
+  right: 14%;
   height: 2px;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba($brand-red, 0.45) 18%,
-    $brand-red 50%,
-    rgba($brand-red, 0.45) 82%,
-    transparent 100%
-  );
-  box-shadow:
-    0 0 12px 3px rgba($brand-red, 0.38),
-    0 0 24px rgba($brand-red, 0.12);
-  animation: scanLine 2.8s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, #ff4766 20%, #fff 50%, #ff4766 80%, transparent);
+  box-shadow: 0 0 20px rgba(255, 71, 102, 0.88);
+  animation: scan 2.2s ease-in-out infinite;
 }
 
-@keyframes scanLine {
-  0% {
-    top: 12%;
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  88% {
-    opacity: 1;
-  }
-  100% {
-    top: 88%;
-    opacity: 0;
-  }
+@keyframes scan {
+  0%, 100% { transform: translateY(0); opacity: 0.2; }
+  50% { transform: translateY(28dvh); opacity: 1; }
 }
 
-// ─── STATUS BADGE ───────────────────────────────────────────
 .statusBadge {
   position: absolute;
-  bottom: $space-4;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
+  z-index: 3;
+  right: $space-3;
+  bottom: $space-3;
+  display: inline-flex;
   align-items: center;
-  gap: $space-2;
-  padding: $space-2 $space-4;
-  background: rgba(0, 0, 0, 0.62);
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(10, 11, 14, 0.72);
+  color: #fff;
+  font-size: 11px;
+  font-weight: $font-bold;
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: $radius-full;
-  border: 1px solid rgba($brand-red, 0.42);
-  white-space: nowrap;
-  z-index: 4;
 }
 
-.statusDot {
-  width: 7px;
-  height: 7px;
-  min-width: 7px;
-  background: $brand-red;
-  border-radius: 50%;
-  box-shadow: 0 0 8px $brand-red;
-  animation: pulseDot 1.5s ease-in-out infinite;
-}
+.statusSpinner,
+.pendingSpinner { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes pulseDot {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(0.65);
-  }
-}
-
-.statusText {
-  color: $text-on-dark;
-  font-size: 10px;
-  font-weight: $font-bold;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.hidden {
-  display: none;
-}
-
-// ─── START BUTTON — 48px touch target ────────────────────────
-.startButton {
-  margin-top: $space-5;
-  padding: $space-3 $space-8;
-  background: $brand-red;
-  color: $text-on-dark;
-  border: none;
-  border-radius: $radius-full;
-  font-family: $font-sans;
-  font-weight: $font-bold;
-  font-size: $text-sm;
-  cursor: pointer;
-  transition:
-    background $transition-fast,
-    transform 0.15s ease,
-    box-shadow $transition-fast;
-  box-shadow: $shadow-brand;
-  @include touch-target(48px);
-
-  @include press-effect(0.96);
-
-  @include hover-only {
-    background: color.adjust($brand-red, $lightness: -8%);
-    transform: translateY(-1px);
-    box-shadow: $shadow-brand-lg;
-  }
-}
-
-// ─── STOP BUTTON — 48px touch target ────────────────────────
-.stopButton {
-  margin-top: $space-3;
-  padding: $space-2 $space-6;
-  background: $info-800;
-  color: $text-on-dark;
-  border: none;
-  border-radius: $radius-full;
-  font-family: $font-sans;
-  font-weight: $font-semibold;
-  font-size: $text-sm;
-  cursor: pointer;
-  transition:
-    background $transition-fast,
-    transform 0.15s ease,
-    box-shadow $transition-fast;
-  box-shadow: 0 3px 12px rgba($info-800, 0.38);
-  @include touch-target(48px);
-
-  @include press-effect(0.96);
-
-  @include hover-only {
-    background: color.adjust($info-800, $lightness: 10%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba($info-800, 0.42);
-  }
-}
-
-.loadingText {
-  margin-top: $space-3;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: $text-xs;
-  font-weight: $font-medium;
-  letter-spacing: 0.04em;
-}
-
-// ─── PENDING OVERLAY (submitting check-in) ───────────────────
-.pendingOverlay {
-  position: fixed;
+.waitingState {
+  position: absolute;
+  z-index: 2;
   inset: 0;
-  z-index: 999;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: $space-3;
+  padding: $space-6;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.78);
+
+  p { margin: 0; font-size: 14px; }
+}
+
+.helper {
+  min-height: 48px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  text-align: center;
+
+  p { margin: 0; color: #4b5563; font-size: 13px; line-height: 1.45; }
+}
+
+.retryButton {
+  min-height: 44px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(35, 38, 45, 0.45);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  pointer-events: all;
+  gap: $space-2;
+  padding: 0 $space-4;
+  border: 0;
+  border-radius: 14px;
+  background: #ff3658;
+  color: #fff;
+  font-family: $font-sans;
+  font-size: 14px;
+  font-weight: $font-bold;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.pendingOverlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: $space-5;
+  background: rgba(0, 0, 0, 0.56);
+  backdrop-filter: blur(4px);
 }
 
 .pendingCard {
   position: relative;
-  min-width: 280px;
-  max-width: 92vw;
-  padding: $space-7 $space-6 $space-6;
-  border-radius: $radius-lg;
+  width: min(100%, 320px);
+  padding: $space-8 $space-5 $space-6;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(18, 19, 26, 0.92);
-  box-shadow: $shadow-2xl;
+  border-radius: 22px;
+  background: #181a20;
   text-align: center;
 }
 
-// ─── CANCEL BUTTON — 48px touch target ───────────────────────
 .cancelButton {
   position: absolute;
   top: $space-3;
   right: $space-3;
-  border: none;
-  border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.1);
-  color: $text-on-dark;
-  font-size: $text-sm;
-  font-weight: $font-bold;
-  cursor: pointer;
-  transition:
-    background $transition-fast,
-    transform 0.15s ease;
-  @include touch-target(44px);
-
-  @include press-effect(0.92);
-
-  @include hover-only {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-  }
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: $brand-red;
-  animation: spin 0.8s linear infinite;
-}
-
-.pendingTitle {
-  margin: $space-4 0 0;
-  color: $text-on-dark;
-  font-size: $text-base;
-  font-weight: $font-bold;
-}
-
-.pendingSubtitle {
-  margin: $space-2 0 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: $text-sm;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Flat professional check-in treatment */
-.videoContainer {
-  border: 1px solid #d1d5db;
-  box-shadow: none;
-  animation: none;
-  background: #ffffff;
-}
-
-.overlay {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
   background: transparent;
+  color: #fff;
+  cursor: pointer;
 }
 
-.cornerBracket {
-  filter: none;
+.pendingTitle { margin: $space-4 0 0; color: #fff; font-size: 17px; font-weight: $font-bold; }
+.pendingSubtitle { margin: $space-2 0 0; color: rgba(255, 255, 255, 0.7); font-size: 13px; line-height: 1.45; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scanLine,
+  .statusSpinner,
+  .pendingSpinner { animation: none; }
 }
 
-.scanLine {
-  background: #e02020;
-  box-shadow: none;
-}
-
-.statusBadge {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #111827;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.statusDot {
-  box-shadow: none;
-}
-
-.statusText {
-  color: #111827;
-}
-
-.startButton,
-.stopButton {
-  box-shadow: none;
-}
-
-.pendingOverlay {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.pendingCard {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  box-shadow: none;
-}
-
-.cancelButton {
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-}
-
-.pendingTitle {
-  color: #111827;
-}
-
-.pendingSubtitle,
-.loadingText {
-  color: #6b7280;
+@include respond-to("md") {
+  .videoContainer { min-height: min(66dvh, 680px); }
 }

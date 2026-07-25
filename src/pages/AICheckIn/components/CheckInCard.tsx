@@ -54,7 +54,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
     : timeStr;
   const displayName =
     user?.user?.userProfile?.name ?? attendanceRecord?.studentName;
-  const displayBelt = user?.user?.userProfile?.belt ?? "Thông tin điểm danh";
+  const displayBelt = user?.user?.userProfile?.belt ?? "Thông tin check-in";
   const memberId = user?.user?.userProfile?.phone ?? attendanceRecord?.studentId;
   const classLabel = attendanceRecord?.classScheduleId
     ? `Mã lớp ${attendanceRecord.classScheduleId}`
@@ -125,7 +125,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.35 }}
                     src={logo}
-                    alt="Student"
+                    alt="Người được nhận diện"
                     className={styles.avatar}
                   />
                   <div className={styles.verifiedBadge}>
@@ -143,7 +143,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                   {memberId && (
                     <p className={styles.memberId}>
                       <UserCircle size={16} />
-                      Member #{memberId}
+                      Mã định danh: {memberId}
                     </p>
                   )}
                 </div>
@@ -159,10 +159,10 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
               >
                 <div className={styles.infoCardLabel}>
                   <Clock />
-                  <span>Time</span>
+                  <span>Thời gian</span>
                 </div>
                 <p className={styles.infoCardTime}>{checkedInTime}</p>
-                <p className={styles.infoCardNote}>On Time</p>
+                <p className={styles.infoCardNote}>Đã ghi nhận</p>
               </motion.div>
 
               <motion.div
@@ -173,7 +173,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
               >
                 <div className={styles.infoCardAccentLabel}>
                   <MapPin />
-                  <span>Next Class</span>
+                  <span>Ca tập</span>
                 </div>
                 <p className={styles.infoCardAccentTitle}>{classLabel}</p>
                 <p className={styles.infoCardAccentNote}>

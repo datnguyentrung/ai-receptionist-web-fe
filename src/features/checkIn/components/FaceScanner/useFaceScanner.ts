@@ -4,115 +4,175 @@ import type { CheckInResponse } from "@/types";
 import { submitFaceCheckIn } from "./faceScannerCheckIn";
 import { createFaceDetector } from "./faceScannerDetector";
 
+type CameraFacingMode = "user" | "environment";
+type FaceScannerStatus =
+  | "loading-model"
+  | "requesting-camera"
+  | "scanning"
+  | "submitting"
+  | "error";
+
 interface UseFaceScannerParams {
   checkInResult?: CheckInResponse | null;
   onCheckInResult?: (result: CheckInResponse | null) => void;
+  resumeAfterCancel?: boolean;
 }
+
+const CAMERA_ERROR_MESSAGE =
+  "Không thể mở camera. Kiểm tra quyền camera rồi thử lại.";
 
 export const useFaceScanner = ({
   checkInResult,
   onCheckInResult,
+  resumeAfterCancel = true,
 }: UseFaceScannerParams) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const detectorRef = useRef<Awaited<ReturnType<typeof createFaceDetector>> | null>(null);
+  const requestRef = useRef<number>(0);
+  const cameraRequestRef = useRef(0);
+  const isMountedRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isScanningRef = useRef(false);
+  const isSubmittingRef = useRef(false);
+  const hasStartedRef = useRef(false);
+  const lastVideoTimeRef = useRef(-1);
+  const autoStartAttemptedRef = useRef(false);
+  const predictWebcamRef = useRef<() => Promise<void>>(async () => {});
+
   const [faceDetector, setFaceDetector] = useState<Awaited<
     ReturnType<typeof createFaceDetector>
   > | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
+  const [status, setStatus] = useState<FaceScannerStatus>("loading-model");
   const [hasStarted, setHasStarted] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const lastVideoTimeRef = useRef(-1);
-  const requestRef = useRef<number>(0);
-  const isScanningRef = useRef(false);
-  const isSubmittingRef = useRef(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasStartedRef = useRef(false);
-  const predictWebcamRef = useRef<() => Promise<void>>(async () => {});
+  const [facingMode, setFacingMode] = useState<CameraFacingMode>("user");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const stopScanningDueToInactivity = useCallback((logs: string) => {
-    console.log(logs);
+  const loadDetector = useCallback(async () => {
+    setStatus("loading-model");
+    setErrorMessage(null);
 
-    setIsScanning(false);
-    isScanningRef.current = false;
-    setHasStarted(false);
-    hasStartedRef.current = false;
-    if (requestRef.current) {
-      window.cancelAnimationFrame(requestRef.current);
+    try {
+      const detector = await createFaceDetector();
+      if (!isMountedRef.current) {
+        detector.close();
+        return null;
+      }
+      detectorRef.current?.close();
+      detectorRef.current = detector;
+      setFaceDetector(detector);
+      return detector;
+    } catch (error) {
+      if (!isMountedRef.current) return null;
+      console.warn("Face detector could not load:", error);
+      setErrorMessage("Không thể tải mô hình nhận diện. Vui lòng thử lại.");
+      setStatus("error");
+      return null;
     }
   }, []);
 
-  const stopScanningDuringCheckIn = useCallback(() => {
-    setIsScanning(false);
-    isScanningRef.current = false;
+  const stopAnimationFrame = useCallback(() => {
     if (requestRef.current) {
       window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = 0;
     }
   }, []);
 
-  const resetInactivityTimeout = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+  const stopStream = useCallback(() => {
+    stopAnimationFrame();
+    isScanningRef.current = false;
+    if (isMountedRef.current) {
+      setIsScanning(false);
     }
-    timeoutRef.current = setTimeout(
-      () =>
-        stopScanningDueToInactivity(
-          "No face detected for 10 seconds. Stopping scanner to save resources.",
-        ),
-      10000,
-    );
-  }, [stopScanningDueToInactivity]);
+
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, [stopAnimationFrame]);
 
   const resumeScanning = useCallback(() => {
-    if (hasStartedRef.current) {
-      setIsScanning(true);
-      isScanningRef.current = true;
-      resetInactivityTimeout();
-      if (faceDetector && videoRef.current) {
-        if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
-        requestRef.current = window.requestAnimationFrame(() =>
-          predictWebcamRef.current(),
-        );
-      }
+    if (
+      !isMountedRef.current ||
+      !hasStartedRef.current ||
+      !faceDetector ||
+      !videoRef.current
+    ) {
+      return;
     }
-  }, [faceDetector, resetInactivityTimeout]);
 
-  const cancelPendingCheckIn = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
+    isScanningRef.current = true;
+    setIsScanning(true);
+    setStatus("scanning");
+    stopAnimationFrame();
+    requestRef.current = window.requestAnimationFrame(() =>
+      predictWebcamRef.current(),
+    );
+  }, [faceDetector, stopAnimationFrame]);
+
+  const stopScanningDuringCheckIn = useCallback(() => {
+    stopAnimationFrame();
+    isScanningRef.current = false;
+    if (isMountedRef.current) {
+      setIsScanning(false);
     }
-    isSubmittingRef.current = false;
-    setIsSubmitting(false);
-    if (!checkInResult) {
-      resumeScanning();
+  }, [stopAnimationFrame]);
+
+  const setSubmittingState = useCallback((nextValue: boolean) => {
+    isSubmittingRef.current = nextValue;
+    if (isMountedRef.current) {
+      setIsSubmitting(nextValue);
     }
-  }, [checkInResult, resumeScanning]);
+  }, []);
+
+  const emitCheckInResult = useCallback(
+    (result: CheckInResponse | null) => {
+      if (isMountedRef.current) {
+        onCheckInResult?.(result);
+      }
+    },
+    [onCheckInResult],
+  );
+
+  const handleRequestError = useCallback(
+    (message: string) => {
+      if (!isMountedRef.current) return;
+      stopScanningDuringCheckIn();
+      setSubmittingState(false);
+      setErrorMessage(message);
+      setStatus("error");
+    },
+    [setSubmittingState, stopScanningDuringCheckIn],
+  );
 
   const captureAndSend = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
-    if (isSubmittingRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas || isSubmittingRef.current) return;
 
-    setIsScanning(false);
-    isScanningRef.current = false;
-    setIsSubmitting(true);
-    isSubmittingRef.current = true;
+    stopScanningDuringCheckIn();
+    setSubmittingState(true);
+    setStatus("submitting");
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
+    const context = canvas.getContext("2d");
+    if (!context || video.videoWidth === 0 || video.videoHeight === 0) {
+      handleRequestError("Không thể chụp ảnh từ camera. Vui lòng thử lại.");
+      return;
+    }
 
-    const context = canvasRef.current.getContext("2d");
-    canvasRef.current.width = videoRef.current.videoWidth;
-    canvasRef.current.height = videoRef.current.videoHeight;
-    context?.drawImage(videoRef.current, 0, 0);
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0);
 
-    canvasRef.current.toBlob(async (blob) => {
+    canvas.toBlob(async (blob) => {
+      if (!isMountedRef.current) return;
       if (!blob) {
-        isSubmittingRef.current = false;
-        setIsSubmitting(false);
-        if (!checkInResult) {
-          resumeScanning();
-        }
+        handleRequestError("Không thể tạo ảnh nhận diện. Vui lòng thử lại.");
         return;
       }
 
@@ -124,63 +184,57 @@ export const useFaceScanner = ({
       await submitFaceCheckIn({
         formData,
         signal: controller.signal,
-        checkInResult,
-        onCheckInResult,
-        resumeScanning,
+        onCheckInResult: emitCheckInResult,
         stopScanningDuringCheckIn,
-        setSubmitting: setIsSubmitting,
+        setSubmitting: setSubmittingState,
+        onRequestError: handleRequestError,
       });
 
-      abortControllerRef.current = null;
+      if (!isMountedRef.current) return;
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       isSubmittingRef.current = false;
     }, "image/jpeg");
   }, [
-    checkInResult,
-    onCheckInResult,
-    resumeScanning,
+    handleRequestError,
+    emitCheckInResult,
+    setSubmittingState,
     stopScanningDuringCheckIn,
   ]);
 
   const processDetections = useCallback(
     (detections: Detection[]) => {
-      if (detections.length === 0) return;
-
-      resetInactivityTimeout();
       const face = detections[0];
-      const box = face.boundingBox;
-      if (!box) return;
+      const box = face?.boundingBox;
+      const video = videoRef.current;
+      if (!box || !video) return;
 
-      const faceSize = box.width * box.height;
-      const videoSize =
-        videoRef.current!.videoWidth * videoRef.current!.videoHeight;
-      const sizeRatio = faceSize / videoSize;
+      const videoSize = video.videoWidth * video.videoHeight;
+      const confidence = face.categories[0]?.score ?? 0;
+      const sizeRatio = videoSize > 0 ? (box.width * box.height) / videoSize : 0;
 
-      if (sizeRatio > 0.15 && face.categories[0].score > 0.8) {
+      if (sizeRatio > 0.15 && confidence > 0.8) {
         captureAndSend();
       }
     },
-    [captureAndSend, resetInactivityTimeout],
+    [captureAndSend],
   );
 
   const predictWebcam = useCallback(async () => {
-    if (!videoRef.current || !faceDetector || !isScanningRef.current) return;
+    const video = videoRef.current;
+    if (!video || !faceDetector || !isScanningRef.current) return;
 
-    if (
-      videoRef.current.videoHeight === 0 ||
-      videoRef.current.videoWidth === 0
-    ) {
-      window.requestAnimationFrame(() => predictWebcamRef.current());
+    if (video.videoHeight === 0 || video.videoWidth === 0) {
+      requestRef.current = window.requestAnimationFrame(() =>
+        predictWebcamRef.current(),
+      );
       return;
     }
 
-    const startTimeMs = performance.now();
-
-    if (videoRef.current.currentTime !== lastVideoTimeRef.current) {
-      lastVideoTimeRef.current = videoRef.current.currentTime;
-      const { detections } = faceDetector.detectForVideo(
-        videoRef.current,
-        startTimeMs,
-      );
+    if (video.currentTime !== lastVideoTimeRef.current) {
+      lastVideoTimeRef.current = video.currentTime;
+      const { detections } = faceDetector.detectForVideo(video, performance.now());
       processDetections(detections);
     }
 
@@ -195,74 +249,124 @@ export const useFaceScanner = ({
     predictWebcamRef.current = predictWebcam;
   }, [predictWebcam]);
 
-  const startVideo = useCallback(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    if (!videoRef.current) return;
+  const startVideo = useCallback(
+    async (requestedFacingMode: CameraFacingMode = facingMode) => {
+      if (!faceDetector || isSubmittingRef.current) return;
 
-    videoRef.current.srcObject = stream;
-    videoRef.current.addEventListener(
-      "loadeddata",
-      () => predictWebcamRef.current(),
-      { once: true },
-    );
-    setHasStarted(true);
-    hasStartedRef.current = true;
-    setIsScanning(true);
-    isScanningRef.current = true;
-    resetInactivityTimeout();
-  }, [resetInactivityTimeout]);
+      const cameraRequestId = cameraRequestRef.current + 1;
+      cameraRequestRef.current = cameraRequestId;
+      stopStream();
+      setErrorMessage(null);
+      setStatus("requesting-camera");
 
-  useEffect(() => {
-    const initDetector = async () => {
-      const detector = await createFaceDetector();
-      setFaceDetector(detector);
-    };
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: requestedFacingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        });
+        const video = videoRef.current;
+        if (!video || !isMountedRef.current || cameraRequestId !== cameraRequestRef.current) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
 
-    initDetector();
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+        streamRef.current = stream;
+        video.srcObject = stream;
+        await video.play();
+        setFacingMode(requestedFacingMode);
+        setHasStarted(true);
+        hasStartedRef.current = true;
+        lastVideoTimeRef.current = -1;
+        resumeScanning();
+      } catch (error) {
+        stopStream();
+        if (!isMountedRef.current) return;
+        console.warn("Face camera could not start:", error);
+        hasStartedRef.current = false;
+        setHasStarted(false);
+        setErrorMessage(CAMERA_ERROR_MESSAGE);
+        setStatus("error");
       }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
-    };
-  }, []);
+    },
+    [faceDetector, facingMode, resumeScanning, stopStream],
+  );
 
-  useEffect(() => {
-    if (checkInResult || isSubmitting) {
-      isScanningRef.current = false;
-      if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
+  const retry = useCallback(() => {
+    if (!faceDetector) {
+      autoStartAttemptedRef.current = false;
+      void loadDetector();
       return;
     }
 
-    const id = setTimeout(() => resumeScanning(), 3000);
-    return () => clearTimeout(id);
-  }, [checkInResult, isSubmitting, resumeScanning]);
+    void startVideo();
+  }, [faceDetector, loadDetector, startVideo]);
+
+  const switchCamera = useCallback(() => {
+    const nextFacingMode = facingMode === "user" ? "environment" : "user";
+    void startVideo(nextFacingMode);
+  }, [facingMode, startVideo]);
+
+  const cancelPendingCheckIn = useCallback(() => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setSubmittingState(false);
+    stopScanningDuringCheckIn();
+    if (resumeAfterCancel && !checkInResult) {
+      resumeScanning();
+    }
+  }, [
+    checkInResult,
+    resumeAfterCancel,
+    resumeScanning,
+    setSubmittingState,
+    stopScanningDuringCheckIn,
+  ]);
 
   useEffect(() => {
-    if (isScanning && faceDetector) {
-      requestRef.current = window.requestAnimationFrame(() =>
-        predictWebcamRef.current(),
-      );
-    }
+    isMountedRef.current = true;
+    const initializeDetector = async () => {
+      await loadDetector();
+    };
+
+    void initializeDetector();
 
     return () => {
-      if (requestRef.current) window.cancelAnimationFrame(requestRef.current);
+      isMountedRef.current = false;
+      cameraRequestRef.current += 1;
+      abortControllerRef.current?.abort();
+      stopStream();
+      detectorRef.current?.close();
+      detectorRef.current = null;
     };
-  }, [isScanning, faceDetector]);
+  }, [loadDetector, stopStream]);
+
+  useEffect(() => {
+    if (!faceDetector || autoStartAttemptedRef.current || checkInResult) return;
+    autoStartAttemptedRef.current = true;
+    void startVideo();
+  }, [checkInResult, faceDetector, startVideo]);
+
+  useEffect(() => {
+    if (!checkInResult && !isSubmitting && hasStartedRef.current) {
+      resumeScanning();
+    }
+  }, [checkInResult, isSubmitting, resumeScanning]);
 
   return {
     videoRef,
     canvasRef,
-    faceDetector,
+    facingMode,
+    status,
+    errorMessage,
     isScanning,
     hasStarted,
     isSubmitting,
-    startVideo,
-    stopScanningDueToInactivity,
+    retry,
+    switchCamera,
     cancelPendingCheckIn,
   };
 };

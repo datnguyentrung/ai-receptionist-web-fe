@@ -39,7 +39,18 @@ import {
 import { useNavigate } from "react-router-dom";
 import styles from "./AICheckIn.module.scss";
 import { CheckInCard } from "./components/CheckInCard";
+import { FaceScannerErrorBoundary } from "./components/FaceScannerErrorBoundary";
 import { IdlePromoCard } from "./components/IdlePromoCard";
+import type {
+  MobileFaceScannerHandle,
+  MobileFaceScannerState,
+} from "./components/MobileFaceScanner";
+import {
+  PwaCheckInScannerShell,
+  type CheckInMode,
+  type MobileScanStatus,
+  type PwaCheckInDisplayResult,
+} from "./components/PwaCheckInScannerShell";
 import { VoiceWave } from "./components/VoiceWave";
 import logo from "/taekwondo.jpg";
 
@@ -52,6 +63,9 @@ const LazyFaceScanner = lazy(() =>
 const LazyMobileCodeScanner = lazy(
   () => import("./components/MobileCodeScanner"),
 );
+const LazyMobileFaceScanner = lazy(
+  () => import("./components/MobileFaceScanner"),
+);
 const CODE_SCANNER_FORMATS: BarcodeFormat[] = [
   "qr_code",
   "code_128",
@@ -63,17 +77,6 @@ const CODE_SCANNER_FORMATS: BarcodeFormat[] = [
   "itf",
   "codabar",
 ];
-
-type MobileScanStatus =
-  | "ready"
-  | "scanning"
-  | "code_detected"
-  | "submitting"
-  | "success"
-  | "error"
-  | "canceled";
-
-type CheckInMode = "FACE_SCAN" | "CODE_SCAN";
 
 const getDefaultCheckInMode = (): CheckInMode =>
   APP_MODE === "desktop" ? "FACE_SCAN" : "CODE_SCAN";
@@ -182,6 +185,91 @@ const mapCoachTimesheetToCheckInResult = (
   };
 };
 
+const mapAttendanceToDisplayResult = (
+  attendance: StudentAttendanceResponse,
+): PwaCheckInDisplayResult => ({
+  title: "Điểm danh thành công",
+  name: attendance.studentName,
+  details: [
+    {
+      label: "Lớp",
+      value: attendance.classScheduleId ?? "Chưa có dữ liệu",
+    },
+    {
+      label: "Ngày học",
+      value: formatScanDate(attendance.sessionDate),
+    },
+    {
+      label: "Giờ điểm danh",
+      value: formatScanTime(attendance.checkInTime),
+    },
+    {
+      label: "Trạng thái",
+      value: attendance.attendanceStatus
+        ? (AttendanceStatusLabel[attendance.attendanceStatus] ??
+          attendance.attendanceStatus)
+        : "Chưa có dữ liệu",
+    },
+  ],
+  note: attendance.note,
+});
+
+const mapCoachToDisplayResult = (
+  timesheet: CoachTimesheetResponse,
+): PwaCheckInDisplayResult => ({
+  title: "Chấm công HLV thành công",
+  name: timesheet.coach?.fullName ?? "Huấn luyện viên",
+  details: [
+    {
+      label: "Lớp",
+      value: timesheet.classSchedule?.scheduleId ?? "Chưa có dữ liệu",
+    },
+    {
+      label: "Ngày làm việc",
+      value: formatScanDate(timesheet.workingDate),
+    },
+    {
+      label: "Giờ check-in",
+      value: formatScanTime(timesheet.checkInTime),
+    },
+    {
+      label: "Trạng thái",
+      value: timesheet.status,
+    },
+  ],
+  note: timesheet.note,
+});
+
+const mapFaceToDisplayResult = (
+  response: CheckInResponse,
+): PwaCheckInDisplayResult => {
+  if (response.attendance_record) {
+    return mapAttendanceToDisplayResult(response.attendance_record);
+  }
+
+  const profile = response.user?.userProfile;
+  const userInfo = response.user?.userInfo;
+
+  return {
+    title: "Check-in thành công",
+    name: profile?.name,
+    details: [
+      {
+        label: "Mã định danh",
+        value: userInfo?.userCode ?? "Chưa có dữ liệu",
+      },
+      {
+        label: "Thời gian",
+        value: formatScanTime(new Date()),
+      },
+      {
+        label: "Trạng thái",
+        value: "Đã ghi nhận",
+      },
+    ],
+  };
+};
+
 const formatScanDate = (value?: string | Date | null) => {
   if (!value) return "Chưa có dữ liệu";
 
@@ -225,12 +313,14 @@ export default function AICheckIn() {
     useState<StudentAttendanceResponse | null>(null);
   const [scanCoachTimesheetResult, setScanCoachTimesheetResult] =
     useState<CoachTimesheetResponse | null>(null);
+  const [displayResult, setDisplayResult] =
+    useState<PwaCheckInDisplayResult | null>(null);
   const [checkInMode, setCheckInMode] = useState<CheckInMode>(
     getDefaultCheckInMode,
   );
   const [mobileScanStatus, setMobileScanStatus] =
     useState<MobileScanStatus>("scanning");
-  const [cameraFacingMode, setCameraFacingMode] = useState<
+  const [qrFacingMode, setQrFacingMode] = useState<
     "user" | "environment"
   >("environment");
   const [mobileScanMessage, setMobileScanMessage] = useState(
@@ -240,15 +330,17 @@ export default function AICheckIn() {
   const [successfulScanCount, setSuccessfulScanCount] = useState(0);
   const mobileScannerConstraints = useMemo<MediaTrackConstraints>(
     () => ({
-      facingMode: { ideal: cameraFacingMode },
+      facingMode: { ideal: qrFacingMode },
       width: { ideal: 1920 },
       height: { ideal: 1080 },
       aspectRatio: { ideal: 16 / 9 },
     }),
-    [cameraFacingMode],
+    [qrFacingMode],
   );
   const lastScanRef = useRef({ code: "", time: 0 });
   const activeScanRequestRef = useRef(0);
+  const mobileFaceScannerRef = useRef<MobileFaceScannerHandle | null>(null);
+  const faceResultHandledRef = useRef(false);
   // Mirror state vào ref để beforeunload log giá trị mới mà không cần re-subscribe effect beforeunload
   const mobileScanStatusRef = useRef<MobileScanStatus>(mobileScanStatus);
   const lastScannedCodeRef = useRef<string | null>(lastScannedCode);
@@ -264,7 +356,6 @@ export default function AICheckIn() {
     mobileScanStatus === "scanning" && !checkInResult && !lastScannedCode;
   const isCodeScanMode = checkInMode === "CODE_SCAN";
   const isFaceScanMode = checkInMode === "FACE_SCAN";
-  const currentScanSubjectLabel = getScannedSubjectLabel(lastScannedCode);
 
   const mobileStatusLabel = useMemo(() => {
     switch (mobileScanStatus) {
@@ -290,8 +381,10 @@ export default function AICheckIn() {
   const resetCheckInSession = useCallback((nextMode: CheckInMode) => {
     activeScanRequestRef.current += 1;
     lastScanRef.current = { code: "", time: 0 };
+    faceResultHandledRef.current = false;
     setScanAttendanceResult(null);
     setScanCoachTimesheetResult(null);
+    setDisplayResult(null);
     setLastScannedCode(null);
     setMobileScanStatus("scanning");
     setMobileScanMessage(getCheckInModeMessage(nextMode));
@@ -329,6 +422,63 @@ export default function AICheckIn() {
     resetCheckInSession(checkInMode);
   }, [checkInMode, resetCheckInSession]);
 
+  const handleFaceCheckInResult = useCallback(
+    (result: CheckInResponse | null) => {
+      setCheckInResult(result);
+      if (!result) return;
+
+      const isSuccess = result.audio_signal === "CHECKIN_SUCCESS";
+      const message =
+        result.message ??
+        (isSuccess
+          ? "Đã ghi nhận check-in thành công."
+          : "Không thể xử lý check-in. Vui lòng thử lại.");
+
+      setMobileScanMessage(message);
+      setMobileScanStatus(isSuccess ? "success" : "error");
+      setDisplayResult(isSuccess ? mapFaceToDisplayResult(result) : null);
+
+      if (isSuccess && !faceResultHandledRef.current) {
+        faceResultHandledRef.current = true;
+        setSuccessfulScanCount((count) => count + 1);
+      }
+    },
+    [],
+  );
+
+  const handleFaceScannerState = useCallback(
+    (state: MobileFaceScannerState) => {
+      if (checkInResult) return;
+
+      switch (state.status) {
+        case "loading-model":
+          setMobileScanStatus("ready");
+          setMobileScanMessage("Đang tải AI nhận diện khuôn mặt...");
+          break;
+        case "requesting-camera":
+          setMobileScanStatus("ready");
+          setMobileScanMessage("Đang mở camera trước...");
+          break;
+        case "scanning":
+          setMobileScanStatus("scanning");
+          setMobileScanMessage("Giữ khuôn mặt rõ và nhìn thẳng vào camera.");
+          break;
+        case "submitting":
+          setMobileScanStatus("submitting");
+          setMobileScanMessage("Đang gửi ảnh nhận diện để check-in...");
+          break;
+        case "error":
+          setMobileScanStatus("error");
+          setMobileScanMessage(
+            state.errorMessage ??
+              "Không thể sử dụng AI khuôn mặt. Vui lòng thử lại.",
+          );
+          break;
+      }
+    },
+    [checkInResult],
+  );
+
   const submitScannedCode = useCallback(
     async (rawCode: string, rawFormat?: string) => {
       writeDebugStorage("aiCheckIn_submitScannedCode_called", {
@@ -363,8 +513,6 @@ export default function AICheckIn() {
           format: getCodeFormat(rawFormat),
         });
 
-        console.log("[CODE_SCAN] API response:", routedResult);
-
         if (activeScanRequestRef.current !== scanRequestId) {
           return;
         }
@@ -376,7 +524,6 @@ export default function AICheckIn() {
           routedResult.type === "student-attendance"
             ? Boolean(routedResult.data?.attendanceId)
             : Boolean(routedResult.data?.timesheetId);
-        console.log("[CODE_SCAN] isSuccess:", isSuccess);
 
         if (!isSuccess) {
           const message =
@@ -401,14 +548,15 @@ export default function AICheckIn() {
           routedResult.type === "student-attendance"
             ? mapAttendanceRecordToCheckInResult(routedResult.data)
             : mapCoachTimesheetToCheckInResult(routedResult.data);
-        console.log("[CODE_SCAN] nextResult:", nextResult);
 
         if (routedResult.type === "student-attendance") {
           setScanAttendanceResult(routedResult.data);
           setScanCoachTimesheetResult(null);
+          setDisplayResult(mapAttendanceToDisplayResult(routedResult.data));
         } else {
           setScanAttendanceResult(null);
           setScanCoachTimesheetResult(routedResult.data);
+          setDisplayResult(mapCoachToDisplayResult(routedResult.data));
         }
         setCheckInResult(null);
         setMobileScanStatus("success");
@@ -468,21 +616,62 @@ export default function AICheckIn() {
 
   const cancelMobileCheckIn = useCallback(() => {
     activeScanRequestRef.current += 1;
+    if (checkInMode === "FACE_SCAN") {
+      mobileFaceScannerRef.current?.cancelPendingCheckIn();
+    }
     setScanAttendanceResult(null);
     setScanCoachTimesheetResult(null);
+    setDisplayResult(null);
+    setCheckInResult(null);
     setMobileScanStatus("canceled");
     setMobileScanMessage("Đã hủy thao tác hiện tại. Bạn có thể quét lại.");
     setLastScannedCode(null);
-  }, []);
+  }, [checkInMode]);
 
   const handleScanResultOk = useCallback(() => {
     setScanAttendanceResult(null);
     setScanCoachTimesheetResult(null);
+    setDisplayResult(null);
     setCheckInResult(null);
     setLastScannedCode(null);
     setMobileScanStatus("scanning");
     setMobileScanMessage(getCheckInModeMessage(checkInMode));
+    faceResultHandledRef.current = false;
     lastScanRef.current = { code: "", time: 0 };
+  }, [checkInMode]);
+
+  const handleRetryScan = useCallback(() => {
+    setScanAttendanceResult(null);
+    setScanCoachTimesheetResult(null);
+    setDisplayResult(null);
+    setLastScannedCode(null);
+    lastScanRef.current = { code: "", time: 0 };
+
+    if (checkInMode === "FACE_SCAN") {
+      if (checkInResult) {
+        setCheckInResult(null);
+        setMobileScanStatus("scanning");
+        setMobileScanMessage(getCheckInModeMessage("FACE_SCAN"));
+        faceResultHandledRef.current = false;
+        return;
+      }
+
+      mobileFaceScannerRef.current?.retry();
+      return;
+    }
+
+    handleCloseCard();
+  }, [checkInMode, checkInResult, handleCloseCard]);
+
+  const handleSwitchCamera = useCallback(() => {
+    if (checkInMode === "FACE_SCAN") {
+      mobileFaceScannerRef.current?.switchCamera();
+      return;
+    }
+
+    setQrFacingMode((previous) =>
+      previous === "user" ? "environment" : "user",
+    );
   }, [checkInMode]);
 
   useEffect(() => {
@@ -522,7 +711,7 @@ export default function AICheckIn() {
           className={styles.leftPanel}
         >
           <div
-            className={`${styles.brandLogo} ${isCodeScanMode ? styles.brandLogoHidden : ""
+            className={`${styles.brandLogo} ${(isCodeScanMode || APP_MODE === "pwa") ? styles.brandLogoHidden : ""
               }`}
           >
             <img
@@ -536,6 +725,57 @@ export default function AICheckIn() {
             </div>
           </div>
 
+          {APP_MODE !== "desktop" && (
+            <PwaCheckInScannerShell
+              mode={checkInMode}
+              status={mobileScanStatus}
+              statusLabel={mobileStatusLabel}
+              message={mobileScanMessage}
+              lastScannedCode={lastScannedCode}
+              successfulScanCount={successfulScanCount}
+              displayResult={displayResult}
+              showBackButton={showMobileBackButton}
+              onModeChange={handleChangeCheckInMode}
+              onBack={handleMobileBack}
+              onSwitchCamera={handleSwitchCamera}
+              onCancel={cancelMobileCheckIn}
+              onRetry={handleRetryScan}
+              onResultOk={handleScanResultOk}
+              camera={
+                isCodeScanMode ? (
+                  <Suspense fallback={<ScannerLoadingFallback />}>
+                    <LazyMobileCodeScanner
+                      onScan={handleMobileScan}
+                      onError={handleMobileScannerError}
+                      paused={scannerPaused}
+                      formats={CODE_SCANNER_FORMATS}
+                      constraints={mobileScannerConstraints}
+                      containerClassName={`${styles.mobileScanner} ${
+                        qrFacingMode === "user"
+                          ? styles.mobileScanner_front
+                          : styles.mobileScanner_back
+                      }`}
+                    />
+                  </Suspense>
+                ) : (
+                  <FaceScannerErrorBoundary>
+                    <Suspense fallback={<ScannerLoadingFallback />}>
+                      <LazyMobileFaceScanner
+                        ref={mobileFaceScannerRef}
+                        checkInResult={checkInResult}
+                        onCheckInResult={handleFaceCheckInResult}
+                        onStateChange={handleFaceScannerState}
+                        videoClassName={styles.mobileScanner}
+                        mirroredClassName={styles.mobileScanner_front}
+                      />
+                    </Suspense>
+                  </FaceScannerErrorBoundary>
+                )
+              }
+            />
+          )}
+
+          {APP_MODE === "desktop" && (
           <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
             <button
               type="button"
@@ -554,8 +794,9 @@ export default function AICheckIn() {
               {getCheckInModeLabel("FACE_SCAN")}
             </button>
           </div>
+          )}
 
-          {isCodeScanMode && (
+          {APP_MODE === "desktop" && isCodeScanMode && (
             <div
               className={`${styles.mobileScanShell} ${styles.mobileScanShellVisible} ai-check-in-mobile-scan`}
             >
@@ -580,7 +821,7 @@ export default function AICheckIn() {
                   <div>
                     <p className={styles.mobileScanEyebrow}>PWA scanner</p>
                     <h1 className={styles.mobileScanTitle}>
-                      Quét mã {currentScanSubjectLabel.toLowerCase()}
+                      Quét mã {getScannedSubjectLabel(lastScannedCode).toLowerCase()}
                     </h1>
                   </div>
                 </div>
@@ -602,7 +843,7 @@ export default function AICheckIn() {
                     type="button"
                     className={styles.mobileCameraSwitchButton}
                     onClick={() =>
-                      setCameraFacingMode((prev) =>
+                      setQrFacingMode((prev) =>
                         prev === "user" ? "environment" : "user",
                       )
                     }
@@ -620,7 +861,7 @@ export default function AICheckIn() {
                     paused={scannerPaused}
                     formats={CODE_SCANNER_FORMATS}
                     constraints={mobileScannerConstraints}
-                    containerClassName={`${styles.mobileScanner} ${cameraFacingMode === "user"
+                    containerClassName={`${styles.mobileScanner} ${qrFacingMode === "user"
                       ? styles.mobileScanner_front
                       : styles.mobileScanner_back
                       }`}
@@ -815,14 +1056,17 @@ export default function AICheckIn() {
             </div>
           )}
 
-          {isFaceScanMode && (
+          {APP_MODE === "desktop" && isFaceScanMode && (
             <div className={styles.cameraWrapper}>
-              <Suspense fallback={<ScannerLoadingFallback />}>
-                <LazyFaceScanner
-                  checkInResult={checkInResult}
-                  onCheckInResult={setCheckInResult}
-                />
-              </Suspense>
+              <FaceScannerErrorBoundary>
+                <Suspense fallback={<ScannerLoadingFallback />}>
+                  <LazyFaceScanner
+                    checkInResult={checkInResult}
+                    onCheckInResult={setCheckInResult}
+                    onBack={handleMobileBack}
+                  />
+                </Suspense>
+              </FaceScannerErrorBoundary>
             </div>
           )}
         </motion.div>
@@ -846,7 +1090,7 @@ export default function AICheckIn() {
         </div>
       </div>
 
-      {checkInResult && (
+      {APP_MODE === "desktop" && checkInResult && (
         <CheckInCard
           user={checkInResult}
           // Truyền true (hoặc một state boolean) để bắt đầu đếm ngược đóng Modal

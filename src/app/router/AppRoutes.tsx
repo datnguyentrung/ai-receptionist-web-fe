@@ -571,7 +571,7 @@ export default function AppRoutes() {
                   />
                 }
               >
-                <Route element={isPWA ? null : <Outlet />}>
+                <Route element={<Outlet />}>
                   <Route path="check-in" element={<AICheckIn />} />
                 </Route>
               </Route>

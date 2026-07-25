@@ -95,7 +95,6 @@ export const studentAPI = {
     const response = await pythonApi.post("/students/check-in", formData, {
       signal,
     });
-    console.log("response:", response.data);
     return response.data;
   },
 };
