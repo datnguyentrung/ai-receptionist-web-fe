@@ -1,21 +1,24 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import { AllowedAppRuntime } from "./AllowedAppRuntime";
 import { APP_MODE } from "@/config/appMode";
-import { isMaintenanceMode } from "@/config/env";
+import { isPwaStandalone } from "@/utils/isPwaStandalone";
 import "@/index.css";
 import { queryClient } from "@/lib/react-query";
-import { initFcm } from "@/integrations/firebase/fcm";
-import { AuthBootstrap } from "@/app/providers/AuthBootstrap";
-
-if (!isMaintenanceMode) {
-  initFcm().catch(() => {});
-}
+import {
+  AppEnvironmentProvider,
+  PwaRequiredGate,
+} from "@/app/providers/pwa-required";
 
 function syncAppModeAttribute() {
   document.body.dataset.appMode = APP_MODE;
   document.documentElement.dataset.appMode = APP_MODE;
+
+  const standalone = isPwaStandalone();
+  document.documentElement.toggleAttribute("data-pwa-standalone", standalone);
+  document.body.toggleAttribute("data-pwa-standalone", standalone);
+  document.getElementById("root")?.toggleAttribute("data-pwa-standalone", standalone);
 }
 
 syncAppModeAttribute();
@@ -23,9 +26,11 @@ syncAppModeAttribute();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthBootstrap>
-        <App />
-      </AuthBootstrap>
+      <AppEnvironmentProvider>
+        <PwaRequiredGate>
+          <AllowedAppRuntime />
+        </PwaRequiredGate>
+      </AppEnvironmentProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

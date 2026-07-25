@@ -1,0 +1,1 @@
+export { isPwaStandalone } from "./appEnvironment";

@@ -1,0 +1,177 @@
+.page {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: grid;
+  align-items: center;
+  padding:
+    max($space-6, env(safe-area-inset-top, 0px))
+    max($space-4, env(safe-area-inset-right, 0px))
+    max($space-6, env(safe-area-inset-bottom, 0px))
+    max($space-4, env(safe-area-inset-left, 0px));
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 10% 0%, rgba($brand-red, 0.16), transparent 38%),
+    linear-gradient(160deg, $bg-base 0%, $brand-red-50 100%);
+}
+
+.card {
+  width: min(100%, 540px);
+  margin-inline: auto;
+  padding: clamp($space-6, 7vw, $space-10);
+  border: 1px solid rgba($brand-red, 0.14);
+  border-radius: $radius-xl;
+  background: $bg-surface;
+  box-shadow: $shadow-lg;
+}
+
+.iconWrap {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: $radius-lg;
+  color: $white;
+  background: $gradient-brand;
+  box-shadow: $shadow-brand;
+}
+
+.eyebrow {
+  margin-top: $space-6;
+  color: $brand-red-700;
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  letter-spacing: 0.08em;
+}
+
+.card h1 {
+  margin-top: $space-3;
+  color: $text-heading;
+  font-size: $text-3xl;
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+}
+
+.description {
+  margin-top: $space-4;
+  color: $text-secondary;
+  font-size: $text-base;
+  line-height: $leading-relaxed;
+}
+
+.guide {
+  margin-top: $space-8;
+  padding: $space-5;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  background: $bg-brand-soft;
+}
+
+.guideHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  color: $brand-dark;
+
+  svg {
+    color: $brand-red;
+  }
+
+  h2 {
+    font-size: $text-lg;
+    font-weight: $font-semibold;
+    line-height: $leading-snug;
+  }
+}
+
+.installButton {
+  width: 100%;
+  min-height: 48px;
+  margin-top: $space-5;
+  color: $white;
+  background: $brand-red;
+  box-shadow: $shadow-brand;
+
+  &:hover {
+    background: $brand-red-700;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba($brand-red, 0.36);
+    outline-offset: 3px;
+  }
+}
+
+.instructions {
+  display: grid;
+  gap: $space-3;
+  margin: $space-5 0 0;
+  padding-left: $space-5;
+  color: $text-secondary;
+  font-size: $text-base;
+  line-height: $leading-relaxed;
+
+  li::marker {
+    color: $brand-red-700;
+    font-weight: $font-bold;
+  }
+
+  svg {
+    display: inline-block;
+    margin: 0 2px -3px;
+    color: $brand-red-700;
+  }
+}
+
+.browserNotice,
+.statusMessage,
+.successNotice {
+  margin-top: $space-5;
+  padding: $space-4;
+  border-radius: $radius-md;
+  font-size: $text-base;
+  line-height: $leading-relaxed;
+}
+
+.browserNotice,
+.statusMessage {
+  border: 1px solid rgba($warning, 0.28);
+  color: $warning-900;
+  background: $warning-50;
+}
+
+.successNotice {
+  border: 1px solid rgba($success, 0.28);
+  color: $success-900;
+  background: $success-50;
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .page {
+    align-items: start;
+    padding-block: $space-4;
+  }
+
+  .card {
+    padding: $space-6;
+  }
+
+  .iconWrap {
+    width: 52px;
+    height: 52px;
+  }
+
+  .eyebrow {
+    margin-top: $space-4;
+  }
+
+  .guide {
+    margin-top: $space-5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .installButton {
+    transition: none;
+  }
+}
