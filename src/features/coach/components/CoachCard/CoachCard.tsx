@@ -7,19 +7,39 @@ import {
   WeekdayCodeToLabel,
 } from "@/config/constants";
 import type { CoachDetail } from "@/types";
+import { useRoleStudent } from "@/utils/roleUtils";
 import { openInNewTab } from "@/utils/windowOpenTab";
 import { EllipsisVertical, Mail, Phone, Star } from "lucide-react";
 import { formatDateDMY } from "../../../../utils/format";
 import StatusBadge from "../StatusBadge/StatusBadge";
+import { isPWA } from "@/config/appMode";
 import styles from "./CoachCard.module.scss";
+
+type CoachMenuAction = "assign-class" | "update" | "info" | "assignment-history";
 
 type CoachCardProps = {
   coach: CoachDetail;
+  onOpenAssignment?: (coach: CoachDetail) => void;
   onOpenUpdate?: (coach: CoachDetail) => void;
 };
 
-export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
+const actionLabels: Record<CoachMenuAction, string> = {
+  "assign-class": "Phân lớp dạy",
+  update: "Cập nhật",
+  info: "Thông tin",
+  "assignment-history": "Lịch sử phân lớp",
+};
+
+export default function CoachCard({
+  coach,
+  onOpenAssignment,
+  onOpenUpdate,
+}: CoachCardProps) {
+  const { canViewManagerSenior } = useRoleStudent();
   const currentAssignments = coach.currentAssignments ?? [];
+  const displayedAssignments = isPWA
+    ? currentAssignments
+    : currentAssignments.slice(0, 3);
 
   return (
     <div className={styles.coachCard}>
@@ -64,12 +84,26 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
             triggerClassName={styles.moreBtn}
             title={`Tùy chọn cho ${coach.fullName}`}
             actions={[
-              { id: "info", label: "Thông tin" },
-              { id: "assign-class", label: "Phân lớp dạy" },
-              { id: "assignment-history", label: "Lịch sử phân lớp" },
-            ]}
+              { id: "info", label: actionLabels.info },
+              { id: "assign-class", label: actionLabels["assign-class"] },
+              canViewManagerSenior
+                ? { id: "update", label: actionLabels.update }
+                : null,
+              {
+                id: "assignment-history",
+                label: actionLabels["assignment-history"],
+              },
+            ].filter(
+              (action): action is { id: CoachMenuAction; label: string } =>
+                action !== null,
+            )}
             onActionSelect={(action) => {
               if (action === "assign-class") {
+                onOpenAssignment?.(coach);
+                return;
+              }
+
+              if (action === "update") {
                 onOpenUpdate?.(coach);
                 return;
               }
@@ -105,7 +139,7 @@ export default function CoachCard({ coach, onOpenUpdate }: CoachCardProps) {
             </p>
           ) : (
             <div className={styles.assignmentsList}>
-              {currentAssignments.slice(0, 3).map((assignment) => {
+              {displayedAssignments.map((assignment) => {
                 const schedule = assignment.classSchedule;
                 const weekdayLabel =
                   WeekdayCodeToLabel[schedule.weekday] ??

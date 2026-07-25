@@ -216,7 +216,26 @@
 @media (min-width: 0) {
   :global(body[data-app-mode="pwa"]) {
     .assignmentsList {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-height: 208px;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+      scrollbar-gutter: stable;
+    }
+
+    .assignmentItem {
+      min-width: 0;
+      padding: $space-2;
+    }
+
+    .assignmentTopRow {
+      align-items: flex-start;
+    }
+
+    .assignmentBadge {
+      padding-inline: 6px;
     }
   }
 }

@@ -1,5 +1,6 @@
 import { ModalLayout } from "@/components/ui/modal-layout";
 import {
+  CoachAssignmentModal,
   CoachCard,
   CoachCreateModal,
   CoachFilters,
@@ -7,9 +8,10 @@ import {
   useCoachesGroupedByRole,
 } from "@/features/coach";
 import { coachAPI } from "@/features/coach/api/coachAPI";
+import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
 import { useGetQuery } from "@/hooks/useCrud";
 import { Plus, Users } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { CoachStatus } from "../../config/constants";
 import type { CoachDetail } from "../../types";
 import styles from "./CoachManagement.module.scss";
@@ -41,30 +43,43 @@ function CoachManagementSkeleton() {
   );
 }
 
+type CoachModalAction = "assignment" | "update";
+
+type ActiveCoachModal = {
+  action: CoachModalAction;
+  coach: CoachDetail;
+};
+
 export function CoachManagement() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | CoachStatus>("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [coachForUpdate, setCoachForUpdate] = useState<CoachDetail | null>(
-    null,
-  );
+  const [activeCoachModal, setActiveCoachModal] =
+    useState<ActiveCoachModal | null>(null);
 
-  const { data: coaches, isLoading } = useGetQuery(
+  const { data: coaches, isLoading, refetch: refetchCoaches } = useGetQuery(
     ["coaches"],
     coachAPI.getAllCoaches,
   );
 
+  const refreshCoachManagement = useCallback(async () => {
+    await refetchCoaches();
+  }, [refetchCoaches]);
+
+  useRegisterPullToRefresh(refreshCoachManagement);
+
   const coachGroups = useCoachesGroupedByRole(coaches || [], search, filter);
 
-  const handleOpenUpdateModal = (coach: CoachDetail) => {
-    setCoachForUpdate(coach);
-    setIsUpdateModalOpen(true);
+  const handleOpenAssignmentModal = (coach: CoachDetail) => {
+    setActiveCoachModal({ action: "assignment", coach });
   };
 
-  const handleCloseUpdateModal = () => {
-    setIsUpdateModalOpen(false);
-    setCoachForUpdate(null);
+  const handleOpenUpdateModal = (coach: CoachDetail) => {
+    setActiveCoachModal({ action: "update", coach });
+  };
+
+  const handleCloseCoachModal = () => {
+    setActiveCoachModal(null);
   };
 
   // Calculate filteredCoaches from groups to ensure consistency
@@ -114,6 +129,7 @@ export function CoachManagement() {
                   <CoachCard
                     key={coach.staffCode}
                     coach={coach}
+                    onOpenAssignment={handleOpenAssignmentModal}
                     onOpenUpdate={handleOpenUpdateModal}
                   />
                 ))}
@@ -138,22 +154,32 @@ export function CoachManagement() {
         onClose={() => setIsCreateModalOpen(false)}
       />
 
-      {coachForUpdate ? (
+      {activeCoachModal?.action === "assignment" ? (
         <ModalLayout
-          open={isUpdateModalOpen}
-          onClose={handleCloseUpdateModal}
+          open
+          onClose={handleCloseCoachModal}
           withSurface={false}
           maxWidth={1020}
           overlayClassName="coach-create-modal__overlay"
         >
           <div className={styles.modalContainer}>
-            <CoachUpdateModal
-              coach={coachForUpdate}
-              onClose={handleCloseUpdateModal}
+            <CoachAssignmentModal
+              coach={activeCoachModal.coach}
+              onClose={handleCloseCoachModal}
             />
           </div>
         </ModalLayout>
       ) : null}
+
+      <CoachUpdateModal
+        open={activeCoachModal?.action === "update"}
+        coach={
+          activeCoachModal?.action === "update"
+            ? activeCoachModal.coach
+            : null
+        }
+        onClose={handleCloseCoachModal}
+      />
     </div>
   );
 }

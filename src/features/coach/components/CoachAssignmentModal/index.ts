@@ -1,0 +1,1 @@
+export { CoachAssignmentModal } from "./CoachAssignmentModal";

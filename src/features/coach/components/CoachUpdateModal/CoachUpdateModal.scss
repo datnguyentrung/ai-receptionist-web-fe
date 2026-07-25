@@ -1,4 +1,4 @@
-.coach-update-modal {
+.coach-assignment-modal {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -14,7 +14,7 @@
   overflow: hidden;
 }
 
-.coach-update-modal__content {
+.coach-assignment-modal__content {
   flex: 1;
   min-height: 0;
   min-width: 0;
@@ -26,7 +26,7 @@
   padding-right: 4px;
 }
 
-.coach-update-modal__header {
+.coach-assignment-modal__header {
   h2 {
     margin: 0;
     font-size: 18px;
@@ -41,7 +41,7 @@
   }
 }
 
-.coach-update-modal__actions {
+.coach-assignment-modal__actions {
   flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
@@ -82,18 +82,18 @@
 }
 
 @media (max-width: 720px) {
-  .coach-update-modal {
+  .coach-assignment-modal {
     padding: 12px;
     max-height: 80dvh;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
 
-  .coach-update-modal__content {
+  .coach-assignment-modal__content {
     padding-right: 0;
   }
 
-  .coach-update-modal__actions {
+  .coach-assignment-modal__actions {
     flex-direction: column-reverse;
   }
 

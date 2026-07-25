@@ -1,265 +1,264 @@
-import { AssignmentSubjectHero } from "@/features/studentEnrollment/components/AssignmentSubjectHero/AssignmentSubjectHero";
-import ConfirmModal from "@/components/common/ConfirmModal";
-import { showErrorToast, showInfoToast } from "@/components/ui/toast";
-import { coachAssignmentAPI } from "@/features/coach/api/coachAssignmentAPI";
-import { ClassAssignmentModal } from "@/features/studentEnrollment/components/ClassAssignmentModal/ClassAssignmentModal";
-import { useGetQuery, useGenericMutation } from "@/hooks/useCrud";
-import type {
-  CoachAssignmentCreateRequest,
-  CoachAssignmentResponse,
-  CoachAssignmentSimpleResponse,
-  CoachDetail,
-} from "@/types";
-import { useMemo, useState } from "react";
-import CoachAssignmentList from "./CoachAssignmentList";
-
-import "./CoachUpdateModal.scss";
+import { Input } from "@/components/ui/input";
+import { ModalLayout } from "@/components/ui/modal-layout";
+import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
+import type { Belt, CoachStatus } from "@/config/constants";
+import { coachAPI } from "@/features/coach/api/coachAPI";
+import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
+import type { CoachDetail, CoachUpdateRequest } from "@/types";
+import { useState } from "react";
+import {
+  COACH_BELT_OPTIONS,
+  COACH_STATUS_OPTIONS,
+  formatDateInput,
+  getRequestErrorMessage,
+  isFutureDate,
+} from "../../utils/coachForm";
+import "../CoachCreateModal/CoachCreateModal.scss";
 
 type CoachUpdateModalProps = {
+  open: boolean;
   coach: CoachDetail | null;
   onClose: () => void;
 };
 
-function formatToday() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+type CoachUpdateFormState = {
+  fullName: string;
+  phoneNumber: string;
+  nationalCode: string;
+  birthDate: string;
+  belt: Belt;
+  coachStatus: CoachStatus;
+};
 
-function createInitialAssignment(
-  coachId: string,
-): CoachAssignmentCreateRequest {
-  const today = formatToday();
+function createForm(coach: CoachDetail, detail?: CoachDetail): CoachUpdateFormState {
   return {
-    coachId,
-    scheduleIds: [],
-    assignmentDate: today,
-    endDate: today,
-    note: "",
+    fullName: detail?.fullName ?? coach.fullName,
+    phoneNumber: detail?.phoneNumber ?? coach.phoneNumber ?? "",
+    nationalCode: detail?.nationalCode ?? coach.nationalCode ?? "",
+    birthDate: formatDateInput(detail?.birthDate ?? coach.birthDate),
+    belt: detail?.belt ?? coach.belt,
+    coachStatus: detail?.coachStatus ?? coach.coachStatus,
   };
 }
 
-export default function CoachUpdateModal({
+function getRoleDisplay(coach: CoachDetail) {
+  const roles = coach.roles ?? (coach.role ? [coach.role] : []);
+  return roles.map((role) => role.replace(/^ROLE_/, "")).join(", ") || "Chưa xác định";
+}
+
+type CoachUpdateFormProps = {
+  coach: CoachDetail;
+  detail?: CoachDetail;
+  isDetailFetching: boolean;
+  onClose: () => void;
+};
+
+function CoachUpdateForm({
+  coach,
+  detail,
+  isDetailFetching,
+  onClose,
+}: CoachUpdateFormProps) {
+  const [form, setForm] = useState<CoachUpdateFormState>(() =>
+    createForm(coach, detail),
+  );
+  const displayedCoach = detail ?? coach;
+  const { mutateAsync: updateCoach, isPending } = useGenericMutation<
+    CoachDetail,
+    CoachUpdateRequest
+  >(
+    (payload) => coachAPI.updateCoach(coach.staffCode, payload),
+    [["coaches"], ["coach-detail", coach.staffCode]],
+  );
+
+  const setField = <K extends keyof CoachUpdateFormState>(
+    key: K,
+    value: CoachUpdateFormState[K],
+  ) => {
+    setForm((previous) => ({ ...previous, [key]: value }));
+  };
+
+  const handleClose = () => {
+    if (!isPending) onClose();
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!form.fullName.trim()) {
+      showErrorToast("Vui lòng nhập họ và tên HLV.");
+      return;
+    }
+    if (!/^\d{9,11}$/.test(form.phoneNumber.trim())) {
+      showErrorToast("Số điện thoại không hợp lệ. Chỉ cho phép 9-11 chữ số.");
+      return;
+    }
+    if (!form.birthDate) {
+      showErrorToast("Vui lòng chọn ngày sinh.");
+      return;
+    }
+    if (isFutureDate(form.birthDate)) {
+      showErrorToast("Ngày sinh không được lớn hơn ngày hiện tại.");
+      return;
+    }
+
+    try {
+      await updateCoach({
+        userId: displayedCoach.userId,
+        fullName: form.fullName.trim(),
+        phoneNumber: form.phoneNumber.trim(),
+        nationalCode: form.nationalCode.trim() || undefined,
+        birthDate: form.birthDate,
+        belt: form.belt,
+        coachStatus: form.coachStatus,
+      });
+      showSuccessToast("Cập nhật huấn luyện viên thành công.");
+      onClose();
+    } catch (error) {
+      showErrorToast(
+        getRequestErrorMessage(
+          error,
+          "Không thể cập nhật huấn luyện viên. Vui lòng thử lại.",
+        ),
+      );
+    }
+  };
+
+  return (
+    <form className="coach-create-modal" onSubmit={handleSubmit}>
+      {isPending || isDetailFetching ? (
+        <div className="coach-create-modal__loading" role="status" aria-live="polite">
+          <span className="coach-create-modal__spinner" aria-hidden="true" />
+          {isPending ? "Đang cập nhật huấn luyện viên..." : "Đang tải thông tin huấn luyện viên..."}
+        </div>
+      ) : null}
+
+      <fieldset
+        className="coach-create-modal__fieldset"
+        disabled={isPending || isDetailFetching}
+      >
+        <div className="coach-create-modal__grid">
+          <label className="coach-create-modal__field">
+            <span>Họ và tên *</span>
+            <Input
+              type="text"
+              value={form.fullName}
+              onChange={(event) => setField("fullName", event.target.value)}
+            />
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Số điện thoại *</span>
+            <Input
+              type="tel"
+              value={form.phoneNumber}
+              onChange={(event) => setField("phoneNumber", event.target.value)}
+            />
+          </label>
+          <label className="coach-create-modal__field">
+            <span>CCCD</span>
+            <Input
+              type="text"
+              value={form.nationalCode}
+              onChange={(event) => setField("nationalCode", event.target.value)}
+            />
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Ngày sinh *</span>
+            <Input
+              type="date"
+              value={form.birthDate}
+              onChange={(event) => setField("birthDate", event.target.value)}
+            />
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Đai *</span>
+            <select
+              value={form.belt}
+              onChange={(event) => setField("belt", event.target.value as Belt)}
+            >
+              {COACH_BELT_OPTIONS.map((belt) => (
+                <option key={belt} value={belt}>
+                  {belt}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Trạng thái công việc</span>
+            <select
+              value={form.coachStatus}
+              onChange={(event) =>
+                setField("coachStatus", event.target.value as CoachStatus)
+              }
+            >
+              {COACH_STATUS_OPTIONS.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Email</span>
+            <Input type="email" value={displayedCoach.email ?? ""} readOnly />
+          </label>
+          <label className="coach-create-modal__field">
+            <span>Vai trò</span>
+            <Input type="text" value={getRoleDisplay(displayedCoach)} readOnly />
+          </label>
+        </div>
+
+        <div className="coach-create-modal__actions">
+          <button type="button" className="btn btn--ghost" onClick={handleClose}>
+            Hủy
+          </button>
+          <button
+            type="submit"
+            className="btn btn--primary"
+            disabled={isPending || isDetailFetching}
+          >
+            {isPending ? "Đang cập nhật..." : "Lưu cập nhật"}
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  );
+}
+
+export function CoachUpdateModal({
+  open,
   coach,
   onClose,
 }: CoachUpdateModalProps) {
-  const assignmentCoachId = coach?.staffCode ?? "";
-  const [assignmentState, setAssignmentState] = useState<{
-    coachId: string;
-    request: CoachAssignmentCreateRequest;
-  }>(() => ({
-    coachId: assignmentCoachId,
-    request: createInitialAssignment(assignmentCoachId),
-  }));
-
-  if (assignmentState.coachId !== assignmentCoachId) {
-    setAssignmentState({
-      coachId: assignmentCoachId,
-      request: createInitialAssignment(assignmentCoachId),
-    });
-  }
-
-  const assignmentRequest =
-    assignmentState.coachId === assignmentCoachId
-      ? assignmentState.request
-      : createInitialAssignment(assignmentCoachId);
-  const setAssignmentRequest = (request: CoachAssignmentCreateRequest) => {
-    setAssignmentState({
-      coachId: assignmentCoachId,
-      request: {
-        ...request,
-        coachId: assignmentCoachId,
-      },
-    });
-  };
-
-  const [deletingAssignmentIds, setDeletingAssignmentIds] = useState<
-    Set<string>
-  >(new Set());
-  const [pendingDeleteAssignment, setPendingDeleteAssignment] =
-    useState<CoachAssignmentResponse | null>(null);
-
-  const { data: coachAssignments = [], isLoading: isCoachAssignmentsLoading } =
-    useGetQuery(
-      ["coach-assignments", coach?.userId ?? ""],
-      () => coachAssignmentAPI.getAssignmentsByCoachId(coach?.userId ?? ""),
-      { enabled: !!coach?.userId },
-    );
-
-  const activeAssignments = useMemo(
-    () =>
-      coachAssignments
-        .filter((assignment) => assignment.status === "ACTIVE")
-        .sort(
-          (a, b) =>
-            a.classSchedule.weekday - b.classSchedule.weekday ||
-            a.classSchedule.startTime.localeCompare(b.classSchedule.startTime),
-        ),
-    [coachAssignments],
+  const { data: detail, isFetching: isDetailFetching } = useGetQuery(
+    ["coach-detail", coach?.staffCode],
+    () => coachAPI.getCoachByStaffCode(coach?.staffCode ?? ""),
+    { enabled: open && Boolean(coach?.staffCode) },
   );
-
-  const { mutate: createCoachAssignment, isPending: isCreatingAssignment } =
-    useGenericMutation<CoachAssignmentSimpleResponse[], CoachAssignmentCreateRequest>(
-      (request) => coachAssignmentAPI.createCoachAssignment(request),
-      [["coach-assignments"]],
-    );
-
-  const {
-    mutateAsync: deleteCoachAssignment,
-    isPending: isDeletingAssignment,
-  } = useGenericMutation<void, string>(
-    (id) => coachAssignmentAPI.deleteCoachAssignment(id),
-    [["coach-assignments"]],
-  );
-
-  const handleOpenDeleteConfirm = (assignment: CoachAssignmentResponse) => {
-    setPendingDeleteAssignment(assignment);
-  };
-
-  const handleCloseDeleteConfirm = () => {
-    if (isDeletingAssignment) {
-      return;
-    }
-
-    setPendingDeleteAssignment(null);
-  };
-
-  const handleConfirmDeleteAssignment = async () => {
-    if (!coach) {
-      return;
-    }
-
-    if (!pendingDeleteAssignment) {
-      return;
-    }
-
-    const assignment = pendingDeleteAssignment;
-
-    const assignmentId = pendingDeleteAssignment.assignmentId;
-
-    setDeletingAssignmentIds((prev) => new Set(prev).add(assignmentId));
-
-    try {
-      await deleteCoachAssignment(assignmentId);
-
-      showInfoToast(
-        `Đã xóa lớp ${assignment.classSchedule.scheduleId} khỏi phân công của ${coach.fullName}.`,
-      );
-
-      setPendingDeleteAssignment(null);
-    } catch {
-      showErrorToast("Có lỗi xảy ra khi xóa lớp đã phân công.");
-    } finally {
-      setDeletingAssignmentIds((prev) => {
-        const next = new Set(prev);
-        next.delete(assignmentId);
-        return next;
-      });
-    }
-  };
-
-  const handleSubmit = () => {
-    if (!coach) {
-      return;
-    }
-
-    if (assignmentRequest.scheduleIds.length === 0) {
-      showErrorToast("Vui lòng chọn ít nhất một lớp dạy.");
-      return;
-    }
-
-    if (!assignmentRequest.assignmentDate || !assignmentRequest.endDate) {
-      showErrorToast("Vui lòng chọn đầy đủ ngày phân công và ngày kết thúc.");
-      return;
-    }
-
-    if (assignmentRequest.endDate < assignmentRequest.assignmentDate) {
-      showErrorToast("Ngày kết thúc không được nhỏ hơn ngày phân công.");
-      return;
-    }
-
-    createCoachAssignment({
-      ...assignmentRequest,
-      coachId: assignmentCoachId,
-    }, {
-      onSuccess: (data: CoachAssignmentSimpleResponse[]) => {
-        const text =
-          "Đã phân công thêm cho HLV " +
-          coach.fullName +
-          " các lớp: " +
-          data.map((d) => d.classSchedule.scheduleId).join(", ");
-        showInfoToast(text);
-        onClose();
-      },
-      onError: () => {
-        showErrorToast("Có lỗi xảy ra khi cập nhật phân công huấn luyện viên.");
-      },
-    });
-  };
-
-  if (!coach) {
-    return null;
-  }
 
   return (
-    <div className="coach-update-modal">
-      <div className="coach-update-modal__content">
-        <AssignmentSubjectHero
-          subjectLabel="Huấn luyện viên"
-          statusText={coach.coachStatus}
-          name={coach.fullName}
-          codeLabel="Mã"
-          codeValue={coach.staffCode}
-          secondaryText={coach.email || coach.phoneNumber || undefined}
+    <ModalLayout
+      open={open}
+      onClose={onClose}
+      closeOnBackdrop={!isDetailFetching}
+      closeOnEscape={!isDetailFetching}
+      title="Cập nhật huấn luyện viên"
+      subtitle={coach ? `${coach.fullName} · ${coach.staffCode}` : undefined}
+      maxWidth={760}
+      overlayClassName="coach-create-modal__overlay"
+      dialogClassName="coach-create-modal__dialog"
+      surfaceClassName="coach-create-modal__surface"
+      bodyClassName="coach-create-modal__body"
+    >
+      {coach ? (
+        <CoachUpdateForm
+          key={`${coach.staffCode}-${detail?.userId ?? "overview"}`}
+          coach={coach}
+          detail={detail}
+          isDetailFetching={isDetailFetching}
+          onClose={onClose}
         />
-
-        <CoachAssignmentList
-          isLoading={isCoachAssignmentsLoading}
-          assignments={activeAssignments}
-          deletingAssignmentIds={deletingAssignmentIds}
-          onDeleteAssignment={handleOpenDeleteConfirm}
-        />
-
-        <ClassAssignmentModal
-          mode="coach-inline"
-          assignmentRequest={assignmentRequest}
-          onAssignmentChange={setAssignmentRequest}
-          disabled={isCreatingAssignment}
-        />
-      </div>
-
-      <div className="coach-update-modal__actions">
-        <button type="button" className="btn btn--ghost" onClick={onClose}>
-          Hủy
-        </button>
-        <button
-          type="button"
-          className="btn btn--primary"
-          onClick={handleSubmit}
-          disabled={isCreatingAssignment}
-        >
-          {isCreatingAssignment ? "Đang lưu phân lớp..." : "Lưu phân lớp dạy"}
-        </button>
-      </div>
-
-      <ConfirmModal
-        open={!!pendingDeleteAssignment}
-        title="Xóa lớp đã phân công?"
-        description={
-          pendingDeleteAssignment
-            ? `Bạn có chắc muốn xóa lớp ${pendingDeleteAssignment.classSchedule.scheduleId} khỏi huấn luyện viên ${coach.fullName}?`
-            : ""
-        }
-        confirmText="Xóa lớp"
-        loadingText="Đang xóa lớp..."
-        isLoading={isDeletingAssignment}
-        showSuccessToastOnConfirm={false}
-        showErrorToastOnFail={false}
-        onCancel={handleCloseDeleteConfirm}
-        onConfirm={handleConfirmDeleteAssignment}
-      />
-    </div>
+      ) : null}
+    </ModalLayout>
   );
 }

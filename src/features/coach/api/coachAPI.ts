@@ -24,10 +24,10 @@ export const coachAPI = {
   },
 
   updateCoach: async (
-    id: number,
+    identifier: string | number,
     coachData: CoachUpdateRequest,
   ): Promise<CoachDetail> => {
-    const response = await javaApi.put(`/coaches/${id}`, coachData);
+    const response = await javaApi.put(`/coaches/${identifier}`, coachData);
     return response.data;
   },
 

@@ -17,42 +17,18 @@ import { useCallback, useState } from "react";
 
 import { useGenericMutation } from "@/hooks/useCrud";
 import { coachAPI } from "../../api/coachAPI";
+import {
+  COACH_BELT_OPTIONS,
+  COACH_STATUS_OPTIONS,
+  getRequestErrorMessage,
+  isFutureDate,
+} from "../../utils/coachForm";
 import "./CoachCreateModal.scss";
 
 type CoachCreateModalProps = {
   open: boolean;
   onClose: () => void;
 };
-
-const BELT_OPTIONS: Belt[] = [
-  "C10",
-  "C9",
-  "C8",
-  "C7",
-  "C6",
-  "C5",
-  "C4",
-  "C3",
-  "C2",
-  "C1",
-  "D1",
-  "D2",
-  "D3",
-  "D4",
-  "D5",
-  "D6",
-  "D7",
-  "D8",
-  "D9",
-  "D10",
-];
-
-const STATUS_OPTIONS: Array<{ value: CoachStatus; label: string }> = [
-  { value: "ACTIVE", label: "Đang hoạt động" },
-  { value: "INACTIVE", label: "Tạm nghỉ" },
-  { value: "SUSPENDED", label: "Đình chỉ" },
-  { value: "RETIRED", label: "Đã nghỉ hưu" },
-];
 
 const INITIAL_FORM: CoachCreateRequest = {
   coachStatus: "ACTIVE",
@@ -70,65 +46,6 @@ const INITIAL_FORM: CoachCreateRequest = {
     note: "",
   },
 };
-
-function getErrorMessage(error: unknown, fallbackMessage: string) {
-  if (!error) {
-    return fallbackMessage;
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  if (typeof error === "object") {
-    const maybeError = error as {
-      message?: unknown;
-      response?: {
-        data?: {
-          message?: unknown;
-          error?: unknown;
-        };
-      };
-    };
-
-    const responseMessage = maybeError.response?.data?.message;
-    if (typeof responseMessage === "string" && responseMessage.trim()) {
-      return responseMessage;
-    }
-
-    const responseError = maybeError.response?.data?.error;
-    if (typeof responseError === "string" && responseError.trim()) {
-      return responseError;
-    }
-
-    if (typeof maybeError.message === "string" && maybeError.message.trim()) {
-      return maybeError.message;
-    }
-  }
-
-  return fallbackMessage;
-}
-
-function isFutureDate(value: string) {
-  if (!value) {
-    return false;
-  }
-
-  const today = new Date();
-  const date = new Date(value);
-  const safeToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-  );
-  const safeDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
-
-  return safeDate > safeToday;
-}
 
 export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
   const { mutateAsync: createCoach, isPending } = useGenericMutation<
@@ -236,7 +153,7 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
       onClose();
     } catch (error) {
       showErrorToast(
-        getErrorMessage(
+        getRequestErrorMessage(
           error,
           "Không thể tạo huấn luyện viên. Vui lòng thử lại.",
         ),
@@ -321,7 +238,7 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
                   setField("belt", event.target.value as Belt)
                 }
               >
-                {BELT_OPTIONS.map((belt) => (
+                {COACH_BELT_OPTIONS.map((belt) => (
                   <option key={belt} value={belt}>
                     {belt}
                   </option>
@@ -353,7 +270,7 @@ export function CoachCreateModal({ open, onClose }: CoachCreateModalProps) {
                   setField("coachStatus", event.target.value as CoachStatus)
                 }
               >
-                {STATUS_OPTIONS.map((status) => (
+                {COACH_STATUS_OPTIONS.map((status) => (
                   <option key={status.value} value={status.value}>
                     {status.label}
                   </option>
