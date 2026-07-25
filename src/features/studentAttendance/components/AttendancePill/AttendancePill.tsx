@@ -12,6 +12,9 @@ import styles from "./AttendancePill.module.scss";
 
 type MenuSelection = AttendanceStatus | "CHECK_IN";
 
+const LONG_PRESS_DELAY_MS = 500;
+const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
+
 const ATTENDANCE_OPTIONS: {
   value: AttendanceStatus;
   label: string;
@@ -30,14 +33,6 @@ interface AttendancePillProps {
   onChange: (v: AttendanceStatus | null) => void;
   onCheckIn?: (studentCode: string) => void;
   isCheckInPending?: boolean;
-}
-
-function isCoarsePointerDevice(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches
-  );
 }
 
 function isAttendanceStatus(
@@ -70,8 +65,10 @@ export function AttendancePill({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedSelection, setHighlightedSelection] =
     useState<MenuSelection | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const activePointerIdRef = useRef<number | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressActiveRef = useRef(false);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const suppressNextClickRef = useRef(false);
   const checkInTriggeredRef = useRef(false);
 
@@ -100,11 +97,21 @@ export function AttendancePill({
     }
   }, [isCheckInPending]);
 
+  const clearLongPressTimer = useCallback(() => {
+    if (longPressTimerRef.current !== null) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearLongPressTimer, [clearLongPressTimer]);
+
   const closeMenu = useCallback(() => {
     setIsOpen(false);
     setHighlightedSelection(null);
-    setIsDragging(false);
     activePointerIdRef.current = null;
+    longPressActiveRef.current = false;
+    pointerStartRef.current = null;
   }, []);
 
   const getOptionFromPoint = useCallback(
@@ -165,26 +172,48 @@ export function AttendancePill({
   );
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (!canOpenMenu) return;
-
-    const isTouchFlow =
-      event.pointerType === "touch" || isCoarsePointerDevice();
-
-    if (!isTouchFlow) return;
+    if (!canOpenMenu || event.button !== 0) return;
 
     event.preventDefault();
     activePointerIdRef.current = event.pointerId;
-    suppressNextClickRef.current = true;
-    setIsDragging(true);
-    setIsOpen(true);
-    setHighlightedSelection(null);
-    event.currentTarget.setPointerCapture?.(event.pointerId);
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    longPressActiveRef.current = false;
+    suppressNextClickRef.current = false;
+    clearLongPressTimer();
+
+    const trigger = event.currentTarget;
+    longPressTimerRef.current = window.setTimeout(() => {
+      if (activePointerIdRef.current !== event.pointerId) return;
+
+      longPressActiveRef.current = true;
+      suppressNextClickRef.current = true;
+      setIsOpen(true);
+      setHighlightedSelection(null);
+      trigger.setPointerCapture?.(event.pointerId);
+    }, LONG_PRESS_DELAY_MS);
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (activePointerIdRef.current !== event.pointerId) return;
 
     event.preventDefault();
+    if (!longPressActiveRef.current) {
+      const pointerStart = pointerStartRef.current;
+      const movedTooFar =
+        pointerStart &&
+        Math.hypot(
+          event.clientX - pointerStart.x,
+          event.clientY - pointerStart.y,
+        ) > LONG_PRESS_MOVE_TOLERANCE_PX;
+
+      if (movedTooFar) {
+        clearLongPressTimer();
+        activePointerIdRef.current = null;
+        pointerStartRef.current = null;
+      }
+      return;
+    }
+
     const nextSelection = getOptionFromPoint(event.clientX, event.clientY);
     setHighlightedSelection(nextSelection);
   };
@@ -193,40 +222,37 @@ export function AttendancePill({
     if (activePointerIdRef.current !== event.pointerId) return;
 
     event.preventDefault();
-    const nextValue = getOptionFromPoint(event.clientX, event.clientY);
+    clearLongPressTimer();
+    const wasLongPress = longPressActiveRef.current;
+    const nextValue = wasLongPress
+      ? getOptionFromPoint(event.clientX, event.clientY)
+      : null;
 
     if (nextValue) {
       selectMenuItem(nextValue);
     }
 
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    }
     closeMenu();
 
-    window.setTimeout(() => {
-      suppressNextClickRef.current = false;
-    }, 0);
+    if (wasLongPress) {
+      window.setTimeout(() => {
+        suppressNextClickRef.current = false;
+      }, 0);
+    }
   };
 
   const handlePointerCancel = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (activePointerIdRef.current !== event.pointerId) return;
 
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    clearLongPressTimer();
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    }
     closeMenu();
-
-    window.setTimeout(() => {
-      suppressNextClickRef.current = false;
-    }, 0);
-  };
-
-  const handleMouseEnter = () => {
-    if (!canOpenMenu || isCoarsePointerDevice()) return;
-    setIsOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    if (isDragging) return;
-    setIsOpen(false);
-    setHighlightedSelection(null);
+    suppressNextClickRef.current = false;
   };
 
   return (
@@ -234,8 +260,6 @@ export function AttendancePill({
       className={`${styles.pillContainer} ${stateClass} ${
         isOpen ? styles.menuOpen : ""
       } ${statusSelectionDisabled ? styles.disabled : ""}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {isOpen && canOpenMenu && (
         <div
@@ -259,7 +283,7 @@ export function AttendancePill({
               onPointerDown={(event) => event.stopPropagation()}
               onClick={(event) => {
                 event.stopPropagation();
-                if (suppressNextClickRef.current || isCoarsePointerDevice()) {
+                if (suppressNextClickRef.current) {
                   return;
                 }
 
@@ -294,8 +318,7 @@ export function AttendancePill({
                   onClick={(event) => {
                     event.stopPropagation();
                     if (
-                      suppressNextClickRef.current ||
-                      isCoarsePointerDevice()
+                      suppressNextClickRef.current
                     ) {
                       return;
                     }
@@ -330,7 +353,7 @@ export function AttendancePill({
         <span className={styles.triggerText}>{triggerLabel}</span>
         {canOpenMenu && (
           <span className={styles.triggerHint}>
-            <span className={styles.desktopHint}>Hover để chọn</span>
+            <span className={styles.desktopHint}>Giữ để chọn</span>
             <span className={styles.touchHint}>Giữ và kéo để chọn</span>
           </span>
         )}
