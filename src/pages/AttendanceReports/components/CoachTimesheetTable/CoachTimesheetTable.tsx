@@ -9,7 +9,7 @@ import {
 } from "@/config/constants";
 import type { CoachTimesheetListResponse, CoachTimesheetResponse } from "@/types";
 import { formatDateDMY, formatTimeHM } from "@/utils/format";
-import { ClipboardList, Clock3, TimerReset } from "lucide-react";
+import { ClipboardList, Clock3, TimerReset, Trash2 } from "lucide-react";
 import styles from "@/features/studentAttendance/components/AttendanceTable/AttendanceTable.module.scss";
 
 interface CoachTimesheetTableProps {
@@ -17,6 +17,9 @@ interface CoachTimesheetTableProps {
   currentPage: number;
   pageSize: number;
   setCurrentPage: (page: number) => void;
+  onDeleteTimesheet?: (timesheet: CoachTimesheetResponse) => void;
+  isDeletingTimesheet?: boolean;
+  deletingTimesheetId?: string | null;
 }
 
 const TABLE_HEADERS = [
@@ -87,16 +90,24 @@ function CoachTimesheetCardGrid({
   rows,
   currentPage,
   pageSize,
+  onDeleteTimesheet,
+  isDeletingTimesheet = false,
+  deletingTimesheetId,
 }: {
   rows: CoachTimesheetResponse[];
   currentPage: number;
   pageSize: number;
+  onDeleteTimesheet?: (timesheet: CoachTimesheetResponse) => void;
+  isDeletingTimesheet?: boolean;
+  deletingTimesheetId?: string | null;
 }) {
   return (
     <div className={styles.cardGrid} aria-label="Danh sách chấm công coach">
       {rows.map((row, index) => {
         const schedule = row.classSchedule;
         const statusClass = getStatusClass(row.status);
+        const isDeleting = isDeletingTimesheet &&
+          deletingTimesheetId === row.timesheetId;
 
         return (
           <article
@@ -107,7 +118,24 @@ function CoachTimesheetCardGrid({
               <span className={styles.cardSelect}>
                 {(currentPage - 1) * pageSize + index + 1}
               </span>
-              <CoachTimesheetStatusBadge status={row.status} />
+              <div className={styles.coachTimesheetCardActions}>
+                <CoachTimesheetStatusBadge status={row.status} />
+                {onDeleteTimesheet ? (
+                  <button
+                    type="button"
+                    className={styles.coachTimesheetDeleteButton}
+                    onClick={() => onDeleteTimesheet(row)}
+                    disabled={isDeletingTimesheet}
+                    aria-label={
+                      "Xóa nhật ký điểm danh của " +
+                      (row.coach?.fullName ?? "coach")
+                    }
+                  >
+                    <Trash2 size={16} aria-hidden="true" />
+                    <span>{isDeleting ? "Đang xóa" : "Xóa"}</span>
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             <div className={styles.cardMain}>
@@ -178,6 +206,9 @@ export function CoachTimesheetTable({
   currentPage,
   pageSize,
   setCurrentPage,
+  onDeleteTimesheet,
+  isDeletingTimesheet,
+  deletingTimesheetId,
 }: CoachTimesheetTableProps) {
   const rows = data?.timesheets.content ?? [];
   const totalPages = data?.timesheets.totalPages ?? 1;
@@ -285,6 +316,9 @@ export function CoachTimesheetTable({
           rows={rows}
           currentPage={currentPage}
           pageSize={pageSize}
+          onDeleteTimesheet={onDeleteTimesheet}
+          isDeletingTimesheet={isDeletingTimesheet}
+          deletingTimesheetId={deletingTimesheetId}
         />
       ) : null}
 

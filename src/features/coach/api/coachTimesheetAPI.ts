@@ -138,4 +138,8 @@ export const coachTimesheetAPI = {
     );
     return response.data as CoachTimesheetResponse;
   },
+
+  deleteTimesheet: async (timesheetId: string): Promise<void> => {
+    await javaApi.delete(`/coach-timesheets/${timesheetId}`);
+  },
 };

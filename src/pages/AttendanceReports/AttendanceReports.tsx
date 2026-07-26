@@ -12,6 +12,7 @@ import type {
 import { coachTimesheetAPI } from "@/features/coach/api/coachTimesheetAPI";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
+import { useRegisterPullToRefresh } from "@/app/providers/pull-to-refresh";
 import { AttendanceFilters } from "@/pages/AttendanceReports/components/AttendanceFilters";
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
@@ -22,12 +23,14 @@ import { SaveAttendanceConfirmContent } from "@/pages/AttendanceReports/componen
 import { useAuthStore } from "@/store/authStore";
 import type {
   AttendanceStats,
+  CoachTimesheetResponse,
   StudentAttendanceResponse,
   StudentAttendanceSimpleResponse,
 } from "@/types";
 import { formatDateDMY } from "@/utils/format";
+import { useRoleStudent } from "@/utils/roleUtils";
 import { Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./AttendanceReports.module.scss";
 
@@ -103,6 +106,17 @@ function CoachTimesheetReportsContent() {
   const [branchId, setBranchId] = useState("");
   const [status, setStatus] = useState<CoachTimesheetStatus | "">("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [timesheetToDelete, setTimesheetToDelete] =
+    useState<CoachTimesheetResponse | null>(null);
+  const { canViewManagerSenior } = useRoleStudent();
+
+  const {
+    mutateAsync: deleteCoachTimesheet,
+    isPending: isDeletingCoachTimesheet,
+  } = useGenericMutation<void, string>(
+    (timesheetId) => coachTimesheetAPI.deleteTimesheet(timesheetId),
+    [["coach-timesheets"]],
+  );
 
   const resetPage = <T,>(setter: (value: T) => void) => (value: T) => {
     setter(value);
@@ -137,13 +151,19 @@ function CoachTimesheetReportsContent() {
     ],
   );
 
-  const { data, isFetching } = useGetQuery(
+  const { data, isFetching, refetch } = useGetQuery(
     ["coach-timesheets", filterParams],
     () => coachTimesheetAPI.getTimesheetsByFilter(filterParams),
     {
       staleTime: 5 * 60 * 1000,
     },
   );
+
+  const refreshCoachTimesheets = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  useRegisterPullToRefresh(refreshCoachTimesheets);
 
   const isInitialLoading = !data && isFetching;
   const isRefreshing = Boolean(data) && isFetching;
@@ -158,6 +178,15 @@ function CoachTimesheetReportsContent() {
     setBranchId("");
     setStatus("");
     setCurrentPage(1);
+  };
+
+  const handleDeleteCoachTimesheet = async () => {
+    if (!timesheetToDelete) {
+      return;
+    }
+
+    await deleteCoachTimesheet(timesheetToDelete.timesheetId);
+    setTimesheetToDelete(null);
   };
 
   return (
@@ -212,8 +241,37 @@ function CoachTimesheetReportsContent() {
           currentPage={currentPage}
           pageSize={data?.timesheets.size || PAGE_SIZE}
           setCurrentPage={setCurrentPage}
+          onDeleteTimesheet={
+            canViewManagerSenior ? setTimesheetToDelete : undefined
+          }
+          isDeletingTimesheet={isDeletingCoachTimesheet}
+          deletingTimesheetId={timesheetToDelete?.timesheetId}
         />
       )}
+
+      <ConfirmModal
+        open={Boolean(timesheetToDelete)}
+        title="Xóa nhật ký điểm danh"
+        description={
+          "Bạn sắp xóa bản ghi điểm danh của " +
+          (timesheetToDelete?.coach?.fullName ?? "coach") +
+          (timesheetToDelete?.workingDate
+            ? " ngày " + formatDateDMY(timesheetToDelete.workingDate)
+            : "") +
+          ". Thao tác này không thể hoàn tác."
+        }
+        confirmText="Xóa"
+        loadingText="Đang xóa..."
+        isLoading={isDeletingCoachTimesheet}
+        successToastMessage="Đã xóa nhật ký điểm danh"
+        errorToastMessage="Không thể xóa nhật ký điểm danh"
+        onCancel={() => {
+          if (!isDeletingCoachTimesheet) {
+            setTimesheetToDelete(null);
+          }
+        }}
+        onConfirm={handleDeleteCoachTimesheet}
+      />
     </div>
   );
 }
