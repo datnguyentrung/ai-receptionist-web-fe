@@ -10,6 +10,9 @@ type BackendErrorPayload = {
   errorCode?: unknown;
   code?: unknown;
   message?: unknown;
+  /** RFC 9457 ProblemDetail fields returned by Spring. */
+  title?: unknown;
+  detail?: unknown;
   error?: {
     code?: unknown;
     message?: unknown;
@@ -17,6 +20,10 @@ type BackendErrorPayload = {
 };
 
 const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
+  STUDENT_ALREADY_ENROLLED: {
+    title: "Học viên đã được đăng ký",
+    description: "Học viên đang theo học lớp này, không thể đăng ký thêm.",
+  },
   NOTIFICATION_RECIPIENT_NOT_FOUND: {
     title: "Không tìm thấy thông báo",
     description: "Thông báo này không còn tồn tại hoặc bạn không có quyền truy cập.",
@@ -33,6 +40,82 @@ const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
     title: "Không có lớp đang hoạt động",
     description: "Học viên chưa có đăng ký lớp đang hoạt động.",
   },
+  COACH_NOT_FOUND: {
+    title: "Không tìm thấy huấn luyện viên",
+    description: "Không tìm thấy thông tin huấn luyện viên.",
+  },
+  CLASS_NOT_FOUND: {
+    title: "Không tìm thấy lớp học",
+    description: "Lớp học không tồn tại.",
+  },
+  CLASS_ALREADY_EXISTS: {
+    title: "Lịch học đã tồn tại",
+    description: "Mã lịch học đã tồn tại.",
+  },
+  CLASS_HAS_STUDENTS: {
+    title: "Không thể xóa lớp học",
+    description: "Lớp học vẫn còn học viên đang theo học.",
+  },
+  CLASS_HAS_COACHES: {
+    title: "Không thể xóa lớp học",
+    description: "Lớp học vẫn còn huấn luyện viên được phân công.",
+  },
+  UNCATEGORIZED_EXCEPTION: {
+    title: "Lỗi hệ thống",
+    description: "Đã xảy ra lỗi hệ thống không xác định. Vui lòng thử lại sau.",
+  },
+  ENROLLMENT_NOT_FOUND: {
+    title: "Không tìm thấy đăng ký học",
+    description: "Không tìm thấy thông tin đăng ký học viên.",
+  },
+  COACH_ASSIGNMENT_NOT_FOUND: {
+    title: "Không tìm thấy phân công",
+    description: "Không tìm thấy thông tin phân công huấn luyện viên.",
+  },
+  COACH_ALREADY_ASSIGNED: {
+    title: "Huấn luyện viên đã được phân công",
+    description: "Huấn luyện viên đã được phân công cho lớp học này.",
+  },
+  PAYMENT_NOT_FOUND: {
+    title: "Không tìm thấy thanh toán",
+    description: "Không tìm thấy thông tin thanh toán.",
+  },
+  TUITION_ALREADY_PAID: {
+    title: "Học phí đã được đóng",
+    description: "Học phí tháng này đã được đóng cho lớp học tương ứng.",
+  },
+  COACH_INACTIVE: {
+    title: "Huấn luyện viên không hoạt động",
+    description: "Huấn luyện viên không ở trạng thái hoạt động.",
+  },
+  CLASS_INACTIVE: {
+    title: "Lớp học không hoạt động",
+    description: "Lớp học không ở trạng thái hoạt động.",
+  },
+  COACH_ASSIGNMENT_INVALID: {
+    title: "Phân công không hợp lệ",
+    description: "Không có phân công huấn luyện viên hợp lệ.",
+  },
+  COACH_ASSIGNMENT_NOT_STARTED: {
+    title: "Phân công chưa bắt đầu",
+    description: "Phân công huấn luyện viên chưa bắt đầu.",
+  },
+  COACH_ASSIGNMENT_ENDED: {
+    title: "Phân công đã kết thúc",
+    description: "Phân công huấn luyện viên đã kết thúc.",
+  },
+  COACH_ASSIGNMENT_OVERLAPPED: {
+    title: "Phân công bị chồng chéo",
+    description: "Phân công huấn luyện viên bị trùng hoặc chồng chéo lịch.",
+  },
+  COACH_TIMESHEET_NOT_FOUND: {
+    title: "Không tìm thấy bảng công",
+    description: "Không tìm thấy bảng công huấn luyện viên.",
+  },
+  COACH_TIMESHEET_ALREADY_EXISTS: {
+    title: "Huấn luyện viên đã chấm công",
+    description: "Huấn luyện viên đã chấm công cho ca dạy này.",
+  },
   CLASS_SESSION_NOT_FOUND: {
     title: "Không có buổi học đang hoạt động",
     description: "Không thể xác định buổi học để điểm danh.",
@@ -44,6 +127,30 @@ const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
   ATTENDANCE_ALREADY_EXISTS: {
     title: "Học viên đã được điểm danh",
     description: "Bản ghi điểm danh cho buổi học này đã tồn tại.",
+  },
+  WRONG_CLASS_DAY: {
+    title: "Ngày chấm công không khớp",
+    description: "Ngày chấm công không khớp với lịch học.",
+  },
+  WRONG_CLASS_SHIFT: {
+    title: "Ca chấm công không khớp",
+    description: "Ca chấm công không khớp với lịch học.",
+  },
+  CHECK_IN_TOO_EARLY: {
+    title: "Chưa đến giờ chấm công",
+    description: "Chưa đến thời gian được phép chấm công.",
+  },
+  CHECK_IN_TOO_LATE: {
+    title: "Đã quá giờ chấm công",
+    description: "Đã quá thời gian được phép chấm công.",
+  },
+  ACCESS_DENIED: {
+    title: "Không có quyền truy cập",
+    description: "Bạn không có quyền truy cập dữ liệu này.",
+  },
+  INVALID_DATE_RANGE: {
+    title: "Khoảng ngày không hợp lệ",
+    description: "Khoảng ngày được chọn không hợp lệ.",
   },
   FACE_IMAGE_INVALID: {
     title: "Ảnh khuôn mặt không hợp lệ",
@@ -115,9 +222,16 @@ function getBackendError(error: unknown) {
 
   const payload = error.response?.data;
   const code = readString(
-    payload?.errorCode ?? payload?.code ?? payload?.error?.code,
+    payload?.errorCode ??
+      payload?.code ??
+      payload?.title ??
+      payload?.error?.code,
   );
-  const message = readString(payload?.message ?? payload?.error?.message);
+  const message = readString(
+    payload?.message ??
+      payload?.detail ??
+      payload?.error?.message,
+  );
 
   return { code, message, status: error.response?.status };
 }

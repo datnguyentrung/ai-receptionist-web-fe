@@ -442,6 +442,16 @@ export default function AICheckIn() {
       setMobileScanStatus(isSuccess ? "success" : "error");
       setDisplayResult(isSuccess ? mapFaceToDisplayResult(result) : null);
 
+      if (isSuccess) {
+        if (result.attendance_record) {
+          setScanAttendanceResult(result.attendance_record);
+          setScanCoachTimesheetResult(null);
+        } else if (result.coachTimesheet) {
+          setScanAttendanceResult(null);
+          setScanCoachTimesheetResult(result.coachTimesheet);
+        }
+      }
+
       if (isSuccess && !faceResultHandledRef.current) {
         faceResultHandledRef.current = true;
         setSuccessfulScanCount((count) => count + 1);
@@ -1066,7 +1076,7 @@ export default function AICheckIn() {
                 <Suspense fallback={<ScannerLoadingFallback />}>
                   <LazyFaceScanner
                     checkInResult={checkInResult}
-                    onCheckInResult={setCheckInResult}
+                    onCheckInResult={handleFaceCheckInResult}
                     onBack={handleMobileBack}
                   />
                 </Suspense>
@@ -1097,8 +1107,7 @@ export default function AICheckIn() {
       {APP_MODE === "desktop" && checkInResult && (
         <CheckInCard
           user={checkInResult}
-          // Truyền true (hoặc một state boolean) để bắt đầu đếm ngược đóng Modal
-          onClose={handleCloseCard}
+          onConfirm={handleScanResultOk}
         />
       )}
     </>

@@ -5,25 +5,48 @@ import { submitFaceCheckIn } from "./faceScannerCheckIn";
 import { createFaceDetector } from "./faceScannerDetector";
 
 type CameraFacingMode = "user" | "environment";
-type FaceScannerStatus =
+export type FaceScannerStatus =
   | "loading-model"
   | "requesting-camera"
   | "scanning"
   | "submitting"
   | "error";
 
+export interface FaceScannerState {
+  status: FaceScannerStatus;
+  errorMessage: string | null;
+  facingMode: CameraFacingMode;
+  isSubmitting: boolean;
+}
+
 interface UseFaceScannerParams {
   checkInResult?: CheckInResponse | null;
   onCheckInResult?: (result: CheckInResponse | null) => void;
+  onStateChange?: (state: FaceScannerState) => void;
   resumeAfterCancel?: boolean;
 }
 
 const CAMERA_ERROR_MESSAGE =
   "Không thể mở camera. Kiểm tra quyền camera rồi thử lại.";
 
+export function shouldResumeFaceScanning({
+  checkInResult,
+  hasStarted,
+  isSubmitting,
+  status,
+}: {
+  checkInResult?: CheckInResponse | null;
+  hasStarted: boolean;
+  isSubmitting: boolean;
+  status: FaceScannerStatus;
+}) {
+  return !checkInResult && !isSubmitting && hasStarted && status !== "error";
+}
+
 export const useFaceScanner = ({
   checkInResult,
   onCheckInResult,
+  onStateChange,
   resumeAfterCancel = true,
 }: UseFaceScannerParams) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -50,6 +73,10 @@ export const useFaceScanner = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [facingMode, setFacingMode] = useState<CameraFacingMode>("user");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    onStateChange?.({ status, errorMessage, facingMode, isSubmitting });
+  }, [errorMessage, facingMode, isSubmitting, onStateChange, status]);
 
   const loadDetector = useCallback(async () => {
     setStatus("loading-model");
@@ -351,10 +378,17 @@ export const useFaceScanner = ({
   }, [checkInResult, faceDetector, startVideo]);
 
   useEffect(() => {
-    if (!checkInResult && !isSubmitting && hasStartedRef.current) {
+    if (
+      shouldResumeFaceScanning({
+        checkInResult,
+        hasStarted: hasStartedRef.current,
+        isSubmitting,
+        status,
+      })
+    ) {
       resumeScanning();
     }
-  }, [checkInResult, isSubmitting, resumeScanning]);
+  }, [checkInResult, isSubmitting, resumeScanning, status]);
 
   return {
     videoRef,

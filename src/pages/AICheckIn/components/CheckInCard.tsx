@@ -1,44 +1,24 @@
 import logo from "/taekwondo.jpg";
 import type { CheckInResponse } from "@/types";
-import { CheckCircle, Clock, MapPin, UserCircle, X } from "lucide-react";
+import { CheckCircle, Clock, MapPin, UserCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./CheckInCard.module.scss";
 
-const AUTO_DISMISS_SECONDS = 5;
-
 type CheckInCardProps = {
-  user: (CheckInResponse & { isAudioFinished?: boolean }) | null;
-  onClose: () => void;
+  user: CheckInResponse | null;
+  onConfirm: () => void;
 };
 
-export function CheckInCard({ user, onClose }: CheckInCardProps) {
-  // Luôn khởi tạo là 5s khi component này được mount
-  const [countdown, setCountdown] = useState(AUTO_DISMISS_SECONDS);
-
-  const isAudioFinished = !!user?.isAudioFinished;
+/** A persistent confirmation dialog for a completed face check-in. */
+export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    // Nếu AI CHƯA đọc xong thì KHÔNG LÀM GÌ CẢ (không đếm ngược, cũng không cần setState)
-    // Vì mặc định countdown đang là 5 rồi.
-    if (!isAudioFinished) {
-      return;
+    if (user) {
+      confirmButtonRef.current?.focus();
     }
-
-    // Khi đã đọc xong (isAudioFinished === true), BẮT ĐẦU đếm ngược
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          onClose();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isAudioFinished, onClose]); // Dependencies giữ nguyên
+  }, [user]);
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString("vi-VN", {
@@ -74,11 +54,6 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
       : "Ca học phù hợp";
   const sessionDate = attendanceRecord?.sessionDate ?? coachTimesheet?.workingDate;
 
-  // Tính toán % để thanh progress chạy mượt
-  const progress = isAudioFinished
-    ? ((AUTO_DISMISS_SECONDS - countdown) / AUTO_DISMISS_SECONDS) * 100
-    : 0;
-
   return (
     <AnimatePresence>
       <motion.div
@@ -88,7 +63,6 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
         className={styles.overlay}
-        onClick={onClose}
       >
         <motion.div
           key="modal-card"
@@ -97,37 +71,22 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
           exit={{ opacity: 0, scale: 0.88, y: 40 }}
           transition={{ duration: 0.5, type: "spring", bounce: 0.35 }}
           className={styles.card}
-          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="check-in-result-title"
         >
-          {/* Progress auto-dismiss bar */}
-          <div className={styles.progressBar}>
-            <motion.div
-              className={styles.progressFill}
-              initial={{ width: "0%" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.9, ease: "linear" }}
-            />
-          </div>
-
           <div className={styles.topStrip} />
-
-          <button
-            className={styles.closeBtn}
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X size={18} strokeWidth={2.5} />
-          </button>
 
           <div className={styles.body}>
             <div className={styles.aiMessageWrapper}>
               <motion.h1
+                id="check-in-result-title"
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
                 className={styles.aiMessage}
               >
-                {user?.message || ""}
+                {user?.message || "Đã ghi nhận check-in thành công."}
               </motion.h1>
             </div>
 
@@ -147,9 +106,7 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                   </div>
                 </div>
                 <div>
-                  <h2 className={styles.studentName}>
-                    {displayName}
-                  </h2>
+                  <h2 className={styles.studentName}>{displayName}</h2>
                   <div className={styles.beltBadge}>
                     <span className={styles.beltDot} />
                     {displayBelt}
@@ -190,33 +147,27 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
                   <span>{coachTimesheet ? "Ca dạy" : "Ca tập"}</span>
                 </div>
                 <p className={styles.infoCardAccentTitle}>{classLabel}</p>
-                <p className={styles.infoCardAccentNote}>
-                  {sessionDate ?? "Hôm nay"}
-                </p>
+                <p className={styles.infoCardAccentNote}>{sessionDate ?? "Hôm nay"}</p>
               </motion.div>
             </div>
           </div>
 
-          {/* Cập nhật UI chỗ text hướng dẫn */}
           <div className={styles.dismissHint}>
-            {isAudioFinished
-              ? `Tự động đóng sau ${countdown}s \u00A0\u00B7\u00A0 Nhấn bên ngoài để đóng`
-              : "Đang phát âm thanh hướng dẫn..."}
+            Xác nhận để tiếp tục quét người tiếp theo.
           </div>
 
-          {isAudioFinished && (
-            <div className={styles.mobileActions}>
-              <button
-                type="button"
-                className={styles.mobileOkButton}
-                onClick={onClose}
-              >
-                OK
-              </button>
-            </div>
-          )}
+          <div className={styles.mobileActions}>
+            <button
+              ref={confirmButtonRef}
+              type="button"
+              className={styles.mobileOkButton}
+              onClick={onConfirm}
+            >
+              OK, quét người tiếp theo
+            </button>
+          </div>
 
-          <div className={styles.decorDots}>
+          <div className={styles.decorDots} aria-hidden="true">
             <svg width="100" height="100" viewBox="0 0 100 100">
               <pattern
                 id="dots"

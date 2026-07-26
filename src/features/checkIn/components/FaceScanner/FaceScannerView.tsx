@@ -137,7 +137,7 @@ export const FaceScannerView = ({
             <p>{errorMessage}</p>
             <button type="button" className={styles.retryButton} onClick={retry}>
               <RefreshCcw size={18} aria-hidden="true" />
-              Thử lại
+              Quét tiếp
             </button>
           </>
         ) : isReady ? (

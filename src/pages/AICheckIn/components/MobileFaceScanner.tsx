@@ -1,6 +1,9 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import type { CheckInResponse } from "@/types";
-import { useFaceScanner } from "@/features/checkIn/components/FaceScanner/useFaceScanner";
+import {
+  type FaceScannerState,
+  useFaceScanner,
+} from "@/features/checkIn/components/FaceScanner/useFaceScanner";
 
 export interface MobileFaceScannerHandle {
   switchCamera: () => void;
@@ -8,17 +11,7 @@ export interface MobileFaceScannerHandle {
   cancelPendingCheckIn: () => void;
 }
 
-export interface MobileFaceScannerState {
-  status:
-    | "loading-model"
-    | "requesting-camera"
-    | "scanning"
-    | "submitting"
-    | "error";
-  errorMessage: string | null;
-  facingMode: "user" | "environment";
-  isSubmitting: boolean;
-}
+export type MobileFaceScannerState = FaceScannerState;
 
 interface MobileFaceScannerProps {
   checkInResult: CheckInResponse | null;
@@ -44,6 +37,7 @@ export const MobileFaceScanner = forwardRef<
   const scanner = useFaceScanner({
     checkInResult,
     onCheckInResult,
+    onStateChange,
     resumeAfterCancel: false,
   });
 
@@ -60,21 +54,6 @@ export const MobileFaceScanner = forwardRef<
       scanner.switchCamera,
     ],
   );
-
-  useEffect(() => {
-    onStateChange({
-      status: scanner.status,
-      errorMessage: scanner.errorMessage,
-      facingMode: scanner.facingMode,
-      isSubmitting: scanner.isSubmitting,
-    });
-  }, [
-    onStateChange,
-    scanner.errorMessage,
-    scanner.facingMode,
-    scanner.isSubmitting,
-    scanner.status,
-  ]);
 
   return (
     <div
