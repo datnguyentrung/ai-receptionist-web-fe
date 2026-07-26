@@ -7,6 +7,7 @@ import type {
 } from "../../config/constants";
 import type { PageResponse } from "../pagination";
 import type { UserResponse } from "../Security/authTypes";
+import type { CoachTimesheetResponse } from "./CoachTimesheetTypes";
 
 export interface AttendanceListResponse {
   stats: AttendanceStats;
@@ -124,6 +125,8 @@ export interface CheckInResponse {
   status: boolean;
   user: UserResponse | null;
   attendance_record: StudentAttendanceResponse | null;
+  /** Present when face check-in resolves to a coach timesheet. */
+  coachTimesheet?: CoachTimesheetResponse | null;
   message?: string;
   isAudioFinished?: boolean; // Cờ báo hiệu đã đọc xong, dùng để trigger đếm ngược đóng Modal
 }

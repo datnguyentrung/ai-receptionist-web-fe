@@ -1,5 +1,11 @@
-import { studentAPI } from "@/features/student";
-import type { CheckInResponse } from "@/types";
+import { personAPI } from "@/features/person";
+import { getCheckInErrorToast } from "@/features/studentAttendance/utils/checkInErrorToast";
+import {
+  isCoachFaceCheckInResponse,
+  isStudentFaceCheckInResponse,
+  type CheckInResponse,
+  type FaceCheckInResponse,
+} from "@/types";
 import { playSound } from "../../utils/playSound";
 import { speakText } from "../../utils/speakText";
 
@@ -12,26 +18,39 @@ interface SubmitFaceCheckInParams {
   onRequestError: (message: string) => void;
 }
 
-const getUserName = (response: CheckInResponse) =>
-  (response.user as { userProfile?: { name?: string } } | null)?.userProfile
-    ?.name ?? "";
-
-const getResponseMessage = (response: CheckInResponse) => {
-  const userName = getUserName(response);
-
-  switch (response.audio_signal) {
-    case "CHECKIN_SUCCESS":
-      return response.message ?? "Đã ghi nhận check-in thành công.";
-    case "ALREADY_CHECKED_IN":
-      return userName ? `${userName} đã check-in rồi.` : "Đã check-in rồi.";
-    case "NO_VALID_SESSION":
-      return response.message ?? "Không có ca phù hợp tại thời điểm này.";
-    case "FACE_NOT_RECOGNIZED":
-      return "Không nhận diện được khuôn mặt. Vui lòng nhìn thẳng vào camera.";
-    default:
-      return response.message ?? "Không thể xử lý check-in. Vui lòng thử lại.";
+/** Adapts the new Person API DTOs to the scanner's existing presentation model. */
+export function normalizeFaceCheckInResponse(
+  response: FaceCheckInResponse,
+): CheckInResponse {
+  if (isStudentFaceCheckInResponse(response)) {
+    return {
+      audio_signal: "CHECKIN_SUCCESS",
+      status: true,
+      user: null,
+      attendance_record: response,
+      coachTimesheet: null,
+      message: response.studentName
+        ? `Điểm danh ${response.studentName} thành công.`
+        : "Điểm danh thành công.",
+    };
   }
-};
+
+  if (isCoachFaceCheckInResponse(response)) {
+    const coachName = response.coach?.fullName;
+    return {
+      audio_signal: "CHECKIN_SUCCESS",
+      status: true,
+      user: null,
+      attendance_record: null,
+      coachTimesheet: response,
+      message: coachName
+        ? `Chấm công HLV ${coachName} thành công.`
+        : "Chấm công HLV thành công.",
+    };
+  }
+
+  throw new Error("Face check-in response has an unsupported shape.");
+}
 
 export const submitFaceCheckIn = async ({
   formData,
@@ -42,14 +61,15 @@ export const submitFaceCheckIn = async ({
   onRequestError,
 }: SubmitFaceCheckInParams) => {
   try {
-    const response = await studentAPI.face_check_in(formData, signal);
-    const message = getResponseMessage(response);
-    const isSuccess = response.audio_signal === "CHECKIN_SUCCESS";
+    const response = normalizeFaceCheckInResponse(
+      await personAPI.faceCheckIn(formData, signal),
+    );
+    const message = response.message ?? "Đã ghi nhận check-in thành công.";
 
     setSubmitting(false);
     stopScanningDuringCheckIn();
     onCheckInResult?.({ ...response, message });
-    void playSound(isSuccess ? "success" : "error");
+    void playSound("success");
     await speakText(message);
     onCheckInResult?.({ ...response, message, isAudioFinished: true });
   } catch (error) {
@@ -65,6 +85,6 @@ export const submitFaceCheckIn = async ({
 
     console.error("Face check-in failed:", error);
     void playSound("error");
-    onRequestError("Không thể gửi check-in. Kiểm tra kết nối rồi thử lại.");
+    onRequestError(getCheckInErrorToast(error).description);
   }
 };

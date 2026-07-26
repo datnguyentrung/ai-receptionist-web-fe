@@ -1,8 +1,7 @@
-import { javaApi, pythonApi } from "@/lib/axiosInstance";
+import { javaApi } from "@/lib/axiosInstance";
 import { ensureStudentListResponse } from "@/lib/runtimeGuards";
 
 import type {
-  CheckInResponse,
   GetStudentsParams,
   StudentCreateRequest,
   StudentDetail,
@@ -88,13 +87,4 @@ export const studentAPI = {
     return response.data;
   },
 
-  face_check_in: async (
-    formData: FormData,
-    signal?: AbortSignal,
-  ): Promise<CheckInResponse> => {
-    const response = await pythonApi.post("/students/check-in", formData, {
-      signal,
-    });
-    return response.data;
-  },
 };

@@ -46,19 +46,33 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
     minute: "2-digit",
   });
   const attendanceRecord = user?.attendance_record;
-  const checkedInTime = attendanceRecord?.checkInTime
-    ? new Date(attendanceRecord.checkInTime).toLocaleTimeString("vi-VN", {
+  const coachTimesheet = user?.coachTimesheet;
+  const checkedInAt = attendanceRecord?.checkInTime ?? coachTimesheet?.checkInTime;
+  const checkedInTime = checkedInAt
+    ? new Date(checkedInAt).toLocaleTimeString("vi-VN", {
         hour: "2-digit",
         minute: "2-digit",
       })
     : timeStr;
   const displayName =
-    user?.user?.userProfile?.name ?? attendanceRecord?.studentName;
-  const displayBelt = user?.user?.userProfile?.belt ?? "Thông tin check-in";
-  const memberId = user?.user?.userProfile?.phone ?? attendanceRecord?.studentId;
-  const classLabel = attendanceRecord?.classScheduleId
-    ? `Mã lớp ${attendanceRecord.classScheduleId}`
-    : "Ca học phù hợp";
+    user?.user?.userProfile?.name ??
+    attendanceRecord?.studentName ??
+    coachTimesheet?.coach?.fullName;
+  const displayBelt =
+    user?.user?.userProfile?.belt ??
+    (coachTimesheet ? "Huấn luyện viên" : "Thông tin check-in");
+  const memberId =
+    user?.user?.userProfile?.phone ??
+    attendanceRecord?.studentId ??
+    coachTimesheet?.coach?.staffCode;
+  const classScheduleId =
+    attendanceRecord?.classScheduleId ?? coachTimesheet?.classSchedule?.scheduleId;
+  const classLabel = classScheduleId
+    ? `Mã lớp ${classScheduleId}`
+    : coachTimesheet
+      ? "Ca dạy phù hợp"
+      : "Ca học phù hợp";
+  const sessionDate = attendanceRecord?.sessionDate ?? coachTimesheet?.workingDate;
 
   // Tính toán % để thanh progress chạy mượt
   const progress = isAudioFinished
@@ -173,11 +187,11 @@ export function CheckInCard({ user, onClose }: CheckInCardProps) {
               >
                 <div className={styles.infoCardAccentLabel}>
                   <MapPin />
-                  <span>Ca tập</span>
+                  <span>{coachTimesheet ? "Ca dạy" : "Ca tập"}</span>
                 </div>
                 <p className={styles.infoCardAccentTitle}>{classLabel}</p>
                 <p className={styles.infoCardAccentNote}>
-                  {attendanceRecord?.sessionDate ?? "Hôm nay"}
+                  {sessionDate ?? "Hôm nay"}
                 </p>
               </motion.div>
             </div>

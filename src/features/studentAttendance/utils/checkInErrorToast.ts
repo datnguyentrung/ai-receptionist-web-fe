@@ -17,6 +17,10 @@ type BackendErrorPayload = {
 };
 
 const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
+  NOTIFICATION_RECIPIENT_NOT_FOUND: {
+    title: "Không tìm thấy thông báo",
+    description: "Thông báo này không còn tồn tại hoặc bạn không có quyền truy cập.",
+  },
   STUDENT_NOT_FOUND: {
     title: "Không tìm thấy học viên",
     description: "Kiểm tra lại mã học viên rồi thử lại.",
@@ -41,6 +45,26 @@ const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
     title: "Học viên đã được điểm danh",
     description: "Bản ghi điểm danh cho buổi học này đã tồn tại.",
   },
+  FACE_IMAGE_INVALID: {
+    title: "Ảnh khuôn mặt không hợp lệ",
+    description: "Vui lòng chụp lại ảnh khuôn mặt rõ nét rồi thử lại.",
+  },
+  FACE_NOT_RECOGNIZED: {
+    title: "Không nhận diện được khuôn mặt",
+    description: "Vui lòng nhìn thẳng vào camera, bảo đảm đủ sáng rồi thử lại.",
+  },
+  FACE_CHECK_IN_PERSON_TYPE_INVALID: {
+    title: "Không thể check-in bằng khuôn mặt này",
+    description: "Người được nhận diện không thuộc đối tượng có thể điểm danh.",
+  },
+  PYTHON_BACKEND_UNAVAILABLE: {
+    title: "Dịch vụ nhận diện tạm thời không khả dụng",
+    description: "Vui lòng thử lại sau ít phút.",
+  },
+  PYTHON_BACKEND_ERROR: {
+    title: "Dịch vụ nhận diện gặp lỗi",
+    description: "Dữ liệu trả về từ dịch vụ nhận diện không hợp lệ. Vui lòng thử lại.",
+  },
 };
 
 const CHECK_IN_ERROR_BY_STATUS: Record<number, CheckInToastContent> = {
@@ -59,6 +83,14 @@ const CHECK_IN_ERROR_BY_STATUS: Record<number, CheckInToastContent> = {
   500: {
     title: "Lỗi hệ thống",
     description: "Máy chủ gặp sự cố. Vui lòng thử lại sau.",
+  },
+  502: {
+    title: "Dịch vụ nhận diện gặp lỗi",
+    description: "Không thể xử lý kết quả từ dịch vụ nhận diện khuôn mặt.",
+  },
+  503: {
+    title: "Dịch vụ nhận diện tạm thời không khả dụng",
+    description: "Vui lòng thử lại sau ít phút.",
   },
 };
 

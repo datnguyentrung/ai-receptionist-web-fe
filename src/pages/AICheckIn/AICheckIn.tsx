@@ -247,6 +247,10 @@ const mapFaceToDisplayResult = (
     return mapAttendanceToDisplayResult(response.attendance_record);
   }
 
+  if (response.coachTimesheet) {
+    return mapCoachToDisplayResult(response.coachTimesheet);
+  }
+
   const profile = response.user?.userProfile;
   const userInfo = response.user?.userInfo;
 
