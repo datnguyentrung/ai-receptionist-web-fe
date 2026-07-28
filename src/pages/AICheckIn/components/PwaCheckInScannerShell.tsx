@@ -9,7 +9,13 @@ import {
   X,
 } from "lucide-react";
 import styles from "../AICheckIn.module.scss";
+import type { PwaCheckInDisplayResult } from "../utils/checkInDisplayResult";
 import logo from "/taekwondo.jpg";
+
+export type {
+  PwaCheckInDisplayDetail,
+  PwaCheckInDisplayResult,
+} from "../utils/checkInDisplayResult";
 
 export type CheckInMode = "FACE_SCAN" | "CODE_SCAN";
 
@@ -21,18 +27,6 @@ export type MobileScanStatus =
   | "success"
   | "error"
   | "canceled";
-
-export interface PwaCheckInDisplayDetail {
-  label: string;
-  value: string;
-}
-
-export interface PwaCheckInDisplayResult {
-  title: string;
-  name?: string;
-  details?: PwaCheckInDisplayDetail[];
-  note?: string | null;
-}
 
 interface PwaCheckInScannerShellProps {
   mode: CheckInMode;

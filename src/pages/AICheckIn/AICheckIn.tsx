@@ -49,9 +49,13 @@ import {
   PwaCheckInScannerShell,
   type CheckInMode,
   type MobileScanStatus,
-  type PwaCheckInDisplayResult,
 } from "./components/PwaCheckInScannerShell";
 import { VoiceWave } from "./components/VoiceWave";
+import {
+  mapAttendanceToDisplayResult,
+  mapCoachToDisplayResult,
+  type PwaCheckInDisplayResult,
+} from "./utils/checkInDisplayResult";
 import logo from "/taekwondo.jpg";
 
 const SCAN_COOLDOWN_MS = 2500;
@@ -184,61 +188,6 @@ const mapCoachTimesheetToCheckInResult = (
     isAudioFinished: true,
   };
 };
-
-const mapAttendanceToDisplayResult = (
-  attendance: StudentAttendanceResponse,
-): PwaCheckInDisplayResult => ({
-  title: "Điểm danh thành công",
-  name: attendance.studentName,
-  details: [
-    {
-      label: "Lớp",
-      value: attendance.classScheduleId ?? "Chưa có dữ liệu",
-    },
-    {
-      label: "Ngày học",
-      value: formatScanDate(attendance.sessionDate),
-    },
-    {
-      label: "Giờ điểm danh",
-      value: formatScanTime(attendance.checkInTime),
-    },
-    {
-      label: "Trạng thái",
-      value: attendance.attendanceStatus
-        ? (AttendanceStatusLabel[attendance.attendanceStatus] ??
-          attendance.attendanceStatus)
-        : "Chưa có dữ liệu",
-    },
-  ],
-  note: attendance.note,
-});
-
-const mapCoachToDisplayResult = (
-  timesheet: CoachTimesheetResponse,
-): PwaCheckInDisplayResult => ({
-  title: "Chấm công HLV thành công",
-  name: timesheet.coach?.fullName ?? "Huấn luyện viên",
-  details: [
-    {
-      label: "Lớp",
-      value: timesheet.classSchedule?.scheduleId ?? "Chưa có dữ liệu",
-    },
-    {
-      label: "Ngày làm việc",
-      value: formatScanDate(timesheet.workingDate),
-    },
-    {
-      label: "Giờ check-in",
-      value: formatScanTime(timesheet.checkInTime),
-    },
-    {
-      label: "Trạng thái",
-      value: timesheet.status,
-    },
-  ],
-  note: timesheet.note,
-});
 
 const mapFaceToDisplayResult = (
   response: CheckInResponse,

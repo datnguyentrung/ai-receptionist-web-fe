@@ -49,6 +49,7 @@ function getStatusClass(status: CoachTimesheetStatus) {
     PENDING: styles.timesheetPending,
     APPROVED: styles.timesheetApproved,
     REJECTED: styles.timesheetRejected,
+    CHECKED_IN: styles.timesheetApproved,
   }[status];
 }
 
