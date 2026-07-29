@@ -118,7 +118,9 @@ export interface UserResponse {
 }
 
 export interface UserDetail {
+  personId: string;
   userId: string;
+  avatarUrl: string | null;
   birthDate: Date | string;
   phoneNumber: string | null;
   belt: Belt;

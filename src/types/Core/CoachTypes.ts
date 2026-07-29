@@ -16,7 +16,6 @@ export interface CoachCreateRequest {
 }
 
 export interface CoachUpdateRequest {
-  userId: string;
   phoneNumber?: string;
   /** Format: "yyyy-MM-dd" */
   birthDate?: string;

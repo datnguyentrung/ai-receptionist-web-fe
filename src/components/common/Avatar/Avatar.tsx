@@ -9,6 +9,7 @@ type AvatarProps = {
   width: string;
   height: string;
   className?: string;
+  imageUrl?: string | null;
 };
 
 export default function Avatar({
@@ -18,6 +19,7 @@ export default function Avatar({
   width,
   height,
   className,
+  imageUrl,
 }: AvatarProps) {
   const avatarInitials = getNameInitials(fullName);
 
@@ -32,7 +34,7 @@ export default function Avatar({
         height: height,
       }}
     >
-      {avatarInitials}
+      {imageUrl ? <img src={imageUrl} alt="" /> : avatarInitials}
     </div>
   );
 }

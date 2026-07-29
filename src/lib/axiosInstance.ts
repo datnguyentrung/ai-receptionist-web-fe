@@ -64,6 +64,14 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
   // Request interceptor
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+      if (
+        typeof FormData !== "undefined" &&
+        config.data instanceof FormData
+      ) {
+        // Let the browser add the multipart boundary for FormData requests.
+        config.headers.delete("Content-Type");
+      }
+
       const token = useAuthStore.getState().accessToken;
       const url = config.url ?? "";
       const shouldSkipAuthHeader =

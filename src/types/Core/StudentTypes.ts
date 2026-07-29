@@ -31,6 +31,8 @@ export interface StudentListResponse {
 // ============================================================
 
 export interface StudentOverview {
+  personId: string;
+  avatarUrl: string | null;
   studentCode: string;
   nationalCode: string | null;
   fullName: string;
@@ -59,7 +61,6 @@ export interface StudentCreateRequest {
 }
 
 export interface StudentUpdateRequest {
-  userId: string;
   phoneNumber?: string;
   /** Format: "yyyy-MM-dd" */
   birthDate?: string;
