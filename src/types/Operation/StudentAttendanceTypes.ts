@@ -5,6 +5,8 @@ import type {
   EvaluationStatus,
   ScheduleLevel,
 } from "../../config/constants";
+import type { ClassScheduleSummary } from "../Core/ClassScheduleTypes";
+import type { StudentSummary } from "../Core/StudentTypes";
 import type { PageResponse } from "../pagination";
 import type { UserResponse } from "../Security/authTypes";
 import type { CoachTimesheetResponse } from "./CoachTimesheetTypes";
@@ -33,9 +35,8 @@ export interface AttendanceStats {
 export interface StudentAttendanceResponse {
   attendanceId: string | null;
   enrollmentId: string;
-  studentId: string;
-  studentName: string;
-  classScheduleId?: string;
+  student: StudentSummary;
+  classSchedule: ClassScheduleSummary;
   /** Format: "yyyy-MM-dd" */
   sessionDate: string;
   attendanceStatus: AttendanceStatus | null;

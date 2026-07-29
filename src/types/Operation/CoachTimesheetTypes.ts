@@ -18,6 +18,7 @@ export interface CoachTimesheetAdjustRequest {
 
 export interface CoachTimesheetResponse {
   timesheetId: string;
+  classSessionId?: string;
   coachAssignmentId: string;
   coach: CoachSummary;
   classSchedule: ClassScheduleSummary;
@@ -28,6 +29,7 @@ export interface CoachTimesheetResponse {
   /** Format: ISO 8601 UTC */
   checkOutTime: string | null;
   status: CoachTimesheetStatus;
+  alreadyCheckedIn?: boolean;
   note: string | null;
   /** Format: ISO 8601 UTC */
   createdAt: string;

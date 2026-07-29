@@ -875,7 +875,7 @@ export default function AICheckIn() {
                             Điểm danh thành công
                           </p>
                           <h2 className={styles.mobileAttendanceStudentName}>
-                            {scanAttendanceResult.studentName}
+                            {scanAttendanceResult.student.fullName}
                           </h2>
                         </div>
                       </div>
@@ -884,7 +884,7 @@ export default function AICheckIn() {
                         <div>
                           <span>Lớp</span>
                           <strong>
-                            {scanAttendanceResult.classScheduleId ??
+                            {scanAttendanceResult.classSchedule?.scheduleId ??
                               "Chưa có dữ liệu"}
                           </strong>
                         </div>

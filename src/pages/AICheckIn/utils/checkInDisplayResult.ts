@@ -51,9 +51,9 @@ export function mapAttendanceToDisplayResult(
 ): PwaCheckInDisplayResult {
   return {
     title: "Điểm danh thành công",
-    name: attendance.studentName,
+    name: attendance.student.fullName,
     details: [
-      { label: "Lớp", value: attendance.classScheduleId ?? MISSING_DATA },
+      { label: "Lớp", value: attendance.classSchedule?.scheduleId ?? MISSING_DATA },
       { label: "Ngày học", value: formatScanDate(attendance.sessionDate) },
       {
         label: "Giờ điểm danh",
