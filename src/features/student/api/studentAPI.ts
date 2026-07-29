@@ -1,5 +1,6 @@
 import { javaApi } from "@/lib/axiosInstance";
 import { ensureStudentListResponse } from "@/lib/runtimeGuards";
+import { toMultipartFormData } from "@/lib/multipart";
 
 import type {
   GetStudentsParams,
@@ -56,16 +57,24 @@ export const studentAPI = {
 
   createStudent: async (
     studentData: StudentCreateRequest,
+    imageFile?: File | null,
   ): Promise<StudentDetail> => {
-    const response = await javaApi.post("/students", studentData);
+    const response = await javaApi.post(
+      "/students",
+      toMultipartFormData(studentData, imageFile),
+    );
     return response.data;
   },
 
   updateStudent: async (
-    id: string | number,
+    personId: string,
     studentData: StudentUpdateRequest,
+    imageFile?: File | null,
   ): Promise<StudentDetail> => {
-    const response = await javaApi.put(`/students/${id}`, studentData);
+    const response = await javaApi.put(
+      `/students/${personId}`,
+      toMultipartFormData(studentData, imageFile),
+    );
     return response.data;
   },
 

@@ -126,6 +126,7 @@ export function StudentTable({
                         fontWeight={800}
                         width="36px"
                         height="36px"
+                        imageUrl={student.avatarUrl}
                       />
                       <div>
                         <p className={styles.studentName}>{student.fullName}</p>
