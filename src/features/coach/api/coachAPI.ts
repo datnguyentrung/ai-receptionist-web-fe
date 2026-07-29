@@ -1,4 +1,5 @@
 import { javaApi } from "@/lib/axiosInstance";
+import { toMultipartFormData } from "@/lib/multipart";
 
 import type {
   CoachCreateRequest,
@@ -18,16 +19,26 @@ export const coachAPI = {
     return response.data;
   },
 
-  createCoach: async (coachData: CoachCreateRequest): Promise<CoachDetail> => {
-    const response = await javaApi.post("/coaches", coachData);
+  createCoach: async (
+    coachData: CoachCreateRequest,
+    imageFile?: File | null,
+  ): Promise<CoachDetail> => {
+    const response = await javaApi.post(
+      "/coaches",
+      toMultipartFormData(coachData, imageFile),
+    );
     return response.data;
   },
 
   updateCoach: async (
-    identifier: string | number,
+    personId: string,
     coachData: CoachUpdateRequest,
+    imageFile?: File | null,
   ): Promise<CoachDetail> => {
-    const response = await javaApi.put(`/coaches/${identifier}`, coachData);
+    const response = await javaApi.put(
+      `/coaches/${personId}`,
+      toMultipartFormData(coachData, imageFile),
+    );
     return response.data;
   },
 

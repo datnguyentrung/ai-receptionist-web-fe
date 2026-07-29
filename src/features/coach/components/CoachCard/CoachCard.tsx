@@ -62,6 +62,7 @@ export default function CoachCard({
               fontWeight={800}
               width="48px"
               height="48px"
+              imageUrl={coach.avatarUrl}
             />
             <div>
               <p

@@ -1,19 +1,16 @@
+import { ProfileImageField } from "@/components/common/ProfileImageField";
 import { Input } from "@/components/ui/input";
 import { ModalLayout } from "@/components/ui/modal-layout";
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import type { Belt, CoachStatus } from "@/config/constants";
 import { coachAPI } from "@/features/coach/api/coachAPI";
+import { CoachCoreFields } from "@/features/coach/components/CoachCoreFields";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
+import { formatDateInput, getRequestErrorMessage, isFutureDate } from "@/lib/personForm";
 import type { CoachDetail, CoachUpdateRequest } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  COACH_BELT_OPTIONS,
-  COACH_STATUS_OPTIONS,
-  formatDateInput,
-  getRequestErrorMessage,
-  isFutureDate,
-} from "../../utils/coachForm";
-import "../CoachCreateModal/CoachCreateModal.scss";
+import "../CoachForm/CoachForm.scss";
 
 type CoachUpdateModalProps = {
   open: boolean;
@@ -28,6 +25,13 @@ type CoachUpdateFormState = {
   birthDate: string;
   belt: Belt;
   coachStatus: CoachStatus;
+};
+
+type CoachUpdateFormProps = {
+  coach: CoachDetail;
+  detail?: CoachDetail;
+  isDetailFetching: boolean;
+  onClose: () => void;
 };
 
 function createForm(coach: CoachDetail, detail?: CoachDetail): CoachUpdateFormState {
@@ -46,41 +50,44 @@ function getRoleDisplay(coach: CoachDetail) {
   return roles.map((role) => role.replace(/^ROLE_/, "")).join(", ") || "Chưa xác định";
 }
 
-type CoachUpdateFormProps = {
-  coach: CoachDetail;
-  detail?: CoachDetail;
-  isDetailFetching: boolean;
-  onClose: () => void;
-};
-
 function CoachUpdateForm({
   coach,
   detail,
   isDetailFetching,
   onClose,
 }: CoachUpdateFormProps) {
-  const [form, setForm] = useState<CoachUpdateFormState>(() =>
-    createForm(coach, detail),
-  );
+  const [form, setForm] = useState<CoachUpdateFormState>(() => createForm(coach, detail));
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const displayedCoach = detail ?? coach;
+  const queryClient = useQueryClient();
   const { mutateAsync: updateCoach, isPending } = useGenericMutation<
     CoachDetail,
-    CoachUpdateRequest
+    { payload: CoachUpdateRequest; imageFile: File | null }
   >(
-    (payload) => coachAPI.updateCoach(coach.staffCode, payload),
+    ({ payload, imageFile: selectedImage }) =>
+      coachAPI.updateCoach(displayedCoach.personId, payload, selectedImage),
     [["coaches"], ["coach-detail", coach.staffCode]],
+    {
+      onSuccess: (updatedCoach) => {
+        queryClient.setQueryData(
+          ["coach-detail", coach.staffCode],
+          updatedCoach,
+        );
+        queryClient.setQueryData<CoachDetail[]>(["coaches"], (current) =>
+          current?.map((item) =>
+            item.personId === updatedCoach.personId
+              ? { ...item, ...updatedCoach }
+              : item,
+          ),
+        );
+      },
+    },
   );
 
   const setField = <K extends keyof CoachUpdateFormState>(
     key: K,
     value: CoachUpdateFormState[K],
-  ) => {
-    setForm((previous) => ({ ...previous, [key]: value }));
-  };
-
-  const handleClose = () => {
-    if (!isPending) onClose();
-  };
+  ) => setForm((previous) => ({ ...previous, [key]: value }));
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,16 +109,17 @@ function CoachUpdateForm({
       return;
     }
 
+    const payload: CoachUpdateRequest = {
+      fullName: form.fullName.trim(),
+      phoneNumber: form.phoneNumber.trim(),
+      nationalCode: form.nationalCode.trim() || undefined,
+      birthDate: form.birthDate,
+      belt: form.belt,
+      coachStatus: form.coachStatus,
+    };
+
     try {
-      await updateCoach({
-        userId: displayedCoach.userId,
-        fullName: form.fullName.trim(),
-        phoneNumber: form.phoneNumber.trim(),
-        nationalCode: form.nationalCode.trim() || undefined,
-        birthDate: form.birthDate,
-        belt: form.belt,
-        coachStatus: form.coachStatus,
-      });
+      await updateCoach({ payload, imageFile });
       showSuccessToast("Cập nhật huấn luyện viên thành công.");
       onClose();
     } catch (error) {
@@ -124,36 +132,39 @@ function CoachUpdateForm({
     }
   };
 
+  const disabled = isPending || isDetailFetching;
+
   return (
     <form className="coach-create-modal" onSubmit={handleSubmit}>
-      {isPending || isDetailFetching ? (
+      {disabled ? (
         <div className="coach-create-modal__loading" role="status" aria-live="polite">
           <span className="coach-create-modal__spinner" aria-hidden="true" />
           {isPending ? "Đang cập nhật huấn luyện viên..." : "Đang tải thông tin huấn luyện viên..."}
         </div>
       ) : null}
 
-      <fieldset
-        className="coach-create-modal__fieldset"
-        disabled={isPending || isDetailFetching}
-      >
+      <fieldset className="coach-create-modal__fieldset" disabled={disabled}>
+        <ProfileImageField
+          value={imageFile}
+          currentAvatarUrl={displayedCoach.avatarUrl}
+          disabled={disabled}
+          onChange={setImageFile}
+          onInvalidFile={showErrorToast}
+        />
         <div className="coach-create-modal__grid">
-          <label className="coach-create-modal__field">
-            <span>Họ và tên *</span>
-            <Input
-              type="text"
-              value={form.fullName}
-              onChange={(event) => setField("fullName", event.target.value)}
-            />
-          </label>
-          <label className="coach-create-modal__field">
-            <span>Số điện thoại *</span>
-            <Input
-              type="tel"
-              value={form.phoneNumber}
-              onChange={(event) => setField("phoneNumber", event.target.value)}
-            />
-          </label>
+          <CoachCoreFields
+            fullName={form.fullName}
+            phoneNumber={form.phoneNumber}
+            birthDate={form.birthDate}
+            belt={form.belt}
+            coachStatus={form.coachStatus}
+            disabled={disabled}
+            onFullNameChange={(value) => setField("fullName", value)}
+            onPhoneNumberChange={(value) => setField("phoneNumber", value)}
+            onBirthDateChange={(value) => setField("birthDate", value)}
+            onBeltChange={(value) => setField("belt", value)}
+            onCoachStatusChange={(value) => setField("coachStatus", value)}
+          />
           <label className="coach-create-modal__field">
             <span>CCCD</span>
             <Input
@@ -161,42 +172,6 @@ function CoachUpdateForm({
               value={form.nationalCode}
               onChange={(event) => setField("nationalCode", event.target.value)}
             />
-          </label>
-          <label className="coach-create-modal__field">
-            <span>Ngày sinh *</span>
-            <Input
-              type="date"
-              value={form.birthDate}
-              onChange={(event) => setField("birthDate", event.target.value)}
-            />
-          </label>
-          <label className="coach-create-modal__field">
-            <span>Đai *</span>
-            <select
-              value={form.belt}
-              onChange={(event) => setField("belt", event.target.value as Belt)}
-            >
-              {COACH_BELT_OPTIONS.map((belt) => (
-                <option key={belt} value={belt}>
-                  {belt}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="coach-create-modal__field">
-            <span>Trạng thái công việc</span>
-            <select
-              value={form.coachStatus}
-              onChange={(event) =>
-                setField("coachStatus", event.target.value as CoachStatus)
-              }
-            >
-              {COACH_STATUS_OPTIONS.map((status) => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
           </label>
           <label className="coach-create-modal__field">
             <span>Email</span>
@@ -209,14 +184,10 @@ function CoachUpdateForm({
         </div>
 
         <div className="coach-create-modal__actions">
-          <button type="button" className="btn btn--ghost" onClick={handleClose}>
+          <button type="button" className="btn btn--ghost" onClick={onClose} disabled={isPending}>
             Hủy
           </button>
-          <button
-            type="submit"
-            className="btn btn--primary"
-            disabled={isPending || isDetailFetching}
-          >
+          <button type="submit" className="btn btn--primary" disabled={disabled}>
             {isPending ? "Đang cập nhật..." : "Lưu cập nhật"}
           </button>
         </div>
@@ -225,11 +196,7 @@ function CoachUpdateForm({
   );
 }
 
-export function CoachUpdateModal({
-  open,
-  coach,
-  onClose,
-}: CoachUpdateModalProps) {
+export function CoachUpdateModal({ open, coach, onClose }: CoachUpdateModalProps) {
   const { data: detail, isFetching: isDetailFetching } = useGetQuery(
     ["coach-detail", coach?.staffCode],
     () => coachAPI.getCoachByStaffCode(coach?.staffCode ?? ""),
@@ -252,7 +219,7 @@ export function CoachUpdateModal({
     >
       {coach ? (
         <CoachUpdateForm
-          key={`${coach.staffCode}-${detail?.userId ?? "overview"}`}
+          key={`${coach.staffCode}-${detail?.personId ?? "overview"}`}
           coach={coach}
           detail={detail}
           isDetailFetching={isDetailFetching}
