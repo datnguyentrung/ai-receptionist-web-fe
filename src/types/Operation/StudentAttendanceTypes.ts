@@ -127,6 +127,14 @@ export interface CheckInResponse {
   attendance_record: StudentAttendanceResponse | null;
   /** Present when face check-in resolves to a coach timesheet. */
   coachTimesheet?: CoachTimesheetResponse | null;
+  recognizedPerson?:
+    | (import("../Core/StudentTypes").StudentDetail & {
+        personType: "STUDENT";
+      })
+    | (import("../Core/CoachTypes").CoachDetail & {
+        personType: "COACH";
+      });
+  checkInErrorCode?: string | null;
   message?: string;
   isAudioFinished?: boolean; // Cờ báo hiệu đã đọc xong, dùng để trigger đếm ngược đóng Modal
 }

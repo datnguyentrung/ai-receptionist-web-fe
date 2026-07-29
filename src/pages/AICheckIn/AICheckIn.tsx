@@ -191,7 +191,33 @@ const mapCoachTimesheetToCheckInResult = (
 
 const mapFaceToDisplayResult = (
   response: CheckInResponse,
-): PwaCheckInDisplayResult => {
+): PwaCheckInDisplayResult | null => {
+  if (!response.status) {
+    const person = response.recognizedPerson;
+    if (!person) return null;
+
+    return {
+      title:
+        person.personType === "STUDENT"
+          ? "Điểm danh chưa thành công"
+          : "Chấm công HLV chưa thành công",
+      name: person.fullName,
+      details:
+        person.personType === "STUDENT"
+          ? [
+              { label: "Mã học viên", value: person.studentCode },
+              { label: "Đai", value: person.belt },
+              { label: "Trạng thái", value: person.studentStatus },
+            ]
+          : [
+              { label: "Mã HLV", value: person.staffCode },
+              { label: "Đai", value: person.belt },
+              { label: "Trạng thái", value: person.coachStatus },
+              { label: "Email", value: person.email ?? "Chưa có dữ liệu" },
+            ],
+    };
+  }
+
   if (response.attendance_record) {
     return mapAttendanceToDisplayResult(response.attendance_record);
   }
@@ -380,7 +406,7 @@ export default function AICheckIn() {
       setCheckInResult(result);
       if (!result) return;
 
-      const isSuccess = result.audio_signal === "CHECKIN_SUCCESS";
+      const isSuccess = result.status;
       const message =
         result.message ??
         (isSuccess
@@ -389,7 +415,7 @@ export default function AICheckIn() {
 
       setMobileScanMessage(message);
       setMobileScanStatus(isSuccess ? "success" : "error");
-      setDisplayResult(isSuccess ? mapFaceToDisplayResult(result) : null);
+      setDisplayResult(mapFaceToDisplayResult(result));
 
       if (isSuccess) {
         if (result.attendance_record) {

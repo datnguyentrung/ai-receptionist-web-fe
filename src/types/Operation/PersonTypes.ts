@@ -1,19 +1,16 @@
+import type { CoachDetail } from "../Core/CoachTypes";
+import type { StudentDetail } from "../Core/StudentTypes";
 import type { CoachTimesheetResponse } from "./CoachTimesheetTypes";
 import type { StudentAttendanceResponse } from "./StudentAttendanceTypes";
 
-/** The concrete payload returned by `POST /persons/face-check-in`. */
-export type FaceCheckInResponse =
-  | StudentAttendanceResponse
-  | CoachTimesheetResponse;
-
-export function isStudentFaceCheckInResponse(
-  response: FaceCheckInResponse,
-): response is StudentAttendanceResponse {
-  return "attendanceId" in response;
-}
-
-export function isCoachFaceCheckInResponse(
-  response: FaceCheckInResponse,
-): response is CoachTimesheetResponse {
-  return "timesheetId" in response;
+/** The payload returned by `POST /persons/face-check-in` after a face is resolved. */
+export interface FaceCheckInResponse {
+  personType: "STUDENT" | "COACH";
+  checkInSuccess: boolean;
+  checkInErrorCode?: string | null;
+  checkInErrorMessage?: string | null;
+  studentDetail: StudentDetail | null;
+  coachDetail: CoachDetail | null;
+  studentAttendance: StudentAttendanceResponse | null;
+  coachTimesheet: CoachTimesheetResponse | null;
 }

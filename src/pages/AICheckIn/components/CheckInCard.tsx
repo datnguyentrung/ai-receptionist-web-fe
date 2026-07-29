@@ -27,6 +27,17 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
   });
   const attendanceRecord = user?.attendance_record;
   const coachTimesheet = user?.coachTimesheet;
+  const attendanceSubject = attendanceRecord as
+    | {
+        student?: { fullName?: string; personId?: string };
+        studentName?: string;
+        studentId?: string;
+        classSchedule?: { scheduleId?: string };
+        classScheduleId?: string;
+      }
+    | null;
+  const recognizedPerson = user?.recognizedPerson;
+  const isSuccess = user?.status ?? false;
   const checkedInAt = attendanceRecord?.checkInTime ?? coachTimesheet?.checkInTime;
   const checkedInTime = checkedInAt
     ? new Date(checkedInAt).toLocaleTimeString("vi-VN", {
@@ -36,17 +47,29 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
     : timeStr;
   const displayName =
     user?.user?.userProfile?.name ??
-    attendanceRecord?.studentName ??
-    coachTimesheet?.coach?.fullName;
+    attendanceSubject?.student?.fullName ??
+    attendanceSubject?.studentName ??
+    coachTimesheet?.coach?.fullName ??
+    recognizedPerson?.fullName;
   const displayBelt =
     user?.user?.userProfile?.belt ??
-    (coachTimesheet ? "Huấn luyện viên" : "Thông tin check-in");
+    (recognizedPerson?.personType === "STUDENT"
+      ? recognizedPerson.belt
+      : coachTimesheet || recognizedPerson?.personType === "COACH"
+        ? "Huấn luyện viên"
+        : "Thông tin check-in");
   const memberId =
     user?.user?.userProfile?.phone ??
-    attendanceRecord?.studentId ??
-    coachTimesheet?.coach?.staffCode;
+    attendanceSubject?.student?.personId ??
+    attendanceSubject?.studentId ??
+    coachTimesheet?.coach?.staffCode ??
+    (recognizedPerson?.personType === "STUDENT"
+      ? recognizedPerson.studentCode
+      : recognizedPerson?.staffCode);
   const classScheduleId =
-    attendanceRecord?.classScheduleId ?? coachTimesheet?.classSchedule?.scheduleId;
+    attendanceSubject?.classSchedule?.scheduleId ??
+    attendanceSubject?.classScheduleId ??
+    coachTimesheet?.classSchedule?.scheduleId;
   const classLabel = classScheduleId
     ? `Mã lớp ${classScheduleId}`
     : coachTimesheet
@@ -101,9 +124,11 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
                     alt="Người được nhận diện"
                     className={styles.avatar}
                   />
-                  <div className={styles.verifiedBadge}>
-                    <CheckCircle size={12} strokeWidth={3} />
-                  </div>
+                  {isSuccess && (
+                    <div className={styles.verifiedBadge}>
+                      <CheckCircle size={12} strokeWidth={3} />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h2 className={styles.studentName}>{displayName}</h2>
@@ -121,7 +146,7 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
               </div>
             )}
 
-            <div className={styles.scheduleGrid}>
+            {isSuccess && <div className={styles.scheduleGrid}>
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -149,11 +174,13 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
                 <p className={styles.infoCardAccentTitle}>{classLabel}</p>
                 <p className={styles.infoCardAccentNote}>{sessionDate ?? "Hôm nay"}</p>
               </motion.div>
-            </div>
+            </div>}
           </div>
 
           <div className={styles.dismissHint}>
-            Xác nhận để tiếp tục quét người tiếp theo.
+            {isSuccess
+              ? "Xác nhận để tiếp tục quét người tiếp theo."
+              : "Quét tiếp để thử nhận diện lại."}
           </div>
 
           <div className={styles.mobileActions}>
@@ -163,7 +190,7 @@ export function CheckInCard({ user, onConfirm }: CheckInCardProps) {
               className={styles.mobileOkButton}
               onClick={onConfirm}
             >
-              OK, quét người tiếp theo
+              {isSuccess ? "OK, quét người tiếp theo" : "Quét tiếp"}
             </button>
           </div>
 

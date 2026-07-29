@@ -1,8 +1,6 @@
 import { personAPI } from "@/features/person";
 import { getCheckInErrorToast } from "@/features/studentAttendance/utils/checkInErrorToast";
 import {
-  isCoachFaceCheckInResponse,
-  isStudentFaceCheckInResponse,
   type CheckInResponse,
   type FaceCheckInResponse,
 } from "@/types";
@@ -18,38 +16,88 @@ interface SubmitFaceCheckInParams {
   onRequestError: (message: string) => void;
 }
 
-/** Adapts the new Person API DTOs to the scanner's existing presentation model. */
+/** Adapts the Person face check-in DTO to the scanner's presentation model. */
 export function normalizeFaceCheckInResponse(
   response: FaceCheckInResponse,
 ): CheckInResponse {
-  if (isStudentFaceCheckInResponse(response)) {
+  if (response.personType !== "STUDENT" && response.personType !== "COACH") {
+    throw new Error("Face check-in response has an unsupported person type.");
+  }
+
+  const hasOnlyStudentDetail =
+    response.studentDetail !== null && response.coachDetail === null;
+  const hasOnlyCoachDetail =
+    response.coachDetail !== null && response.studentDetail === null;
+  const isStudent = response.personType === "STUDENT";
+
+  if ((isStudent && !hasOnlyStudentDetail) || (!isStudent && !hasOnlyCoachDetail)) {
+    throw new Error("Face check-in response has an invalid person detail.");
+  }
+
+  if (
+    response.checkInSuccess &&
+    ((isStudent && (response.studentAttendance === null || response.coachTimesheet !== null)) ||
+      (!isStudent && (response.coachTimesheet === null || response.studentAttendance !== null)))
+  ) {
+    throw new Error("Face check-in response is missing its successful check-in record.");
+  }
+
+  if (
+    !response.checkInSuccess &&
+    (response.studentAttendance !== null || response.coachTimesheet !== null)
+  ) {
+    throw new Error("Face check-in failure response must not include a check-in record.");
+  }
+
+  if (!response.checkInSuccess) {
+    const recognizedPerson = isStudent
+      ? {
+          personType: "STUDENT" as const,
+          ...response.studentDetail!,
+        }
+      : {
+          personType: "COACH" as const,
+          ...response.coachDetail!,
+        };
+
     return {
-      audio_signal: "CHECKIN_SUCCESS",
-      status: true,
+      audio_signal: "NO_VALID_SESSION",
+      status: false,
       user: null,
-      attendance_record: response,
+      attendance_record: null,
       coachTimesheet: null,
-      message: response.studentName
-        ? `Điểm danh ${response.studentName} thành công.`
-        : "Điểm danh thành công.",
+      recognizedPerson,
+      checkInErrorCode: response.checkInErrorCode ?? null,
+      message: response.checkInErrorMessage ?? "Không thể xử lý check-in. Vui lòng thử lại.",
+      isAudioFinished: true,
     };
   }
 
-  if (isCoachFaceCheckInResponse(response)) {
-    const coachName = response.coach?.fullName;
+  if (!isStudent) {
+    const coachName = response.coachDetail!.fullName;
     return {
       audio_signal: "CHECKIN_SUCCESS",
       status: true,
       user: null,
       attendance_record: null,
-      coachTimesheet: response,
+      coachTimesheet: response.coachTimesheet!,
       message: coachName
         ? `Chấm công HLV ${coachName} thành công.`
         : "Chấm công HLV thành công.",
     };
   }
 
-  throw new Error("Face check-in response has an unsupported shape.");
+  const studentName = response.studentDetail!.fullName;
+  return {
+    audio_signal: "CHECKIN_SUCCESS",
+    status: true,
+    user: null,
+    attendance_record: response.studentAttendance!,
+    coachTimesheet: null,
+    message: studentName
+      ? `Điểm danh ${studentName} thành công.`
+      : "Điểm danh thành công.",
+  };
 }
 
 export const submitFaceCheckIn = async ({
@@ -64,14 +112,22 @@ export const submitFaceCheckIn = async ({
     const response = normalizeFaceCheckInResponse(
       await personAPI.faceCheckIn(formData, signal),
     );
-    const message = response.message ?? "Đã ghi nhận check-in thành công.";
-
     setSubmitting(false);
     stopScanningDuringCheckIn();
-    onCheckInResult?.({ ...response, message });
+
+    if (!response.status) {
+      onCheckInResult?.(response);
+      void playSound("error");
+      return;
+    }
+
+    const message = response.message ?? "Đã ghi nhận check-in thành công.";
+    const successResponse = { ...response, message };
+
+    onCheckInResult?.(successResponse);
     void playSound("success");
     await speakText(message);
-    onCheckInResult?.({ ...response, message, isAudioFinished: true });
+    onCheckInResult?.({ ...successResponse, isAudioFinished: true });
   } catch (error) {
     setSubmitting(false);
     const errorName =

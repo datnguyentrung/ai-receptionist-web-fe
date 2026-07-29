@@ -68,7 +68,7 @@ export function PwaCheckInScannerShell({
 }: PwaCheckInScannerShellProps) {
   const isSubmitting = status === "submitting";
   const isFaceMode = mode === "FACE_SCAN";
-  const showDetailedResult = status === "success" && displayResult;
+  const showDetailedResult = displayResult !== null;
   const scanStateClass = styles[`mobileScanState_${status}`] ?? "";
   const feedbackStateClass =
     styles[`mobileFeedbackPanel_${status}`] ?? "";
@@ -199,19 +199,21 @@ export function PwaCheckInScannerShell({
 
               <p className={styles.mobileFeedbackMessage}>{message}</p>
 
-              {successfulScanCount > 0 && (
+              {status === "success" && successfulScanCount > 0 && (
                 <p className={styles.mobileSuccessCount}>
                   Đã check-in {successfulScanCount} người trong phiên này.
                 </p>
               )}
 
-              <button
-                type="button"
-                className={styles.mobileAttendanceOkButton}
-                onClick={onResultOk}
-              >
-                OK
-              </button>
+              {status === "success" && (
+                <button
+                  type="button"
+                  className={styles.mobileAttendanceOkButton}
+                  onClick={onResultOk}
+                >
+                  OK
+                </button>
+              )}
             </div>
           ) : (
             <>
