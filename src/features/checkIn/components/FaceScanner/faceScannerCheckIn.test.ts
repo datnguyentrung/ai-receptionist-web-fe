@@ -32,15 +32,23 @@ const studentDetail = {
   branchName: "Văn Quán",
 } as StudentDetail;
 
-const coachDetail = {
+const coachDetail: CoachDetail = {
   personId: "coach-1",
+  userId: "user-coach-1",
   fullName: "Trần Bình",
+  avatarUrl: null,
+  birthDate: "1990-01-01",
+  phoneNumber: null,
   staffCode: "VQT001",
   belt: "D2",
+  status: "ACTIVE",
   coachStatus: "ACTIVE",
   email: "coach@example.com",
+  createdAt: "2026-07-26T08:00:00Z",
+  updatedAt: "2026-07-26T08:00:00Z",
+  lastLoginAt: null,
   currentAssignments: [],
-} as CoachDetail;
+};
 
 const studentSuccess: FaceCheckInResponse = {
   personType: "STUDENT",

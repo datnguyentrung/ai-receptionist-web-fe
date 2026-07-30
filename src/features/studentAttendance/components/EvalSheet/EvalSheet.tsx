@@ -1,5 +1,6 @@
 import Avatar from "@/components/common/Avatar";
 import type { EvaluationStatus } from "@/config/constants";
+import { getAttendanceStudentName } from "@/features/studentAttendance/utils/attendanceAccessors";
 import type { StudentAttendanceResponse } from "@/types";
 import { Check, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -71,6 +72,7 @@ export function EvalSheet({
   );
   const [notes, setNotes] = useState(student.note ?? "");
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const studentName = getAttendanceStudentName(student);
 
   // Lock body scroll while sheet is open
   useEffect(() => {
@@ -113,14 +115,14 @@ export function EvalSheet({
         {/* Header */}
         <div className={styles.sheetHeader}>
           <Avatar
-            fullName={student.studentName}
+            fullName={studentName}
             fontSize="11px"
             fontWeight={800}
             width="40px"
             height="40px"
           />
           <div className={styles.sheetStudentInfo}>
-            <p className={styles.sheetStudentName}>{student.studentName}</p>
+            <p className={styles.sheetStudentName}>{studentName}</p>
             <p className={styles.sheetSubtitle}>
               Nhận xét buổi học · {sessionDate}
             </p>

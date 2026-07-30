@@ -9,6 +9,13 @@ import {
 } from "@/config/constants";
 import { AttendanceBadge } from "@/features/studentAttendance/components/AttendanceBadge/AttendanceBadge";
 import { ClipboardList } from "@/features/studentAttendance/components/ClipboardList";
+import {
+  getAttendanceBranchName,
+  getAttendanceShiftLabel,
+  getAttendanceStudentId,
+  getAttendanceStudentName,
+  getAttendanceWeekdayLabel,
+} from "@/features/studentAttendance/utils/attendanceAccessors";
 import type {
   AttendanceListResponse,
   StudentAttendanceSimpleResponse,
@@ -194,7 +201,10 @@ export function AttendanceTable({
 
               return (
                 <tr
-                  key={a.attendanceId ?? `${a.enrollmentId}-${a.studentId}`}
+                  key={
+                    a.attendanceId ??
+                    `${a.enrollmentId}-${getAttendanceStudentId(a)}`
+                  }
                   className={`${styles.tr} ${isChanged ? styles.changedRow : ""}`}
                 >
                   <td className={styles.td}>
@@ -230,31 +240,33 @@ export function AttendanceTable({
                   <td className={`${styles.td} ${styles.studentCol}`}>
                     <div className={styles.avatarCell}>
                       <Avatar
-                        fullName={a.studentName}
+                        fullName={getAttendanceStudentName(a)}
                         fontSize="9px"
                         fontWeight={800}
                         width="32px"
                         height="32px"
                       />
-                      <p className={styles.studentName}>{a.studentName}</p>
+                      <p className={styles.studentName}>
+                        {getAttendanceStudentName(a)}
+                      </p>
                     </div>
                   </td>
                   {/* Cơ sở */}
                   <td className={styles.td}>
                     <p className={styles.cellText}>
-                      Cơ sở {a.classScheduleId?.charAt(1) ?? "—"}
+                      {getAttendanceBranchName(a)}
                     </p>
                   </td>
                   {/* Thứ */}
                   <td className={styles.td}>
                     <p className={styles.cellText}>
-                      Thứ {a.classScheduleId?.charAt(2) ?? "—"}
+                      {getAttendanceWeekdayLabel(a)}
                     </p>
                   </td>
                   {/* Ca học */}
                   <td className={styles.td}>
                     <p className={styles.cellText}>
-                      Ca {a.classScheduleId?.charAt(4) ?? "—"}
+                      {getAttendanceShiftLabel(a)}
                     </p>
                   </td>
                   {/* Điểm danh */}
@@ -384,7 +396,7 @@ export function AttendanceTable({
                         </button>
                       ) : null}
                       <MiniActionPopover
-                        itemLabel={a.studentName}
+                        itemLabel={getAttendanceStudentName(a)}
                         actions={[
                           { id: "info", label: "Thông tin", icon: Info },
                           { id: "note", label: "Ghi chú", icon: StickyNote },
@@ -399,7 +411,7 @@ export function AttendanceTable({
                           if (actionId === "info") {
                             showComingSoonActionToast(
                               "Thông tin",
-                              a.studentName,
+                              getAttendanceStudentName(a),
                             );
                             return;
                           }

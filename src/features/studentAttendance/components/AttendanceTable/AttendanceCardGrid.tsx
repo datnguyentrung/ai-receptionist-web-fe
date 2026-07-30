@@ -10,6 +10,13 @@ import type {
   AttendanceListResponse,
   StudentAttendanceSimpleResponse,
 } from "@/types";
+import {
+  getAttendanceBranchName,
+  getAttendanceShiftLabel,
+  getAttendanceStudentId,
+  getAttendanceStudentName,
+  getAttendanceWeekdayLabel,
+} from "@/features/studentAttendance/utils/attendanceAccessors";
 import { formatDateDMY } from "@/utils/format";
 import {
   AlertCircle,
@@ -57,10 +64,6 @@ const EVALUATION_OPTIONS: EvaluationStatus[] = [
   "AVERAGE",
   "WEAK",
 ];
-
-function getClassPart(value: string | undefined, index: number) {
-  return value?.charAt(index) || "-";
-}
 
 function getEvaluationClass(status: EvaluationStatus | null | undefined) {
   if (!status) return "";
@@ -144,7 +147,8 @@ export function AttendanceCardGrid({
         const blockedEvaluationReason =
           "Chỉ có thể đánh giá khi điểm danh là Có mặt, Học bù hoặc Đi muộn.";
         const cardKey =
-          row.attendanceId ?? `${row.enrollmentId}-${row.studentId}-${index}`;
+          row.attendanceId ??
+          `${row.enrollmentId}-${getAttendanceStudentId(row)}-${index}`;
         const AttendanceIcon = getAttendanceIcon(attendanceStatus);
         const evaluationControl = (
           <MiniActionPopover
@@ -206,7 +210,7 @@ export function AttendanceCardGrid({
               </label>
 
               <MiniActionPopover
-                itemLabel={row.studentName}
+                itemLabel={getAttendanceStudentName(row)}
                 actions={[
                   { id: "info", label: "Thông tin", icon: Info },
                   { id: "note", label: "Ghi chú", icon: StickyNote },
@@ -219,7 +223,10 @@ export function AttendanceCardGrid({
                 ]}
                 onActionSelect={(actionId) => {
                   if (actionId === "info") {
-                    showComingSoonActionToast("Thông tin", row.studentName);
+                    showComingSoonActionToast(
+                      "Thông tin",
+                      getAttendanceStudentName(row),
+                    );
                     return;
                   }
 
@@ -240,7 +247,7 @@ export function AttendanceCardGrid({
                 <div className={styles.cardIdentity}>
                   <div className={styles.cardAvatarWrap}>
                     <Avatar
-                      fullName={row.studentName}
+                      fullName={getAttendanceStudentName(row)}
                       fontSize="12px"
                       fontWeight={800}
                       width="42px"
@@ -248,7 +255,9 @@ export function AttendanceCardGrid({
                     />
                   </div>
                   <div className={styles.cardTitleBlock}>
-                    <h3 className={styles.cardStudentName}>{row.studentName}</h3>
+                    <h3 className={styles.cardStudentName}>
+                      {getAttendanceStudentName(row)}
+                    </h3>
                     <p className={styles.cardDate}>{formatDateDMY(row.sessionDate)}</p>
                   </div>
                 </div>
@@ -256,15 +265,15 @@ export function AttendanceCardGrid({
                 <dl className={styles.cardMetaGrid}>
                   <div>
                     <dt>Cơ sở</dt>
-                    <dd>{getClassPart(row.classScheduleId, 1)}</dd>
+                    <dd>{getAttendanceBranchName(row)}</dd>
                   </div>
                   <div>
                     <dt>Thứ</dt>
-                    <dd>{getClassPart(row.classScheduleId, 2)}</dd>
+                    <dd>{getAttendanceWeekdayLabel(row)}</dd>
                   </div>
                   <div>
                     <dt>Ca</dt>
-                    <dd>{getClassPart(row.classScheduleId, 4)}</dd>
+                    <dd>{getAttendanceShiftLabel(row)}</dd>
                   </div>
                 </dl>
               </div>

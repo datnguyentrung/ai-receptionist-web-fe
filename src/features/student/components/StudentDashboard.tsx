@@ -1,4 +1,5 @@
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
+import { getAttendanceStudentName } from "@/features/studentAttendance/utils/attendanceAccessors";
 import { useGetQuery } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
 import { CalendarDays, Loader2 } from "lucide-react";
@@ -86,7 +87,7 @@ export default function StudentDashboard() {
                   }}
                 >
                   <span>{record.sessionDate}</span>
-                  <span>{record.studentName}</span>
+                  <span>{getAttendanceStudentName(record)}</span>
                   <span>{record.attendanceStatus}</span>
                 </li>
               ))}

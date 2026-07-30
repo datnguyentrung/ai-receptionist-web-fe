@@ -15,6 +15,10 @@ import { EvalSheet } from "@/features/studentAttendance";
 import { studentAttendanceAPI } from "@/features/studentAttendance/api/studentAttendanceAPI";
 import { showCheckInErrorToast } from "@/features/studentAttendance/utils/checkInErrorToast";
 import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
+import {
+  getAttendanceStudentId,
+  getAttendanceStudentName,
+} from "@/features/studentAttendance/utils/attendanceAccessors";
 import { studentEnrollmentAPI } from "@/features/studentEnrollment/api/studentEnrollmentAPI";
 import { useGetQuery, usePlainMutation } from "@/hooks/useCrud";
 import { useAuthStore } from "@/store/authStore";
@@ -123,7 +127,8 @@ function mergeAttendanceIntoList(
     attendances: {
       ...old.attendances,
       content: old.attendances.content.map((student) =>
-        student.studentId === updatedAttendance.studentId ||
+        getAttendanceStudentId(student) ===
+          getAttendanceStudentId(updatedAttendance) ||
           student.attendanceId === updatedAttendance.attendanceId
           ? { ...student, ...updatedAttendance }
           : student,
@@ -332,8 +337,12 @@ export function AttendanceCheckin() {
       CLASS_SESSION.date,
     ).map((student) => ({
       ...student,
-      belt: readBelt(student) ?? beltByStudentId.get(student.studentId) ?? null,
-      studentCode: studentCodeById.get(student.studentId),
+      belt:
+        readBelt(student.student) ??
+        readBelt(student) ??
+        beltByStudentId.get(getAttendanceStudentId(student)) ??
+        null,
+      studentCode: studentCodeById.get(getAttendanceStudentId(student)),
     }));
   }, [data, enrollments]);
 
@@ -360,7 +369,11 @@ export function AttendanceCheckin() {
   }, []);
 
   const students = useMemo<StudentAttendanceWithBelt[]>(
-    () => baseMerged.map((s) => ({ ...s, ...(mutations[s.studentId] ?? {}) })),
+    () =>
+      baseMerged.map((student) => ({
+        ...student,
+        ...(mutations[getAttendanceStudentId(student)] ?? {}),
+      })),
     [baseMerged, mutations],
   );
 
@@ -460,7 +473,10 @@ export function AttendanceCheckin() {
             beltSort === "asc" ? beltCompare : -beltCompare;
 
           if (orderedBeltCompare !== 0) return orderedBeltCompare;
-          return a.studentName.localeCompare(b.studentName, "vi");
+          return getAttendanceStudentName(a).localeCompare(
+            getAttendanceStudentName(b),
+            "vi",
+          );
         }),
     };
   }, [students, filter, beltFilter, beltSort]);
@@ -492,7 +508,7 @@ export function AttendanceCheckin() {
       if (!status) return;
 
       const attendanceId = baseMergedRef.current.find(
-        (s) => s.studentId === id,
+        (s) => getAttendanceStudentId(s) === id,
       )?.attendanceId;
       if (!attendanceId) return;
 
@@ -534,7 +550,7 @@ export function AttendanceCheckin() {
       setCheckingInStudentCode(studentCode);
       checkInByScan(studentCode, {
         onSuccess: (checkedInAttendance) => {
-          const studentId = checkedInAttendance.studentId;
+          const studentId = getAttendanceStudentId(checkedInAttendance);
           setMutations((prev) => ({
             ...prev,
             [studentId]: {
@@ -581,7 +597,7 @@ export function AttendanceCheckin() {
 
       // 2. Tìm attendanceId
       const attendanceId = baseMergedRef.current.find(
-        (s) => s.studentId === id,
+        (s) => getAttendanceStudentId(s) === id,
       )?.attendanceId;
       if (!attendanceId) return;
 
@@ -728,7 +744,7 @@ export function AttendanceCheckin() {
                 <AnimatePresence initial={false}>
                   {filtered.map((student, index) => (
                     <StudentCard
-                      key={student.studentId}
+                      key={getAttendanceStudentId(student)}
                       student={student}
                       index={index}
                       onUpdateStatus={updateStatus}
@@ -780,7 +796,7 @@ export function AttendanceCheckin() {
             student={evalTarget}
             sessionDate={new Date().toISOString().split("T")[0]}
             onSave={(evalStatus, notes) =>
-              updateEval(evalTarget.studentId, evalStatus, notes)
+              updateEval(getAttendanceStudentId(evalTarget), evalStatus, notes)
             }
             onClose={() => setEvalTarget(null)}
           />

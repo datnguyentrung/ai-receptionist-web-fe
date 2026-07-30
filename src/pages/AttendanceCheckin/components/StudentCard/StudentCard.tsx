@@ -6,6 +6,10 @@ import type {
 import { BeltLabel } from "@/config/constants";
 import { AttendancePill, EvalQuick } from "@/features/studentAttendance";
 import { canEvaluateAttendance } from "@/features/studentAttendance/evaluationRules";
+import {
+  getAttendanceStudentId,
+  getAttendanceStudentName,
+} from "@/features/studentAttendance/utils/attendanceAccessors";
 import type { StudentAttendanceResponse } from "@/types";
 import { avatarColor } from "@/utils/avatarColor";
 import { getNameInitials } from "@/utils/getInitials";
@@ -54,6 +58,8 @@ export function StudentCardInner({
     hasAttendanceRecord && canEvaluateAttendance(student.attendanceStatus);
   const visibleEvaluationStatus = canEvaluate ? student.evaluationStatus : null;
   const visibleNote = canEvaluate ? student.note : null;
+  const studentId = getAttendanceStudentId(student);
+  const studentName = getAttendanceStudentName(student);
 
   return (
     <motion.div
@@ -78,16 +84,16 @@ export function StudentCardInner({
         <div className={styles.avatarWrap}>
           <div
             className={styles.avatar}
-            style={{ background: avatarColor(student.studentId) }}
+            style={{ background: avatarColor(studentId) }}
           >
-            {getNameInitials(student.studentName)}
+            {getNameInitials(studentName)}
           </div>
         </div>
 
         {/* Info */}
         <div className={styles.studentInfo}>
           <div className={styles.nameRow}>
-            <p className={styles.studentName}>{student.studentName}</p>
+            <p className={styles.studentName}>{studentName}</p>
           </div>
           <div className={styles.metaRow}>
             <span className={styles.beltTag}>
@@ -114,7 +120,7 @@ export function StudentCardInner({
               if (!canEvaluate) return;
 
               if (v !== student.evaluationStatus) {
-                onUpdateEval(student.studentId, v);
+                onUpdateEval(studentId, v);
               }
             }}
           />
@@ -144,7 +150,7 @@ export function StudentCardInner({
           attendanceId={student.attendanceId ? student.attendanceId : undefined}
           studentCode={student.studentCode}
           value={student.attendanceStatus}
-          onChange={(v) => onUpdateStatus(student.studentId, v)}
+          onChange={(v) => onUpdateStatus(studentId, v)}
           onCheckIn={onCheckIn}
           isCheckInPending={isCheckInPending}
         />
@@ -212,7 +218,8 @@ export function StudentCardInner({
 export const StudentCard = memo(StudentCardInner, (prev, next) => {
   return (
     prev.index === next.index &&
-    prev.student.studentId === next.student.studentId &&
+    getAttendanceStudentId(prev.student) ===
+      getAttendanceStudentId(next.student) &&
     prev.student.belt === next.student.belt &&
     prev.student.attendanceId === next.student.attendanceId &&
     prev.student.attendanceStatus === next.student.attendanceStatus &&

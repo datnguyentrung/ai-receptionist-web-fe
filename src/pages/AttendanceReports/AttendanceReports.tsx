@@ -17,6 +17,11 @@ import { AttendanceFilters } from "@/pages/AttendanceReports/components/Attendan
 import { AttendancePageHeader } from "@/pages/AttendanceReports/components/AttendancePageHeader";
 import { AttendanceSummarySection } from "@/pages/AttendanceReports/components/AttendanceSummarySection";
 import { AttendanceTable } from "@/features/studentAttendance/components/AttendanceTable";
+import {
+  getAttendanceScheduleId,
+  getAttendanceStudentId,
+  getAttendanceStudentName,
+} from "@/features/studentAttendance/utils/attendanceAccessors";
 import { CoachTimesheetFilters } from "@/pages/AttendanceReports/components/CoachTimesheetFilters/CoachTimesheetFilters";
 import { CoachTimesheetTable } from "@/pages/AttendanceReports/components/CoachTimesheetTable/CoachTimesheetTable";
 import { SaveAttendanceConfirmContent } from "@/pages/AttendanceReports/components/SaveAttendanceConfirmContent/SaveAttendanceConfirmContent";
@@ -387,7 +392,7 @@ function StudentAttendanceReportsContent() {
     return {
       attendanceId: row.attendanceId,
       enrollmentId: row.enrollmentId,
-      studentId: row.studentId,
+      studentId: getAttendanceStudentId(row),
       attendanceStatus: row.attendanceStatus ?? "ABSENT",
       checkInTime: toCheckInString(row.checkInTime),
       recordedByCoachName: row.recordedByCoachName,
@@ -512,9 +517,11 @@ function StudentAttendanceReportsContent() {
 
       return {
         attendanceId,
-        studentName: base?.studentName ?? "Học viên không xác định",
+        studentName: base
+          ? getAttendanceStudentName(base)
+          : "Học viên không xác định",
         sessionDate: base?.sessionDate ?? null,
-        classScheduleId: base?.classScheduleId ?? "-",
+        classScheduleId: base ? getAttendanceScheduleId(base) : "-",
         attendanceStatus,
         evaluationStatus,
         note,
