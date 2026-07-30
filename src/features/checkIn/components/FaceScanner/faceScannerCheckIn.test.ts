@@ -157,9 +157,39 @@ describe("normalizeFaceCheckInResponse", () => {
     expect(result).toMatchObject({
       status: false,
       checkInErrorCode: "CHECK_IN_TOO_LATE",
-      message: "Đã quá thời gian được phép chấm công",
+      message: "Đã quá thời gian được phép chấm công.",
       recognizedPerson: { personType: "COACH", ...coachDetail },
     });
+  });
+
+  it("uses mapped description for STUDENT_INACTIVE, ignoring raw checkInErrorMessage", () => {
+    const result = normalizeFaceCheckInResponse({
+      ...studentSuccess,
+      checkInSuccess: false,
+      checkInErrorCode: "STUDENT_INACTIVE",
+      checkInErrorMessage: "Some arbitrary backend text that should be ignored",
+      studentAttendance: null,
+    });
+
+    expect(result.status).toBe(false);
+    expect(result.message).toBe(
+      "Chỉ học viên đang hoạt động mới có thể điểm danh.",
+    );
+  });
+
+  it("falls back to generic message when checkInErrorCode is unknown", () => {
+    const result = normalizeFaceCheckInResponse({
+      ...studentSuccess,
+      checkInSuccess: false,
+      checkInErrorCode: "TOTALLY_UNKNOWN_CODE",
+      checkInErrorMessage: "Backend text that should not surface",
+      studentAttendance: null,
+    });
+
+    expect(result.status).toBe(false);
+    expect(result.message).toBe(
+      "Không thể xử lý check-in. Vui lòng thử lại.",
+    );
   });
 
   it("rejects inconsistent success and person-detail payloads", () => {

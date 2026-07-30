@@ -82,8 +82,7 @@ const CODE_SCANNER_FORMATS: BarcodeFormat[] = [
   "codabar",
 ];
 
-const getDefaultCheckInMode = (): CheckInMode =>
-  APP_MODE === "desktop" ? "FACE_SCAN" : "CODE_SCAN";
+const getDefaultCheckInMode = (): CheckInMode => "FACE_SCAN";
 
 const getCheckInModeMessage = (mode: CheckInMode) =>
   mode === "CODE_SCAN"
@@ -768,19 +767,19 @@ export default function AICheckIn() {
           <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
             <button
               type="button"
-              className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
-                }`}
-              onClick={() => handleChangeCheckInMode("CODE_SCAN")}
-            >
-              {getCheckInModeLabel("CODE_SCAN")}
-            </button>
-            <button
-              type="button"
               className={`${styles.mobileModeButton} ${isFaceScanMode ? styles.mobileModeButtonActive : ""
                 }`}
               onClick={() => handleChangeCheckInMode("FACE_SCAN")}
             >
               {getCheckInModeLabel("FACE_SCAN")}
+            </button>
+            <button
+              type="button"
+              className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
+                }`}
+              onClick={() => handleChangeCheckInMode("CODE_SCAN")}
+            >
+              {getCheckInModeLabel("CODE_SCAN")}
             </button>
           </div>
           )}

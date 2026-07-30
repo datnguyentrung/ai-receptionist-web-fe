@@ -68,4 +68,42 @@ describe("PwaCheckInScannerShell", () => {
     act(() => retryButton?.dispatchEvent(new MouseEvent("click", { bubbles: true })));
     expect(onRetry).toHaveBeenCalledOnce();
   });
+
+  it("renders AI khuôn mặt before Quét mã in the mode switch", () => {
+    container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+
+    act(() => {
+      root?.render(
+        <PwaCheckInScannerShell
+          mode="FACE_SCAN"
+          status="scanning"
+          statusLabel="Đang quét"
+          message="Sẵn sàng nhận diện khuôn mặt."
+          lastScannedCode={null}
+          successfulScanCount={0}
+          displayResult={null}
+          showBackButton={false}
+          camera={<div />}
+          onModeChange={vi.fn()}
+          onBack={vi.fn()}
+          onSwitchCamera={vi.fn()}
+          onCancel={vi.fn()}
+          onRetry={vi.fn()}
+          onResultOk={vi.fn()}
+        />,
+      );
+    });
+
+    const modeButtons = Array.from(container.querySelectorAll("button")).filter(
+      (btn) =>
+        btn.textContent?.includes("AI khuôn mặt") ||
+        btn.textContent?.includes("Quét mã"),
+    );
+
+    expect(modeButtons).toHaveLength(2);
+    expect(modeButtons[0].textContent).toContain("AI khuôn mặt");
+    expect(modeButtons[1].textContent).toContain("Quét mã");
+  });
 });

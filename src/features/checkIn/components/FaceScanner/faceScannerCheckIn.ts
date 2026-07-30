@@ -1,5 +1,8 @@
 import { personAPI } from "@/features/person";
-import { getCheckInErrorToast } from "@/features/studentAttendance/utils/checkInErrorToast";
+import {
+  getCheckInErrorContentByCode,
+  getCheckInErrorToast,
+} from "@/features/studentAttendance/utils/checkInErrorToast";
 import {
   type CheckInResponse,
   type FaceCheckInResponse,
@@ -68,7 +71,9 @@ export function normalizeFaceCheckInResponse(
       coachTimesheet: null,
       recognizedPerson,
       checkInErrorCode: response.checkInErrorCode ?? null,
-      message: response.checkInErrorMessage ?? "Không thể xử lý check-in. Vui lòng thử lại.",
+      message:
+        getCheckInErrorContentByCode(response.checkInErrorCode)?.description ??
+        "Không thể xử lý check-in. Vui lòng thử lại.",
       isAudioFinished: true,
     };
   }

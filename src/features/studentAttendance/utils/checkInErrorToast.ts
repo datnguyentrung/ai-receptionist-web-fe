@@ -94,7 +94,7 @@ const CHECK_IN_ERROR_BY_CODE: Record<string, CheckInToastContent> = {
   },
   COACH_ASSIGNMENT_INVALID: {
     title: "Phân công không hợp lệ",
-    description: "Không có phân công huấn luyện viên hợp lệ.",
+    description: "Không tìm thấy ca tập chấm công hợp lệ.",
   },
   COACH_ASSIGNMENT_NOT_STARTED: {
     title: "Phân công chưa bắt đầu",
@@ -223,17 +223,28 @@ function getBackendError(error: unknown) {
   const payload = error.response?.data;
   const code = readString(
     payload?.errorCode ??
-      payload?.code ??
-      payload?.title ??
-      payload?.error?.code,
+    payload?.code ??
+    payload?.title ??
+    payload?.error?.code,
   );
   const message = readString(
     payload?.message ??
-      payload?.detail ??
-      payload?.error?.message,
+    payload?.detail ??
+    payload?.error?.message,
   );
 
   return { code, message, status: error.response?.status };
+}
+
+/**
+ * Looks up the user-facing content for a given check-in error code.
+ * Returns `undefined` when the code is missing or not in the map.
+ */
+export function getCheckInErrorContentByCode(
+  code: string | null | undefined,
+): CheckInToastContent | undefined {
+  if (!code) return undefined;
+  return CHECK_IN_ERROR_BY_CODE[code];
 }
 
 /** Maps the check-in API's backend error contract to a concise user-facing toast. */

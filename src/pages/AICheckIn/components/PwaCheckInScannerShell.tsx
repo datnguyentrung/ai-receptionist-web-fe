@@ -79,7 +79,7 @@ export function PwaCheckInScannerShell({
         className={styles.mobileModeSwitch}
         aria-label="Chọn chế độ check-in"
       >
-        {(["CODE_SCAN", "FACE_SCAN"] as const).map((nextMode) => (
+        {(["FACE_SCAN", "CODE_SCAN"] as const).map((nextMode) => (
           <button
             key={nextMode}
             type="button"
