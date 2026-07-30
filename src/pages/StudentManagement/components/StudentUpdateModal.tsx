@@ -175,16 +175,16 @@ function StudentUpdateForm({
             onFormChange={setForm}
           />
         </section>
-
-        <footer className={styles.studentCreateModalActions}>
-          <button type="button" className={styles.btn} onClick={onClose} disabled={isPending}>
-            Hủy
-          </button>
-          <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={disabled}>
-            {isPending ? "Đang cập nhật..." : "Cập nhật"}
-          </button>
-        </footer>
       </fieldset>
+
+      <div className={styles.studentUpdateModalActions}>
+        <button type="button" className={styles.btn} onClick={onClose} disabled={isPending}>
+          Hủy
+        </button>
+        <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={disabled}>
+          {isPending ? "Đang cập nhật..." : "Cập nhật"}
+        </button>
+      </div>
     </form>
   );
 }
@@ -210,6 +210,9 @@ export function StudentUpdateModal({
       subtitle={student ? `${student.fullName} · ${student.studentCode}` : undefined}
       maxWidth={760}
       overlayClassName={styles.noBlurOverlay}
+      dialogClassName={styles.studentUpdateDialog}
+      surfaceClassName={styles.studentUpdateSurface}
+      bodyClassName={styles.studentUpdateBody}
     >
       {student ? (
         <StudentUpdateForm

@@ -233,6 +233,53 @@
   transform: none !important;
 }
 
+// ── Student Update Modal: layout overrides ──────────────────
+
+.studentUpdateDialog {
+  max-height: min(78vh, 720px) !important;
+}
+
+.studentUpdateSurface {
+  max-height: inherit;
+}
+
+.studentUpdateBody {
+  overflow: auto;
+}
+
+.studentUpdateModalActions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+  padding-top: $space-3;
+  padding-bottom: calc(#{$space-2} + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid $gray-100;
+  background: linear-gradient(180deg, rgba($white, 0.92), $white 42%);
+  box-shadow: 0 -10px 24px rgba($gray-900, 0.06);
+
+  @include respond-to(md) {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 720px) {
+  .studentUpdateDialog {
+    max-height: min(82dvh, calc(100dvh - 88px)) !important;
+  }
+
+  .studentUpdateModalActions {
+    flex-direction: column-reverse;
+  }
+}
+
+:global(body[data-app-mode="pwa"]) .studentUpdateDialog {
+  max-height: min(82dvh, calc(100dvh - 88px)) !important;
+}
+
 @keyframes student-create-spin {
   to {
     transform: rotate(360deg);
