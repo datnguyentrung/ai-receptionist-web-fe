@@ -1,11 +1,5 @@
 import { APP_MODE } from "@/config/appMode";
 import { AttendanceStatusLabel } from "@/config/constants";
-import type {
-  CheckInResponse,
-  CoachTimesheetResponse,
-  StudentAttendanceResponse,
-} from "@/types";
-import { writeDebugStorage } from "@/utils/debugStorage";
 import { playSound } from "@/features/checkIn/utils/playSound";
 import {
   ScannedCheckInCodeError,
@@ -14,6 +8,12 @@ import {
 import {
   type ScannedCheckInCodeFormat,
 } from "@/features/checkIn/utils/validateScannedCheckInCode";
+import type {
+  CheckInResponse,
+  CoachTimesheetResponse,
+  StudentAttendanceResponse,
+} from "@/types";
+import { writeDebugStorage } from "@/utils/debugStorage";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import axios from "axios";
 import type { BarcodeFormat } from "barcode-detector";
@@ -204,16 +204,20 @@ const mapFaceToDisplayResult = (
       details:
         person.personType === "STUDENT"
           ? [
-              { label: "Mã học viên", value: person.studentCode },
-              { label: "Đai", value: person.belt },
-              { label: "Trạng thái", value: person.studentStatus },
-            ]
+            { label: "Mã học viên", value: person.studentCode },
+            { label: "Ngày sinh", value: formatScanDate(person.birthDate) },
+            { label: "Giới tính", value: person.gender === true ? "Nam" : "Nữ" },
+            { label: "Đai", value: person.belt },
+            { label: "Trạng thái", value: person.studentStatus },
+          ]
           : [
-              { label: "Mã HLV", value: person.staffCode },
-              { label: "Đai", value: person.belt },
-              { label: "Trạng thái", value: person.coachStatus },
-              { label: "Email", value: person.email ?? "Chưa có dữ liệu" },
-            ],
+            { label: "Mã HLV", value: person.staffCode },
+            { label: "Ngày sinh", value: formatScanDate(person.birthDate) },
+            { label: "Giới tính", value: person.gender === true ? "Nam" : "Nữ" },
+            { label: "Đai", value: person.belt },
+            { label: "Trạng thái", value: person.coachStatus },
+            { label: "Email", value: person.email ?? "Chưa có dữ liệu" },
+          ],
     };
   }
 
@@ -459,7 +463,7 @@ export default function AICheckIn() {
           setMobileScanStatus("error");
           setMobileScanMessage(
             state.errorMessage ??
-              "Không thể sử dụng AI khuôn mặt. Vui lòng thử lại.",
+            "Không thể sử dụng AI khuôn mặt. Vui lòng thử lại.",
           );
           break;
       }
@@ -738,11 +742,10 @@ export default function AICheckIn() {
                       paused={scannerPaused}
                       formats={CODE_SCANNER_FORMATS}
                       constraints={mobileScannerConstraints}
-                      containerClassName={`${styles.mobileScanner} ${
-                        qrFacingMode === "user"
-                          ? styles.mobileScanner_front
-                          : styles.mobileScanner_back
-                      }`}
+                      containerClassName={`${styles.mobileScanner} ${qrFacingMode === "user"
+                        ? styles.mobileScanner_front
+                        : styles.mobileScanner_back
+                        }`}
                     />
                   </Suspense>
                 ) : (
@@ -764,24 +767,24 @@ export default function AICheckIn() {
           )}
 
           {APP_MODE === "desktop" && (
-          <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
-            <button
-              type="button"
-              className={`${styles.mobileModeButton} ${isFaceScanMode ? styles.mobileModeButtonActive : ""
-                }`}
-              onClick={() => handleChangeCheckInMode("FACE_SCAN")}
-            >
-              {getCheckInModeLabel("FACE_SCAN")}
-            </button>
-            <button
-              type="button"
-              className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
-                }`}
-              onClick={() => handleChangeCheckInMode("CODE_SCAN")}
-            >
-              {getCheckInModeLabel("CODE_SCAN")}
-            </button>
-          </div>
+            <div className={styles.mobileModeSwitch} aria-label="Chọn chế độ check-in">
+              <button
+                type="button"
+                className={`${styles.mobileModeButton} ${isFaceScanMode ? styles.mobileModeButtonActive : ""
+                  }`}
+                onClick={() => handleChangeCheckInMode("FACE_SCAN")}
+              >
+                {getCheckInModeLabel("FACE_SCAN")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.mobileModeButton} ${isCodeScanMode ? styles.mobileModeButtonActive : ""
+                  }`}
+                onClick={() => handleChangeCheckInMode("CODE_SCAN")}
+              >
+                {getCheckInModeLabel("CODE_SCAN")}
+              </button>
+            </div>
           )}
 
           {APP_MODE === "desktop" && isCodeScanMode && (
