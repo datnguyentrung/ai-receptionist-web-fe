@@ -1,5 +1,5 @@
 import { APP_MODE } from "@/config/appMode";
-import { AttendanceStatusLabel } from "@/config/constants";
+import { AttendanceStatusLabel, BeltLabel, CoachStatusLabel, StudentStatusLabel } from "@/config/constants";
 import { playSound } from "@/features/checkIn/utils/playSound";
 import {
   ScannedCheckInCodeError,
@@ -207,15 +207,15 @@ const mapFaceToDisplayResult = (
             { label: "Mã học viên", value: person.studentCode },
             { label: "Ngày sinh", value: formatScanDate(person.birthDate) },
             { label: "Giới tính", value: person.gender === true ? "Nam" : "Nữ" },
-            { label: "Đai", value: person.belt },
-            { label: "Trạng thái", value: person.studentStatus },
+            { label: "Đai", value: BeltLabel[person.belt] },
+            { label: "Trạng thái", value: StudentStatusLabel[person.studentStatus] },
           ]
           : [
             { label: "Mã HLV", value: person.staffCode },
             { label: "Ngày sinh", value: formatScanDate(person.birthDate) },
             { label: "Giới tính", value: person.gender === true ? "Nam" : "Nữ" },
-            { label: "Đai", value: person.belt },
-            { label: "Trạng thái", value: person.coachStatus },
+            { label: "Đai", value: BeltLabel[person.belt] },
+            { label: "Trạng thái", value: CoachStatusLabel[person.coachStatus] },
             { label: "Email", value: person.email ?? "Chưa có dữ liệu" },
           ],
     };
