@@ -78,7 +78,9 @@ export interface StudentUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một học viên */
-export interface StudentDetail extends UserDetail {
+export interface StudentDetail {
+  userDetails: UserDetail[];
+
   studentCode: string;
   nationalCode: string | null;
   /** Format: "yyyy-MM-dd" */

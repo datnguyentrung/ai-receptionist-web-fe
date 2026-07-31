@@ -12,7 +12,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import type { LoginRequest, SwitchContextRequest } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { authApi } from "./authApi";
 
 const getPrimaryUserCode = (

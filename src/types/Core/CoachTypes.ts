@@ -1,6 +1,9 @@
 import type { Belt, CoachStatus } from "../../config/constants";
-import type { CoachAssignmentCreateRequest, CoachAssignmentSimpleResponse } from '../Operation/CoachAssignmentTypes';
-import type { UserDetail } from '../Security/authTypes';
+import type {
+  CoachAssignmentCreateRequest,
+  CoachAssignmentSimpleResponse,
+} from "../Operation/CoachAssignmentTypes";
+import type { UserDetail } from "../Security/authTypes";
 
 export interface CoachCreateRequest {
   coachStatus?: CoachStatus;
@@ -30,7 +33,9 @@ export interface CoachUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một HLV */
-export interface CoachDetail extends UserDetail {
+export interface CoachDetail {
+  userDetails: UserDetail[];
+
   /** Format: "yyyy-MM-dd" */
   email: string;
 

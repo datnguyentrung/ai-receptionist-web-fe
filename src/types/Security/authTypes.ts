@@ -8,11 +8,7 @@ export interface ChangePasswordRequest {
 }
 
 export type AuthUserStatus =
-  | "ACTIVE"
-  | "INACTIVE"
-  | "LOCKED"
-  | "DISABLED"
-  | string;
+  "ACTIVE" | "INACTIVE" | "LOCKED" | "DISABLED" | string;
 
 export type SystemRole =
   | "ROLE_STUDENT"
@@ -25,11 +21,7 @@ export type SystemRole =
   | string;
 
 export type AuthContextType =
-  | "STUDENT"
-  | "COACH"
-  | "GUARDIAN"
-  | "MANAGER"
-  | string;
+  "STUDENT" | "COACH" | "GUARDIAN" | "MANAGER" | string;
 
 export type RelationshipType = "OWNER" | "GUARDIAN" | "MANAGER" | string;
 
@@ -49,10 +41,7 @@ export type UserContext = {
 };
 
 export type AuthStatus =
-  | "initializing"
-  | "authenticated"
-  | "selecting-context"
-  | "anonymous";
+  "initializing" | "authenticated" | "selecting-context" | "anonymous";
 
 export type AuthResponse = {
   accessToken?: string;
@@ -118,18 +107,29 @@ export interface UserResponse {
 }
 
 export interface UserDetail {
-  personId: string;
   userId: string;
-  avatarUrl: string | null;
-  birthDate: Date | string;
+
+  /** Format: yyyy-MM-dd */
+  birthDate: string | null;
+
   phoneNumber: string | null;
-  belt: Belt;
+  belt: Belt | null;
   status: UserStatus | null;
-  createdAt: Date | string;
-  updatedAt: Date | string | null;
-  lastLoginAt: Date | string | null;
-  role?: string | null;
-  roles?: string[] | null;
-  fullName: string;
-  gender?: boolean;
+
+  /** Format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z' */
+  createdAt: string | null;
+
+  /** Format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z' */
+  updatedAt: string | null;
+
+  /** Format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z' */
+  lastLoginAt: string | null;
+
+  roles: string[] | null;
+  fullName: string | null;
+  relationshipType: RelationshipType | null;
+  active: boolean | null;
+
+  /** true = nam, false = nữ */
+  gender: boolean | null;
 }
