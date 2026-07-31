@@ -1,0 +1,111 @@
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import fs from "node:fs";
+import path from "path";
+import { defineConfig, loadEnv, type Plugin } from "vite";
+
+function fcmConfigPlugin(env: Record<string, string>): Plugin {
+  return {
+    name: "fcm-config",
+    configResolved() {
+      const config = {
+        apiKey: env.VITE_FIREBASE_API_KEY || "",
+        authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || "",
+        projectId: env.VITE_FIREBASE_PROJECT_ID || "",
+        storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || "",
+        messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+        appId: env.VITE_FIREBASE_APP_ID || "",
+      };
+      const content = `self.__FCM_CONFIG__ = ${JSON.stringify(config)};\n`;
+      fs.writeFileSync("public/fcm-config.js", content);
+    },
+  };
+}
+
+// https://vite.dev/config/
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+
+  const config = {
+    plugins: [tailwindcss(), react(), fcmConfigPlugin(env)],
+  server: {
+    allowedHosts: true as const, // Thêm dòng này để cho phép tất cả các host
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) {
+            return;
+          }
+
+          if (
+            id.includes("node_modules/react") ||
+            id.includes("node_modules/react-dom") ||
+            id.includes("node_modules/scheduler")
+          ) {
+            return "react-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@radix-ui") ||
+            id.includes("node_modules/cmdk") ||
+            id.includes("node_modules/vaul")
+          ) {
+            return "radix-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules/axios") ||
+            id.includes("node_modules/axios-retry")
+          ) {
+            return "data-vendor";
+          }
+
+          if (id.includes("node_modules/recharts")) {
+            return "chart-vendor";
+          }
+
+          if (
+            id.includes("node_modules/@mediapipe") ||
+            id.includes("node_modules/@yudiel/react-qr-scanner")
+          ) {
+            return "ai-vendor";
+          }
+
+          if (
+            id.includes("node_modules/lucide-react") ||
+            id.includes("node_modules/motion")
+          ) {
+            return "ui-vendor";
+          }
+
+          return;
+        },
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "@components": path.resolve(__dirname, "./src/components"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
+      "@assets": path.resolve(__dirname, "./public/assets"),
+      "@styles": path.resolve(__dirname, "./src/styles"),
+      "@store": path.resolve(__dirname, "./src/store"),
+      "@types": path.resolve(__dirname, "./src/types"),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Tự động inject biến và mixins vào tất cả các file SCSS
+        additionalData: `@use "@/styles/_variables.scss" as *;\n@use "@/styles/_mixins" as *;`,
+      },
+    },
+  },
+  };
+
+  return config;
+});
