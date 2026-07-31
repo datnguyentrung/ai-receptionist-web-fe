@@ -4,7 +4,7 @@ import type {
   StudentEnrollmentSimpleResponse,
 } from "../Operation/StudentEnrollmentTypes";
 import type { PageResponse } from "../pagination";
-import type { UserDetail } from "../Security/authTypes";
+import type { PersonAccountDetail, UserDetail } from "../Security/authTypes";
 import type { ClassScheduleSummary } from "./ClassScheduleTypes";
 
 // Type cho params lọc
@@ -78,11 +78,10 @@ export interface StudentUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một học viên */
-export interface StudentDetail {
+export interface StudentDetail extends PersonAccountDetail {
   userDetails: UserDetail[];
 
   studentCode: string;
-  nationalCode: string | null;
   /** Format: "yyyy-MM-dd" */
   startDate: string;
   studentStatus: StudentStatus;

@@ -10,6 +10,10 @@ import type { StudentSummary } from "../Core/StudentTypes";
 import type { PageResponse } from "../pagination";
 import type { UserResponse } from "../Security/authTypes";
 import type { CoachTimesheetResponse } from "./CoachTimesheetTypes";
+import type {
+  FaceCheckInCoachIdentity,
+  FaceCheckInStudentIdentity,
+} from "./PersonTypes";
 
 export interface AttendanceListResponse {
   stats: AttendanceStats;
@@ -129,10 +133,10 @@ export interface CheckInResponse {
   /** Present when face check-in resolves to a coach timesheet. */
   coachTimesheet?: CoachTimesheetResponse | null;
   recognizedPerson?:
-    | (import("../Core/StudentTypes").StudentDetail & {
+    | (FaceCheckInStudentIdentity & {
         personType: "STUDENT";
       })
-    | (import("../Core/CoachTypes").CoachDetail & {
+    | (FaceCheckInCoachIdentity & {
         personType: "COACH";
       });
   checkInErrorCode?: string | null;

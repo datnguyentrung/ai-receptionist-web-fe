@@ -8,7 +8,11 @@ export interface ChangePasswordRequest {
 }
 
 export type AuthUserStatus =
-  "ACTIVE" | "INACTIVE" | "LOCKED" | "DISABLED" | string;
+  | "ACTIVE"
+  | "INACTIVE"
+  | "LOCKED"
+  | "DISABLED"
+  | string;
 
 export type SystemRole =
   | "ROLE_STUDENT"
@@ -21,7 +25,11 @@ export type SystemRole =
   | string;
 
 export type AuthContextType =
-  "STUDENT" | "COACH" | "GUARDIAN" | "MANAGER" | string;
+  | "STUDENT"
+  | "COACH"
+  | "GUARDIAN"
+  | "MANAGER"
+  | string;
 
 export type RelationshipType = "OWNER" | "GUARDIAN" | "MANAGER" | string;
 
@@ -41,7 +49,10 @@ export type UserContext = {
 };
 
 export type AuthStatus =
-  "initializing" | "authenticated" | "selecting-context" | "anonymous";
+  | "initializing"
+  | "authenticated"
+  | "selecting-context"
+  | "anonymous";
 
 export type AuthResponse = {
   accessToken?: string;
@@ -104,6 +115,30 @@ export interface UserProfile {
 export interface UserResponse {
   userInfo: UserInfo;
   userProfile: UserProfile;
+}
+
+export interface PersonResponse {
+  personId: string;
+  fullName: string;
+  gender: boolean | null;
+  birthDate: string | Date;
+  nationalCode: string | null;
+  email: string | null;
+  belt: Belt;
+  faceImagePath: string | null;
+  avatarUrl: string | null;
+}
+
+export interface PersonAccountDetail extends PersonResponse {
+  userId?: string;
+  phoneNumber?: string | null;
+  status?: UserStatus | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  lastLoginAt?: string | null;
+  roles?: string[] | null;
+  role?: string | null;
+  active?: boolean | null;
 }
 
 export interface UserDetail {

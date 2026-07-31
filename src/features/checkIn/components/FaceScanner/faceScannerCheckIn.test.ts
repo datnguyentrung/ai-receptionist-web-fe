@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type {
-  CoachDetail,
   CoachSummary,
+  FaceCheckInCoachIdentity,
   FaceCheckInResponse,
-  StudentDetail,
+  FaceCheckInStudentIdentity,
   StudentAttendanceResponse,
   StudentSummary,
 } from "@/types";
@@ -30,24 +30,16 @@ const studentDetail = {
   belt: "C10",
   studentStatus: "ACTIVE",
   branchName: "Văn Quán",
-} as StudentDetail;
+} as FaceCheckInStudentIdentity;
 
-const coachDetail: CoachDetail = {
+const coachDetail: FaceCheckInCoachIdentity = {
   personId: "coach-1",
-  userId: "user-coach-1",
   fullName: "Trần Bình",
-  avatarUrl: null,
   birthDate: "1990-01-01",
-  phoneNumber: null,
   staffCode: "VQT001",
   belt: "D2",
-  status: "ACTIVE",
   coachStatus: "ACTIVE",
   email: "coach@example.com",
-  createdAt: "2026-07-26T08:00:00Z",
-  updatedAt: "2026-07-26T08:00:00Z",
-  lastLoginAt: null,
-  currentAssignments: [],
 };
 
 const studentSuccess: FaceCheckInResponse = {

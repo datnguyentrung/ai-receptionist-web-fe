@@ -3,7 +3,7 @@ import type {
   CoachAssignmentCreateRequest,
   CoachAssignmentSimpleResponse,
 } from "../Operation/CoachAssignmentTypes";
-import type { UserDetail } from "../Security/authTypes";
+import type { PersonAccountDetail, UserDetail } from "../Security/authTypes";
 
 export interface CoachCreateRequest {
   coachStatus?: CoachStatus;
@@ -33,14 +33,13 @@ export interface CoachUpdateRequest {
 // ============================================================
 
 /** Chi tiết đầy đủ của một HLV */
-export interface CoachDetail {
+export interface CoachDetail extends PersonAccountDetail {
   userDetails: UserDetail[];
 
   /** Format: "yyyy-MM-dd" */
   email: string;
 
   staffCode: string;
-  nationalCode?: string | null;
   /** Trạng thái công việc */
   coachStatus: CoachStatus;
 

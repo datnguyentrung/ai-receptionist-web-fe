@@ -155,7 +155,9 @@ export default function PersonalInfoTab() {
               </div>
               <div className={`${S.infoContent} ${S.last}`}>
                 <p className={S.infoLabel}>Ngày tham gia</p>
-                <p className={S.infoValue}>{formatDateDMY(user.createdAt)}</p>
+                <p className={S.infoValue}>
+                  {user.createdAt ? formatDateDMY(user.createdAt) : "Chưa có"}
+                </p>
               </div>
             </div>
           </div>
