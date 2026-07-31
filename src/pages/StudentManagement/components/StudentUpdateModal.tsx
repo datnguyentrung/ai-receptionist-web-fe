@@ -3,7 +3,11 @@ import { ModalLayout } from "@/components/ui/modal-layout";
 import { showErrorToast, showSuccessToast } from "@/components/ui/toast";
 import { studentAPI } from "@/features/student/api/studentAPI";
 import { useGenericMutation, useGetQuery } from "@/hooks/useCrud";
-import { formatDateInput, getRequestErrorMessage, isFutureDate } from "@/lib/personForm";
+import {
+  formatDateInput,
+  getRequestErrorMessage,
+  isFutureDate,
+} from "@/lib/personForm";
 import type {
   StudentDetail,
   StudentListResponse,
@@ -12,11 +16,11 @@ import type {
 } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import styles from "./StudentCreateModal.module.scss";
 import {
   StudentProfileFields,
   type StudentProfileFormState,
 } from "./StudentProfileFields";
-import styles from "./StudentCreateModal.module.scss";
 
 type StudentUpdateModalProps = {
   open: boolean;
@@ -37,7 +41,7 @@ function createForm(
 ): StudentProfileFormState {
   return {
     fullName: detail?.fullName ?? student.fullName,
-    phoneNumber: detail?.phoneNumber ?? student.phoneNumber,
+    phoneNumber: student.phoneNumber,
     nationalCode: detail?.nationalCode ?? student.nationalCode ?? "",
     birthDate: formatDateInput(detail?.birthDate ?? student.birthDate),
     startDate: formatDateInput(detail?.startDate),
@@ -64,7 +68,11 @@ function StudentUpdateForm({
     { payload: StudentUpdateRequest; imageFile: File | null }
   >(
     ({ payload, imageFile: selectedImage }) =>
-      studentAPI.updateStudent(displayedStudent.personId, payload, selectedImage),
+      studentAPI.updateStudent(
+        displayedStudent.personId,
+        payload,
+        selectedImage,
+      ),
     [["students"], ["student-detail", student.studentCode]],
     {
       onSuccess: (updatedStudent) => {
@@ -85,7 +93,8 @@ function StudentUpdateForm({
                         ? {
                             ...item,
                             fullName: updatedStudent.fullName,
-                            phoneNumber: updatedStudent.phoneNumber ?? item.phoneNumber,
+                            // phoneNumber:
+                            // updatedStudent.phoneNumber ?? item.phoneNumber,
                             birthDate: updatedStudent.birthDate,
                             belt: updatedStudent.belt,
                             avatarUrl: updatedStudent.avatarUrl,
@@ -107,10 +116,10 @@ function StudentUpdateForm({
       showErrorToast("Vui lòng nhập họ và tên học viên.");
       return;
     }
-    if (!/^\d{9,11}$/.test(form.phoneNumber.trim())) {
-      showErrorToast("Số điện thoại không hợp lệ. Chỉ cho phép 9-11 chữ số.");
-      return;
-    }
+    // if (!/^\d{9,11}$/.test(form.phoneNumber.trim())) {
+    //   showErrorToast("Số điện thoại không hợp lệ. Chỉ cho phép 9-11 chữ số.");
+    //   return;
+    // }
     if (!form.birthDate) {
       showErrorToast("Vui lòng chọn ngày sinh.");
       return;
@@ -122,7 +131,7 @@ function StudentUpdateForm({
 
     const payload: StudentUpdateRequest = {
       fullName: form.fullName.trim(),
-      phoneNumber: form.phoneNumber.trim(),
+      // phoneNumber: form.phoneNumber.trim(),
       nationalCode: form.nationalCode.trim() || undefined,
       birthDate: form.birthDate,
       startDate: form.startDate || undefined,
@@ -150,13 +159,23 @@ function StudentUpdateForm({
   return (
     <form className={styles.studentCreateModal} onSubmit={handleSubmit}>
       {disabled ? (
-        <div className={styles.studentCreateModalLoading} role="status" aria-live="polite">
-          <span className={styles.studentCreateModalSpinner} aria-hidden="true" />
+        <div
+          className={styles.studentCreateModalLoading}
+          role="status"
+          aria-live="polite"
+        >
+          <span
+            className={styles.studentCreateModalSpinner}
+            aria-hidden="true"
+          />
           {isPending ? "Đang cập nhật hồ sơ..." : "Đang tải hồ sơ..."}
         </div>
       ) : null}
 
-      <fieldset className={styles.studentCreateModalFieldset} disabled={disabled}>
+      <fieldset
+        className={styles.studentCreateModalFieldset}
+        disabled={disabled}
+      >
         <section className={styles.studentCreateModalSection}>
           <div className={styles.studentCreateModalSectionHeader}>
             <h3>Thông tin học viên</h3>
@@ -178,10 +197,19 @@ function StudentUpdateForm({
       </fieldset>
 
       <div className={styles.studentUpdateModalActions}>
-        <button type="button" className={styles.btn} onClick={onClose} disabled={isPending}>
+        <button
+          type="button"
+          className={styles.btn}
+          onClick={onClose}
+          disabled={isPending}
+        >
           Hủy
         </button>
-        <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={disabled}>
+        <button
+          type="submit"
+          className={`${styles.btn} ${styles.btnPrimary}`}
+          disabled={disabled}
+        >
           {isPending ? "Đang cập nhật..." : "Cập nhật"}
         </button>
       </div>
@@ -207,7 +235,9 @@ export function StudentUpdateModal({
       closeOnBackdrop={!isDetailFetching}
       closeOnEscape={!isDetailFetching}
       title="Cập nhật học viên"
-      subtitle={student ? `${student.fullName} · ${student.studentCode}` : undefined}
+      subtitle={
+        student ? `${student.fullName} · ${student.studentCode}` : undefined
+      }
       maxWidth={760}
       overlayClassName={styles.noBlurOverlay}
       dialogClassName={styles.studentUpdateDialog}

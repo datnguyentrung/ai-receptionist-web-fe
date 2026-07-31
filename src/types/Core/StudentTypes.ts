@@ -61,7 +61,6 @@ export interface StudentCreateRequest {
 }
 
 export interface StudentUpdateRequest {
-  phoneNumber?: string;
   /** Format: "yyyy-MM-dd" */
   birthDate?: string;
   belt?: Belt;
