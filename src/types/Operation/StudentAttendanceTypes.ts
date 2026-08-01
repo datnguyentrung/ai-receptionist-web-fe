@@ -39,7 +39,7 @@ export interface AttendanceStats {
 export interface StudentAttendanceResponse {
   attendanceId: string | null;
   enrollmentId: string;
-  student: StudentSummary;
+  studentSummary: StudentSummary;
   classSchedule: ClassScheduleSummary;
   /** Format: "yyyy-MM-dd" */
   sessionDate: string;

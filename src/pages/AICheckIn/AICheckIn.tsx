@@ -877,7 +877,7 @@ export default function AICheckIn() {
                             Điểm danh thành công
                           </p>
                           <h2 className={styles.mobileAttendanceStudentName}>
-                            {scanAttendanceResult.student.fullName}
+                            {scanAttendanceResult.studentSummary.fullName}
                           </h2>
                         </div>
                       </div>

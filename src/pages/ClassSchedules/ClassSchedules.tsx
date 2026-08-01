@@ -112,7 +112,7 @@ export function ClassSchedules() {
       <div className={styles.page}>
         {isRefreshing && (
           <div className={styles.refreshNotice} role="status">
-            �ang c?p nh?t l?ch h?c m?i...
+            Đang cập nhật lịch học mới ...
           </div>
         )}
         <RenderProfiler id="ClassSchedules:Header" thresholdMs={4}>

@@ -17,7 +17,7 @@ export function mergeAttendanceData(
 ): StudentAttendanceResponse[] {
   // 1. Tạo một Set chứa các studentId đã có trong danh sách Attendance để tra cứu cực nhanh O(1)
   const existingStudentIds = new Set(
-    attendances.map((attendance) => attendance.student.personId),
+    attendances.map((attendance) => attendance.studentSummary.personId),
   );
 
   // 2. Clone danh sách attendance hiện tại để tránh mutate data gốc
@@ -32,7 +32,7 @@ export function mergeAttendanceData(
       const newRecord: StudentAttendanceResponse = {
         attendanceId: null, // Rỗng hoặc null vì chưa được lưu vào Database
         enrollmentId: enrollment.enrollmentId,
-        student: enrollment.studentSummary,
+        studentSummary: enrollment.studentSummary,
         classSchedule: enrollment.classScheduleSummary,
         sessionDate: sessionDate,
 

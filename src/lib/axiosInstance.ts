@@ -1,3 +1,5 @@
+import { notifyAuthSessionInvalid } from "@/features/auth/utils/authEvents";
+import type { AuthResponse } from "@/types";
 import type {
   AxiosInstance,
   AxiosResponse,
@@ -5,8 +7,6 @@ import type {
 } from "axios";
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import type { AuthResponse } from "@/types";
-import { notifyAuthSessionInvalid } from "@/features/auth/utils/authEvents";
 import { useAuthStore } from "../store/authStore";
 import { writeDebugStorage } from "../utils/debugStorage";
 import { queryClient } from "./react-query";
@@ -64,10 +64,7 @@ function setupInterceptors(instance: AxiosInstance): AxiosInstance {
   // Request interceptor
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      if (
-        typeof FormData !== "undefined" &&
-        config.data instanceof FormData
-      ) {
+      if (typeof FormData !== "undefined" && config.data instanceof FormData) {
         // Let the browser add the multipart boundary for FormData requests.
         config.headers.delete("Content-Type");
       }
@@ -224,7 +221,7 @@ export const javaApi = setupInterceptors(
   setupRetry(
     axios.create({
       baseURL: JAVA_API_URL,
-      timeout: 15000,
+      timeout: 30000,
       withCredentials: true, // QUAN TRỌNG: Bật cookie cho Java API
       headers: {
         "Content-Type": "application/json",

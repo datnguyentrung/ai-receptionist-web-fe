@@ -338,7 +338,7 @@ export function AttendanceCheckin() {
     ).map((student) => ({
       ...student,
       belt:
-        readBelt(student.student) ??
+        readBelt(student.studentSummary) ??
         readBelt(student) ??
         beltByStudentId.get(getAttendanceStudentId(student)) ??
         null,

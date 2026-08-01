@@ -27,7 +27,9 @@ function formatToday() {
   return `${year}-${month}-${day}`;
 }
 
-function createInitialAssignment(coachId: string): CoachAssignmentCreateRequest {
+function createInitialAssignment(
+  coachId: string,
+): CoachAssignmentCreateRequest {
   const today = formatToday();
   return {
     coachId,
@@ -42,7 +44,7 @@ export function CoachAssignmentModal({
   coach,
   onClose,
 }: CoachAssignmentModalProps) {
-  const assignmentCoachId = coach?.staffCode ?? "";
+  const assignmentCoachId = coach?.personId ?? "";
   const [assignmentState, setAssignmentState] = useState<{
     coachId: string;
     request: CoachAssignmentCreateRequest;
@@ -50,9 +52,9 @@ export function CoachAssignmentModal({
     coachId: assignmentCoachId,
     request: createInitialAssignment(assignmentCoachId),
   }));
-  const [deletingAssignmentIds, setDeletingAssignmentIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const [deletingAssignmentIds, setDeletingAssignmentIds] = useState<
+    Set<string>
+  >(new Set());
   const [pendingDeleteAssignment, setPendingDeleteAssignment] =
     useState<CoachAssignmentResponse | null>(null);
 
@@ -73,9 +75,9 @@ export function CoachAssignmentModal({
 
   const { data: coachAssignments = [], isLoading: isCoachAssignmentsLoading } =
     useGetQuery(
-      ["coach-assignments", coach?.userId ?? ""],
-      () => coachAssignmentAPI.getAssignmentsByCoachId(coach?.userId ?? ""),
-      { enabled: Boolean(coach?.userId) },
+      ["coach-assignments", coach?.personId ?? ""],
+      () => coachAssignmentAPI.getAssignmentsByCoachId(coach?.personId ?? ""),
+      { enabled: Boolean(coach?.personId) },
     );
 
   const activeAssignments = useMemo(
@@ -91,15 +93,20 @@ export function CoachAssignmentModal({
   );
 
   const { mutate: createCoachAssignment, isPending: isCreatingAssignment } =
-    useGenericMutation<CoachAssignmentSimpleResponse[], CoachAssignmentCreateRequest>(
-      coachAssignmentAPI.createCoachAssignment,
-      [["coach-assignments"], ["coaches"]],
-    );
-  const { mutateAsync: deleteCoachAssignment, isPending: isDeletingAssignment } =
-    useGenericMutation<void, string>(coachAssignmentAPI.deleteCoachAssignment, [
+    useGenericMutation<
+      CoachAssignmentSimpleResponse[],
+      CoachAssignmentCreateRequest
+    >(coachAssignmentAPI.createCoachAssignment, [
       ["coach-assignments"],
       ["coaches"],
     ]);
+  const {
+    mutateAsync: deleteCoachAssignment,
+    isPending: isDeletingAssignment,
+  } = useGenericMutation<void, string>(
+    coachAssignmentAPI.deleteCoachAssignment,
+    [["coach-assignments"], ["coaches"]],
+  );
 
   const handleConfirmDeleteAssignment = async () => {
     if (!coach || !pendingDeleteAssignment) return;
@@ -152,7 +159,9 @@ export function CoachAssignmentModal({
           onClose();
         },
         onError: () => {
-          showErrorToast("Có lỗi xảy ra khi cập nhật phân công huấn luyện viên.");
+          showErrorToast(
+            "Có lỗi xảy ra khi cập nhật phân công huấn luyện viên.",
+          );
         },
       },
     );
@@ -212,7 +221,9 @@ export function CoachAssignmentModal({
         isLoading={isDeletingAssignment}
         showSuccessToastOnConfirm={false}
         showErrorToastOnFail={false}
-        onCancel={() => !isDeletingAssignment && setPendingDeleteAssignment(null)}
+        onCancel={() =>
+          !isDeletingAssignment && setPendingDeleteAssignment(null)
+        }
         onConfirm={handleConfirmDeleteAssignment}
       />
     </div>

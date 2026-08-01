@@ -5,15 +5,15 @@ import {
 import type { StudentAttendanceResponse } from "@/types";
 
 export function getAttendanceStudentId(row: StudentAttendanceResponse) {
-  return row.student.personId;
+  return row.studentSummary.personId;
 }
 
 export function getAttendanceStudentName(row: StudentAttendanceResponse) {
-  return row.student.fullName;
+  return row.studentSummary.fullName;
 }
 
 export function getAttendanceStudentCode(row: StudentAttendanceResponse) {
-  return row.student.code;
+  return row.studentSummary.code;
 }
 
 export function getAttendanceScheduleId(row: StudentAttendanceResponse) {

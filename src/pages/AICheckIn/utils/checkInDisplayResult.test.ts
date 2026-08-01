@@ -55,7 +55,7 @@ describe("PWA check-in display result mappers", () => {
     const response: StudentAttendanceResponse = {
       attendanceId: "attendance-1",
       enrollmentId: "enrollment-1",
-      student: {
+      studentSummary: {
         personId: "student-1",
         fullName: "Nguyễn An",
         email: "student@example.com",
